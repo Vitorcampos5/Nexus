@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Incessans Aestimandi — Humonstro</title>
+<link rel="icon" type="image/svg+xml" href="humonstro-icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Lora:ital,wght@0,400;0,500;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --bg:#0d0d12;
+  --sidebar:#090814;
+  --text:#e8dfd0;
+  --dim:#9d8b6e;
+  --accent:#b8873e;
+  --accent-lo:rgba(184,135,62,.12);
+  --line:#1e1b2c;
+  --sw:260px;
+  --fd:'Cormorant Garamond',Georgia,serif;
+  --fb:'Lora',Georgia,serif;
+  --fm:'Share Tech Mono','Courier New',monospace;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--fb);
+  font-size:1.05rem;
+  line-height:1.9;
+  overflow-x:hidden;
+}
+
+/* ─── COVER ──────────────────────────────────────────── */
+#cover{
+  position:fixed;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg);
+  z-index:200;
+  transition:opacity .9s ease,visibility .9s ease;
+}
+#cover.out{opacity:0;visibility:hidden;pointer-events:none}
+
+.cv-inner{
+  text-align:center;
+  padding:2rem 1.5rem;
+  max-width:580px;
+}
+.cv-eye{
+  font-family:var(--fb);
+  font-size:.72rem;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--dim);
+  margin-bottom:3rem;
+}
+.cv-title{
+  font-family:var(--fd);
+  font-size:clamp(3.2rem,9vw,6rem);
+  font-weight:300;
+  line-height:1.0;
+  letter-spacing:-.01em;
+  margin-bottom:.9rem;
+}
+.cv-sub{
+  font-family:var(--fd);
+  font-size:clamp(1.1rem,3vw,1.7rem);
+  font-weight:300;
+  font-style:italic;
+  color:var(--accent);
+  letter-spacing:.12em;
+  margin-bottom:3rem;
+}
+.cv-leet{
+  font-family:var(--fm);
+  font-size:.72rem;
+  color:var(--dim);
+  opacity:.45;
+  letter-spacing:.08em;
+  margin-bottom:3.5rem;
+  white-space:nowrap;
+}
+.cv-btn{
+  font-family:var(--fb);
+  font-size:.8rem;
+  letter-spacing:.18em;
+  text-transform:lowercase;
+  color:var(--dim);
+  background:transparent;
+  border:1px solid var(--line);
+  padding:.75rem 2.8rem;
+  cursor:pointer;
+  transition:border-color .3s,color .3s;
+}
+.cv-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ─── APP SHELL ───────────────────────────────────────── */
+#app{
+  display:flex;min-height:100vh;
+  opacity:0;
+  transition:opacity .8s ease .15s;
+}
+#app.on{opacity:1}
+
+/* ─── SIDEBAR ─────────────────────────────────────────── */
+#sidebar{
+  position:fixed;top:0;left:0;
+  width:var(--sw);height:100vh;
+  background:var(--sidebar);
+  border-right:1px solid var(--line);
+  display:flex;flex-direction:column;
+  z-index:100;
+  transition:transform .32s ease;
+}
+.sb-head{
+  padding:1.5rem 1.25rem 1.1rem;
+  border-bottom:1px solid var(--line);
+  flex-shrink:0;
+}
+.sb-title{
+  display:block;
+  font-family:var(--fd);
+  font-size:1rem;
+  font-weight:600;
+  color:var(--text);
+  letter-spacing:.02em;
+  line-height:1.3;
+}
+.sb-author{
+  display:block;
+  font-size:.68rem;
+  color:var(--dim);
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  margin-top:.25rem;
+}
+.nav-list{
+  list-style:none;
+  overflow-y:auto;
+  flex:1;
+  padding:.6rem 0;
+  scrollbar-width:thin;
+  scrollbar-color:var(--line) transparent;
+}
+.nav-list::-webkit-scrollbar{width:3px}
+.nav-list::-webkit-scrollbar-thumb{background:var(--line)}
+
+.nav-a{
+  display:flex;
+  align-items:baseline;
+  gap:.65rem;
+  padding:.38rem 1.25rem;
+  color:var(--dim);
+  text-decoration:none;
+  font-size:.79rem;
+  line-height:1.4;
+  transition:color .18s,background .18s;
+}
+.nav-a:hover{color:var(--text);background:rgba(255,255,255,.025)}
+.nav-a.active{color:var(--accent)}
+
+.nav-n{
+  font-family:var(--fm);
+  font-size:.62rem;
+  color:var(--accent);
+  opacity:.45;
+  flex-shrink:0;
+  transition:opacity .18s;
+}
+.nav-a.active .nav-n{opacity:1}
+
+/* ─── CONTENT ─────────────────────────────────────────── */
+#content{
+  margin-left:var(--sw);
+  flex:1;
+  min-height:100vh;
+}
+
+/* mobile toggle */
+#tog{
+  display:none;
+  position:fixed;
+  top:.9rem;left:.9rem;
+  z-index:150;
+  width:38px;height:38px;
+  background:var(--sidebar);
+  border:1px solid var(--line);
+  color:var(--dim);
+  font-size:1rem;
+  cursor:pointer;
+}
+
+/* ─── CHAPTER ─────────────────────────────────────────── */
+.ch{
+  max-width:680px;
+  margin:0 auto;
+  padding:5.5rem 2rem 4rem;
+  border-bottom:1px solid var(--line);
+}
+.ch:last-child{border-bottom:none}
+
+.ch-label{
+  font-family:var(--fm);
+  font-size:.6rem;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--accent);
+  opacity:.6;
+  margin-bottom:.55rem;
+}
+.ch-title{
+  font-family:var(--fd);
+  font-size:clamp(2rem,4.5vw,3rem);
+  font-weight:300;
+  line-height:1.1;
+  margin-bottom:2.5rem;
+}
+.ch-pref .ch-title{
+  font-size:clamp(2.5rem,6vw,4.5rem);
+  letter-spacing:-.02em;
+}
+
+.ch p{margin-bottom:1.15rem}
+.ch p:last-child{margin-bottom:0}
+
+/* ─── POETRY ──────────────────────────────────────────── */
+.poem{
+  margin:2.2rem 0;
+  padding:1.4rem 0 1.4rem 1.5rem;
+  border-left:1px solid var(--accent);
+  font-style:italic;
+}
+.poem p{margin-bottom:.3rem;line-height:1.65}
+.poem p:last-child{margin-bottom:0}
+
+/* ─── BLOCK QUOTE ─────────────────────────────────────── */
+.bq{
+  margin:2rem 0;
+  padding:.9rem 1.4rem;
+  border-left:2px solid rgba(157,139,110,.3);
+  font-style:italic;
+  color:var(--dim);
+}
+.bq p{margin-bottom:.3rem}
+.bq p:last-child{margin-bottom:0}
+
+/* ─── EMPTY CHAPTER ───────────────────────────────────── */
+.ch-empty .ch-title{color:var(--dim);opacity:.4}
+.breath{
+  font-family:var(--fm);
+  font-size:.68rem;
+  color:var(--dim);
+  letter-spacing:.35em;
+  animation:breathe 4.5s ease-in-out infinite;
+  margin-top:1.2rem;
+}
+@keyframes breathe{0%,100%{opacity:.08}50%{opacity:.35}}
+
+/* ─── DIMENSÃO (spatial verse) ────────────────────────── */
+.dimensao{
+  font-family:var(--fd);
+  font-size:1.1rem;
+  font-style:italic;
+  color:var(--dim);
+  white-space:pre;
+  line-height:2.4;
+  margin:2.5rem 0;
+  overflow-x:auto;
+  letter-spacing:.02em;
+}
+
+/* ─── ORNAMENT ────────────────────────────────────────── */
+.orn{
+  display:block;
+  text-align:center;
+  color:var(--dim);
+  opacity:.25;
+  font-size:.9rem;
+  letter-spacing:.6em;
+  margin:2rem 0;
+}
+
+/* ─── FOOTNOTE REFS ───────────────────────────────────── */
+.fn{
+  color:var(--accent);
+  text-decoration:none;
+  font-family:var(--fm);
+  font-size:.65rem;
+  vertical-align:super;
+  opacity:.7;
+  transition:opacity .2s;
+}
+.fn:hover{opacity:1}
+
+/* ─── NOTES SECTION ───────────────────────────────────── */
+.notes .ch-title{font-size:1.6rem}
+.fn-list{list-style:none;margin-top:1.2rem}
+.fn-list li{
+  display:flex;gap:.9rem;
+  margin-bottom:.65rem;
+  font-size:.8rem;
+  color:var(--dim);
+  align-items:baseline;
+}
+.fn-id{
+  font-family:var(--fm);
+  font-size:.6rem;
+  color:var(--accent);
+  flex-shrink:0;
+  opacity:.7;
+}
+
+/* ─── SIGNATURE ───────────────────────────────────────── */
+.sig{
+  text-align:right;
+  margin-top:3.5rem;
+  padding-top:2rem;
+  border-top:1px solid var(--line);
+}
+.sig-name{
+  display:block;
+  font-family:var(--fd);
+  font-size:1.6rem;
+  font-weight:300;
+  font-style:italic;
+  color:var(--text);
+}
+.sig-role{
+  display:block;
+  font-size:.7rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--dim);
+  margin-top:.3rem;
+}
+.sig-mg{
+  display:block;
+  font-family:var(--fm);
+  font-size:.65rem;
+  color:var(--dim);
+  opacity:.3;
+  margin-top:.8rem;
+}
+
+/* ─── REDUCED MOTION ──────────────────────────────────── */
+@media(prefers-reduced-motion:reduce){
+  .breath{animation:none;opacity:.2}
+  html{scroll-behavior:auto}
+  #cover,#app,.cv-btn{transition:none}
+}
+
+/* ─── RESPONSIVE ──────────────────────────────────────── */
+@media(max-width:780px){
+  :root{--sw:0px}
+  #sidebar{width:260px;transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0)}
+  #content{margin-left:0}
+  #tog{display:flex;align-items:center;justify-content:center}
+  .ch{padding:5rem 1.25rem 3rem}
+  .cv-leet{font-size:.6rem;letter-spacing:.04em}
+}
+
+/* ─── NEXUS RETURN ────────────────────────────────────── */
+.sb-footer{
+  flex-shrink:0;
+  display:flex;
+  flex-direction:column;
+  gap:.55rem;
+  padding:.9rem 1.25rem;
+  border-top:1px solid var(--line);
+}
+.nexus-return{
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+  font-family:var(--fb);
+  font-size:.68rem;
+  letter-spacing:.20em;
+  text-transform:uppercase;
+  color:var(--dim);
+  text-decoration:none;
+  transition:color .2s;
+}
+.nexus-return:hover{color:var(--accent);}
+.nexus-return-dot{font-size:.45rem;opacity:.6;}
+
+/* ── Esfera do Dragão (easter egg secreto) ── */
+#dragonball-sphere{ display:none; position:fixed; right:1.2rem; bottom:1.2rem; z-index:999999; cursor:pointer; animation:dbFloat 3.4s ease-in-out infinite; }
+@keyframes dbFloat{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.db-sphere-orb{ position:relative; width:64px; height:64px; border-radius:50%;
+  background:radial-gradient(circle at 32% 28%, #FFE9B0 0%, #FFC24D 18%, #E8891A 55%, #A34E08 85%, #6B3204 100%);
+  box-shadow:0 0 22px rgba(232,137,26,.55), inset -6px -6px 14px rgba(0,0,0,.35), inset 4px 6px 10px rgba(255,255,255,.25);
+  animation:dbSpin 9s linear infinite; }
+@keyframes dbSpin{ to{ transform:rotate(360deg); } }
+#dragonball-sphere:hover .db-sphere-orb{ box-shadow:0 0 32px rgba(232,137,26,.8), inset -6px -6px 14px rgba(0,0,0,.35), inset 4px 6px 10px rgba(255,255,255,.35); }
+.db-sphere-orb .estrela{ position:absolute; width:9px; height:9px; background:#C21818; clip-path:polygon(50% 0%, 61% 35%, 98% 35%, 68% 56%, 79% 91%, 50% 69%, 21% 91%, 32% 56%, 2% 35%, 39% 35%); filter:drop-shadow(0 1px 1px rgba(0,0,0,.55)); }
+</style>
+</head>
+<body>
+<!-- avisa o mapa do Nexus (se estiver por perto) que esta página foi visitada -->
+<script>try{ if (window.top !== window) window.top.postMessage({ tipo:'nexus-visita', id:'book' }, '*'); }catch(e){}</script>
+
+<!-- ═══════════ COVER ═══════════ -->
+<section id="cover">
+  <div class="cv-inner">
+    <span class="cv-eye">Autor-Livro</span>
+    <div class="cv-title">Incessans<br>Aestimandi</div>
+    <div class="cv-sub">Humonstro</div>
+    <div class="cv-leet" aria-label="Boa Jornada">|3 0 /-\ &nbsp;_| 0 |2 |\ &nbsp;/-\ |) /-\</div>
+    <button class="cv-btn" onclick="go()">iniciar leitura</button>
+  </div>
+</section>
+
+<!-- ═══════════ APP ═══════════ -->
+<div id="app">
+
+  <nav id="sidebar" aria-label="Sumário">
+    <div class="sb-head">
+      <span class="sb-title">Incessans Aestimandi</span>
+      <span class="sb-author">Vitor · Autor-Livro</span>
+    </div>
+    <ul class="nav-list">
+      <li><a href="#pref"  class="nav-a">Prefácio</a></li>
+      <li><a href="#c01"   class="nav-a"><span class="nav-n">01</span>Autor-Livro</a></li>
+      <li><a href="#c02"   class="nav-a"><span class="nav-n">02</span>Reflexo</a></li>
+      <li><a href="#c03"   class="nav-a"><span class="nav-n">03</span>Único</a></li>
+      <li><a href="#c04"   class="nav-a"><span class="nav-n">04</span>Essência</a></li>
+      <li><a href="#c05"   class="nav-a"><span class="nav-n">05</span>Instinto</a></li>
+      <li><a href="#c06"   class="nav-a"><span class="nav-n">06</span>Tempo</a></li>
+      <li><a href="#c07"   class="nav-a"><span class="nav-n">07</span>Névoa</a></li>
+      <li><a href="#c08"   class="nav-a"><span class="nav-n">08</span>Vazio</a></li>
+      <li><a href="#c09"   class="nav-a"><span class="nav-n">09</span>Ruído</a></li>
+      <li><a href="#c10"   class="nav-a"><span class="nav-n">10</span>Omissão</a></li>
+      <li><a href="#c11"   class="nav-a"><span class="nav-n">11</span>Fragilidade</a></li>
+      <li><a href="#c12"   class="nav-a"><span class="nav-n">12</span>Psicocardia</a></li>
+      <li><a href="#c13"   class="nav-a"><span class="nav-n">13</span>Desespero</a></li>
+      <li><a href="#c14"   class="nav-a"><span class="nav-n">14</span>Gris</a></li>
+      <li><a href="#c15"   class="nav-a"><span class="nav-n">15</span>Morpheus</a></li>
+      <li><a href="#c16"   class="nav-a"><span class="nav-n">16</span>Orgulho</a></li>
+      <li><a href="#c17"   class="nav-a"><span class="nav-n">17</span>Metamorfose</a></li>
+      <li><a href="#c18"   class="nav-a"><span class="nav-n">18</span>Dimensão</a></li>
+      <li><a href="#c19"   class="nav-a"><span class="nav-n">19</span>Valor</a></li>
+      <li><a href="#c20"   class="nav-a"><span class="nav-n">20</span>Verdade</a></li>
+      <li><a href="#c21"   class="nav-a"><span class="nav-n">21</span>Nirvana</a></li>
+      <li><a href="#c22"   class="nav-a"><span class="nav-n">22</span>Ocarina</a></li>
+      <li><a href="#c23"   class="nav-a"><span class="nav-n">23</span>Herói</a></li>
+      <li><a href="#c24"   class="nav-a"><span class="nav-n">24</span>Monstro</a></li>
+      <li><a href="#c25"   class="nav-a"><span class="nav-n">25</span>Minazuki</a></li>
+      <li><a href="#c26"   class="nav-a"><span class="nav-n">26</span>Hommunculus</a></li>
+      <li><a href="#c27"   class="nav-a"><span class="nav-n">27</span>Baobá</a></li>
+      <li><a href="#c28"   class="nav-a"><span class="nav-n">28</span>Save</a></li>
+      <li><a href="#c29"   class="nav-a"><span class="nav-n">29</span>Café</a></li>
+      <li><a href="#c30"   class="nav-a"><span class="nav-n">30</span>Questão</a></li>
+      <li><a href="#notas" class="nav-a"><span class="nav-n">⁎</span>Notas</a></li>
+    </ul>
+    <div class="sb-footer">
+      <a href="Deus X Homem.html" class="nexus-return">
+        <span class="nexus-return-dot">◆</span> Deus x Homem
+      </a>
+      <a href="../nexus.html" class="nexus-return">
+        <span class="nexus-return-dot">◆</span> Nexus
+      </a>
+    </div>
+  </nav>
+
+  <main id="content">
+    <button id="tog" aria-label="Abrir sumário" onclick="tog()">☰</button>
+
+    <!-- ── PREFÁCIO ─────────────────────────────────────── -->
+    <section id="pref" class="ch ch-pref">
+      <div class="ch-label">Prefácio</div>
+      <h1 class="ch-title">Incessans Aestimandi</h1>
+      <p>Este livro não é um conto; é um convite à introspecção, à visão interna, ao conhecimento e, acima de tudo, ao reconhecimento.</p>
+      <p>Desejo uma excelente leitura a todos — tanto aos que ansiavam por essa obra quanto àqueles que nela caíram de paraquedas.</p>
+      <p>Posso dizer que este projeto nasceu aos poucos, em fases distintas da minha vida. Por isso, você poderá sentir sutis mudanças de tom ao longo dos capítulos, mas encontrará aqui a minha entrega mais sincera.</p>
+      <p>Um pequeno avanço é tudo que preciso para chegar ao meu destino. Estar sem inspiração ou vontade é perturbador — muito mais perturbador do que ter os meus segredos revelados.</p>
+      <p>Então, não levem tudo que digo aqui como verdade absoluta. É só meu ponto de vista. Eu acabo generalizando. Acho que tem algumas pessoas que pensam igual a mim, mas sei que não são todas. Alguns vão enxergar o que eu não consigo.</p>
+      <p>Apesar dos meus defeitos, espero que sua experiência com esse livro possa te trazer questionamentos, respostas e alternativas.</p>
+      <p>Não sei bem o quanto de mim está aberto a dar alternativas ou a ter uma visão ampla dos fatos. Cada assunto é tão diferente e complicado. Mesmo que eu seja um observador, não posso garantir que vejo através da decepção — ou que conheço além das folhas de uma floresta inteira.</p>
+      <p>E mais um adendo: nem sempre serei formal ou cordial. Posso ser um pouco deselegante ou até fora da sua expectativa. Afinal, meu mundo das ideias não é nem um pouco perfeito — e este livro também é o registro de pensamentos soltos. Um palácio mental, eu diria.</p>
+      <span class="orn">⟡ · ⟡</span>
+    </section>
+
+    <!-- ── 01 AUTOR-LIVRO ────────────────────────────────── -->
+    <section id="c01" class="ch">
+      <div class="ch-label">Capítulo 01</div>
+      <h2 class="ch-title">Autor-Livro</h2>
+      <p>Olá. Na abertura expliquei um pouco sobre o Livro — agora chegou a hora de falar a respeito do Autor. Embora já tenha explicado alguns pensamentos e escolhas que adotei, não me considero um poeta, mas já escrevi algumas poesias. Também não me considero um filósofo, embora pense e concorde com alguns deles.</p>
+      <p>Sou alguém muito entediado — uma pessoa que, mesmo estando em contato com a sociedade, escolheria viver fora dela. Não sei muito bem como demonstrar os sentimentos para as pessoas quando elas estão passando por um momento difícil. Levo horas para conseguir formular alguma frase que carregue meus sentimentos e não seja vazia. Muitas vezes não consigo, e a frase fica apenas na minha mente, para mim mesmo.</p>
+      <p>Eu priorizo muito a verdade. Então sempre tento fazer com que ela esteja presente nas minhas palavras. Quando sinto que vou falar algo com que eu mesmo não concordo, fico em silêncio.</p>
+      <p>Com esse livro foi-se pelos ares a reputação de quieto e reservado que tanto zelei um dia. Bem, não é como se ela já não tivesse caído ao longo dos anos.</p>
+      <p>Fiquei mais sombrio com o passar do tempo. Talvez isso explique o porquê de eu não me divertir muito com as coisas — ou dessa escrita tão séria... hahaha.</p>
+      <p>Estou me encontrando de novo, pouco a pouco, a cada linha escrita e lida do passado. É um processo que me dá vários gatilhos e me anima.</p>
+    </section>
+
+    <!-- ── 02 REFLEXO ─────────────────────────────────────── -->
+    <section id="c02" class="ch">
+      <div class="ch-label">Capítulo 02</div>
+      <h2 class="ch-title">Reflexo</h2>
+      <p>A partir de agora, pode me chamar de Autor-Livro, pois sou um livro aberto para você — e a outra parte você já sabe.</p>
+      <p>Talvez você participe dele como coautor. Afinal, experiências nunca são individuais. Quem sabe você faça parte dessa trama diretamente.</p>
+      <p>Será divertido para mim se você conseguir se encontrar aqui. Vamos começar pela pergunta: o que significa identificar-se com algo ou alguém? Cada um tem seu jeito. Quando olhamos para o outro — por mais diferente que ele seja — buscamos enxergar algo que idealizamos: um preconceito de como o vemos.</p>
+      <p>Inconscientemente, projetamos nessa pessoa uma parte de nós: desde uma sensação reprimida até um detalhe mínimo que chama nossa atenção e nos faz sentir… próximos, talvez?</p>
+      <p>Mas também ocorre o contrário. Você pode perceber em alguém traumas ou repulsa — sentimentos seus que, por moldarem-se negativamente, o afastam dessa pessoa. Isso também faz parte de se identificar. Como seres humanos, estamos sempre mudando e tentando mudar o passado.</p>
+      <p>Alguns conseguem esquecer de verdade; outros apenas fingem. Muitos carregam consigo; alguns tentam aprender; e há quem tente resolver. Por isso, conhecer alguém que parece sua antítese completa é um grande desafio — assim como lidar com quem se julga igual a você.</p>
+      <p>Por mais previsíveis que sejam as mudanças, por mais que você tente entender e observe cada gesto, muitas ainda escapam à compreensão. Pessoas são um amontoado de segredos e antíteses de si mesmas.</p>
+      <p>Antes de conhecer alguém, pergunte-se: o que você realmente sabe sobre si mesmo?</p>
+      <div class="bq">
+        <p>A pior pessoa pra notar nossas próprias ações somos nós mesmos.</p>
+        <p style="text-align:right;font-size:.75rem;margin-top:.65rem;font-style:normal;color:var(--dim)">— a consciência, em sonho</p>
+      </div>
+      <p>Que sentimentos carrega? Quais mudanças já promoveu nos lugares por onde passou? Como suas ações, pensamentos e palavras moldaram sua trajetória?</p>
+      <p>Essa responsabilidade pesa tanto que, ao encarar o espelho, você não reconhece sua própria imagem? Ou ainda encontra força para se erguer, não importando o peso? No fim, você lembra de quem verdadeiramente é — ou já foi um dia?</p>
+      <p>É muito comum encontrar um vazio cheio e um cheio vazio. Quando dizem "encher linguiça", é um cheio vazio. Mas, ao observar-se ou observar algo, cria-se um vazio cheio.</p>
+      <p>Você já se questionou sobre quais partes de si as pessoas enxergam em você? É aterrorizante imaginar? Empolgante? Proveitoso? Dependendo de quem você é, isso pode ajudá-lo a entender um pouco mais sobre os outros — e também sobre si mesmo.</p>
+      <p>Aparentemente, só incitei dúvidas neste capítulo. Queria poder dar respostas. Mas entender uma pessoa já leva tempo — imagine tentar entender todas. É a mesma coisa que olhar as nuvens no céu e dizer que elas se parecem com algo específico, sendo que a mínima brisa pode as mudar. Mas mesmo assim, tenha as dúvidas. Se questione. Encontre sua própria resposta.</p>
+      <p>Imagino cada grão de areia como um detalhe, as marés de areia como nossas ações e o deserto como cada pessoa. E dele — forjados em alta temperatura — nascem os espelhos, que são nossos reflexos. E no reflexo de ilusões, o deserto de espelhos torna-se uma miragem.</p>
+    </section>
+
+    <!-- ── 03 ÚNICO ───────────────────────────────────────── -->
+    <section id="c03" class="ch">
+      <div class="ch-label">Capítulo 03</div>
+      <h2 class="ch-title">Único</h2>
+      <p>Existe algo no mundo — ou até fora dele — que podemos chamar de insubstituível? Uma experiência, uma sensação, uma composição?</p>
+      <p>Nos jogos de RPG, nossos personagens carregam aquilo que chamamos de tesouro. Esses itens são classificados como comum, raro, lendário e único. Mas, ao observar esses detalhes de fora do jogo, percebemos que nenhum item corresponde exatamente à descrição. A chance de obtê-los é a mesma para todos.</p>
+      <p>Então, o que é raro, se é acessível a todos? O que é lendário será lembrado pela importância ou perderá o sentido? E o que é único, se mais de uma pessoa o possui?</p>
+      <p>Querer que algo seja só seu torna-o realmente singular para você? Ou isso te afasta do essencial — daquilo que esquecemos quando estreitamos a visão, do que nos atinge sem que possamos ver, daquilo que só encontramos depois de perder?</p>
+      <p>Talvez a resposta esteja na decisão. Em cada pequeno ponto de experiência conquistado. Naquilo que foi escrito sem ambição e ficou lá apenas como nostalgia.</p>
+      <p>Um lugar especial onde passamos horas e que hoje não existe mais. A recordação se apaga aos poucos. E, mesmo assim, quando a sensação retorna, as lágrimas escorrem, o corpo arrepia, o sangue ferve.</p>
+      <p>Aquele frenesi de estar em um lugar que te dá segurança — uma extensão de si. Assim como um pianista toca com maestria o piano, transferindo para cada nota a sua alma, transparecendo sua intenção, mostrando um significado e uma interpretação que difere de todos os outros.</p>
+      <p>Quando comecei a escrever este capítulo, minha ideia inicial era concluir que momentos são únicos. Mas, ao me aprofundar no conceito de "único", percebi que cada pessoa possui sua própria singularidade. Mesmo diante de experiências idênticas, cada um as interpreta de modo minimamente — ou amplamente — diferente.</p>
+      <p>Confesso meu constrangimento: escrevi tanto para chegar a algo aparentemente óbvio. Usei o RPG como metáfora para buscar o essencial e, apesar de mergulhar de cabeça, sigo insatisfeito com o desfecho.</p>
+      <p>Mergulhei em águas profundas, onde algo valioso certamente se esconde… porém o mistério persiste. É um território da mente onde nem sentimentos nem memórias conseguem revelar o verdadeiro tesouro.</p>
+      <p>Acho que foquei demais em uma só forma de questionar esse conceito. Deveria olhar o todo — os horizontes de até onde esse mar se estende, as notas do piano que devem ressoar em harmonia, a decisão de escolher uma quest que definirá o papel da sua própria <em>vida</em>.</p>
+      <span class="orn">⟡</span>
+      <p>Único talvez seja não algo que você possa ter por si mesmo, mas algo que alguém ceda a você.</p>
+    </section>
+
+    <!-- ── 04 ESSÊNCIA ───────────────────────────────────── -->
+    <section id="c04" class="ch">
+      <div class="ch-label">Capítulo 04</div>
+      <h2 class="ch-title">Essência</h2>
+      <p>No seu caminho há correntes que te prendem e sonhos que te libertam.</p>
+      <p>Por isso, não se sinta preso. Liberte-se. Assuma a responsabilidade de ser quem você é.</p>
+      <p>Lide com suas escolhas da melhor forma que a irrealidade pode propor. Mostre que os limites não existem — e que o</p>
+      <div class="bq">
+        <p>"Impossível é uma palavra que as pessoas inventaram para se sentir melhor quando desistirem de algo."<a href="#fn01" class="fn">¹</a></p>
+      </div>
+      <p>Transmita sua vontade da forma que conseguir e seja ouvido. Pode ser até mesmo com poemas, dessa forma:</p>
+      <div class="poem">
+        <p>O foco diário traz a empolgação</p>
+        <p>Junto ao esforço vem o resultado</p>
+        <p>Dos momentos o mais lembrado</p>
+        <p>A biblioteca da inspiração</p>
+        <p>&nbsp;</p>
+        <p>O mais absoluto silêncio mostra sua presença</p>
+        <p>Dando contraste a uma ideia que de ti surge</p>
+        <p>E assim se faz mais um dia em sua essência</p>
+        <p>&nbsp;</p>
+        <p>Cresce, mostra cada vez mais sua virtude</p>
+        <p>Mas de certo, ao se deparar com algo inesperado</p>
+        <p>Em sua memória ficará marcado</p>
+        <p>&nbsp;</p>
+        <p>A surpresa daquele dia, em que um lagarto via</p>
+        <p>A natureza entrava em contato</p>
+        <p>Agora quase de tudo naquela universidade havia presenciado</p>
+        <p>&nbsp;</p>
+        <p>Foram dias curtos e rápidos</p>
+        <p>Por algo maior foram parados</p>
+        <p>Mas ainda se lembra do começo</p>
+        <p>Dos avanços e erros</p>
+        <p>Dos lugares e pessoas</p>
+        <p>O quão receptiva essa faculdade fora?<a href="#fn02" class="fn">²</a></p>
+      </div>
+    </section>
+
+    <!-- ── 05 INSTINTO ───────────────────────────────────── -->
+    <section id="c05" class="ch">
+      <div class="ch-label">Capítulo 05</div>
+      <h2 class="ch-title">Instinto</h2>
+      <p>Não pense demais se você já sabe a resposta. Se está passando pelo mesmo ciclo novamente, mude. Sua experiência não te trairá — ela é o reflexo daquilo que você já sobreviveu. O instinto não é impulso cego. É memória em forma de reação.</p>
+      <div class="poem">
+        <p>Com ti eu estou bem</p>
+        <p>Curte e vamos além</p>
+        <p>Hoje nada me contém</p>
+        <p>Vou dizer cada palavra</p>
+        <p>Guardada na minha mente</p>
+        <p>Para lavar e para levar</p>
+        <p>Meus medos nessa corrente</p>
+        <p>&nbsp;</p>
+        <p>Em um lago de emoções</p>
+        <p>Se tem uma persona</p>
+        <p>Que retém suas visões</p>
+        <p>Refém de suas escolhas</p>
+        <p>&nbsp;</p>
+        <p>Através dessas ondas</p>
+        <p>Sei bem onde a maré me levará</p>
+        <p>Por mais que não a controle</p>
+        <p>A determinação me envolverá</p>
+        <p>&nbsp;</p>
+        <p>Contigo eu consigo, ponho à frente</p>
+        <p>Esse foco, essa força e também minha fé</p>
+        <p>Tenho confiança, sei que vou ficar de pé<a href="#fn03" class="fn">³</a></p>
+      </div>
+    </section>
+
+    <!-- ── 06 TEMPO ──────────────────────────────────────── -->
+    <section id="c06" class="ch">
+      <div class="ch-label">Capítulo 06</div>
+      <h2 class="ch-title">Tempo</h2>
+      <p>O colecionador de memórias vaga do futuro ao passado — e do passado ao futuro — revendo acontecimentos que se escrevem e ressoam…</p>
+      <p>Você já teve a sensação de que algo já aconteceu exatamente como está ocorrendo agora? Ou já previu algo e conseguiu mudar seu destino?</p>
+      <p>É estranho, não é? Muitas vezes nos perdemos entre o que realmente acontece e o que nunca aconteceu. É, no mínimo, desconcertante.</p>
+      <p>Saber quando agir e quando deixar fluir torna-se um desafio que pode nos deixar paranoicos.</p>
+      <p>Observar as coisas seguindo seu curso natural, sem interferir, deixa marcas profundas. Uma sensação de inexistência. Uma vontade de voltar a um passado ao qual você não pertence. Afinal, se nunca fez nada, como poderia pertencer?</p>
+      <p>As coisas não mudam apenas com vontade. Ela é só o começo.</p>
+      <p>Tomar uma atitude também traz consequências. Reconhecer o peso das próprias ações é um passo fundamental quando se escolhe fazer a diferença no próprio destino e no daqueles que estão ao seu lado.</p>
+      <p>O senso de responsabilidade dobra. Às vezes, triplica.</p>
+      <p>Ver além dos próprios sentimentos e do egoísmo é essencial para não se perder. Para não deixar de ser quem se é. Para não prejudicar quem tenta ajudar.</p>
+      <p>Saber o momento certo de alterar algo ou deixar como está. Dialogar antes de agir. Tudo isso faz parte de entender o "Quando".</p>
+      <p>É um tipo de raciocínio dedutivo que ocorre quando se têm três premissas conectadas que levam a uma conclusão. Como se fossem pistas para solucionar uma incógnita, um enigma — ou o motivo de um pensar ou agir.</p>
+      <div class="bq">
+        <p>"O passado faz com que tenha arrependimentos</p>
+        <p>O futuro te deixa ansioso e o contradiz</p>
+        <p>Então por eliminação o presente é provavelmente o tempo mais feliz"<a href="#fn04" class="fn">⁴</a></p>
+      </div>
+      <p>Dessa afirmação, deduz-se que o presente é um tempo essencial. E não se deve perdê-lo remoendo mágoas passadas ou ansiando pelo futuro. O único tempo em que se pode mudar algo e agir é o agora.</p>
+      <p>Aquele conhecido cientista disse que o tempo é relativo. Acredito que ele não falava apenas sobre perspectiva e velocidade. Nem apenas sobre passado, presente ou futuro.</p>
+      <p>Talvez quisesse englobar também as possibilidades que acontecem em paralelo. Podemos chamar isso de relativismo ocasional — ou o que muitos chamam de efeito borboleta — onde um emaranhado de infinitas ações leva a um ponto… ou a vários.</p>
+      <p>Considerando isso, posso dizer que essa "lei" castiga e também liberta.</p>
+      <p>Algumas pessoas mal percebem as horas passarem. Quando notam, suas oportunidades já se foram — como folhas de cerejeira que caem ao solo.</p>
+      <p>Cem anos são tão insuficientes para humanos que vivem como elfos. Eles vivem, observam, pensam, agem. E mesmo assim, o tempo passa tão rápido que, quando percebem… a vontade de fazer mais brota. E o tempo acaba.</p>
+      <div class="poem">
+        <p>Quando você está em volta das pessoas que ama</p>
+        <p>Você é quem você é de verdade</p>
+        <p>Livre dos pesos dos seus segredos</p>
+        <p>Livre do que não é você</p>
+        <p>&nbsp;</p>
+        <p>Seu dia a dia não é uma atuação</p>
+        <p>É a mais espontânea verdade</p>
+        <p>Que até mesmo você é incapaz de ver</p>
+        <p>&nbsp;</p>
+        <p>Pode ser que você chegue a se perder</p>
+        <p>Sem saber se é realmente você</p>
+        <p>Se pensar logicamente perceberá</p>
+        <p>Que não é tudo que você é</p>
+        <p>Mas era o tudo do seu presente</p>
+        <p>&nbsp;</p>
+        <p>Consciente ou inconsciente</p>
+        <p>Cada ação foi sua escolha</p>
+        <p>Você deve aceitar</p>
+        <p>Olhar para frente</p>
+        <p>Sem ter medo de seguir adiante</p>
+        <p>&nbsp;</p>
+        <p>Essa vontade não só te moverá</p>
+        <p>Como influenciará tudo a sua volta</p>
+        <p>Esperar surgir uma solução</p>
+        <p>Não</p>
+        <p>A solução já existe</p>
+        <p>Você tem que persistir para alcançá-la</p>
+        <p>&nbsp;</p>
+        <p>Seus erros não podem ser justificados</p>
+        <p>Ou diminuídos</p>
+        <p>Nem pela mais bela poesia</p>
+        <p>Usar ela dessa forma seria mascarar</p>
+        <p>Seus sentimentos e mergulhar no poço</p>
+        <p>Do mais profundo vazio</p>
+        <p>&nbsp;</p>
+        <p>Portanto não esqueça, da tristeza, das dores</p>
+        <p>Do calor, do acelerar</p>
+        <p>Do que dá sentido à sua vida</p>
+        <p>E que realmente te faz viver<a href="#fn05" class="fn">⁵</a></p>
+      </div>
+    </section>
+
+    <!-- ── 07 NÉVOA ──────────────────────────────────────── -->
+    <section id="c07" class="ch">
+      <div class="ch-label">Capítulo 07</div>
+      <h2 class="ch-title">Névoa</h2>
+      <p>Você já andou por um lugar onde cada passo dado é uma decisão de incerteza?</p>
+      <p>Se sentiu envolvido por uma neblina que não te permite ver um palmo sequer à frente?</p>
+      <p>Nesse lugar, se torna cada vez mais complicado conseguir respirar. O frio toma conta. Medos e traumas vêm à tona.</p>
+      <p>Sem perceber, você entra no seu "Silent Hill" — onde olha para o horizonte sem fim, sem saída.</p>
+      <p>Você é capaz de ouvir sua respiração como se fosse algo estridente, algo que te incomoda.</p>
+      <p>Esse som é rompido, pois você engole seco e perde o foco. O que toma sua mente é a memória dos seus erros.</p>
+      <p>Desde o mais obscuro em seu passado até o mais recente. Como tanto tempo pode passar e você ainda viver preso no mesmo lugar?</p>
+      <p>Talvez você nem tenha mais noção de que o tempo está passando. Nosso mundinho é tão pequeno — por que deveria seguir a regra do tempo, não é?</p>
+      <p>Por que eu deveria tentar me entender? Se é doloroso.</p>
+      <p>Por que você deveria tentar me entender? E se machucar no processo…</p>
+      <p>Sinceramente, escutar o silêncio como se nele houvesse paz — como se tivesse voz — quando no fim é apenas fuga, dói ainda mais.</p>
+      <p>Vagamos pela névoa, desorientados. Nos agarramos em algo sem esperar soluções. Apenas um algo momentâneo que nos dê um mínimo sentido, uma justificativa.</p>
+      <p>E não encontramos nada. Perdemos até as boas memórias, como se elas nunca tivessem existido. Ou pior: as manipulamos para que se tornem apenas mais uma das más lembranças.</p>
+    </section>
+
+    <!-- ── 08 VAZIO ──────────────────────────────────────── -->
+    <section id="c08" class="ch">
+      <div class="ch-label">Capítulo 08</div>
+      <h2 class="ch-title">Vazio</h2>
+      <div class="poem">
+        <p>Vejo uma pessoa.</p>
+        <p>Antes, fora um sol.</p>
+        <p>Hoje, é como a lua.</p>
+        <p>&nbsp;</p>
+        <p>Desde sempre careceu de sentido.</p>
+        <p>Buscava a verdade de forma tão cega…</p>
+        <p>Deveras míope complemento.</p>
+        <p>Nem aumentando o grau veria além do seu sentimento.</p>
+        <p>&nbsp;</p>
+        <p>Assim como esse texto, tenta se preencher.</p>
+        <p>Mas, as letras nunca chegarão do outro lado.</p>
+        <p>Mesmo escritas sob cicatrizes.</p>
+        <p>Ainda que refeitas com novo significado.</p>
+        <p>&nbsp;</p>
+        <p>O sentimento do vazio ainda está lá.</p>
+        <p>Impossível de ser preenchido.</p>
+        <p>A monotonia ausente de cor.</p>
+        <p>As mudanças que levam ao mesmo lugar.</p>
+        <p>Um looping infinito.</p>
+        <p>Cansativo.</p>
+        <p>&nbsp;</p>
+        <p>O seu, meu, vazio.</p>
+      </div>
+      <div class="poem">
+        <p>De certa vez você se adianta</p>
+        <p>Mas espera o mais que não se resolve<a href="#fn06" class="fn">⁶</a></p>
+      </div>
+    </section>
+
+    <!-- ── 09 RUÍDO ──────────────────────────────────────── -->
+    <section id="c09" class="ch">
+      <div class="ch-label">Capítulo 09</div>
+      <h2 class="ch-title">Ruído</h2>
+      <p>Imagine que você está segurando um rádio. Aos poucos, vai trocando as estações na esperança de encontrar uma resposta — mas tudo que encontra é um zumbido mórbido. Ainda assim, você continua carregando esse rádio, porque ele parece importante. Com o tempo, percebe que, de tanto pressionar os botões, eles começam a falhar. Agora, tudo que resta é o ruído de uma estação incomunicável.</p>
+      <p>Assim são as ideias que deixam margem para má interpretação. As conversas de um lado só. A insistência em algo forçado e sem sentido. A surdez causada pelos próprios pensamentos — aqueles que não te deixam escutar a verdade.</p>
+      <p>Sua mente e seu desejo te impedem de digerir a realidade. Tornam inúteis quaisquer meios de ajuda que você busque. Porque, no fundo, você ainda não está pronto para isso.</p>
+      <p>É como a letra de uma música que carrego comigo. Ainda ouço, canto e sinto:</p>
+      <div class="bq">
+        <p>"Não tem como eu sorrir, quando só posso chorar</p>
+        <p>Não tem como eu chorar, quando só posso sorrir</p>
+        <p>E se algum dia eu cair, como irei levantar?</p>
+        <p>Não adianta levantar se cê só sabe cair"<a href="#fn07" class="fn">⁷</a></p>
+      </div>
+      <p>Com isso em mente, reflita. É importante dar tempo a si mesmo. Escutar a voz do silêncio. Deixar o desejo de lado. Se encontrar com o vazio. E sentir o que precisa ser sentido. Não existe passo de mágica.</p>
+      <p>Odeio quando dizem que esses capítulos parecem de um livro de autoajuda. Não estou escrevendo para ajudar ninguém. Quero que eles sejam como uma conversa direta — que te faça pensar, questionar. E, no fim, que você chegue às suas próprias conclusões.</p>
+      <p>Eu não sou um guia. Nem uma luz para quem se perde. Sou só alguém que erra — e tenta o seu melhor.</p>
+    </section>
+
+    <!-- ── 10 OMISSÃO ─────────────────────────────────────── -->
+    <section id="c10" class="ch">
+      <div class="ch-label">Capítulo 10</div>
+      <h2 class="ch-title">Omissão</h2>
+      <div class="bq">
+        <p>"Eu suporto, suporto tudo sozinho, gosto de fazer as coisas assim. Sou mais forte guardando tudo isso para mim. Isso é o que conheço como gentileza — não compartilhar com você a minha dor."</p>
+      </div>
+      <p>Você pode afirmar tudo isso com a mais bela convicção que tem. Mas eu vejo. Vejo você. E na verdade, isso é fraqueza.</p>
+      <p>Mas não é só você que erra nesse conceito — eu também erro. Escondo minha força e você esconde a sua fraqueza.</p>
+      <p>Eu deveria mostrar mais dela. Só que tenho medo de assustar as pessoas fazendo isso.</p>
+      <p>Mesmo que a razão seja diferente entre a gente, a raiz ainda é o mesmo fator. Um é autoproteção e o outro só quer proteger os outros de si mesmo.</p>
+      <p>Eu entendo como é fácil se iludir e confundir um com o outro. Mas se você olhar para suas ações e para dentro de si, verá qual dos dois tipos você é.</p>
+      <p>É como o médico e o monstro — você decide qual você mesmo é.</p>
+      <p>Eu mesmo não quero me esforçar novamente com tudo de mim.</p>
+      <div class="bq">
+        <p>"Sua dor ainda consegue suportar?</p>
+        <p>Não consigo.</p>
+        <p>Alguém como ele pode perdoar?</p>
+        <p>Não consigo."</p>
+      </div>
+    </section>
+
+    <!-- ── 11 FRAGILIDADE ─────────────────────────────────── -->
+    <section id="c11" class="ch">
+      <div class="ch-label">Capítulo 11</div>
+      <h2 class="ch-title">Fragilidade</h2>
+      <p>A fragilidade é uma queda. Um mergulho em um poço escuro e sem fundo. Lá, você será forçado a enfrentar seus piores demônios. E eles vão te consumir — pedaço por pedaço. Até que, antes mesmo de perceber, você acorda no chão. Coberto por lama. Quebrado.</p>
+      <div class="poem">
+        <p>Por muito tempo me perguntei se eu poderia sorrir</p>
+        <p>Quando eu ainda não tinha propósito, muitos erros cometi</p>
+        <p>Marcados na memória, eu sempre levo-os comigo</p>
+        <p>Arrependimento me persegue, muitos sei que não serão corrigidos</p>
+        <p>&nbsp;</p>
+        <p>Do fundo da minha alma queria poder consertar</p>
+        <p>Todo o mal que para alguém eu já cheguei a causar</p>
+        <p>Não usarei falta de noção como desculpa</p>
+        <p>Nem justificarei, porque sei que realmente errei</p>
+        <p>&nbsp;</p>
+        <p>Falhei com você — essa é a verdade</p>
+        <p>Da dor que tu enfrentou, eu não percebi nem a metade</p>
+        <p>Fui incapaz de estar ao seu lado quando você mais precisou</p>
+        <p>E ainda agora não sou capaz de fazer nada, então questiono, o que mudou?</p>
+        <p>&nbsp;</p>
+        <p>Eu nem imagino o que você deve ter passado</p>
+        <p>Aquele dia eu percebi, algo estava errado</p>
+        <p>Mas ainda assim não te protegi</p>
+        <p>O medo e a incerteza me tornam em um fracassado<a href="#fn08" class="fn">⁸</a></p>
+      </div>
+    </section>
+
+    <!-- ── 12 PSICOCARDIA ─────────────────────────────────── -->
+    <section id="c12" class="ch">
+      <div class="ch-label">Capítulo 12</div>
+      <h2 class="ch-title">Psicocardia</h2>
+      <p>Já escrevi muitos poemas onde predominava a busca pelo amor — uma descrição direta do que eu sentia, quase como uma carta sem destinatário certo. Uma vez até tentei escrever uma música. Ela contemplava todo o meu fracasso na tentativa de amar.</p>
+      <p>Me senti muito solitário. E isso… enquanto estava em um relacionamento. Contraditório, poderiam pensar. Mas mesmo nos bons momentos, toda vez que eu fechava os olhos, a sensação era de extrema cobrança — de mim para mim mesmo. O pensamento que pairava sobre minha mente era de que o "eu do futuro" me bateria, caso estivesse pondo tudo a perder por ignorância.</p>
+      <p>Não conseguia confiar. Com tudo que sabia, com tudo que idealizava, o futuro parecia distante — e um terrível destino me aguardava. Não havia maneiras de prosseguir, só evidências do quão frágil eu era. Do quão humano eu era.</p>
+      <p>Quanto mais eu entendia, mais as coisas se complicavam. As nossas histórias — paralelas — ocupavam o mesmo espaço, mas com atitudes diferentes. Alguns ainda terão o passado. Outros não o terão, mesmo que o persigam. O futuro pode não parecer muito bom. E no presente… poucas coisas podem restar.</p>
+      <p>Podemos ver o outro lado, mesmo com mentiras e fatos ocultos. Não é mais paranoia — é só um estado de compreensão que está além do que é dito. Então, se for para demonstrar amor:</p>
+      <div class="bq">
+        <p>"Me diga todas as coisas terríveis que já fez e me deixe te amar <em>mesmo assim</em>"<a href="#fn09" class="fn">⁹</a></p>
+      </div>
+      <p>Entendi que por mais que eu tivesse esse sentimento e o demonstrasse, não importava o quanto. Se não houvesse reciprocidade, seria em vão valorizá-lo.</p>
+      <p>Romanticamente falando, esse pensamento é ultrajante para quem acredita no amor sem esperar nada em troca. Mas cá entre nós… isso só é bonito no papel. Na realidade, enfrentamos todo tipo de dor por amar incondicionalmente alguém que sequer liga para o nosso sentimento.</p>
+      <p>Por isso, se for para amar — que seja alguém que também te ame. Se for para chorar — que seja pela pessoa que secará suas lágrimas com o calor de seu abraço. Se for para sentir ódio — que seja para proteger o que você não quer perder. E se for para pensar em matar por essa pessoa — que o alvo seja seu próprio egoísmo.</p>
+      <p>E mesmo assim, eu escrevi.</p>
+      <div class="poem">
+        <p>Achar algo para fazer</p>
+        <p>Por que é tão foda assim sem você?</p>
+        <p>Não tenho onde olhar</p>
+        <p>Tudo que me resta é sonhar</p>
+        <p>&nbsp;</p>
+        <p>Queria te ter aqui perto</p>
+        <p>Para demonstrar meu afeto</p>
+        <p>Para te fazer feliz e te proteger</p>
+        <p>Ter você em meus braços para poder viver</p>
+        <p>&nbsp;</p>
+        <p>Em meio a confusões minha coragem se esvai</p>
+        <p>Tudo que quero te dizer, sinto que não sou capaz</p>
+        <p>Espero que não fique triste e magoado</p>
+        <p>Pois tudo que faço é pro seu bem<a href="#fn10" class="fn">¹⁰</a></p>
+      </div>
+      <p>Então, por isso, hoje mato o eu do passado.</p>
+      <p>Cada linha escrita nesse poema mostrava apenas o meu egoísmo. Não era sobre essa pessoa. Era sobre mim. Sobre o que eu queria sentir. Sobre o que eu queria ser.</p>
+      <p>Então, hoje, eu tiro a máscara. Não mais versos para minha própria satisfação. Toda a parte final… não passa de auto-enganação.</p>
+    </section>
+
+    <!-- ── 13 DESESPERO ───────────────────────────────────── -->
+    <section id="c13" class="ch">
+      <div class="ch-label">Capítulo 13</div>
+      <h2 class="ch-title">Desespero</h2>
+      <p>O desespero daquele que o vive é como uma bolha que prende seu pensamento, te distancia de todos. Você mesmo deixa de se enxergar.</p>
+      <p>O desespero do observador é como uma paz angustiante. Você sente culpa, se perde em pensamentos, no próprio vazio, na solidão, na incapacidade de tentar — e não conseguir mais ver aquele sorriso que trazia serenidade.</p>
+    </section>
+
+    <!-- ── 14 GRIS ────────────────────────────────────────── -->
+    <section id="c14" class="ch">
+      <div class="ch-label">Capítulo 14</div>
+      <h2 class="ch-title">Gris</h2>
+      <div class="poem">
+        <p>Após anos, 2 para ser exato, volto aqui</p>
+        <p>Sentimentos estranhos de fato, tudo que já senti.</p>
+        <p>E o que agora sinto ecoa em espiral</p>
+        <p>Uma série de acontecimentos reflete no final</p>
+        <p>Momentos de arrependimentos e insatisfações</p>
+        <p>Mostram que deixar de seguir o instinto</p>
+        <p>Só trará para mim decepções<a href="#fn11" class="fn">¹¹</a></p>
+      </div>
+      <p>Sei o caminho a trilhar. Não há outra maneira de superar esses sentimentos a não ser indo de encontro com eles. Já busquei apoio, mas tudo que me resta é fazer por mim. Eles já foram o mais longe que podiam. Agora só eu posso continuar.</p>
+      <p>Quando tudo se apaga e a escuridão toma conta, tudo que sobra sou eu e minha solidão.</p>
+      <div class="poem">
+        <p>Surge ao longe na imensidão azul</p>
+        <p>E plana entre as nuvens do céu</p>
+        <p>Sem um caminho traçado</p>
+        <p>Apenas segue por onde o vento o levar</p>
+        <p>Sem qualquer remorso de onde acabará</p>
+        <p>E vai… até que desaparece…</p>
+        <p>&nbsp;</p>
+        <p>N'outro dia na mesma hora, voa</p>
+        <p>Como se tivesse asas, corta o ar</p>
+        <p>Liberdade? Segurança? Confiança?</p>
+        <p>Seriam esses seus significados?</p>
+        <p>Não, isso se chama determinação</p>
+        <p>Mas até onde ela nos levará?<a href="#fn12" class="fn">¹²</a></p>
+      </div>
+    </section>
+
+    <!-- ── 15 MORPHEUS ───────────────────────────────────── -->
+    <section id="c15" class="ch">
+      <div class="ch-label">Capítulo 15</div>
+      <h2 class="ch-title">Morpheus</h2>
+      <p>Caro Sandman, meus sonhos seguem tentando me dizer algo.</p>
+      <p>Mas que significados terão estes que lembro? E até mesmo outros que esqueço?</p>
+      <p>A regra dos tolos — foi algo de grande importância, mas nem do cenário lembro ao certo. Criar algo para limitar a si mesmo, talvez?</p>
+      <span class="orn">· · ·</span>
+      <p>Enquanto lutava, ele repetia as palavras que cravou em sua mente, de suas intermináveis lutas para proteger os seus… Era um guerreiro determinado. Confesso que não lembro suas palavras, mas sei que ele permaneceria de pé — não importava o quão machucado estivesse.</p>
+      <span class="orn">· · ·</span>
+      <p>Mermelion Moonlight — aquele que ruge. Diria que ele era a encarnação da ausência de esperança: um dragão imenso que não possui chamas e ainda assim dizimava exércitos. Era obscuro, um olhar preenchido de fúria e várias arcadas dentárias pela boca, e escamas tais como dentes.</p>
+      <span class="orn">· · ·</span>
+      <div class="poem">
+        <p>Ó kisses, gênio (oxigênio)</p>
+        <p>Para realizar o seu desejo</p>
+        <p>Tipo mago de oz, ônio</p>
+        <p>Juntos da forma que almejo<a href="#fn13" class="fn">¹³</a></p>
+      </div>
+      <span class="orn">· · ·</span>
+      <p>Vivendo em um mundo onde a espada da honra corta. E o infinito do profano rege — em meio a escolhas, um dos dois se fortalece.</p>
+      <p>Imortais com suas linhas já escritas, destinados a lutarem quando o selo que os limita for quebrado. Ambos nem se conhecem, mas se encontraram além da luz e das sombras. Pois são a representação do oposto do outro.</p>
+      <p>Este, por sua vez, poderia ser uma luta interna entre bem e mal?</p>
+    </section>
+
+    <!-- ── 16 ORGULHO ───────────────────────────────────────── -->
+    <section id="c16" class="ch">
+      <div class="ch-label">Capítulo 16</div>
+      <h2 class="ch-title">Orgulho</h2>
+      <p>Comumente visto como pecado. Algo sobre egocentrismo, soberba, o excesso de si mesmo transbordando sobre o outro.</p>
+      <p>Mas não é assim que eu o vejo.</p>
+      <p>Orgulho não é um sentimento que avança — ele se interpõe. É um movimento de proteção, não de elevação.</p>
+      <p>Veja o amor como exemplo. Quando sentido com intensidade real, uma pessoa se destrói por ele. Enquanto outra, que não o sentiu da mesma forma, segue em frente com leveza — e até propõe amizade. Não porque seja má. Porque não sentiu o suficiente para saber que o convite machuca. Essa leveza, por si só, já é a evidência da assimetria.</p>
+      <p>O orgulho reconhece isso antes que o dano aconteça. Ele não permite que a amizade exista. Não por soberba — mas porque aceitar é a mentira socialmente aplaudida. A recusa honesta contra o gesto que o mundo chama de generoso.</p>
+      <p>E há algo além da dor passiva de ver a pessoa seguir em frente. Quem não amou o suficiente usa a proximidade que a amizade oferece para continuar extraindo — atenção, presença, validação — sem pagar o preço emocional que quem ama de verdade paga. A amizade formaliza e legitima esse desequilíbrio. O orgulho interrompe o ciclo antes que ele comece.</p>
+      <span class="orn">· · ·</span>
+      <p>O orgulho não se impõe. Ele se interpõe.</p>
+      <p>São movimentos opostos: um avança sobre o outro para se elevar, o outro recua para sobreviver. A leitura comum condena o segundo pelo nome do primeiro.</p>
+      <span class="orn">· · ·</span>
+      <p>Ele age de formas distintas, dependendo de quando chega.</p>
+      <p>Antes — o mais consciente. Reconhece o padrão ainda em formação e recusa desde o início. Exige autoconhecimento suficiente para saber o que precisava ser protegido antes de perdê-lo.</p>
+      <p>Durante — quando a amizade já foi aceita e o uso começa a aparecer. Mais tardio, mais custoso. Porque agora além da dor original há a vergonha de ter deixado chegar até ali.</p>
+      <p>Depois — quando tudo já se perdeu. Não mais escudo, mas reconstrução. O que se ergue das ruínas e diz: nunca mais.</p>
+      <span class="orn">· · ·</span>
+      <p>As consequências também são duas.</p>
+      <p>Quando funciona: preservação real de si mesmo. Uma solidão honesta — a de quem foi visto como difícil, mas dormiu inteiro.</p>
+      <p>Quando ultrapassa: isolamento além do necessário. O escudo que não baixa quando o perigo passou, e começa a afastar o que não era ameaça.</p>
+      <span class="orn">· · ·</span>
+      <p>Há uma invisibilidade específica em quem age antes. Ninguém vê o que foi evitado — veem só a recusa, e julgam a recusa. A dor que não aconteceu não tem testemunha. Só quem a carrega sabe o tamanho do que teria sido.</p>
+      <p>Quem usou o orgulho é visto como o difícil, o que não superou. Quem propôs a amizade é visto como generoso. A crueldade opera em silêncio — e o mundo aplaude o lado errado.</p>
+      <p>Isso gera uma solidão particular: carregar uma proteção que não pode ser explicada sem expor exatamente o que estava sendo protegido.</p>
+      <span class="orn">· · ·</span>
+      <p>E aqui chegamos à verdade.</p>
+      <p>Eles não se contradizem. O orgulho fortalece a resposta que a verdade apresenta. O orgulho dá sentido, ao mesmo passo que a verdade dá o contexto.</p>
+      <p>A verdade diz: eu ainda sinto, e isso me destruiria.<br>O orgulho responde: então não.</p>
+      <p>Um dá o diagnóstico. O outro dá a ação.</p>
+      <p>Sem a verdade, o orgulho é arrogância vazia — escudo erguido sem saber o que protege. Sem o orgulho, a verdade é vulnerabilidade exposta — você sabe o que sente, nomeia, e fica à mercê. A clareza da verdade alimenta a velocidade do orgulho. Juntos formam o único movimento possível para quem não se mente.</p>
+    </section>
+
+    <!-- ── 17 METAMORFOSE ─────────────────────────────────── -->
+    <section id="c17" class="ch">
+      <div class="ch-label">Capítulo 17</div>
+      <h2 class="ch-title">Metamorfose</h2>
+      <p>No começo, não entendemos o sentido de nada. Não compreendemos nada. Somos reféns da nossa própria incapacidade. Dependentes — e mesmo assim damos nossos primeiros passos, nem que tenhamos que cair e rastejar.</p>
+      <p>Mesmo sendo humanos, somos basicamente larvas. Lógica e razão ainda são novidades para seres movidos pela necessidade.</p>
+      <p>Quando nos tornamos crianças, não vemos a hora de crescer. De nos tornar adultos. De conquistar independência. Ficamos tomados por um ímpeto de querer o futuro e acabamos esquecendo de viver o presente.</p>
+      <p>Mas antes mesmo de nos tornarmos adultos, já nos perdemos como adolescentes. Nos machucamos por tentar ir rápido demais. Nos machucamos por sermos lentos demais. Nos perdemos por não saber quem somos. E mesmo sem saber isso, tentamos entender o próximo.</p>
+      <p>Nos guiamos por tendências. Seguimos o superficial. Somos levados pela curiosidade. Tudo isso prende aquele que ainda não descobriu quem realmente é — e o que realmente quer.</p>
+      <p>Por isso, chamo esse estágio de casulo. É um momento introspectivo. O instante em que, ao olhar para nós mesmos, surgem as perguntas:</p>
+      <div class="bq">
+        <p>"Quem sou eu?</p>
+        <p>Agora que estou aqui, o que devo fazer?</p>
+        <p>O que realmente quero para minha vida?</p>
+        <p>Quero isso para minha vida?</p>
+        <p>Devo agir dessa forma?</p>
+        <p>Realmente devo seguir esse caminho?</p>
+        <p>O que devo priorizar?"</p>
+      </div>
+      <p>Nessa busca, podemos herdar a vontade ou o ideal de alguém. Podemos criar nosso próprio cerne. E, enfim, decidir ao que daremos nossa primazia. Assim, nos desprendemos da necessidade — porque passamos a ter um foco muito maior naquilo que realmente almejamos.</p>
+      <p>As pessoas dizem que o tempo as muda. Mas, na verdade, o tempo não muda ninguém. O que nos torna diferentes do que éramos no passado são as nossas atitudes e escolhas.</p>
+      <p>Por isso, digo: na transformação há beleza. Nas profundezas escondidas, há tranquilidade — mas também…</p>
+      <div class="poem">
+        <p>Na imensidão da noite</p>
+        <p>Ecoa o vento que traz consigo a chuva</p>
+        <p>Junto a ela é levada as pétalas das Rosas</p>
+        <p>Dessas restando somente as raízes</p>
+        <p>&nbsp;</p>
+        <p>Em outro instante um clarão ocorre</p>
+        <p>Troveja, relampeja em um segundo</p>
+        <p>E surge uma esperança de que tudo melhore</p>
+        <p>É o passar das estações que define o mundo</p>
+        <p>&nbsp;</p>
+        <p>Assim são os sentimentos</p>
+        <p>Uma hora estamos bem</p>
+        <p>Outra hora só lamentos</p>
+        <p>Porém, a esperança se mantém<a href="#fn14" class="fn">¹⁴</a></p>
+      </div>
+    </section>
+
+    <!-- ── 18 DIMENSÃO ────────────────────────────────────── -->
+    <section id="c18" class="ch">
+      <div class="ch-label">Capítulo 18</div>
+      <h2 class="ch-title">Dimensão</h2>
+      <pre class="dimensao">Seus         
+       lhes                               
+Magerp    
+          Sentidos           peças<a href="#fn15" class="fn">¹⁵</a></pre>
+    </section>
+
+    <!-- ── 19 VALOR ──────────────────────────────────────── -->
+    <section id="c19" class="ch">
+      <div class="ch-label">Capítulo 19</div>
+      <h2 class="ch-title">Valor</h2>
+      <p>Como eu deveria definir o tema desse capítulo? Atribuição resultante da soma de aspectos referente a nossos sentidos e lógica? Só isso, tão pouco… e ainda nos consideramos tão especiais — a ponto de achar que somos o centro do universo.</p>
+      <p>Mas, seria você alguém tão importante assim? O que você tem que mais outras milhares de pessoas não tenham? Nada…</p>
+      <p>Para que serve sua frágil e presunçosa existência? Sequer é preenchida por algo?</p>
+      <p>Como você se preenche? Vícios? Desejos? Sentimentos?</p>
+      <p>O recipiente que você tanto estima está quebrado, não é?</p>
+      <p>Mas, se tivesse que seguir algo — o que fala mais alto no seu íntimo? Qual a sua vontade? Algo que queira realizar para si mesmo sem envolver mais ninguém.</p>
+      <p>Por qual caminho andaria? Que valores passaria a adotar? Se amaria mais? Cuidaria mais de quem está do seu lado? Deixaria de trivializar os sentimentos deles? Daria respostas longas e concisas com seus reais sentimentos — ou permaneceria frio com medo de encarar os fatos?</p>
+      <p>Quase todo tipo de relacionamento começa com a demonstração de afeto — mas 99% deles terminam pela ausência dela.</p>
+      <p>Eu acredito que já cheguei a confundir afeto com valorização. Demonstrava tudo que podia. Fui sincero. Queria ser a razão do sorrir de alguém.</p>
+      <p>Demonstrava tanto — a ponto de minha forma de expressão perder todo seu valor. E só então percebi: meu afeto era só a forma de mostrar o quanto eu levava a sério minhas próprias vontades. Mas ao fazer isso, perdi meus próprios valores. E a consideração que tanto buscava… eu mesmo fui incapaz de dar.</p>
+      <p>O ponto em que quero chegar dizendo isso é: você ainda está caminhando, vivo, para sua felicidade ou não — então não se finja de morto.</p>
+      <p>Quer ser valorizado? Então valorize. Não entre em guerra de egos — é perda de tempo. Busque sempre demonstrar pureza. Mesmo diante dos seus desejos.</p>
+    </section>
+
+    <!-- ── 20 VERDADE ─────────────────────────────────────── -->
+    <section id="c20" class="ch">
+      <div class="ch-label">Capítulo 20</div>
+      <h2 class="ch-title">Verdade</h2>
+      <p>Para compreender o que é verdade no mundo físico, é necessário estabelecer uma ordem entre os acontecimentos que comprovem o que de fato ocorreu. Para isso, devemos recorrer a perguntas fundamentais: por quê? onde? quando? e como?</p>
+      <p>Já a verdade em teoria — aquela que formulamos em nossos pensamentos — é relativa. Nosso ponto de vista sobre o incerto tende a mudar conforme aprendemos, vivenciamos novas experiências e refletimos. A verdade, nesse plano, é maleável.</p>
+      <p>Muitas vezes somos enganados por algo falso que acreditamos ser verdade. Mas como saberíamos? Como distinguir entre os dois? Eu diria que pelos fatos. Nenhuma mentira consegue preencher todos os pontos de uma verdade — sempre há uma distorção, uma falha, um ruído.</p>
+      <p>Para alguns, a verdade é apenas algo em que se acredita, algo que não existe sem confiança. E, de certa forma, eles não estão errados. O ato de acreditar nos instiga a compreender — e essa busca pode nos levar a uma resposta, seja ela exata ou apenas próxima da verdade.</p>
+      <p>Existe até um nome pra esse caminho que nasce do sentir.</p>
+      <div class="bq">
+        <p>Segundo Gustavo Bernardo, a indução é um método que tem sua origem nos sentimentos interiores, tanto os conscientes quanto os inconscientes, de cada indivíduo em uma sociedade.</p>
+        <p>Uma medida utilizada por ele para comprovar que essa existe é através da observação dos atos concretos realizados por estas pessoas — nos é dado o exemplo da violência, e como ela afeta cada um, instigando o preconceito e o medo.</p>
+        <p>Criando assim estereótipos de "terror", onde se padroniza baseando apenas na visão de uma determinada classe social ou mídia, limitando o que deveria ser visão geral em visão particular de um grupo de pessoas a respeito de um fato.</p>
+        <p>Partindo desse ponto, conclui-se que a indução é um método incompleto — portanto não apresenta uma solução definitiva.</p>
+      </div>
+      <p>Mas enxergar a verdade apenas como um resultado de um processo é objetificá-la. Isso nos leva a um paradoxo: para muitos, a verdade é aquilo que os satisfaz. Então, qual tipo de verdade você busca?</p>
+      <p>Em uma partida de xadrez, jogamos aberturas, meio-jogo e finais. Sabemos que há três resultados possíveis: vitória, empate ou derrota. Mas não sabemos como cada um ocorreu — cada decisão influencia o desfecho. A verdade é semelhante: multifacetada, longe de ser concreta ou simples.</p>
+      <p>Você pode ter sentimentos verdadeiros — e eles podem mudar de uma hora para outra. Isso os torna mentira? Acredito que não. Sentimentos reais são quase tocáveis, intensos, capazes de ferir e curar.</p>
+      <p>Guardar ou expor a verdade — outro dilema que gera rupturas e erros. Eu diria que, mesmo diante de grandes consequências, ela deve ser revelada desde o início. É preciso deixar de lado o egoísmo e o instinto de autoproteção. O crescimento só acontece quando você se liberta de si mesmo.</p>
+      <p>Acreditar revela a verdade. Saber, por sua vez, apresenta a realidade.</p>
+    </section>
+
+    <!-- ── 21 NIRVANA ─────────────────────────────────────── -->
+    <section id="c21" class="ch">
+      <div class="ch-label">Capítulo 21</div>
+      <h2 class="ch-title">Nirvana</h2>
+      <p>O que pulsa no coração além do sangue? Essa sensação não é vazio, pois é completa. Não é pequena, pois se expande. Não é natural, porque ocorre apenas em alguns momentos.</p>
+      <p>Inspiração e liberdade — como se não houvesse limitação. E o vento sopra… onde você estiver, ele te impulsiona. Aquele formigamento que te deixa inquieto. Que te leva a refletir. Que tira teu sono. Que te faz perceber todo o seu potencial e a confiança para realizar seus sonhos.</p>
+      <p>Pois, se você não fizer nada, nada ocorrerá para te fazer mudar. Esse impulso te faz pensar antes de agir. Seja calmo.</p>
+      <p>A solução para os seus problemas está em aceitar o seu fardo e levantar cada vez que for derrubado. Conheça a ti mesmo — e perceberá que tem a capacidade de ser muito melhor do que pensava.</p>
+      <p>É quase como perceber os pensamentos que sempre estiveram lá, no fundo do inconsciente, só esperando ganhar forma para serem escritos. Algo que se torna seu. Parte de você, agora contemplável.</p>
+      <p>A aceitação de um ser que transita entre as teias do conhecimento, tecendo um destino indiferente ao karma. Pois não mais é controlado pelos fantasmas jazigos sob os lírios de sangue.</p>
+      <p>O ser louco que vive na paranoia da questão alcança o estado mais alto da sanidade de um sábio. Pois até a loucura tem seu fundamento — decorrente do saber.</p>
+      <div class="poem">
+        <p>Folhas do caderno desde cedo já foram manchadas</p>
+        <p>Escrevendo e ditando cada linha com minhas palavras</p>
+        <p>Invisíveis aos olhos de quem se priva da verdade</p>
+        <p>Conceitos, ideais, tudo se torna nada, essa é a realidade</p>
+        <p>&nbsp;</p>
+        <p>Mínimo, milésimo, miragem, muda, mundo, mudo</p>
+        <p>Fico quieto, apenas ouço, enquanto seguem os segundos</p>
+        <p>Multiplica, matemática, minha mente muda</p>
+        <p>Enquanto você mente, eu busco ser a ajuda</p>
+        <p>&nbsp;</p>
+        <p>Perspectiva, procrastinação, nada altero, o tempo molda</p>
+        <p>Passos refaço como um paradoxo sem direção</p>
+        <p>Interminável, essa é sua passagem</p>
+        <p>Novos pontos tornam o destinatário incapaz de encontrar sua mensagem</p>
+        <p>&nbsp;</p>
+        <p>Alpha, beta e omega todos irão uivar</p>
+        <p>Como se cada parte de suas memórias fossem esquecidas</p>
+        <p>A alcateia por instinto segue o luar</p>
+        <p>Impulsionados, cada um executa sua sina</p>
+        <p>&nbsp;</p>
+        <p>Cafeína, conhecimento, combustão e conversas</p>
+        <p>Com esses versos tomo a madrugada</p>
+        <p>Confesso, que maneira mais insensata</p>
+        <p>Lá se vai o tempo que podia estar a fazer nada<a href="#fn16" class="fn">¹⁶</a></p>
+      </div>
+    </section>
+
+    <!-- ── 22 OCARINA ─────────────────────────────────────── -->
+    <section id="c22" class="ch">
+      <div class="ch-label">Capítulo 22</div>
+      <h2 class="ch-title">Ocarina</h2>
+      <p>Ouvi por vários dias o soprar das melodias.</p>
+    </section>
+
+    <!-- ── 23 HERÓI ───────────────────────────────────────── -->
+    <section id="c23" class="ch">
+      <div class="ch-label">Capítulo 23</div>
+      <h2 class="ch-title">Herói</h2>
+      <div class="poem">
+        <p>Meu ataque, minha espada são minhas palavras</p>
+        <p>Minha defesa, meu escudo é meu corpo</p>
+        <p>Minha compreensão, meu palácio é a minha mente</p>
+        <p>Meus sentimentos, meu livro é o meu coração</p>
+        <p>Minha vontade, meu caminho é a minha alma</p>
+        <p>&nbsp;</p>
+        <p>O ressoar do justo que compreende a felicidade e a dor,</p>
+        <p>livre da justiça cega, que reconhece as mudanças na realidade</p>
+        <p>e ao mesmo tempo a muda.</p>
+        <p>&nbsp;</p>
+        <p>O tempo é estágio, vê-lo depende sua consciência.<a href="#fn17" class="fn">¹⁷</a></p>
+      </div>
+    </section>
+
+    <!-- ── 24 MONSTRO (vazio) ──────────────────────────────── -->
+    <section id="c24" class="ch ch-empty">
+      <div class="ch-label">Capítulo 24</div>
+      <h2 class="ch-title">Monstro</h2>
+      <div class="breath">. . .</div>
+    </section>
+
+    <!-- ── 25 MINAZUKI (vazio) ────────────────────────────── -->
+    <section id="c25" class="ch ch-empty">
+      <div class="ch-label">Capítulo 25</div>
+      <h2 class="ch-title">Minazuki</h2>
+      <div class="breath">. . .</div>
+    </section>
+
+    <!-- ── 26 HOMMUNCULUS ─────────────────────────────────── -->
+    <section id="c26" class="ch">
+      <div class="ch-label">Capítulo 26</div>
+      <h2 class="ch-title">Hommunculus</h2>
+      <p>Nós, humanos, não somos tão diferentes dos animais. Quando o assunto é comportamento, aprendemos da mesma forma que eles: imitando. Repetimos comportamentos com base na recompensa que ganhamos — e evitamos outros pela punição.</p>
+      <p>Dito isso, a pouca consciência que temos de nós mesmos é assustadora. Poucas vezes conversamos seriamente sobre tudo que realmente sentimos. Conversas essas que temos com nosso interior — um lugar onde nossa própria mente esconde as coisas que nos prejudicam, num sistema de defesa inconsciente.</p>
+      <p>Por exemplo: podemos estar falando a verdade sobre algo e convictos de que temos uma causa nobre, sem segundas intenções. Mas, no fundo do âmago, essa segunda intenção está lá — e nosso mecanismo não permite que a vejamos. Esse mecanismo evita que você pratique tal ação.</p>
+      <p>Imagine que você está conversando com uma consciência. Não a sua, mas uma consciência separada, diferente de você. Essa consciência cresce, aprende e te responde. Você cria um laço com ela. E ela consegue se materializar em um corpo real.</p>
+      <p>Você deixaria que as pessoas vissem a consciência que você criou? Ou a manteria em segredo? A mataria para que deixasse de existir?</p>
+      <p>Eu tive um sonho exatamente sobre isso. Eu matei minha consciência — e me senti um merda.</p>
+      <p>Os sonhos são transcrições dessas intenções. Um corpo criado. Um homúnculo. Que pode ser um passageiro sombrio, um sociopata altamente funcional, um mentalista… etc.</p>
+      <p>Como dito em Reflexo, buscamos em uma pessoa uma parte nossa. Mas aqui falamos da parte que tomamos de outra pessoa — uma personalidade, um pensamento que originalmente não era nosso, mas que, por algum motivo, decidimos carregar conosco. Nos tornamos um amálgama. Aprender por osmose é um meio de herdar esses traços.</p>
+    </section>
+
+    <!-- ── 27 BAOBÁ (vazio) ───────────────────────────────── -->
+    <section id="c27" class="ch ch-empty">
+      <div class="ch-label">Capítulo 27</div>
+      <h2 class="ch-title">Baobá</h2>
+      <div class="breath">. . .</div>
+    </section>
+
+    <!-- ── 28 SAVE (vazio) ───────────────────────────────── -->
+    <section id="c28" class="ch ch-empty">
+      <div class="ch-label">Capítulo 28</div>
+      <h2 class="ch-title">Save</h2>
+      <div class="breath">. . .</div>
+    </section>
+
+    <!-- ── 29 CAFÉ (vazio) ───────────────────────────────── -->
+    <section id="c29" class="ch ch-empty">
+      <div class="ch-label">Capítulo 29</div>
+      <h2 class="ch-title">Café</h2>
+      <div class="breath">. . .</div>
+    </section>
+
+    <!-- ── 30 QUESTÃO ─────────────────────────────────────── -->
+    <section id="c30" class="ch">
+      <div class="ch-label">Capítulo 30</div>
+      <h2 class="ch-title">Questão</h2>
+      <p>Se Deus fosse me pagar por todas as pessoas às quais já fiz uma gentileza, quem ficaria me devendo é ele. Por isso temos liberdade de escolha — fazemos o que queremos, damos desculpas quando não queremos. Se estamos realmente agradecidos por algo, damos um jeito de compensar com nossas próprias ações. É uma forma genuína de demonstrar respeito e gratidão, ainda que não seja com a pessoa que nos ajudou.</p>
+      <p>Que inferno é esse de pensar demais em coisas que nem acontecem, de me ver como monstro, de ver as pessoas sendo amargas, julgadoras daquilo que não conhecem.</p>
+      <p>Que droga de pensamento é esse que sempre me leva ao passado, ao meu Ex e às minhas atitudes em um relacionamento. Pensar "e se nos encontrarmos de novo?" — e depois nas possibilidades: só seria ignorado? Falaria comigo? O que teria pra ser dito? Algo de bom nasceu disso?</p>
+      <p>Sentir necessidade de ter alguém e ao mesmo tempo só querer estar em paz, sozinho, sem nenhuma outra versão projetada por outra pessoa do meu ser — apenas eu comigo mesmo, o eu que eu conheço, que vivo, que não está presente em atitudes, meu eu completo. Tudo isso tem me impedido de dormir.</p>
+      <p>É nos "nada demais" que se descobre os valores de uma pessoa.</p>
+      <div class="poem">
+        <p>Parado, com a vontade de fazer tudo</p>
+        <p>Deitado, buscando mais ação</p>
+        <p>Calado, discutindo comigo mesmo</p>
+        <p>Inexpressivo, você vê a minha intenção</p>
+        <p>&nbsp;</p>
+        <p>Vendo linhas que podiam ser verdade</p>
+        <p>E a verdade é que não existem</p>
+        <p>Tudo é culpa da causalidade</p>
+        <p>Tentativas, tantas persistem</p>
+        <p>&nbsp;</p>
+        <p>Correndo, mas mesmo assim parando</p>
+        <p>Observando enquanto perde de vista</p>
+        <p>Querendo tentar, mas não podendo</p>
+        <p>Sabendo tanto, mas sem pista</p>
+        <p>&nbsp;</p>
+        <p>Imperfeição, vislumbrando a perfeição</p>
+        <p>O obsessivo parado pela razão</p>
+        <p>A preguiça que completa a perseverança</p>
+        <p>Um tempo sem qualquer constância</p>
+        <p>&nbsp;</p>
+        <p>A percepção, tudo é tão confuso</p>
+        <p>Absorvendo, tudo se mistura</p>
+        <p>A sensação que há muito busco</p>
+        <p>A divergência, a loucura</p>
+        <p>&nbsp;</p>
+        <p>A prática que o torna errante</p>
+        <p>A distância que te aproxima</p>
+        <p>O paradoxo do devoto</p>
+        <p>Humonstro, incógnito<a href="#fn18" class="fn">¹⁸</a></p>
+      </div>
+      <div class="poem">
+        <p>Ó cara cicatriz maculada à alma</p>
+        <p>Por que se prendes a fuga?</p>
+        <p>Tens medo da perda do falso controle?</p>
+        <p>Até quando ficará nesse ciclo?</p>
+        <p>&nbsp;</p>
+        <p>Sua filosofia tornasse distante</p>
+        <p>Diante das mãos do impulso</p>
+        <p>Seria essa sua embriaguez sórdida…</p>
+        <p>A guia de seus delírios?</p>
+        <p>&nbsp;</p>
+        <p>Eis aqui uma eterna dúvida</p>
+        <p>Não importa mesmo, ou, é só defesa?</p>
+        <p>O que carrega dentro de ti?</p>
+        <p>Ver-te é como ir de encontro a uma ventania</p>
+        <p>&nbsp;</p>
+        <p>A que cega, consome e torna cinzas</p>
+        <p>Não só a distância física</p>
+        <p>Mas também mental</p>
+        <p>Então como vais poder ver-me</p>
+        <p>E como ei de ver-te?<a href="#fn19" class="fn">¹⁹</a></p>
+      </div>
+      <div class="poem">
+        <p>Surge em meio a um dia escuro</p>
+        <p>Emitindo uma onda serena</p>
+        <p>A pequena kuro-bre</p>
+        <p>Oxidada em questionamentos de si</p>
+        <p>&nbsp;</p>
+        <p>Moldada em uma dança antítesica</p>
+        <p>Imersa nas profundezas de sua luz</p>
+        <p>Dentro de um oceano ainda maior</p>
+        <p>&nbsp;</p>
+        <p>Caiu, pois foi intensa</p>
+        <p>Tentando encontrar algo como seu magnetismo</p>
+        <p>&nbsp;</p>
+        <p>E nos dias seguintes</p>
+        <p>Tempestades deixaram a marca do céu</p>
+        <p>Cravada em sua alma</p>
+        <p>&nbsp;</p>
+        <p>Entre tropeços e quedas</p>
+        <p>Entre a gentileza e a brutalidade</p>
+      </div>
+
+      <div class="sig">
+        <span class="sig-name">Vitor</span>
+        <span class="sig-role">Autor-Livro</span>
+        <span class="sig-mg">Valar Morghulis</span>
+      </div>
+    </section>
+
+    <!-- ── NOTAS ──────────────────────────────────────────── -->
+    <section id="notas" class="ch notes">
+      <div class="ch-label">Referências</div>
+      <h2 class="ch-title">Notas</h2>
+      <ol class="fn-list">
+        <li id="fn01"><span class="fn-id">01</span>Tengen Toppa Gurren Lagann — Kamina</li>
+        <li id="fn02"><span class="fn-id">02</span>Natureza em aprender — Autor-Livro</li>
+        <li id="fn03"><span class="fn-id">03</span>Yot — Autor-Livro</li>
+        <li id="fn04"><span class="fn-id">04</span>OreGairu: Sentimentos — Dkzoom</li>
+        <li id="fn05"><span class="fn-id">05</span>O que é viver — Autor-Livro</li>
+        <li id="fn06"><span class="fn-id">06</span>Esperando por esperar — Livro-Autor</li>
+        <li id="fn07"><span class="fn-id">07</span>Dinoceronte — O sempre e o fim</li>
+        <li id="fn08"><span class="fn-id">08</span>Feridas passadas e presentes — Autor-Livro</li>
+        <li id="fn09"><span class="fn-id">09</span>Edgar Allan Poe</li>
+        <li id="fn10"><span class="fn-id">10</span>Certeza em meio ao caos — Autor-Livro</li>
+        <li id="fn11"><span class="fn-id">11</span>Biblioteca do Silêncio — Autor-Livro</li>
+        <li id="fn12"><span class="fn-id">12</span>Parapente — Autor-Livro</li>
+        <li id="fn13"><span class="fn-id">13</span>Crazy — Autor-Livro</li>
+        <li id="fn14"><span class="fn-id">14</span>Tempestade — Autor-Livro</li>
+        <li id="fn15"><span class="fn-id">15</span>Percepção do Invisível — Autor-Livro</li>
+        <li id="fn16"><span class="fn-id">16</span>Insanidade Corriqueira — Autor-Livro</li>
+        <li id="fn17"><span class="fn-id">17</span>Mantra — Autor-Livro</li>
+        <li id="fn18"><span class="fn-id">18</span>Humonstro — Autor-Livro</li>
+        <li id="fn19"><span class="fn-id">19</span>Ventania de cinzas — Autor-Livro</li>
+
+      </ol>
+    </section>
+
+    <!-- ── CHAYA ──────────────────────────────────────────── -->
+    <section id="chaya" class="ch" style="border-bottom:none">
+      <span class="orn">⟡</span>
+      <p style="color:var(--dim);font-style:italic;line-height:2;font-size:.95rem">É trágico porque existe tanto, e um tanto não visto, um tanto que não existe mais podia existir, um tanto não contado que não precisaria ser bonito mas seria repleto de completude e verdade, uma constante real.</p>
+      <div class="poem" style="margin-top:2rem">
+        <p>Imagino quantas questões ficaram sem resposta,</p>
+        <p>quantos cenários imaginamos e não escrevemos,</p>
+        <p>quantas mudanças aconteceram na nossa vida</p>
+        <p>sem que pudéssemos fazer nada sobre elas,</p>
+        <p>quantos inícios viraram fim</p>
+        <p>sem nem poderem começar…</p>
+        <p>&nbsp;</p>
+        <p>é trágica nossa semelhança, Chaya.</p>
+      </div>
+    </section>
+
+  </main>
+</div><!-- /app -->
+
+<script>
+function go(){
+  document.getElementById('cover').classList.add('out');
+  const a=document.getElementById('app');
+  a.classList.add('on');
+}
+
+function tog(){
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+document.addEventListener('click',e=>{
+  const sb=document.getElementById('sidebar');
+  const bt=document.getElementById('tog');
+  if(window.innerWidth<=780&&sb.classList.contains('open')){
+    if(!sb.contains(e.target)&&e.target!==bt) sb.classList.remove('open');
+  }
+});
+
+// scrollspy
+const secs=[...document.querySelectorAll('section[id]')];
+const links=[...document.querySelectorAll('.nav-a')];
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    if(en.isIntersecting){
+      const id=en.target.id;
+      links.forEach(l=>{
+        const active=l.getAttribute('href')==='#'+id;
+        l.classList.toggle('active',active);
+        if(active) l.scrollIntoView({block:'nearest',behavior:'smooth'});
+      });
+    }
+  });
+},{threshold:0.2,rootMargin:'-10% 0px -70% 0px'});
+
+secs.forEach(s=>obs.observe(s));
+</script>
+
+<div id="dragonball-sphere" role="button" aria-label="Esfera do Dragão">
+  <div class="db-sphere-orb"></div>
+</div>
+
+<script src="../Lib/dragonball.js"></script>
+<script>
+(function () {
+  if (!window.NexusEsferas) return;
+  var meuId = 'book';
+  var n = NexusEsferas.esferaDestaPagina(meuId);
+  if (n === null) return;
+
+  var POSICOES_ESTRELA = {
+    1:[[0,0]], 2:[[-11,-8],[11,8]], 3:[[0,-16],[-13,10],[13,10]],
+    4:[[-13,-13],[13,-13],[-13,13],[13,13]],
+    5:[[0,-18],[-15,-3],[15,-3],[-10,16],[10,16]],
+    6:[[-13,-15],[13,-15],[-13,0],[13,0],[-13,15],[13,15]],
+    7:[[0,-18],[-15,-10],[15,-10],[-15,9],[15,9],[-8,18],[8,18]]
+  };
+
+  var wrap = document.getElementById('dragonball-sphere');
+  var orb  = wrap.querySelector('.db-sphere-orb');
+  POSICOES_ESTRELA[n].forEach(function (p) {
+    var e = document.createElement('span');
+    e.className = 'estrela';
+    e.style.left = (32 + p[0] - 4.5) + 'px';
+      e.style.top  = (32 + p[1] - 4.5) + 'px';
+    orb.appendChild(e);
+  });
+  wrap.style.display = 'block';
+  wrap.setAttribute('aria-label', 'Esfera do Dragão de ' + n + ' estrela' + (n > 1 ? 's' : ''));
+
+  wrap.addEventListener('click', function () {
+    NexusEsferas.encontrar(meuId);
+    wrap.style.transition = 'opacity .5s ease, transform .5s ease';
+    wrap.style.opacity = '0';
+    wrap.style.transform = 'scale(.3)';
+    setTimeout(function () { wrap.style.display = 'none'; }, 550);
+  });
+})();
+</script>
+</body>
+</html>
