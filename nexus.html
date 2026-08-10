@@ -1,0 +1,2622 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus</title>
+  <link rel="icon" type="image/svg+xml" href="Assets/favicon-drill.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@400&family=Cormorant+Garamond:ital,wght@0,300;1,300&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --gold:#C4A35A; --text:#E8E0D0; --dim:rgba(232,224,208,0.4); --bg:#07080D; --spiral-green:#39FF7A; }
+
+    html, body { width:100%; height:100%; background:var(--bg); color:var(--text); font-family:'EB Garamond',Georgia,serif; overflow:hidden; }
+
+    #nexus-canvas { position:fixed; inset:0; z-index:1; }
+
+    /* ── Chrome (header + label + footer) ── */
+    .page-chrome { position:fixed; inset:0; z-index:10; pointer-events:none; display:flex; flex-direction:column; }
+
+    header { padding:2.2rem 2rem 0; text-align:center; }
+
+    .ornament { display:flex; align-items:center; justify-content:center; gap:1rem; color:var(--gold); margin-bottom:.8rem; }
+    .ornament-line { display:block; width:72px; height:1px; }
+    .ornament-line:first-child { background:linear-gradient(to right,transparent,var(--gold)); }
+    .ornament-line:last-child  { background:linear-gradient(to left, transparent,var(--gold)); }
+
+    h1 { font-family:'Cinzel Decorative',serif; font-size:clamp(1.45rem,3.5vw,2.4rem); font-weight:400; color:var(--gold); letter-spacing:.45em; margin-bottom:.3rem; }
+    .tagline { font-style:italic; font-size:.88rem; color:var(--dim); letter-spacing:.12em; }
+
+    /* ── Invocação da Broca — some antes do lunge. Ecoa o header (mesmo
+       ornamento, mesma escala tipográfica) só que em verde, a cor do
+       brilho da própria broca quando desperta. Notas na ordem tocada
+       (A, Baixo, Cima, A, Baixo, Cima) — cores adaptadas à paleta daqui
+       em vez do azul original do jogo. ── */
+    #drill-invocation { position:fixed; inset:0; z-index:20; pointer-events:none; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:clamp(.4rem, 3vh, 1.4rem); gap:.9rem; text-align:center; opacity:0; transition:opacity .5s ease; }
+    #drill-invocation.show { opacity:1; }
+    #drill-invocation .ornament { color:var(--spiral-green); }
+    #drill-invocation .ornament-line:first-child { background:linear-gradient(to right,transparent,var(--spiral-green)); }
+    #drill-invocation .ornament-line:last-child  { background:linear-gradient(to left, transparent,var(--spiral-green)); }
+
+    .drill-notes { display:flex; align-items:center; gap:.6rem; height:16px; }
+    .drill-notes .note { opacity:0; transform:scale(.3); animation:notePop .3s ease forwards; }
+    .note--a { width:14px; height:14px; border-radius:50%; background:var(--gold); box-shadow:0 0 9px rgba(196,163,90,.9); }
+    .note--up, .note--down { width:0; height:0; border-left:7px solid transparent; border-right:7px solid transparent; filter:drop-shadow(0 0 6px rgba(57,255,122,.8)); }
+    .note--down { border-top:13px solid var(--spiral-green); }
+    .note--up   { border-bottom:13px solid var(--spiral-green); }
+    .drill-notes .note:nth-child(1){ animation-delay:.00s }
+    .drill-notes .note:nth-child(2){ animation-delay:.13s }
+    .drill-notes .note:nth-child(3){ animation-delay:.26s }
+    .drill-notes .note:nth-child(4){ animation-delay:.44s }
+    .drill-notes .note:nth-child(5){ animation-delay:.57s }
+    .drill-notes .note:nth-child(6){ animation-delay:.70s }
+    @keyframes notePop { to { opacity:1; transform:scale(1); } }
+
+    .drill-invocation__title { font-family:'Cinzel Decorative',serif; font-weight:400; font-size:clamp(1.1rem,3.4vw,1.9rem); letter-spacing:.28em; text-transform:uppercase; color:var(--spiral-green); text-shadow:0 0 20px rgba(57,255,122,.5); opacity:0; transform:translateY(8px); animation:invocationIn .55s ease forwards; animation-delay:.95s; }
+    .drill-invocation__subtitle { font-style:italic; font-size:.85rem; letter-spacing:.1em; color:var(--dim); opacity:0; transform:translateY(8px); animation:invocationIn .55s ease forwards; animation-delay:1.15s; }
+    @keyframes invocationIn { to { opacity:1; transform:translateY(0); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .drill-notes .note, .drill-invocation__title, .drill-invocation__subtitle { animation:none !important; opacity:1 !important; transform:none !important; }
+    }
+
+    /* ── Painel das Esferas do Dragão — canto inferior esquerdo, minimizado até
+       hover (desktop) ou toque (mobile) — o toggle real é feito via JS com a
+       classe .expandido, não por :hover puro, pra não depender de como cada
+       navegador touch simula hover. ── */
+    #dragonball-panel { position:fixed; left:1rem; bottom:1rem; z-index:30; background:rgba(7,8,13,.88); border:1px solid rgba(232,224,208,.14); border-radius:8px; padding:.55rem .7rem; cursor:pointer; user-select:none; transition:background .25s ease, border-color .25s ease; }
+    #dragonball-panel.expandido { background:rgba(7,8,13,.96); border-color:rgba(196,163,90,.35); }
+    .db-mini { display:flex; align-items:center; gap:.45rem; white-space:nowrap; }
+    .db-mini-orb { width:14px; height:14px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #FFD98A, #E8891A 62%, #A34E08); box-shadow:0 0 5px rgba(232,137,26,.55); flex:none; }
+    .db-mini-count { font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.1em; color:var(--gold); }
+    .db-expanded { display:none; margin-top:.65rem; max-width:210px; }
+    #dragonball-panel.expandido .db-expanded { display:block; }
+    .db-panel-title { font-family:'EB Garamond',serif; font-style:italic; font-size:.75rem; color:var(--dim); margin-bottom:.55rem; }
+    .db-grid { display:flex; flex-wrap:wrap; gap:.4rem; }
+    .db-orb { position:relative; width:24px; height:24px; border-radius:50%; background:#1a1a1f; opacity:.4; flex:none; }
+    .db-orb.achada { background:radial-gradient(circle at 35% 30%, #FFD98A, #E8891A 62%, #A34E08); box-shadow:0 0 6px rgba(232,137,26,.55); opacity:1; }
+    .db-orb .estrela { position:absolute; width:4px; height:4px; background:#C21818; clip-path:polygon(50% 0%, 61% 35%, 98% 35%, 68% 56%, 79% 91%, 50% 69%, 21% 91%, 32% 56%, 2% 35%, 39% 35%); }
+
+    /* ── Conjunto completo (7/7) — o painel ganha um brilho dourado
+       permanente (o "troféu"), e na primeira vez que o conjunto se
+       completa, um pulso mais intenso toca por cima disso (a
+       "cutscene"), acompanhado do som — ver celebrarConclusao() no JS. ── */
+    #dragonball-panel.completo { border-color:rgba(232,137,26,.65); box-shadow:0 0 18px rgba(232,137,26,.35); }
+    #dragonball-panel.completo .db-mini-count { color:#FFD98A; }
+    .db-resgatar { display:none; margin:.5rem 0 0; font-family:'EB Garamond',serif; font-style:italic; font-size:.72rem; color:#FFD98A; text-decoration:underline; cursor:pointer; text-align:center; }
+    #dragonball-panel.completo .db-resgatar { display:block; }
+    .db-resgatar:hover { color:#fff; }
+    .db-orb.completo { box-shadow:0 0 10px rgba(255,217,138,.75); }
+    #dragonball-panel.celebrando .db-orb.completo { animation:dbPulso 1.4s ease-in-out infinite; }
+    @keyframes dbPulso {
+      0%, 100% { box-shadow:0 0 10px rgba(255,217,138,.75); filter:brightness(1); }
+      50%      { box-shadow:0 0 22px rgba(255,217,138,1); filter:brightness(1.45); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #dragonball-panel.celebrando .db-orb.completo { animation:none !important; box-shadow:0 0 22px rgba(255,217,138,1) !important; filter:brightness(1.3) !important; }
+    }
+
+    /* ── Painel de leitura de Valtheris — lê a mesma chave que o próprio
+       Valtheris_hub.html já grava (localStorage 'valtheris_read'); não
+       escreve nada, só lê — a lógica de marcar saga como lida continua
+       vivendo só no hub. 21 Sagas de Além do Véu (S1–S21) + a Saga 0 de
+       Sob o Luar (S0_luar) = 22 no total.
+       Fica empilhado ACIMA do #dragonball-panel (mesmo left:1rem, bottom
+       maior) em vez de ao lado — era a posição só do mobile antes, agora
+       é o padrão em qualquer largura de tela, por isso a media query
+       antiga saiu. O #cancao-painel, mais abaixo no arquivo, já sabe se
+       reposicionar acima deste painel também (não só do de Esferas). ── */
+    #valtheris-painel { position:fixed; left:1rem; bottom:4.1rem; z-index:30; background:rgba(7,8,13,.88); border:1px solid rgba(204,64,96,.22); border-radius:8px; padding:.55rem .7rem; user-select:none; display:flex; align-items:center; gap:.45rem; white-space:nowrap; transition:border-color .25s ease, box-shadow .25s ease; }
+    #valtheris-painel .vp-olho { width:14px; height:10px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #CC4060, #7a1f30 70%); box-shadow:0 0 5px rgba(204,64,96,.55); flex:none; position:relative; }
+    #valtheris-painel .vp-olho::after { content:''; position:absolute; inset:0; margin:auto; width:3px; height:3px; border-radius:50%; background:#150507; }
+    #valtheris-painel .vp-count { font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.1em; color:#CC4060; }
+    #valtheris-painel.completo { border-color:rgba(204,64,96,.65); box-shadow:0 0 18px rgba(204,64,96,.35); }
+    #valtheris-painel.completo .vp-count { color:#ff7a9c; }
+
+    /* ── Painel da Canção da Tempestade — o componente base (círculo,
+       ícone, estado .completa) vem de Lib/cancao-tempestade.js, mas essa
+       página não carrega o style.css do diário TLOZ, então o visual
+       precisa estar aqui. Mesma paleta prateado→dourado das outras
+       páginas. ── */
+    .cancao-painel {
+      position: fixed; left: 1.2rem; bottom: 1.2rem; z-index: 700;
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(10,10,14,.85);
+      border: 1px solid rgba(184,184,192,.35);
+      transition: border-color .4s ease, box-shadow .4s ease;
+      animation: cancaoFloat 4s ease-in-out infinite;
+    }
+    @keyframes cancaoFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .cancao-nota {
+      width: 18px; height: 18px; fill: none; flex: none;
+      stroke: #B8B8C0; stroke-width: 1.6;
+      stroke-linecap: round; stroke-linejoin: round;
+      transition: stroke .4s ease, filter .4s ease;
+    }
+    .cancao-painel.completa { border-color: rgba(232,137,26,.65); box-shadow: 0 0 18px rgba(232,137,26,.5); }
+    .cancao-painel.completa .cancao-nota { stroke: #FFD98A; filter: drop-shadow(0 0 7px rgba(255,217,138,.85)); }
+    .cancao-painel.piscando { cursor: pointer; animation: cancaoFloat 4s ease-in-out infinite, cancaoPiscar 1.6s ease-in-out infinite; }
+    @keyframes cancaoPiscar {
+      0%, 100% { box-shadow: 0 0 0 rgba(184,184,192,0); border-color: rgba(184,184,192,.35); }
+      50%      { box-shadow: 0 0 16px rgba(184,184,192,.85); border-color: rgba(184,184,192,.9); }
+    }
+
+    /* ── Versão "conjunto completo" — só depois que OOT, MM e Recordações
+       já foram todos encontrados. Ganha o mesmo padrão de expandir do
+       #dragonball-panel (hover no desktop, toque no mobile, variável
+       `mob` compartilhada), com os Irmãos Compositores reunidos por
+       dentro. Ver a segunda IIFE lá no fim do arquivo. ── */
+    #cancao-painel.expansivel { cursor: pointer; }
+    #cancao-painel.expandido {
+      width: auto; height: auto;
+      max-width: min(280px, calc(100vw - 3rem));
+      border-radius: 14px; padding: .85rem;
+      background: rgba(10,8,4,.96);
+      flex-direction: column; align-items: center;
+      animation-play-state: paused;
+    }
+    .cancao-expandido { display: none; width: 100%; margin-top: .65rem; position: relative; }
+    .cancao-expandido.aberto { display: block; }
+
+    .cancao-notas-fundo { position: absolute; inset: -8px; overflow: hidden; pointer-events: none; z-index: 0; border-radius: 10px; }
+    .cancao-notas-fundo span { position: absolute; bottom: -8%; color: rgba(255,217,138,.4); font-size: 1.1rem; animation: notaSubindo linear infinite; }
+    @keyframes notaSubindo {
+      0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+      12%  { opacity: 1; }
+      88%  { opacity: 1; }
+      100% { transform: translateY(-280px) translateX(var(--desvio, 10px)) rotate(18deg); opacity: 0; }
+    }
+
+    .cancao-irmaos-img { position: relative; z-index: 1; width: 100%; display: block; border-radius: 8px; margin-bottom: .65rem; filter: drop-shadow(0 8px 18px rgba(0,0,0,.55)); }
+
+    .cancao-dialogo { position: relative; z-index: 1; font-family:'EB Garamond',serif; font-size: .82rem; line-height: 1.55; color: #FFEFC8; text-align: left; }
+    .cancao-dialogo p { margin-bottom: .6rem; }
+    .cancao-escolha { display: flex; gap: .5rem; margin-top: .5rem; }
+    .cancao-escolha button {
+      all: unset; box-sizing: border-box; cursor: pointer; text-align: center; flex: 1;
+      font-family: 'Cinzel', serif; font-size: .62rem; letter-spacing: .12em; text-transform: uppercase;
+      padding: .5rem .6rem; border: 1px solid rgba(255,217,138,.5); color: #FFD98A;
+      transition: background .2s ease, color .2s ease;
+    }
+    .cancao-escolha button:hover { background: rgba(255,217,138,.15); color: #fff; }
+    @media (prefers-reduced-motion: reduce) {
+      .cancao-notas-fundo span { animation: none !important; opacity: .5 !important; }
+    }
+
+    /* ── Dispersão das esferas — ao voltar do Segredo depois de um desejo
+       concedido, as 7 esferas saem do slot, giram, e voam pra fora em
+       direções diferentes (--dx/--dy definidos por esfera via JS) antes
+       de sumir, simbolizando elas se espalhando pelo universo de novo.
+       Só depois dessa animação terminar é que o reset de dados acontece
+       de verdade (ver dispersarEsferas() no JS). ── */
+    .db-orb.dispersando { animation: dbDispersar 1.3s cubic-bezier(.32,.62,.4,1) forwards; z-index: 5; }
+    @keyframes dbDispersar {
+      0%   { transform: translate(0,0) rotate(0deg) scale(1); opacity: 1; }
+      25%  { transform: translate(0,0) rotate(340deg) scale(1.2); opacity: 1; }
+      100% { transform: translate(var(--dx), var(--dy)) rotate(1080deg) scale(.15); opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .db-orb.dispersando { animation: none !important; opacity: 0 !important; transition: opacity .5s ease; }
+    }
+
+    /* ── Marca permanente de "já completado antes" — um pequeno selo
+       dourado no mini-indicador do canto, que fica mesmo depois do
+       progresso atual zerar de novo (ver CHAVE_COMPLETOU_ANTES no JS). ── */
+    .db-mini { position: relative; }
+    .db-mini-orb.ja-completou::after {
+      content: '✦'; position: absolute; top: -7px; left: 9px;
+      font-size: .55rem; line-height: 1; color: #FFD98A;
+      text-shadow: 0 0 3px rgba(255,217,138,.85);
+    }
+
+    /* ── Symbol label ── */
+    #symbol-label { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:clamp(.4rem, 3vh, 1.4rem); pointer-events:none; opacity:0; transition:opacity .3s ease; }
+
+    /* Moldura: dá "palco" próprio ao título, para que os símbolos 3D
+       nunca disputem espaço visual com o texto — independe do
+       tamanho do título, largura fixa via min(vw, px) */
+    .sym-frame { position:relative; display:flex; flex-direction:column; align-items:center; --sym-line-color: var(--gold); }
+
+    .sym-frame::before {
+      content:'';
+      position:absolute;
+      left:50%; top:50%;
+      width:min(92vw, 560px);
+      height:calc(100% + 4rem);
+      transform:translate(-50%,-50%);
+      background:radial-gradient(ellipse 58% 100% at center, rgba(7,8,13,.88) 0%, rgba(7,8,13,.52) 46%, rgba(7,8,13,0) 76%);
+      z-index:-1;
+      pointer-events:none;
+    }
+
+    .sym-line      { display:flex; align-items:center; justify-content:center; gap:.6rem; margin-bottom:.65rem; }
+    .sym-line__l   { display:block; width:26px; height:1px; }
+    .sym-line__l:first-child { background:linear-gradient(to right, transparent, var(--sym-line-color)); }
+    .sym-line__l:last-child  { background:linear-gradient(to left,  transparent, var(--sym-line-color)); }
+    .sym-line__dot { font-size:.42rem; color:var(--sym-line-color); opacity:.85; }
+
+    .sym-tag   { font-family:'Cinzel',serif; font-size:.53rem; letter-spacing:.42em; text-transform:uppercase; color:var(--dim); margin-bottom:.4rem; }
+    .sym-title { font-family:'Cinzel',serif; font-size:clamp(.95rem,2.5vw,1.45rem); font-weight:400; color:var(--text); letter-spacing:.04em; text-align:center; margin-bottom:.5rem; padding:0 1rem; }
+    .sym-cta   { font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.30em; text-transform:uppercase; }
+    .sym-cta.sealed { font-family:'EB Garamond',serif; font-style:italic; font-size:.9rem; letter-spacing:.15em; text-transform:none; color:rgba(180,80,20,.48); }
+
+    footer { text-align:center; padding:1rem; font-size:.66rem; color:rgba(232,224,208,.12); letter-spacing:.18em; }
+
+    /* ── Ícaro: mensagem selada ── */
+    #icaro-msg { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9994; text-align:center; pointer-events:none; opacity:0; transition:opacity .4s ease; }
+    .icaro-main { font-family:'EB Garamond',serif; font-style:italic; font-size:clamp(1rem,3vw,1.45rem); color:rgba(200,90,20,.65); letter-spacing:.08em; }
+    .icaro-sub  { font-family:'Cinzel',serif; font-size:.53rem; letter-spacing:.32em; text-transform:uppercase; color:rgba(200,90,20,.28); margin-top:.7rem; }
+
+    /* ── Link caído: mensagem própria por ícone, quando o destino não responde ── */
+    #linkdown-msg { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9995; text-align:center; pointer-events:none; opacity:0; transition:opacity .4s ease; padding:0 1.5rem; }
+    .linkdown-main { font-family:'EB Garamond',serif; font-style:italic; font-size:clamp(1rem,3vw,1.4rem); color:rgba(232,224,208,.7); letter-spacing:.06em; }
+    .linkdown-sub  { font-family:'Cinzel',serif; font-size:.5rem; letter-spacing:.3em; text-transform:uppercase; color:rgba(232,224,208,.3); margin-top:.7rem; }
+
+    /* ── Fallback total: motor 3D/WebGL indisponível — links simples pros 8 projetos ── */
+    #fallback-nexus { display:none; position:fixed; inset:0; z-index:20000; background:#07080D; overflow-y:auto; padding:3rem 1.5rem; }
+    #fallback-nexus.ativo { display:block; }
+    .fb-wrap { max-width:640px; margin:0 auto; }
+    .fb-title { font-family:'Cinzel Decorative',serif; font-size:1.7rem; color:#C4A35A; text-align:center; letter-spacing:.3em; margin-bottom:.5rem; }
+    .fb-note  { font-family:'EB Garamond',serif; font-style:italic; font-size:.85rem; color:rgba(232,224,208,.4); text-align:center; margin-bottom:2.4rem; }
+    .fb-link  { display:block; padding:1.3rem 1.6rem; margin-bottom:1rem; border:1px solid rgba(232,224,208,.14); border-radius:4px; text-decoration:none; transition:border-color .2s ease; }
+    .fb-link:hover { border-color:rgba(196,163,90,.5); }
+    .fb-link__tag   { display:block; font-family:'Cinzel',serif; font-size:.55rem; letter-spacing:.28em; text-transform:uppercase; color:rgba(232,224,208,.35); margin-bottom:.4rem; }
+    .fb-link__title { display:block; font-family:'Cinzel',serif; font-size:1.05rem; color:#E8E0D0; margin-bottom:.3rem; }
+    .fb-link__msg   { display:block; font-family:'EB Garamond',serif; font-style:italic; font-size:.85rem; color:rgba(232,224,208,.45); }
+
+    /* ── Curtain ── */
+    #curtain { position:fixed; inset:0; background:#000; opacity:0; z-index:9999; transition:opacity .65s ease; pointer-events:none; }
+
+    /* ── Book overlay ── */
+    #book-overlay { position:fixed; inset:0; background:#0d0d12; opacity:0; z-index:9998; display:flex; align-items:center; justify-content:center; pointer-events:none; transition:opacity .5s ease; }
+    .book-question { font-family:'Cormorant Garamond',Georgia,serif; font-size:clamp(1.15rem,3.2vw,1.85rem); font-weight:300; font-style:italic; color:#b8873e; text-align:center; max-width:560px; padding:2rem; letter-spacing:.03em; line-height:1.75; transition:opacity .85s ease; }
+    .book-cursor { font-style:normal; color:#b8873e; opacity:.7; animation:book-blink .75s ease-in-out infinite; margin-left:1px; }
+    @keyframes book-blink { 0%,100%{opacity:.7} 50%{opacity:0} }
+
+    /* ── Diary overlay ── */
+    #diario-overlay { position:fixed; inset:0; z-index:9996; background:rgba(12,8,4,.97); opacity:0; pointer-events:none; transition:opacity .5s ease; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .diario-bloco { display:flex; flex-direction:column; align-items:center; gap:.55rem; }
+    .diario-cidade { font-family:'Cinzel',serif; font-size:clamp(1.5rem,4.8vw,2.8rem); font-weight:400; color:#E0B86A; letter-spacing:.18em; opacity:0; text-align:center; padding:0 1rem; }
+    .diario-ano    { font-family:'EB Garamond',serif; font-size:clamp(.88rem,2vw,1.1rem); font-style:italic; color:rgba(224,184,106,.45); letter-spacing:.42em; opacity:0; text-align:center; }
+    .diario-frase  { font-family:'EB Garamond',serif; font-size:clamp(.95rem,2.2vw,1.25rem); font-style:italic; color:rgba(224,184,106,.5); letter-spacing:.1em; opacity:0; text-align:center; margin-top:2.8rem; padding:0 1rem; }
+
+    /* ── Valtheris overlay ── */
+    #valtheris-overlay { position:fixed; inset:0; z-index:9997; pointer-events:none; opacity:0; }
+  </style>
+</head>
+<body>
+
+<div id="curtain"></div>
+<div id="book-overlay"><p class="book-question"><span class="book-typed"></span><span class="book-cursor">|</span></p></div>
+<div id="diario-overlay"><div class="diario-bloco"><p class="diario-cidade"></p><p class="diario-ano"></p></div><p class="diario-frase">E isso bastava.</p></div>
+<div id="valtheris-overlay"></div>
+<div id="icaro-msg"><p class="icaro-main">voou perto demais.</p><p class="icaro-sub">prometia renascer</p></div>
+<div id="linkdown-msg"><p class="linkdown-main"></p><p class="linkdown-sub">este link não respondeu</p></div>
+
+<canvas id="nexus-canvas"></canvas>
+
+<div id="fallback-nexus">
+  <div class="fb-wrap">
+    <p class="fb-title">Nexus</p>
+    <p class="fb-note">o motor 3D não carregou — aqui estão os caminhos diretos</p>
+
+    <a class="fb-link" href="TLOZ/Tloz.html">
+      <span class="fb-link__tag">Jogo</span>
+      <span class="fb-link__title">The Legend of Zelda</span>
+      <span class="fb-link__msg">a lenda espera, mesmo sem palco.</span>
+    </a>
+
+    <a class="fb-link" href="Valtheris/Valtheris%20hub.html">
+      <span class="fb-link__tag">RPG de Mesa</span>
+      <span class="fb-link__title">Valtheris</span>
+      <span class="fb-link__msg">o véu se abre de qualquer forma.</span>
+    </a>
+
+    <a class="fb-link" href="Di%C3%A1rio/Di%C3%A1rio.html">
+      <span class="fb-link__tag">Memórias</span>
+      <span class="fb-link__title">Diário de Memórias</span>
+      <span class="fb-link__msg">as cidades continuam lá, esperando.</span>
+    </a>
+
+    <a class="fb-link" href="Livro/Incessans%20Aestimandi.html">
+      <span class="fb-link__tag">Escrita</span>
+      <span class="fb-link__title">Incessans Aestimandi</span>
+      <span class="fb-link__msg">a pergunta continua sem resposta.</span>
+    </a>
+
+    <a class="fb-link" href="Covers/covers.html">
+      <span class="fb-link__tag">Música</span>
+      <span class="fb-link__title">Covers</span>
+      <span class="fb-link__msg">quando não sei dizer, eu canto.</span>
+    </a>
+
+    <a class="fb-link" href="Origem/Origem.html">
+      <span class="fb-link__tag">Retrato</span>
+      <span class="fb-link__title">Antes do Autor-Livro</span>
+      <span class="fb-link__msg">o ponto de partida, mesmo sem palco.</span>
+    </a>
+
+    <a class="fb-link" href="Icarus/icarus.html">
+      <span class="fb-link__tag">Catálogo</span>
+      <span class="fb-link__title">Ícarus Reborn</span>
+      <span class="fb-link__msg">caiu uma vez; este link continua de pé.</span>
+    </a>
+
+    <a class="fb-link" href="Recorda%C3%A7%C3%B5es/recorda%C3%A7%C3%B5es.html">
+      <span class="fb-link__tag">Jogos</span>
+      <span class="fb-link__title">Recordações</span>
+      <span class="fb-link__msg">as fotos não precisam de palco pra aparecer.</span>
+    </a>
+
+    <a class="fb-link" href="Mal/mal.html">
+      <span class="fb-link__tag">Perfil</span>
+      <span class="fb-link__title">M.A.L</span>
+      <span class="fb-link__msg">a tempestade espiral não gira sem palco — isto chegou de outro jeito.</span>
+    </a>
+  </div>
+</div>
+
+<div class="page-chrome">
+  <header>
+    <div class="ornament"><span class="ornament-line"></span><span>◆</span><span class="ornament-line"></span></div>
+    <h1><span id="nexus-title-text">Nexus</span></h1>
+    <p class="tagline">todos os universos em um só lugar</p>
+  </header>
+  <div id="symbol-label">
+    <div class="sym-frame">
+      <div class="sym-line"><span class="sym-line__l"></span><span class="sym-line__dot">◆</span><span class="sym-line__l"></span></div>
+      <span class="sym-tag"></span>
+      <h2 class="sym-title"></h2>
+      <span class="sym-cta"></span>
+    </div>
+  </div>
+  <footer>◆ &nbsp; Nexus — Universo Pessoal &nbsp; ◆</footer>
+</div>
+
+<div id="drill-invocation">
+  <div class="ornament"><span class="ornament-line"></span><span>◆</span><span class="ornament-line"></span></div>
+  <div class="drill-notes">
+    <span class="note note--a"></span>
+    <span class="note note--down"></span>
+    <span class="note note--up"></span>
+    <span class="note note--a"></span>
+    <span class="note note--down"></span>
+    <span class="note note--up"></span>
+  </div>
+  <p class="drill-invocation__title">Você invocou a tempestade espiral</p>
+  <p class="drill-invocation__subtitle">A broca que cria céus desperta</p>
+</div>
+
+<div id="dragonball-panel">
+  <div class="db-mini">
+    <span class="db-mini-orb"></span>
+    <span class="db-mini-count">0/7</span>
+  </div>
+  <div class="db-expanded">
+    <p class="db-panel-title">Esferas encontradas</p>
+    <div class="db-grid"></div>
+    <p class="db-resgatar">✦ Reivindicar o desejo</p>
+  </div>
+</div>
+
+<div id="valtheris-painel" title="Sagas de Valtheris lidas">
+  <span class="vp-olho"></span>
+  <span class="vp-count">0/22</span>
+</div>
+<script>
+(function () {
+  var TOTAL_SAGAS = 22; // S1–S21 (Além do Véu) + S0_luar (Sob o Luar)
+  var lidas = [];
+  try { lidas = JSON.parse(localStorage.getItem('valtheris_read') || '[]'); } catch (e) {}
+  if (!Array.isArray(lidas)) lidas = [];
+  var painel = document.getElementById('valtheris-painel');
+  painel.querySelector('.vp-count').textContent = lidas.length + '/' + TOTAL_SAGAS;
+  if (lidas.length >= TOTAL_SAGAS) painel.classList.add('completo');
+})();
+
+/* ── O #dragonball-panel expande no hover/toque e cresce por cima do
+   bottom:4.1rem fixo deste painel — essa folga só dá conta do estado
+   colapsado dele (foi o que aconteceu no print que o usuário mandou:
+   o valtheris-painel ficou entalado dentro do painel "Esferas
+   encontradas" expandido). Em vez de aumentar a distância fixa (que
+   sobraria espaço vazio a maior parte do tempo), um ResizeObserver
+   sobe o painel de Valtheris junto, sempre colado acima do topo atual
+   do de Esferas com 20px de folga, em qualquer estado. ── */
+(function () {
+  var painelEsferas = document.getElementById('dragonball-panel');
+  var painelValtheris = document.getElementById('valtheris-painel');
+  if (!painelEsferas || !painelValtheris) return;
+
+  function reposicionar() {
+    var topeEsferas = window.innerHeight - painelEsferas.getBoundingClientRect().top;
+    painelValtheris.style.bottom = (topeEsferas + 20) + 'px';
+  }
+  reposicionar();
+
+  if (window.ResizeObserver) {
+    new ResizeObserver(reposicionar).observe(painelEsferas);
+  } else {
+    // sem ResizeObserver: ainda cobre o caso mais comum (hover no desktop,
+    // toque no mobile) que é o que muda a altura desse painel.
+    painelEsferas.addEventListener('mouseenter', reposicionar);
+    painelEsferas.addEventListener('mouseleave', reposicionar);
+    painelEsferas.addEventListener('click', reposicionar);
+    window.addEventListener('resize', reposicionar);
+  }
+})();
+</script>
+
+
+<script src="Lib/drill-obj-data.js"></script>
+<script src="Lib/three.min.js"></script>
+<script src="Lib/OBJLoader.js"></script>
+<script src="Lib/dragonball.js"></script>
+<script>
+(function () {
+'use strict';
+
+/* ═══════════════════════════════════════════
+   TESTE DE CAPACIDADE — motor 3D indisponível?
+   Não depende de CDN (Three.js já está embutido acima), mas
+   WebGL em si pode estar desligado/sem suporte no navegador.
+   Se falhar, mostra o fallback total e não toca no resto do script.
+═══════════════════════════════════════════ */
+try {
+  if (typeof THREE === 'undefined') throw new Error('THREE indisponível');
+  var _testeRenderer = new THREE.WebGLRenderer({ canvas: document.createElement('canvas') });
+  _testeRenderer.dispose();
+} catch (erroMotor) {
+  document.getElementById('fallback-nexus').classList.add('ativo');
+  document.getElementById('nexus-canvas').style.display = 'none';
+  document.querySelector('.page-chrome').style.display = 'none';
+  return;
+}
+
+/* ═══════════════════════════════════════════
+   ÁUDIO — Song of Time (OGG mono 22 kHz, b64)
+═══════════════════════════════════════════ */
+
+function playSongOfTime(cb) {
+  const audio = new Audio('Assets/song-of-time.ogg');
+  let fired = false;
+  const done = () => { if (!fired) { fired = true; cb(); } };
+  audio.addEventListener('ended', done, { once: true });
+  audio.addEventListener('error', () => setTimeout(done, 3500), { once: true });
+  const p = audio.play();
+  if (p !== undefined) p.catch(() => setTimeout(done, 3500));
+}
+
+/* ═══════════════════════════════════════════
+   THREE.JS
+═══════════════════════════════════════════ */
+const cnv = document.getElementById('nexus-canvas');
+let mob = window.innerWidth < 768;
+const W = () => window.innerWidth;
+const H = () => window.innerHeight;
+
+// Fatores responsivos — recalculados no resize (rotacionar o celular não deve
+// deixar a cena presa nas proporções calculadas só no load).
+let responsiveScale = mob ? 0.80 : 1; // multiplica o tamanho de cada símbolo (via group.scale)
+let orbitScale       = mob ? 0.82 : 1; // multiplica o raio orbital de cada símbolo
+
+const renderer = new THREE.WebGLRenderer({ canvas: cnv, antialias: !mob });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, mob ? 1.5 : 2));
+renderer.setSize(W(), H());
+renderer.setClearColor(0x07080D, 1);
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(55, W()/H(), 0.1, 200);
+camera.position.set(0, mob ? 2.5 : 3, mob ? 13 : 11);
+camera.lookAt(0, 0, 0);
+
+window.addEventListener('resize', () => {
+  renderer.setSize(W(), H());
+  camera.aspect = W() / H();
+  camera.updateProjectionMatrix();
+
+  const eraMob = mob;
+  mob = window.innerWidth < 768;
+  responsiveScale = mob ? 0.80 : 1;
+  orbitScale       = mob ? 0.82 : 1;
+
+  if (eraMob !== mob) {
+    camera.position.set(0, mob ? 2.5 : 3, mob ? 13 : 11);
+    atualizarOrientacaoRepouso();
+  }
+
+  pivots.forEach(function(piv) {
+    var g = piv.userData.group;
+    g.userData.baseScale = responsiveScale;
+    g.scale.setScalar(responsiveScale);
+    // Só reposiciona quem está em órbita normal — não mexe em quem está
+    // convergindo ou parado no centro no meio de uma animação.
+    if (!piv.userData.frozen) {
+      g.position.x = g.userData.def.orbit.r * orbitScale;
+    }
+  });
+});
+
+/* ── Estrelas ── */
+(function () {
+  const n = mob ? 700 : 1500, pos = new Float32Array(n*3);
+  for (let i = 0; i < n; i++) {
+    const phi = Math.acos(2*Math.random()-1), theta = Math.random()*Math.PI*2, r = 65+Math.random()*55;
+    pos[i*3] = r*Math.sin(phi)*Math.cos(theta);
+    pos[i*3+1] = r*Math.sin(phi)*Math.sin(theta);
+    pos[i*3+2] = r*Math.cos(phi);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  scene.add(new THREE.Points(geo, new THREE.PointsMaterial({ color:0xDAD2B9, size: mob?0.13:0.09, sizeAttenuation:true })));
+})();
+
+/* ── Luz ── */
+scene.add(new THREE.AmbientLight(0xffffff, 0.18));
+const cLight = new THREE.PointLight(0xDDD5BB, 1.5, 30);
+scene.add(cLight);
+
+/* ── Núcleo do Nexus: a Broca que Fura os Céus ──
+   Substitui o antigo orbe-placeholder. Em repouso é só um metal escuro
+   e discreto; quando invocada (ver gatilho secreto mais abaixo), acorda:
+   brilho verde pulsante + luz própria + tema de Gurren Lagann. */
+const drillGroup = new THREE.Group();   // POSIÇÃO — centro em repouso; "voa" até o título quando ativa
+scene.add(drillGroup);
+
+const drillTilt = new THREE.Group();    // ORIENTAÇÃO — em repouso aponta o eixo pra câmera (parece um ponto)
+drillGroup.add(drillTilt);
+
+const drillSpin = new THREE.Group();    // GIRO — o que de fato roda sobre o próprio eixo
+drillTilt.add(drillSpin);
+
+// Orientação de repouso (broca "olhando" pra câmera). Calculada aqui uma
+// única vez, e de novo só quando a câmera muda de posição no resize —
+// não a cada quadro: sem OrbitControls no projeto, a câmera não se move
+// fora do resize, então o resultado é sempre o mesmo entre um quadro e o
+// próximo. animate() antes recalculava (e realocava dois THREE.Vector3
+// novos) todo quadro enquanto drillPhase === 'sleep', ou seja, na maior
+// parte do tempo que a página fica aberta, pra sempre chegar no mesmo valor.
+const EIXO_CIMA = new THREE.Vector3(0, 1, 0);
+function atualizarOrientacaoRepouso() {
+  const camDir = camera.position.clone().normalize();
+  drillTilt.quaternion.setFromUnitVectors(EIXO_CIMA, camDir);
+}
+atualizarOrientacaoRepouso();
+
+let drillMesh    = null;   // populado quando o .obj terminar de carregar
+let brocaSequestrada = false; // true durante o confronto com M.A.L.I.K. (ver ponte NexusMalikBridge, mais abaixo)
+let brocaLibertando = false; // true só por um instante — o pulso de força ao se soltar, no Cenário B
+let drillAwake   = false;
+let drillGlowMat = null;   // material do cone de brilho interno (separado do metal do cone externo)
+let drillPhase   = 'sleep'; // 'sleep' | 'lunge' | 'vanish' | 'appear' | 'docked'
+let phaseStart   = 0;
+let dockTarget   = null;   // THREE.Vector3 — recalculado a cada quadro em 'appear'/'docked'
+let drillPaused  = false;  // true depois de clicar nela já ancorada ao lado do título
+let drillTiltStart = null; // quaternion de onde ela estava (disfarçada) ao acordar
+const DRILL_UPRIGHT_Q = new THREE.Quaternion(); // identidade — de pé, orientação normal
+
+const drillMat = stdMat(0x5A4522, 0x000000, 0); // bronze escuro, sem brilho em repouso — nunca muda de cor
+const DRILL_GROW_SECONDS = 40; // segundos de música pra ir de 1x a 2x de tamanho/velocidade — ajuste à vontade
+const ALVO_ALTURA = 0.55; // altura da broca em repouso — mexa aqui pra maior/menor
+const LUNGE_DIST = 2.4, LUNGE_DUR = 0.5, VANISH_DUR = 0.25, APPEAR_DUR = 0.35; // tudo ajustável
+const INVOCATION_HOLD_MS = 2200; // quanto tempo a mensagem fica em tela antes de sumir
+const INVOCATION_FADE_MS = 500;  // duração do fade de saída — tem que bater com a transition do CSS de #drill-invocation
+const TAP_MAX_MOVE = 12;    // px — abaixo disso o toque conta como "parado" (tap)
+const SWIPE_MIN_DIST = 40;  // px — acima disso no eixo vertical conta como swipe
+const GESTURE_MAX_MS = 600; // ms — mais devagar que isso não conta como toque nem swipe
+
+const DRILL_SPIN_SPEED = 2.0; // rad/s — ritmo rápido e constante (era 0.18, lento demais)
+
+const GALAXY_PARTICLES  = 4500; // menos = melhor performance no mobile
+const GALAXY_ARMS       = 4;    // braços espirais
+const GALAXY_RADIUS     = 2.1;  // fica dentro da órbita mais fechada dos símbolos (r:2.8) — não briga com eles
+const GALAXY_TWIST      = 3.2;  // o quanto os braços se enrolam
+const GALAXY_SPIN_SPEED = 0.12; // rad/s — bem mais lento que a broca: é vasta, não afobada
+const GALAXY_GROW_MS    = 3000; // duração da entrada (longe e minúscula → centrada e cheia)
+const STAR_SPAWN_TIME   = 78;   // segundos de música (01:18) — quando a galáxia cospe a Estrela
+let drillPopMul = 1; // multiplicador de escala 0→1 do efeito sumir/reaparecer
+
+const drillGreenLight = new THREE.PointLight(0x22ff55, 0, 9);
+drillGroup.add(drillGreenLight);
+
+function screenToWorldAtZ(clientX, clientY, targetZ) {
+  const ndcX =  (clientX / window.innerWidth)  * 2 - 1;
+  const ndcY = -(clientY / window.innerHeight) * 2 + 1;
+  const vec = new THREE.Vector3(ndcX, ndcY, 0.5).unproject(camera);
+  const dir = vec.sub(camera.position).normalize();
+  const t   = (targetZ - camera.position.z) / dir.z;
+  return camera.position.clone().add(dir.multiplyScalar(t));
+}
+
+// O modelo 3D da broca vem de Lib/drill-obj-data.js (carregado como
+// <script src>, igual three.min.js/OBJLoader.js/dragonball.js — ver
+// esse arquivo pra mais detalhes) em vez de um .obj carregado via
+// OBJLoader.load(), porque abrir o nexus.html direto via file:// bloqueia
+// fetch/XHR — e é isso que OBJLoader.load() usa por baixo dos panos.
+// <script src> não passa por fetch/XHR, então funciona em file:// do
+// mesmo jeito que os outros arquivos de Lib/ já funcionam.
+const DRILL_OBJ_TEXT = window.DRILL_OBJ_TEXT;
+
+try {
+  const obj = new THREE.OBJLoader().parse(DRILL_OBJ_TEXT);
+  obj.traverse(function (child) {
+    if (child.isMesh) child.material = drillMat;
+  });
+  // Ajusta escala pro tamanho alvo e ancora o TOPO do modelo em Y=0 (não o centro) —
+  // assim ela sempre "pendura" do mesmo ponto fixo, e crescer só estica a base
+  // pra baixo, nunca desloca o topo. (Erro anterior: subtraía o centro sem
+  // escalar pela mesma proporção do fitScale, deixando o modelo inteiro
+  // "flutuando" abaixo da origem — crescer multiplicava tudo mais pra baixo.)
+  const box       = new THREE.Box3().setFromObject(obj);
+  const altura    = box.getSize(new THREE.Vector3()).y || 1;
+  const fitScale  = ALVO_ALTURA / altura;
+  obj.position.set(-fitScale * box.getCenter(new THREE.Vector3()).x, -fitScale * box.max.y, -fitScale * box.getCenter(new THREE.Vector3()).z);
+  obj.scale.setScalar(fitScale);
+
+  // Cone de brilho interno — antes era um triângulo achatado (só ficava certo
+  // de um ângulo); um cone de verdade fica correto vista de qualquer lado.
+  // Mesma região onde o triângulo estava. Nasce invisível; só aparece ao acordar.
+  drillGlowMat = new THREE.MeshBasicMaterial({
+    color: 0x33ff77, transparent: true, opacity: 0,
+    blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false, side: THREE.DoubleSide
+  });
+  const glowCone = new THREE.Mesh(new THREE.ConeGeometry(0.11, 1.75, 24), drillGlowMat);
+  glowCone.position.set(0, 1.15, 0);
+  glowCone.renderOrder = 10;
+  obj.add(glowCone);
+
+  drillMesh = obj;
+  drillSpin.add(obj);
+} catch (err) {
+  console.warn('Broca não pôde ser interpretada:', err);
+}
+
+/* Tempestade Espiral — galáxia de partículas verdes que nasce no lugar onde a
+   broca dormia (a origem, mesmo ponto do "pontinho" em repouso) assim que ela
+   acorda. Nasce longe e minúscula, cresce até se estabelecer ali, girando pra
+   sempre — devagar e majestosa, ao contrário do giro rápido e pessoal da broca. */
+let galaxyGroup = null, galaxyGrowStart = null;
+let starSpawned = false;
+(function buildGalaxy() {
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const cx = c.getContext('2d');
+  const grad = cx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  grad.addColorStop(0,    'rgba(255,255,255,1)');
+  grad.addColorStop(0.35, 'rgba(180,255,200,0.85)');
+  grad.addColorStop(1,    'rgba(57,255,122,0)');
+  cx.fillStyle = grad; cx.fillRect(0, 0, 64, 64);
+  const spriteTex = new THREE.CanvasTexture(c);
+
+  const positions = new Float32Array(GALAXY_PARTICLES * 3);
+  const colors    = new Float32Array(GALAXY_PARTICLES * 3);
+  const inner = new THREE.Color(0xF3D989); // núcleo dourado — ecoa a paleta do site
+  const outer = new THREE.Color(0x39FF7A); // ponta dos braços — o verde da broca
+
+  for (let i = 0; i < GALAXY_PARTICLES; i++) {
+    const r      = Math.pow(Math.random(), 1.5) * GALAXY_RADIUS; // mais denso perto do centro
+    const branch = (i % GALAXY_ARMS) * (Math.PI * 2 / GALAXY_ARMS);
+    const twist  = r * GALAXY_TWIST;
+    const spread = (1 - r / GALAXY_RADIUS) * 0.3 + 0.05;
+    const rx = (Math.random() - 0.5) * spread * r;
+    const ry = (Math.random() - 0.5) * spread * 0.3;
+    const rz = (Math.random() - 0.5) * spread * r;
+
+    const i3 = i * 3;
+    positions[i3]     = Math.cos(branch + twist) * r + rx;
+    positions[i3 + 1] = ry;
+    positions[i3 + 2] = Math.sin(branch + twist) * r + rz;
+
+    const mixed = inner.clone().lerp(outer, r / GALAXY_RADIUS);
+    colors[i3] = mixed.r; colors[i3 + 1] = mixed.g; colors[i3 + 2] = mixed.b;
+  }
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute('color',    new THREE.BufferAttribute(colors, 3));
+
+  const mat = new THREE.PointsMaterial({
+    size: 0.06, map: spriteTex, transparent: true, depthWrite: false,
+    vertexColors: true, blending: THREE.AdditiveBlending
+  });
+
+  galaxyGroup = new THREE.Group();
+  galaxyGroup.add(new THREE.Points(geo, mat));
+  galaxyGroup.visible = false;
+  scene.add(galaxyGroup);
+})();
+
+function spawnGalaxy() {
+  galaxyGroup.visible = true;
+  galaxyGroup.position.z = -14;   // nasce bem ao fundo
+  galaxyGroup.scale.setScalar(0.04);
+  galaxyGrowStart = clock.elapsedTime;
+}
+
+// ————— Ponte pro confronto com M.A.L.I.K. (malik-batalha.js) —————
+// Isolada de propósito: só mexe no ritmo de giro da broca e da galáxia
+// e garante a tempestade visível (reaproveitando spawnGalaxy() já
+// existente) — nunca toca em drillPhase, posição ou na cor do drillMat,
+// pra não interferir na animação de invocação de verdade.
+window.NexusMalikBridge = {
+  sequestrarBroca: function () {
+    brocaSequestrada = true;
+    if (galaxyGroup && !galaxyGroup.visible) spawnGalaxy();
+  },
+  liberarBroca: function () {
+    brocaSequestrada = false;
+  },
+  // Cenário B: a broca resiste por um instante (pulso de força, acima
+  // até do ritmo do sequestro) antes de se soltar de vez.
+  libertarComForca: function (duracaoMs) {
+    if (galaxyGroup && !galaxyGroup.visible) spawnGalaxy();
+    brocaLibertando = true;
+    setTimeout(function () {
+      brocaLibertando = false;
+      brocaSequestrada = false;
+    }, duracaoMs || 600);
+  }
+};
+
+let drillAudio = null;
+function awakenDrill() {
+  drillAwake = true;
+  drillPhase = 'lunge';
+  phaseStart = clock.elapsedTime;
+  drillTiltStart = drillTilt.quaternion.clone(); // de onde ela estava disfarçada — endireita suave, não num corte seco
+  spawnGalaxy();
+  if (!drillAudio) drillAudio = new Audio('Assets/libera-me-from-hell.mp3');
+  drillAudio.currentTime = 0;
+  drillAudio.volume = 0.75;
+  drillAudio.play().catch(function () {});
+  // só agora libera-me-from-hell está tocando de verdade — se o painel da
+  // Canção da Tempestade já estiver aberto neste instante, atualiza o
+  // texto dele pra admiração na hora (ver window.aoBrocaComecouATocar,
+  // definido junto do painel).
+  if (typeof window.aoBrocaComecouATocar === 'function') window.aoBrocaComecouATocar();
+}
+
+// Mostra a invocação (notas + texto) e só chama onDone (awakenDrill) quando
+// ela some — o lunge nunca começa por baixo da mensagem.
+const invocationEl = document.getElementById('drill-invocation');
+function showInvocationMessage(onDone) {
+  invocationEl.classList.add('show');
+  setTimeout(function () {
+    invocationEl.classList.remove('show');
+    setTimeout(onDone, INVOCATION_FADE_MS);
+  }, INVOCATION_HOLD_MS);
+}
+
+// A Canção da Tempestade (painel dourado, só existe depois dos 3
+// fragmentos encontrados) nunca deve tocar junto com o som do despertar
+// da broca — se ela estiver tocando neste instante, window.aoTempestadeEspiralDisparar
+// (definido junto do painel, lá embaixo) pausa e comenta. Checagem segura
+// mesmo se esse painel nunca tiver sido criado nesta visita.
+function aoSequenciaEspiralCompleta() {
+  if (typeof window.aoTempestadeEspiralDisparar === 'function') window.aoTempestadeEspiralDisparar();
+  showInvocationMessage(awakenDrill);
+}
+
+// Clique nela já ancorada ao lado do título: para a música e o giro, mas
+// mantém o tamanho conquistado e o brilho continua pulsando.
+function toggleDrillPause() {
+  if (drillPhase !== 'docked') return;
+  drillPaused = !drillPaused;
+  if (!drillAudio) return;
+  if (drillPaused) drillAudio.pause();
+  else drillAudio.play().catch(function () {});
+}
+
+function hitDrill(e) {
+  if (drillPhase !== 'docked') return false;
+  const pt = ptFrom(e), rect = cnv.getBoundingClientRect();
+  mouse.x =  ((pt.clientX - rect.left) / rect.width)  * 2 - 1;
+  mouse.y = -((pt.clientY - rect.top)  / rect.height) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  return raycaster.intersectObject(drillGroup, true).length > 0;
+}
+
+/* Gatilho secreto — Song of Storms tocada no teclado (A, Baixo, Cima, A, Baixo, Cima).
+   A vira Espaço, já que é o botão de ação/confirmação, igual o A no jogo. */
+(function () {
+  const seq = ['Space','ArrowDown','ArrowUp','Space','ArrowDown','ArrowUp'];
+  let idx = 0;
+  window.addEventListener('keydown', function (e) {
+    const tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if (e.code === 'Space') e.preventDefault();
+    const tecla = e.code;
+    if (tecla === seq[idx]) {
+      idx++;
+      if (idx === seq.length) { idx = 0; if (drillPhase === 'sleep') aoSequenciaEspiralCompleta(); }
+    } else {
+      idx = (tecla === seq[0]) ? 1 : 0;
+    }
+  });
+})();
+
+/* Mesmo gatilho, agora em toque — não tem teclado no mobile, então o A/Baixo/Cima
+   vira toque/deslizar-baixo/deslizar-cima (a mesma lógica de tocar a ocarina
+   movendo o direcional, só que com o dedo). Roda em paralelo ao listener de
+   teclado, sem checar se é mobile — cada aparelho só dispara o que tem. */
+(function () {
+  const seq = ['tap','swipe-down','swipe-up','tap','swipe-down','swipe-up'];
+  let idx = 0;
+  let startX = 0, startY = 0, startTime = 0;
+
+  window.addEventListener('touchstart', function (e) {
+    if (e.touches.length !== 1) return; // ignora multi-touch (pinch, etc.)
+    const t = e.touches[0];
+    startX = t.clientX; startY = t.clientY; startTime = performance.now();
+  }, { passive: true });
+
+  window.addEventListener('touchend', function (e) {
+    const t = e.changedTouches[0];
+    if (!t) return;
+    const dt = performance.now() - startTime;
+    if (dt > GESTURE_MAX_MS) return; // devagar demais — ignora, não conta como gesto nenhum
+
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+    let gesto = null;
+    if (Math.abs(dx) < TAP_MAX_MOVE && Math.abs(dy) < TAP_MAX_MOVE) {
+      gesto = 'tap';
+    } else if (Math.abs(dy) > SWIPE_MIN_DIST && Math.abs(dy) > Math.abs(dx) * 1.5) {
+      gesto = dy > 0 ? 'swipe-down' : 'swipe-up';
+    }
+    if (!gesto) return; // gesto ambíguo (diagonal, horizontal...) — ignora, não reseta a sequência
+
+    if (gesto === seq[idx]) {
+      idx++;
+      if (idx === seq.length) { idx = 0; if (drillPhase === 'sleep') aoSequenciaEspiralCompleta(); }
+    } else {
+      idx = (gesto === seq[0]) ? 1 : 0;
+    }
+  }, { passive: true });
+})();
+
+/* ═══════════════════════════════════════════
+   GEOMETRIAS DOS SÍMBOLOS
+═══════════════════════════════════════════ */
+const sc = 0.85; // canônico e fixo — responsividade aplicada via group.scale, não na geometria
+
+function stdMat(color, emissive, ei) {
+  return new THREE.MeshStandardMaterial({ color, emissive, emissiveIntensity: ei !== undefined ? ei : 0.65, roughness: 0.38, metalness: 0.72, side: THREE.DoubleSide });
+}
+
+function ext(shape, depth, bevel, curveSegments) {
+  depth  = depth  !== undefined ? depth  : 0.22;
+  bevel  = bevel  !== undefined ? bevel  : true;
+  const opts = { depth, bevelEnabled: bevel, bevelThickness: bevel ? 0.04 : 0, bevelSize: bevel ? 0.02 : 0, bevelSegments: bevel ? 2 : 0 };
+  if (curveSegments !== undefined) opts.curveSegments = curveSegments; // só usado onde uma curva vai ser esticada bem além do tamanho de repouso (ex.: pupila de Valtheris)
+  return new THREE.ExtrudeGeometry(shape, opts);
+}
+
+/* ── ZELDA: Triforce ── */
+function createTriforce() {
+  const group = new THREE.Group();
+  // Base: pedra cinza. Hover: dourada (via setHover)
+  const m   = stdMat(0x848488, 0x404044, 0.38);
+  const R   = 0.50 * sc;
+  const SQ3 = Math.sqrt(3);
+  // Triângulo equilátero: todos os vértices a distância R do centróide
+  function tri(cx, cy) {
+    const s = new THREE.Shape();
+    s.moveTo(cx,             cy + R);           // topo
+    s.lineTo(cx + R*SQ3/2,  cy - R/2);         // baixo-dir
+    s.lineTo(cx - R*SQ3/2,  cy - R/2);         // baixo-esq
+    s.closePath();
+    return new THREE.Mesh(ext(s, 0.22), m);
+  }
+  // Centros nos vértices de um triângulo equilátero de circumradius R
+  // → os três triângulos se encaixam sem lacunas nem sobreposições
+  group.add(tri(0,           R));    // topo
+  group.add(tri(-R*SQ3/2,  -R/2)); // baixo-esq
+  group.add(tri( R*SQ3/2,  -R/2)); // baixo-dir
+  return group;
+}
+
+/* ── VALTHERIS: Olho ── */
+function createValtherisEye() {
+  const group = new THREE.Group();
+  const s0 = sc * 1.02;
+  const outer = new THREE.Shape();
+  outer.moveTo(-1.05*s0, 0);
+  outer.bezierCurveTo(-1.05*s0, 0.60*s0, 0, 0.82*s0, 1.05*s0, 0);
+  outer.bezierCurveTo(0, -0.82*s0, -1.05*s0, -0.60*s0, -1.05*s0, 0);
+  const ih = new THREE.Path(); ih.absellipse(0, 0, 0.56*s0, 0.56*s0, 0, Math.PI*2, false);
+  outer.holes.push(ih);
+  group.add(new THREE.Mesh(ext(outer, 0.12, false, 48), stdMat(0x7A1428, 0x4A0818, 0.55)));
+
+  const iris = new THREE.Shape(); iris.absellipse(0, 0, 0.56*s0, 0.56*s0, 0, Math.PI*2, false);
+  const ph = new THREE.Path(); ph.absellipse(0, 0, 0.21*s0, 0.42*s0, 0, Math.PI*2, false);
+  iris.holes.push(ph);
+  group.add(new THREE.Mesh(ext(iris, 0.15, false, 48), stdMat(0xCC4060, 0x9A2040)));
+
+  // curveSegments mais alto aqui é o que importa de verdade: a pupila estica até
+  // ~2.9x no clique (ver triggerValtheris), e com os 12 segmentos padrão do
+  // ExtrudeGeometry isso fica visivelmente poligonal — "pixels" maiores que os
+  // do resto do olho, que nunca é esticado.
+  const pupil = new THREE.Shape(); pupil.absellipse(0, 0, 0.21*s0, 0.42*s0, 0, Math.PI*2, false);
+  group.add(new THREE.Mesh(ext(pupil, 0.20, false, 48), stdMat(0x08010F, 0x040008, 0.05)));
+  // children[2] = pupila — usado na animação de dilatação
+  return group;
+}
+
+/* ── DIÁRIO: Rosa dos Ventos ── */
+function createCompassRose() {
+  const group = new THREE.Group();
+  const m = stdMat(0x9A6A20, 0x6A4010);
+  [[0,1.0*sc],[180,1.0*sc],[90,0.80*sc],[270,0.80*sc]].forEach(function(pair) {
+    var deg = pair[0], len = pair[1];
+    const s = new THREE.Shape();
+    s.moveTo(-0.13*sc, 0.08*sc); s.lineTo(0, len); s.lineTo(0.13*sc, 0.08*sc); s.lineTo(0, 0.32*sc); s.closePath();
+    const mesh = new THREE.Mesh(ext(s, 0.18), m);
+    mesh.rotation.z = -deg*Math.PI/180; group.add(mesh);
+  });
+  [45,135,225,315].forEach(function(deg) {
+    const s = new THREE.Shape();
+    s.moveTo(-0.085*sc,0.05*sc); s.lineTo(0,0.60*sc); s.lineTo(0.085*sc,0.05*sc); s.lineTo(0,0.22*sc); s.closePath();
+    const mesh = new THREE.Mesh(ext(s,0.10,false), stdMat(0x9A6A20,0x4A3008,0.28));
+    mesh.rotation.z = -deg*Math.PI/180; group.add(mesh);
+  });
+  const cs = new THREE.Shape(); cs.absellipse(0,0,0.13*sc,0.13*sc,0,Math.PI*2,false);
+  group.add(new THREE.Mesh(ext(cs,0.28,false), stdMat(0xE8B86D,0xA07828)));
+  return group;
+}
+
+/* ── LIVRO: Incessans Aestimandi ── */
+function createBook() {
+  const group = new THREE.Group();
+  const m = stdMat(0x3A6080, 0x1A3848);
+  function page(sg) {
+    const s = new THREE.Shape();
+    s.moveTo(0, 0.82*sc);
+    s.bezierCurveTo(sg*0.30*sc, 0.80*sc, sg*0.90*sc, 0.90*sc, sg*1.05*sc, 0.84*sc);
+    s.lineTo(sg*1.05*sc, -0.84*sc);
+    s.bezierCurveTo(sg*0.90*sc, -0.90*sc, sg*0.30*sc, -0.80*sc, 0, -0.68*sc);
+    s.closePath();
+    return new THREE.Mesh(ext(s, 0.10, false), m);
+  }
+  var pageR = page(1);  pageR.userData.isPageRight = true;
+  var pageL = page(-1); pageL.userData.isPageLeft  = true;
+  pageR.rotation.y = -Math.PI / 2; // livro nasce fechado — só abre ao chegar no centro
+  pageL.rotation.y =  Math.PI / 2;
+  group.add(pageR, pageL);
+  const ss = new THREE.Shape();
+  ss.moveTo(-0.04*sc,0.82*sc); ss.lineTo(0.04*sc,0.82*sc); ss.lineTo(0.04*sc,-0.68*sc); ss.lineTo(-0.04*sc,-0.68*sc); ss.closePath();
+  group.add(new THREE.Mesh(ext(ss, 0.28, false), stdMat(0x8EB5D8, 0x4A6880)));
+  return group;
+}
+
+/* ── ÍCARO: Sol Caído ── */
+function icaroRayShape(len) {
+  const s = new THREE.Shape();
+  s.moveTo(-0.08*sc, 0.38*sc); s.lineTo(0, 0.38*sc+len); s.lineTo(0.08*sc, 0.38*sc); s.lineTo(0, 0.50*sc); s.closePath();
+  return ext(s, 0.10, false);
+}
+
+function createIcaro() {
+  const group  = new THREE.Group();
+  const mCore  = stdMat(0x8B4A1E, 0x6B3610, 0.50);
+  const mRay   = stdMat(0x6B3A14, 0x452208, 0.30);
+  const mBreak = stdMat(0x241608, 0x120A04, 0.10);
+  const cs = new THREE.Shape(); cs.absellipse(0,0,0.38*sc,0.38*sc,0,Math.PI*2,false);
+  const core = new THREE.Mesh(ext(cs, 0.25), mCore);
+  core.userData.isCore = true;
+  group.add(core);
+  for (var i = 0; i < 8; i++) {
+    var broken = (i===3), isShort = (i%2===1);
+    var len = broken ? 0.25*sc : (isShort ? 0.45*sc : 0.65*sc);
+    const mesh = new THREE.Mesh(icaroRayShape(len), broken ? mBreak : mRay);
+    mesh.rotation.z = -(i*45)*Math.PI/180;
+    if (broken) { mesh.userData.isBrokenRay = true; mesh.userData.brokenLen = 0.25*sc; mesh.userData.healthyLen = 0.65*sc; }
+    group.add(mesh);
+  }
+  return group;
+}
+
+/* ── COVERS: Máscara do Fantasma ── */
+function createCoversMask() {
+  const group = new THREE.Group();
+  const lav = 0xE3D6F0, lavEmis = 0x9B7FD4;
+
+  // silhueta da meia-máscara, com o topo quebrado — mesmo desenho do favicon da página
+  const s = new THREE.Shape();
+  s.moveTo(0, 0.7833);
+  s.lineTo(-0.2333, 0.8167);
+  s.lineTo(-0.1667, 0.6833);
+  s.lineTo(-0.4,    0.7167);
+  s.lineTo(-0.3333, 0.5667);
+  s.lineTo(-0.5667, 0.55);
+  s.lineTo(-0.4833, 0.4167);
+  s.lineTo(-0.6667, 0.3667);
+  s.lineTo(-0.5833, 0.2333);
+  s.lineTo(-0.6333, 0.1167);
+  s.bezierCurveTo(-0.6333, -0.2833, -0.4, -0.6167, 0, -0.7833);
+  s.lineTo(0, 0.7833); // costura reta, onde a máscara encontraria o rosto
+
+  const eyeHole = new THREE.Path();
+  eyeHole.absellipse(-0.3167, 0.1833, 0.1433, 0.09, 0, Math.PI*2, false);
+  s.holes.push(eyeHole);
+
+  const mask = new THREE.Mesh(ext(s, 0.16, false), stdMat(lav, lavEmis, 0.6));
+  mask.userData.isMask = true;
+  group.add(mask);
+
+  // fio fino marcando a costura central, como no ícone
+  const seamShape = new THREE.Shape();
+  seamShape.moveTo(-0.012, 0.78); seamShape.lineTo(0.012, 0.78);
+  seamShape.lineTo(0.012, -0.78); seamShape.lineTo(-0.012, -0.78);
+  seamShape.lineTo(-0.012, 0.78);
+  const seam = new THREE.Mesh(ext(seamShape, 0.20, false), stdMat(0x241f33, 0x120f1a, 0.15));
+  seam.userData.isSeam = true;
+  group.add(seam);
+
+  // a outra metade do rosto — pele nua, sem máscara — some até a convergência ao centro,
+  // quando aparece ao lado da máscara para formar o rosto completo
+  const skin = 0x2a2438, skinEmis = 0x1b1826;
+
+  const faceShape = new THREE.Shape();
+  faceShape.moveTo(0, 0.7833);
+  faceShape.bezierCurveTo(0.4,    0.7833,  0.6333, 0.45,    0.6333, 0.1167);
+  faceShape.bezierCurveTo(0.6333, -0.2833, 0.4,    -0.6167, 0,      -0.7833);
+  faceShape.lineTo(0, 0.7833);
+  const face = new THREE.Mesh(ext(faceShape, 0.14, false), stdMat(skin, skinEmis, 0.25));
+  face.userData.isFaceReveal = true;
+  face.material.transparent = true; face.material.opacity = 0;
+  group.add(face);
+
+  const eyeShape = new THREE.Shape();
+  eyeShape.absellipse(0.3167, 0.1833, 0.1267, 0.0767, 0, Math.PI*2, false);
+  const eye = new THREE.Mesh(ext(eyeShape, 0.16, false), stdMat(0x08070a, 0x000000, 0.1));
+  eye.userData.isFaceReveal = true;
+  eye.material.transparent = true; eye.material.opacity = 0;
+  group.add(eye);
+
+  const mouthShape = new THREE.Shape();
+  mouthShape.moveTo(-0.2, -0.4213);
+  mouthShape.bezierCurveTo(-0.1, -0.4813, 0.1, -0.4813, 0.2, -0.4213);
+  mouthShape.lineTo(0.2, -0.4453);
+  mouthShape.bezierCurveTo(0.1, -0.5053, -0.1, -0.5053, -0.2, -0.4453);
+  mouthShape.lineTo(-0.2, -0.4213);
+  const mouth = new THREE.Mesh(ext(mouthShape, 0.16, false), stdMat(0x4a3d63, 0x241f33, 0.2));
+  mouth.userData.isFaceReveal = true;
+  mouth.material.transparent = true; mouth.material.opacity = 0;
+  group.add(mouth);
+
+  return group;
+}
+
+/* ── RECORDAÇÕES: três fotos em leque — mesma pose da pilha da própria página ── */
+function recordacoesSquareShape(size) {
+  const h = size / 2;
+  const s = new THREE.Shape();
+  s.moveTo(-h, -h); s.lineTo(h, -h); s.lineTo(h, h); s.lineTo(-h, h); s.lineTo(-h, -h);
+  return s;
+}
+
+function createRecordacoesStack() {
+  const group = new THREE.Group();
+  const paper = 0xF2ECDD, paperEmis = 0x3A352C;
+  const accent = 0x5EC4BB, accentEmis = 0x2F6B66;
+
+  const poses = [
+    { rot: -0.30, x: -0.20, y:  0.07, z: 0.00 },
+    { rot:  0.22, x:  0.19, y: -0.06, z: 0.05 },
+    { rot: -0.05, x: -0.01, y:  0.02, z: 0.10 },
+  ];
+
+  poses.forEach(function(p, i) {
+    // moldura ciano, um pouco maior, espiando atrás — a mesma pista de cor da página
+    const back = new THREE.Mesh(ext(recordacoesSquareShape(0.50), 0.05, false), stdMat(accent, accentEmis, 0.5));
+    back.position.set(p.x, p.y, p.z - 0.035);
+    back.rotation.z = p.rot;
+    back.userData.isBack = true; back.userData.photoIndex = i;
+    group.add(back);
+
+    // a "foto" em si — papel claro, na frente
+    const front = new THREE.Mesh(ext(recordacoesSquareShape(0.42), 0.06, false), stdMat(paper, paperEmis, 0.28));
+    front.position.set(p.x, p.y, p.z);
+    front.rotation.z = p.rot;
+    front.userData.isFront = true; front.userData.photoIndex = i;
+    group.add(front);
+  });
+
+  return group;
+}
+
+/* ── ORIGEM: Ponto de Origem ── */
+function origemRingShape(rO, rI) {
+  const s = new THREE.Shape();
+  s.absellipse(0, 0, rO, rO, 0, Math.PI*2, false);
+  const h = new THREE.Path(); h.absellipse(0, 0, rI, rI, 0, Math.PI*2, false);
+  s.holes.push(h);
+  return s;
+}
+
+function createOrigemPoint() {
+  const group = new THREE.Group();
+  const gold = 0xD9B776, goldEmis = 0x8A6B34;
+
+  // o ponto central — de onde tudo mais se espalhou
+  const coreShape = new THREE.Shape(); coreShape.absellipse(0, 0, 0.17*sc, 0.17*sc, 0, Math.PI*2, false);
+  const core = new THREE.Mesh(ext(coreShape, 0.32, false), stdMat(gold, goldEmis, 0.85));
+  core.userData.isCore = true;
+  group.add(core);
+
+  // três ondas concêntricas, cada uma mais fina e mais discreta que a anterior
+  const rings = [
+    { rO:0.36*sc, rI:0.29*sc, depth:0.20, ei:0.55 },
+    { rO:0.58*sc, rI:0.53*sc, depth:0.15, ei:0.34 },
+    { rO:0.82*sc, rI:0.78*sc, depth:0.11, ei:0.20 },
+  ];
+  rings.forEach(function(r, i) {
+    const mesh = new THREE.Mesh(ext(origemRingShape(r.rO, r.rI), r.depth, false), stdMat(gold, goldEmis, r.ei));
+    mesh.userData.isRing = true; mesh.userData.ringIndex = i;
+    group.add(mesh);
+  });
+
+  return group;
+}
+
+/* ── M.A.L: Estrela — mesmo desenho de 5 pontas do favicon da página,
+   em verde-sálvia (a cor de marca do M.A.L). Só a estrela, sem halo —
+   o halo em disco ficava parecendo um vidro na frente dela. ── */
+function createStar() {
+  const group = new THREE.Group();
+  const outerR = 0.62*sc, innerR = outerR * 0.39, pts = 5;
+  const s = new THREE.Shape();
+  for (var i = 0; i < pts*2; i++) {
+    var ang = (Math.PI/pts)*i - Math.PI/2; // ponta pra cima, igual ao favicon
+    var r = (i % 2 === 0) ? outerR : innerR;
+    var x = Math.cos(ang)*r, y = Math.sin(ang)*r;
+    if (i === 0) s.moveTo(x, y); else s.lineTo(x, y);
+  }
+  s.closePath();
+  const star = new THREE.Mesh(ext(s, 0.16), stdMat(0x8FCBB0, 0x5FA88A, 0.7));
+  star.userData.isStar = true;
+  group.add(star);
+
+  return group;
+}
+
+/* ═══════════════════════════════════════════
+   SISTEMA ORBITAL
+═══════════════════════════════════════════ */
+
+const symbolDefs = [
+  { id:'zelda',     tag:'Jogo',        title:'The Legend of Zelda',  cta:'Entrar \u2192', color:'#D4AA40', sealed:false, href:'TLOZ/Tloz.html',                 orbit:{ r:3.2, speed:0.35, tx: 20, tz:  5 }, create:createTriforce     },
+  { id:'valtheris', tag:'RPG de Mesa', title:'Valtheris',            cta:'Entrar \u2192', color:'#CC4060', sealed:false, href:'Valtheris/Valtheris%20hub.html',    orbit:{ r:4.0, speed:0.25, tx:-30, tz:-10 }, create:createValtherisEye },
+  { id:'diary',     tag:'Mem\u00f3rias',    title:'Di\u00e1rio de Mem\u00f3rias',   cta:'Entrar \u2192', color:'#E8B86D', sealed:false, href:'Di%C3%A1rio/Di%C3%A1rio.html',             orbit:{ r:2.8, speed:0.45, tx: 42, tz: 15 }, create:createCompassRose  },
+  { id:'book',      tag:'Escrita',     title:'Incessans Aestimandi', cta:'Entrar \u2192', color:'#8EB5D8', sealed:false, href:'Livro/Incessans%20Aestimandi.html', orbit:{ r:4.5, speed:0.20, tx: 12, tz: -8 }, create:createBook         },
+  { id:'icaro',     tag:'Cat\u00e1logo',    title:'\u00cdcarus Reborn',         cta:'Despertar \u2192',    color:'#D2691E', sealed:false,  href:'Icarus/icarus.html',                              orbit:{ r:3.7, speed:0.30, tx:-18, tz: 22 }, create:createIcaro        },
+  { id:'origem',    tag:'Retrato',     title:'Antes do Autor-Livro', cta:'Entrar \u2192', color:'#D9B776', sealed:false, href:'Origem/Origem.html',                orbit:{ r:3.4, speed:0.28, tx: 33, tz:-18 }, create:createOrigemPoint  },
+  { id:'covers',    tag:'M\u00fasica',      title:'Covers',              cta:'Ouvir \u2192',  color:'#9B7FD4', sealed:false, href:'Covers/covers.html',                orbit:{ r:3.9, speed:0.33, tx:-40, tz:  6 }, create:createCoversMask   },
+  { id:'recordacoes', tag:'Jogos',     title:'Recorda\u00e7\u00f5es',    cta:'Abrir \u2192',  color:'#5EC4BB', sealed:false, href:'Recorda%C3%A7%C3%B5es/recorda%C3%A7%C3%B5es.html', orbit:{ r:3.6, speed:0.31, tx:-24, tz: 18 }, create:createRecordacoesStack },
+];
+
+const pivots    = [];
+const allMeshes = [];
+
+symbolDefs.forEach(function(def, i) {
+  const pivot = new THREE.Object3D();
+  pivot.rotation.x = def.orbit.tx * Math.PI/180;
+  pivot.rotation.z = def.orbit.tz * Math.PI/180;
+  pivot.rotation.y = (i*72) * Math.PI/180;
+
+  const group = def.create();
+  group.position.set(def.orbit.r * orbitScale, 0, 0);
+  group.scale.setScalar(responsiveScale);
+  group.userData = { id: def.id, def: def, baseScale: responsiveScale };
+
+  pivot.add(group);
+  pivot.userData = { speed: def.orbit.speed, group: group, frozen: false };
+  scene.add(pivot);
+  pivots.push(pivot);
+
+  group.traverse(function(o) {
+    if (o.isMesh) {
+      allMeshes.push(o);
+      o.userData.baseEI       = o.material.emissiveIntensity;
+      o.userData.baseColor    = o.material.color.getHex();
+      o.userData.baseEmissive = o.material.emissive.getHex();
+    }
+  });
+});
+
+// Voltou pra cá perseguido (?malikQuebrou=id, gravado pelo malik.js antes
+// de redirecionar) — o símbolo daquela página treme, perde a cor e some.
+// Passageiro só: não mexe em sealed, não persiste — um F5 mostra ele normal.
+(function () {
+  var alvo = new URLSearchParams(location.search).get('malikQuebrou');
+  if (!alvo) return;
+  try { history.replaceState(null, '', location.pathname); } catch (e) {}
+
+  var pivotAlvo = pivots.filter(function (p) { return p.userData.group.userData.id === alvo; })[0];
+  if (!pivotAlvo) return;
+  var grupo = pivotAlvo.userData.group;
+  var baseScale = grupo.userData.baseScale || 1;
+
+  var materiaisOriginais = [];
+  grupo.traverse(function (o) {
+    if (o.isMesh) materiaisOriginais.push({ mesh: o, cor: o.material.color.getHex(), emissivo: o.material.emissive.getHex() });
+  });
+
+  var inicio = null;
+  var DURACAO = 2200;
+  var corAlvo = new THREE.Color(0x1a0508);
+  var emisAlvo = new THREE.Color(0xff2b3a);
+
+  function passoQuebra(t) {
+    if (inicio === null) inicio = t;
+    var decorrido = t - inicio;
+    var prog = Math.min(1, decorrido / DURACAO);
+
+    grupo.rotation.z = Math.sin(decorrido / 40) * 0.35 * (1 - prog * 0.3);
+    grupo.rotation.x = Math.cos(decorrido / 55) * 0.25 * (1 - prog * 0.3);
+
+    materiaisOriginais.forEach(function (m) {
+      m.mesh.material.color.copy(new THREE.Color(m.cor)).lerp(corAlvo, prog);
+      m.mesh.material.emissive.copy(new THREE.Color(m.emissivo)).lerp(emisAlvo, Math.min(1, prog * 1.6));
+    });
+
+    grupo.scale.setScalar(Math.max(0.0001, (1 - prog) * baseScale));
+
+    if (prog < 1) requestAnimationFrame(passoQuebra);
+    else grupo.visible = false;
+  }
+  requestAnimationFrame(passoQuebra);
+})();
+
+/* A Estrela do M.A.L não nasce com os outros — a galáxia "cospe" ela aos
+   01:18 de música (ver checagem no loop de animação). Mesmo padrão de
+   pivot/group dos símbolos normais, só que criada tempos depois e animada
+   voando de dentro da galáxia até seu raio orbital, crescendo no caminho. */
+function spawnStar() {
+  if (pivots.some(function(p) { return p.userData.group.userData.id === 'mal'; })) return; // já nasceu
+
+  const def = {
+    id:'mal', tag:'Perfil', title:'M.A.L', cta:'Ver \u2192', color:'#5FA88A', sealed:false,
+    href:'Mal/mal.html', orbit:{ r:3.0, speed:0.38, tx:8, tz:-15 }
+  };
+
+  const pivot = new THREE.Object3D();
+  pivot.rotation.x = def.orbit.tx * Math.PI/180;
+  pivot.rotation.z = def.orbit.tz * Math.PI/180;
+  pivot.rotation.y = Math.random() * Math.PI * 2; // nasce virada pra um ponto aleatório da órbita
+
+  const group = createStar();
+  group.scale.setScalar(0); // nasce do nada, cresce ao ser cuspida
+  group.userData = { id: def.id, def: def, baseScale: responsiveScale };
+
+  pivot.add(group);
+  pivot.userData = { speed: def.orbit.speed, group: group, frozen: false };
+  scene.add(pivot);
+  pivots.push(pivot);
+
+  group.traverse(function(o) {
+    if (o.isMesh) {
+      allMeshes.push(o);
+      o.userData.baseEI       = o.material.emissiveIntensity;
+      o.userData.baseColor    = o.material.color.getHex();
+      o.userData.baseEmissive = o.material.emissive.getHex();
+    }
+  });
+
+  // "Cospe": nasce junto da galáxia (raio 0) e voa pra fora até o raio orbital, crescendo no caminho
+  const finalR = def.orbit.r * orbitScale;
+  const t0 = clock.elapsedTime;
+  const SPIT_DUR = 1.6;
+  (function fly() {
+    const k = Math.min(1, (clock.elapsedTime - t0) / SPIT_DUR);
+    const e = 1 - Math.pow(1 - k, 3);
+    group.position.x = finalR * e;
+    group.scale.setScalar(responsiveScale * (k * k * (3 - 2 * k)));
+    if (k < 1) requestAnimationFrame(fly);
+  })();
+}
+
+/* ── Loop de animação ── */
+const clock = new THREE.Clock();
+(function animate() {
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  pivots.forEach(function(piv) {
+    if (piv.userData.frozen) return; // Ícaro em reconstrução — pausa órbita e giro próprio
+    piv.rotation.y += piv.userData.speed * dt;
+    const g = piv.userData.group;
+    g.rotation.y += 0.38 * dt;
+    g.rotation.x += 0.14 * dt;
+  });
+  if (drillPhase === 'sleep') {
+    // Repouso: a orientação (broca "olhando" pra câmera) já está calculada
+    // em atualizarOrientacaoRepouso() — aqui só gira sobre o próprio eixo.
+    drillSpin.rotation.y += (brocaLibertando ? 4.5 : brocaSequestrada ? 2.2 : 0.18) * dt;
+  } else {
+    const elapsed = clock.elapsedTime - phaseStart;
+    if (drillPhase === 'lunge') {
+      const k = Math.min(1, elapsed / LUNGE_DUR);
+      drillGroup.position.z = LUNGE_DIST * (1 - Math.pow(1 - k, 3)); // em direção à tela/usuário (câmera está em Z positivo)
+      drillTilt.quaternion.slerpQuaternions(drillTiltStart, DRILL_UPRIGHT_Q, k); // endireita suave, não corta seco
+      if (k >= 1) { drillPhase = 'vanish'; phaseStart = clock.elapsedTime; }
+    } else if (drillPhase === 'vanish') {
+      const k = Math.min(1, elapsed / VANISH_DUR);
+      drillPopMul = 1 - k; // encolhe até sumir, parada no mesmo lugar da investida
+      if (k >= 1) { phaseStart = clock.elapsedTime; drillPhase = 'appear'; }
+    } else if (drillPhase === 'appear') {
+      const k = Math.min(1, elapsed / APPEAR_DUR);
+      drillPopMul = k * k * (3 - 2 * k); // reaparece já no novo lugar
+      if (k >= 1) { drillPopMul = 1; drillPhase = 'docked'; }
+    }
+    // giro, tamanho e brilho seguem em todas as fases acordadas (giro pausa se clicada já ancorada)
+    const prog = drillAudio ? Math.min(1, drillAudio.currentTime / DRILL_GROW_SECONDS) : 0;
+    drillTilt.scale.setScalar((1 + prog) * drillPopMul); // 1x → 2x (uma duplicação), multiplicado pelo sumir/reaparecer
+    if (!drillPaused) drillSpin.rotation.y += (brocaLibertando ? DRILL_SPIN_SPEED * 9 : brocaSequestrada ? DRILL_SPIN_SPEED * 5 : DRILL_SPIN_SPEED) * (1 + prog) * dt; // libertando: pulso único de força ao se soltar
+
+    // Tempestade Espiral — nasce longe (no lugar onde a broca dormia) e cresce
+    // até se estabelecer ali, girando devagar e pra sempre.
+    if (galaxyGroup && galaxyGroup.visible) {
+      galaxyGroup.rotation.y += (brocaLibertando ? GALAXY_SPIN_SPEED * 8 : brocaSequestrada ? GALAXY_SPIN_SPEED * 4 : GALAXY_SPIN_SPEED) * dt;
+      if (galaxyGrowStart !== null) {
+        const gk = Math.min(1, (clock.elapsedTime - galaxyGrowStart) * 1000 / GALAXY_GROW_MS);
+        const eased = 1 - Math.pow(1 - gk, 3);
+        galaxyGroup.scale.setScalar(0.04 + eased * 0.96);
+        galaxyGroup.position.z = -14 * (1 - eased);
+        if (gk >= 1) galaxyGrowStart = null;
+      }
+      // aos 01:18 de música, a galáxia cospe a Estrela do M.A.L
+      if (!starSpawned && drillAudio && drillAudio.currentTime >= STAR_SPAWN_TIME) {
+        starSpawned = true;
+        try { spawnStar(); } catch (err) { console.warn('Estrela não pôde nascer:', err); }
+      }
+    }
+
+    // Posição ao lado do título — X acompanha o texto (lado do "S"), Y usa o
+    // rect.top do próprio span: recalculado todo quadro (não é medição única,
+    // então a "fragilidade" das tentativas antigas não se aplica aqui), e segue
+    // a posição real do título em vez de um palpite em % de innerHeight, que só
+    // batia com o header (padding fixo em rem) numa altura de janela específica.
+    // O topo do modelo já fica ancorado em Y=0 (ver o try acima), então o alvo
+    // aqui é só a posição do topo — sem precisar compensar crescimento.
+    if (drillPhase === 'appear' || drillPhase === 'docked') {
+      const span = document.getElementById('nexus-title-text'); // span = só o texto, não o bloco cheio do h1
+      const rect = span ? span.getBoundingClientRect() : null;
+      if (rect) {
+        dockTarget = screenToWorldAtZ(rect.right + 22, rect.top, 0);
+      } else if (!dockTarget) {
+        dockTarget = new THREE.Vector3(2.6, 3.1, 0); // fallback caso o título não seja encontrado
+      }
+      drillGroup.position.copy(dockTarget);
+    }
+
+    const t = clock.elapsedTime;
+    const pulso = 0.5 + Math.sin(t * 3.2) * 0.5; // continua mesmo pausada
+    if (drillGlowMat) drillGlowMat.opacity = Math.min(1, 0.20 + prog * 0.55 + pulso * 0.25);
+    drillGreenLight.intensity = (0.6 + prog * 2.2) * (0.7 + pulso * 0.5);
+  }
+  renderer.render(scene, camera);
+})();
+
+/* ═══════════════════════════════════════════
+   RAYCASTING + HOVER
+═══════════════════════════════════════════ */
+const raycaster  = new THREE.Raycaster();
+const mouse      = new THREE.Vector2(-9, -9);
+const symLabel   = document.getElementById('symbol-label');
+const symFrame   = symLabel.querySelector('.sym-frame');
+const symTag     = symLabel.querySelector('.sym-tag');
+const symTitle   = symLabel.querySelector('.sym-title');
+const symCta     = symLabel.querySelector('.sym-cta');
+let hoveredGroup = null;
+let touchGroup   = null;
+
+function ptFrom(e) {
+  if (e.touches && e.touches.length) return e.touches[0];
+  if (e.changedTouches && e.changedTouches.length) return e.changedTouches[0];
+  return e;
+}
+
+function getSymbol(e) {
+  const pt = ptFrom(e), rect = cnv.getBoundingClientRect();
+  mouse.x =  ((pt.clientX - rect.left) / rect.width)  * 2 - 1;
+  mouse.y = -((pt.clientY - rect.top)  / rect.height) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObjects(allMeshes);
+  if (!hits.length) return null;
+  let obj = hits[0].object;
+  while (obj && !obj.userData.id) obj = obj.parent;
+  return obj || null;
+}
+
+function setHover(group) {
+  if (navegando) return;          // não resetar durante transição de navegação
+  if (hoveredGroup === group) return;
+  if (hoveredGroup) {
+    if (hoveredGroup.userData.def && hoveredGroup.userData.def.id === 'zelda') {
+      hoveredGroup.traverse(function(o) {
+        if (!o.isMesh) return;
+        o.material.color.setHex(o.userData.baseColor);
+        o.material.emissive.setHex(o.userData.baseEmissive);
+        o.material.emissiveIntensity = o.userData.baseEI;
+      });
+    } else {
+      hoveredGroup.traverse(function(o) { if (o.isMesh) o.material.emissiveIntensity = o.userData.baseEI; });
+    }
+  }
+  hoveredGroup = group;
+  if (group) {
+    const def   = group.userData.def;
+    if (def.id === 'zelda') {
+      // Pedra → Ouro
+      group.traverse(function(o) {
+        if (!o.isMesh) return;
+        o.material.color.setHex(0xD4AA40);
+        o.material.emissive.setHex(0xA88020);
+        o.material.emissiveIntensity = 0.88;
+      });
+    } else {
+      const boost = def.sealed ? 1.7 : 2.6;
+      group.traverse(function(o) { if (o.isMesh) o.material.emissiveIntensity = Math.min(o.userData.baseEI * boost, 1.0); });
+    }
+    symTag.textContent   = def.tag;
+    symTitle.textContent = def.title;
+    symCta.textContent   = def.cta;
+    symCta.className     = 'sym-cta ' + (def.sealed ? 'sealed' : 'active');
+    symCta.style.color   = def.sealed ? '' : def.color;
+    symFrame.style.setProperty('--sym-line-color', def.sealed ? 'rgba(180,80,20,.55)' : def.color);
+    symLabel.style.opacity = '1';
+    cnv.style.cursor = def.sealed ? 'default' : 'pointer';
+  } else {
+    symLabel.style.opacity = '0';
+    cnv.style.cursor = 'default';
+  }
+}
+
+let mcnt = 0;
+cnv.addEventListener('mousemove', function(e) {
+  if (navegando) return;
+  if (++mcnt % 2) return;
+  setHover(getSymbol(e));
+});
+cnv.addEventListener('mouseleave', function() { setHover(null); });
+
+/* ═══════════════════════════════════════════
+   TRAVA DE NAVEGAÇÃO
+═══════════════════════════════════════════ */
+let navegando = false;
+function bloquear() { navegando = true; cnv.style.pointerEvents = 'none'; }
+
+/* ═══════════════════════════════════════════
+   REFERÊNCIAS DE OVERLAY
+═══════════════════════════════════════════ */
+const curtain       = document.getElementById('curtain');
+const bookOverlay   = document.getElementById('book-overlay');
+const bookTyped     = bookOverlay.querySelector('.book-typed');
+const bookCursor    = bookOverlay.querySelector('.book-cursor');
+const bookQuestion  = bookOverlay.querySelector('.book-question');
+const diarioOverlay = document.getElementById('diario-overlay');
+const diarioCidade  = diarioOverlay.querySelector('.diario-cidade');
+const diarioAno     = diarioOverlay.querySelector('.diario-ano');
+const diarioFrase   = diarioOverlay.querySelector('.diario-frase');
+const veilOverlay   = document.getElementById('valtheris-overlay');
+const icaroMsg      = document.getElementById('icaro-msg');
+const icaroMain     = icaroMsg.querySelector('.icaro-main');
+const icaroSub      = icaroMsg.querySelector('.icaro-sub');
+const linkDownMsg   = document.getElementById('linkdown-msg');
+
+/* ═══════════════════════════════════════════
+   FUNÇÕES DE TRIGGER
+═══════════════════════════════════════════ */
+
+/* Convergência genérica ao centro — usada por todos os portais.
+   Todo símbolo nasce em position.set(orbit.r, 0, 0) dentro do seu
+   pivot, então animar apenas o eixo X sempre funciona.
+
+   A rotação do pivot (tilt + posição orbital) some ao mesmo tempo:
+   calculamos a orientação inversa do pivot ("qFace") e interpolamos
+   a rotação do próprio símbolo até ela via slerp, o que garante que
+   ele chegue sempre de frente para o usuário — não importa em que
+   ponto da órbita estava quando foi clicado.
+
+   extraSpins (opcional): número de voltas extras que o símbolo dá
+   enquanto viaja, dissolvendo-se gradualmente até zero — ele ainda
+   termina exatamente de frente para o usuário. */
+function convergirAoCentro(id, duration, onDone, extraSpins) {
+  var piv = pivots.find(function(p) { return p.userData.group.userData.id === id; });
+  var g = piv.userData.group;
+  var startX  = g.position.x;
+  var qStart  = g.quaternion.clone();
+  var qFace   = new THREE.Quaternion(-piv.quaternion.x, -piv.quaternion.y, -piv.quaternion.z, piv.quaternion.w);
+  var spin    = (extraSpins || 0) * Math.PI * 2;
+  piv.userData.frozen = true;
+  var t0 = performance.now();
+  (function step(now) {
+    var t = Math.min((now - t0) / duration, 1);
+    var e = 1 - Math.pow(1 - t, 3); // ease-out cúbico
+    g.position.x = startX * (1 - e);
+    g.quaternion.copy(qStart).slerp(qFace, e);
+    if (spin) g.rotateY(spin * (1 - e)); // giro extra que se dissolve até a chegada
+    if (t < 1) requestAnimationFrame(step);
+    else if (onDone) onDone();
+  })(t0);
+}
+
+/* ── Zelda ── */
+var zeldaPulseActive = false;
+
+function triggerZelda(def) {
+  var g = pivots.find(function(p) { return p.userData.group.userData.id === 'zelda'; }).userData.group;
+
+  convergirAoCentro('zelda', 1400, function() {
+    igniteZeldaIntenso(g); // chegou ao centro — agora, com a música tocando, brilha intensamente
+  });
+
+  playSongOfTime(function() {
+    zeldaPulseActive = false;
+    curtain.style.opacity = '1'; curtain.style.pointerEvents = 'all';
+    setTimeout(function() { window.location.href = def.href; }, 700);
+  });
+}
+
+function igniteZeldaIntenso(g) {
+  var starts = [];
+  g.children.forEach(function(o) {
+    if (!o.isMesh) return;
+    starts.push({ mesh:o, color:o.material.color.getHex(), emissive:o.material.emissive.getHex(), ei:o.material.emissiveIntensity });
+  });
+  var durRamp = 450, t0 = performance.now();
+  (function ramp(now) {
+    var t = Math.min((now - t0) / durRamp, 1);
+    var e = t*t*(3-2*t); // smoothstep
+    starts.forEach(function(s) {
+      s.mesh.material.color.copy(lerpHex(s.color, 0xFFE066, e));
+      s.mesh.material.emissive.copy(lerpHex(s.emissive, 0xCC9900, e));
+      s.mesh.material.emissiveIntensity = s.ei + (1.35 - s.ei) * e;
+    });
+    if (t < 1) requestAnimationFrame(ramp);
+    else pulseZeldaIntenso(g);
+  })(t0);
+}
+
+function pulseZeldaIntenso(g) {
+  zeldaPulseActive = true;
+  var t0 = performance.now();
+  (function pulse(now) {
+    if (!zeldaPulseActive) return; // música acabou ou usuário voltou — para o pulso
+    var t = (now - t0) / 1400;
+    var wobble = 1.15 + Math.sin(t * Math.PI * 2) * 0.23;
+    g.children.forEach(function(o) {
+      if (o.isMesh) o.material.emissiveIntensity = wobble;
+    });
+    requestAnimationFrame(pulse);
+  })(t0);
+}
+
+/* ── Valtheris ── */
+function animarVinheta(overlay) {
+  var dur = 2800, t0 = performance.now();
+  overlay.style.pointerEvents = 'all';
+  (function frame(now) {
+    var t = Math.min((now-t0)/dur, 1), e = t*t;
+    var r = (82-92*e).toFixed(1), o = (0.45+0.55*e).toFixed(3);
+    overlay.style.background = 'radial-gradient(ellipse at center, transparent ' + r + '%, rgba(5,0,8,0.98) calc(' + r + '% + 18%))';
+    overlay.style.opacity = o;
+    if (t < 1) requestAnimationFrame(frame);
+  })(t0);
+}
+
+function tocarDrone() {
+  var AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return;
+  var ac = new AC(), now = ac.currentTime, dur = 3.5;
+  function voz(f,v,fi,fo) {
+    var o=ac.createOscillator(),g=ac.createGain(); o.type='sine'; o.frequency.value=f; o.connect(g); g.connect(ac.destination);
+    g.gain.setValueAtTime(0,now); g.gain.linearRampToValueAtTime(v,now+fi); g.gain.setValueAtTime(v,now+dur-fo); g.gain.linearRampToValueAtTime(0,now+dur);
+    o.start(now); o.stop(now+dur+0.1);
+  }
+  voz(55,.18,.9,.8); voz(110,.05,1.4,.7);
+  var ov=ac.createOscillator(),ev=ac.createGain(),lf=ac.createOscillator(),lg=ac.createGain();
+  ov.type=lf.type='sine'; ov.frequency.value=55; lf.frequency.value=0.35; lg.gain.value=1.8;
+  lf.connect(lg); lg.connect(ov.frequency); ov.connect(ev); ev.connect(ac.destination);
+  ev.gain.setValueAtTime(0,now); ev.gain.linearRampToValueAtTime(.10,now+1.0); ev.gain.setValueAtTime(.10,now+dur-.9); ev.gain.linearRampToValueAtTime(0,now+dur);
+  lf.start(now); ov.start(now); lf.stop(now+dur+0.1); ov.stop(now+dur+0.1);
+  if (ac.state==='suspended') ac.resume();
+}
+
+function triggerValtheris(def) {
+  convergirAoCentro('valtheris', 1400);
+  var vg = pivots.find(function(p) { return p.userData.group.userData.id === 'valtheris'; }).userData.group;
+  var pup = vg.children[2]; // pupila
+  if (pup) {
+    var dur=2300, t0=performance.now();
+    var tX=(0.56/0.21)*1.08-1, tY=(0.56/0.42)*1.08-1;
+    (function sp(now) {
+      var t=Math.min((now-t0)/dur,1), e=t*t*t;
+      pup.scale.set(1+e*tX, 1+e*tY, 1);
+      if (t<1) requestAnimationFrame(sp);
+    })(t0);
+  }
+  tocarDrone();
+  setTimeout(function() { animarVinheta(veilOverlay); }, 450);
+  setTimeout(function() { window.location.href = def.href; }, 3300);
+}
+
+/* ── Livro ── */
+var pergunta = 'O que voc\u00ea realmente sabe sobre si mesmo?';
+function abrirLivro(g, onDone) {
+  var pageRight = g.children.find(function(c){ return c.userData.isPageRight; });
+  var pageLeft  = g.children.find(function(c){ return c.userData.isPageLeft;  });
+  var closeAngle = Math.PI / 2;
+
+  // Chega fechado (nasce assim) — abre com as páginas passando rapidamente (flutter decrescente) — 650ms
+  var flips = 4, durFlip = 650, t1 = performance.now();
+  (function flip(now) {
+    var t = Math.min((now - t1) / durFlip, 1);
+    var base = closeAngle * (1 - t);
+    var osc  = Math.sin(t * flips * Math.PI * 2) * closeAngle * 0.5 * (1 - t);
+    pageRight.rotation.y = -(base + osc);
+    pageLeft.rotation.y  =  (base + osc);
+    if (t < 1) requestAnimationFrame(flip);
+    else {
+      pageRight.rotation.y = 0; pageLeft.rotation.y = 0; // garante pouso exato aberto
+      if (onDone) onDone();
+    }
+  })(t1);
+}
+
+function triggerBook(def) {
+  var g = pivots.find(function(p) { return p.userData.group.userData.id === 'book'; }).userData.group;
+  bookTyped.textContent = ''; bookCursor.style.animation = ''; bookCursor.style.opacity = ''; bookQuestion.style.opacity = '';
+
+  convergirAoCentro('book', 700, function() {
+    setTimeout(function() { // breve pausa — chega fechado antes de começar a abrir
+      abrirLivro(g, function() {
+        setTimeout(function() {
+          bookOverlay.style.pointerEvents = 'all'; bookOverlay.style.opacity = '1';
+        }, 100);
+
+        var i = 0;
+        function digitar() {
+          if (i < pergunta.length) {
+            bookTyped.textContent += pergunta[i]; i++;
+            var c = pergunta[i-1];
+            setTimeout(digitar, c==='?'?220:c===','?130:58);
+          } else {
+            setTimeout(function() {
+              bookCursor.style.animation = 'none'; bookCursor.style.transition = 'opacity 0.3s ease'; bookCursor.style.opacity = '0';
+              bookQuestion.style.opacity = '0';
+              setTimeout(function() { window.location.href = def.href; }, 900);
+            }, 1500);
+          }
+        }
+        setTimeout(digitar, 600);
+      });
+    }, 200);
+  });
+}
+
+/* ── Covers ── */
+function revelarRostoCovers(g, onDone) {
+  var partes = g.children.filter(function(o) { return o.userData.isFaceReveal; });
+  var dur = 650, t0 = performance.now();
+  (function frame(now) {
+    var t = Math.min((now - t0) / dur, 1);
+    var e = t*t*(3-2*t); // smoothstep
+    partes.forEach(function(o) { o.material.opacity = e; });
+    if (t < 1) requestAnimationFrame(frame);
+    else if (onDone) onDone();
+  })(t0);
+}
+
+function pulsarCoversMask(g, onDone) {
+  var mask = g.children.find(function(o) { return o.userData.isMask; });
+  var dur = 850, t0 = performance.now();
+  var base = 0.6, peak = 1.5;
+  (function frame(now) {
+    var t = Math.min((now - t0) / dur, 1);
+    var s = t*t*(3-2*t);
+    mask.material.emissiveIntensity = base + (peak - base) * Math.sin(s * Math.PI);
+    if (t < 1) requestAnimationFrame(frame);
+    else { mask.material.emissiveIntensity = base; if (onDone) onDone(); }
+  })(t0);
+}
+
+function triggerCovers(def) {
+  var g = pivots.find(function(p) { return p.userData.group.userData.id === 'covers'; }).userData.group;
+  convergirAoCentro('covers', 1200, function() {
+    revelarRostoCovers(g, function() {
+      pulsarCoversMask(g, function() {
+        curtain.style.opacity = '1'; curtain.style.pointerEvents = 'all';
+        setTimeout(function() { window.location.href = def.href; }, 700);
+      });
+    });
+  });
+}
+
+/* ── Recordações: três flashes de câmera em sequência, com o clique do
+   obturador sintetizado na hora (mesma técnica do tocarDrone do Valtheris —
+   sem depender de nenhum arquivo de áudio externo). ── */
+function playShutterClick() {
+  var AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return;
+  var ac = new AC(), now = ac.currentTime;
+  function clique(t, freq) {
+    var o = ac.createOscillator(), g = ac.createGain();
+    o.type = 'square'; o.frequency.value = freq;
+    o.connect(g); g.connect(ac.destination);
+    g.gain.setValueAtTime(0.0001, now + t);
+    g.gain.exponentialRampToValueAtTime(0.22, now + t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + t + 0.05);
+    o.start(now + t); o.stop(now + t + 0.07);
+  }
+  clique(0, 1800);
+  clique(0.09, 2200);
+  if (ac.state === 'suspended') ac.resume();
+}
+
+function flashRecordacoes(g, onDone) {
+  var fronts = g.children.filter(function(o) { return o.userData.isFront; });
+  var backs  = g.children.filter(function(o) { return o.userData.isBack; });
+  var dur = 900, t0 = performance.now();
+  playShutterClick();
+  (function frame(now) {
+    var t = Math.min((now - t0) / dur, 1);
+    fronts.forEach(function(mesh, i) {
+      var delay = i * 0.16;
+      var lt = Math.max(0, Math.min(1, (t - delay) / 0.4));
+      var flash = Math.sin(lt * Math.PI);
+      mesh.material.emissiveIntensity = 0.28 + flash * 2.3;
+      mesh.material.emissive.copy(lerpHex(0x3A352C, 0xFFFFFF, flash));
+    });
+    backs.forEach(function(mesh, i) {
+      var delay = i * 0.16;
+      var lt = Math.max(0, Math.min(1, (t - delay) / 0.5));
+      var e = lt*lt*(3-2*lt); // smoothstep
+      mesh.material.emissiveIntensity = 0.5 + e * 0.6;
+    });
+    if (t < 1) requestAnimationFrame(frame);
+    else if (onDone) onDone();
+  })(t0);
+}
+
+function triggerRecordacoes(def) {
+  var g = pivots.find(function(p) { return p.userData.group.userData.id === 'recordacoes'; }).userData.group;
+  convergirAoCentro('recordacoes', 1200, function() {
+    flashRecordacoes(g, function() {
+      curtain.style.opacity = '1'; curtain.style.pointerEvents = 'all';
+      setTimeout(function() { window.location.href = def.href; }, 700);
+    });
+  });
+}
+
+/* ── Origem ── */
+function pulsarOrigem(g, onDone) {
+  var rings = g.children.filter(function(o) { return o.userData.isRing; });
+  var dur = 900, t0 = performance.now();
+  (function frame(now) {
+    var t = Math.min((now - t0) / dur, 1);
+    rings.forEach(function(mesh, i) {
+      var delay = i * 0.12;
+      var lt = Math.max(0, Math.min(1, (t - delay) / (1 - delay)));
+      var le = lt*lt*(3-2*lt); // smoothstep
+      var s = 1 + le * 0.55;
+      mesh.scale.set(s, s, 1);
+      mesh.material.emissiveIntensity = (0.55 - i*0.15) * (1 - le*0.6) + 0.4*le;
+    });
+    if (t < 1) requestAnimationFrame(frame);
+    else if (onDone) onDone();
+  })(t0);
+}
+
+function triggerOrigem(def) {
+  var g = pivots.find(function(p) { return p.userData.group.userData.id === 'origem'; }).userData.group;
+  convergirAoCentro('origem', 1200, function() {
+    pulsarOrigem(g, function() {
+      curtain.style.opacity = '1'; curtain.style.pointerEvents = 'all';
+      setTimeout(function() { window.location.href = def.href; }, 700);
+    });
+  });
+}
+
+/* ── M.A.L: ao chegar de volta ao centro, esfria o verde-sálvia de repouso e
+   "esquenta" pra um azul incandescente — cor de estrelas de temperatura alta,
+   o oposto do vermelho/laranja de estrelas frias. Mesmo padrão de rampa que
+   o Zelda usa em igniteZeldaIntenso, só que sem o pulso contínuo depois. ── */
+function igniteMalIncandescente(g) {
+  var starts = [];
+  g.children.forEach(function(o) {
+    if (!o.isMesh) return;
+    starts.push({ mesh:o, color:o.material.color.getHex(), emissive:o.material.emissive.getHex(), ei:o.material.emissiveIntensity });
+  });
+  var durRamp = 900, t0 = performance.now(); // era 450 — rápido demais, cortava antes de terminar de esquentar
+  (function ramp(now) {
+    var t = Math.min((now - t0) / durRamp, 1);
+    var e = t*t*(3-2*t); // smoothstep
+    starts.forEach(function(s) {
+      s.mesh.material.color.copy(lerpHex(s.color, 0x9FD8FF, e));
+      s.mesh.material.emissive.copy(lerpHex(s.emissive, 0xBEEAFF, e));
+      s.mesh.material.emissiveIntensity = s.ei + (2.0 - s.ei) * e;
+    });
+    if (t < 1) requestAnimationFrame(ramp);
+  })(t0);
+}
+
+/* ── M.A.L: sem revelação própria além do brilho — converge e segue ── */
+function triggerMal(def) {
+  convergirAoCentro('mal', 1200, function() {
+    var g = pivots.find(function(p) { return p.userData.group.userData.id === 'mal'; }).userData.group;
+    igniteMalIncandescente(g);
+    // espera a rampa (900ms) terminar e segura mais um instante no azul antes
+    // da cortina começar a cobrir — antes a cortina disparava junto com o
+    // aceso e cortava o brilho pela metade.
+    setTimeout(function() {
+      curtain.style.opacity = '1'; curtain.style.pointerEvents = 'all';
+      setTimeout(function() { window.location.href = def.href; }, 700);
+    }, 1300);
+  });
+}
+
+/* ── Diário ── */
+var cidades = [
+  {cidade:'Jacarezinho',              ano:'2008'},
+  {cidade:'Arandu',                   ano:'2008'},
+  {cidade:'Cerqueira C\u00e9sar',     ano:'2009'},
+  {cidade:'Avar\u00e9',               ano:'2009'},
+  {cidade:'Jacarezinho',              ano:'2010'},
+  {cidade:'Ourinhos',                 ano:'2011'},
+  {cidade:'Jacarezinho',              ano:'2015'},
+  {cidade:'Jacarezinho \u2014 Ourinhos', ano:'2023'},
+  {cidade:'Foz do Igua\u00e7u',       ano:'2026'},
+];
+var duracoes = [1150,1150,1150,1000,900,900,800,700]; // um valor por cidade, exceto a última (especial)
+
+function girarComACidade() {
+  var piv = pivots.find(function(p) { return p.userData.group.userData.id === 'diary'; });
+  var g = piv.userData.group;
+  var passo = (Math.PI * 2) / cidades.length; // divide 360° pelo nº real de cidades — sempre termina de frente
+  var dur = 480, t0 = performance.now(), aplicado = 0;
+  (function tick(now) {
+    var t = Math.min((now - t0) / dur, 1);
+    var e = t*t*(3-2*t); // smoothstep
+    var alvo = passo * e;
+    g.rotateZ(alvo - aplicado);
+    aplicado = alvo;
+    if (t < 1) requestAnimationFrame(tick);
+  })(t0);
+}
+
+function triggerDiario(def) {
+  convergirAoCentro('diary', 1300, null, 2); // gira 2 voltas extras, terminando de frente para o usuário
+  setTimeout(function() {
+    diarioOverlay.style.opacity = '1'; diarioOverlay.style.pointerEvents = 'all';
+  }, 750);
+  var t = 1350;
+  cidades.forEach(function(entrada, i) {
+    var isU = (i===cidades.length-1);
+    var dur=isU?1750:duracoes[i], fi=isU?380:280, fo=isU?0:200, hold=dur-fi-fo, t0=t;
+    setTimeout(function() {
+      girarComACidade(); // rosa dos ventos avança 360°/cidades.length a cada nova cidade
+      diarioCidade.textContent = entrada.cidade; diarioAno.textContent = entrada.ano;
+      diarioCidade.style.transition = 'opacity '+fi+'ms ease'; diarioAno.style.transition = 'opacity '+fi+'ms ease';
+      void diarioCidade.offsetWidth;
+      diarioCidade.style.opacity = '1'; diarioAno.style.opacity = '1';
+      if (!isU) {
+        setTimeout(function() {
+          diarioCidade.style.transition = 'opacity '+fo+'ms ease'; diarioAno.style.transition = 'opacity '+fo+'ms ease';
+          diarioCidade.style.opacity = '0'; diarioAno.style.opacity = '0';
+        }, fi+hold);
+      } else {
+        setTimeout(function() {
+          diarioFrase.style.transition = 'opacity 550ms ease';
+          void diarioFrase.offsetWidth;
+          diarioFrase.style.opacity = '1';
+          setTimeout(function() { window.location.href = def.href; }, 2200);
+        }, fi+1380);
+      }
+    }, t0);
+    if (!isU) t += duracoes[i];
+  });
+}
+
+/* ── Ícaro: o sol desperta ── */
+function lerpHex(hexA, hexB, t) {
+  var a = new THREE.Color(hexA), b = new THREE.Color(hexB);
+  return new THREE.Color(a.r+(b.r-a.r)*t, a.g+(b.g-a.g)*t, a.b+(b.b-a.b)*t);
+}
+
+function corComAlpha(hex, alpha) {
+  var c = new THREE.Color(hex);
+  return 'rgba(' + Math.round(c.r*255) + ',' + Math.round(c.g*255) + ',' + Math.round(c.b*255) + ',' + alpha + ')';
+}
+
+// Subtítulos do selado — pareiam com a frase principal de mensagensQueda (definida mais abaixo).
+var mensagensSelado = {
+  zelda:     'o tempo não chegou',
+  valtheris: 'valtheris aguarda',
+  diary:     'a lembrança aguarda',
+  book:      'as palavras aguardam',
+  icaro:     'prometia renascer'
+};
+
+function triggerSealedFallback(def) {
+  icaroMain.textContent  = mensagensQueda[def.id] || 'ainda não é hora.';
+  icaroMain.style.color  = corComAlpha(def.color, 0.65);
+  icaroSub.textContent   = mensagensSelado[def.id] || 'aguarde';
+  icaroSub.style.color   = corComAlpha(def.color, 0.28);
+  icaroSub.style.display = '';
+  icaroMsg.style.opacity = '1';
+  setTimeout(function() { icaroMsg.style.opacity = '0'; }, 2400);
+}
+
+function triggerIcaroAwaken(def) {
+  var piv = pivots.find(function(p) { return p.userData.group.userData.id === 'icaro'; });
+  var g   = piv.userData.group;
+  var brokenRay = g.children.find(function(c) { return c.userData.isBrokenRay; });
+  var startX = g.position.x;
+  var qStart = g.quaternion.clone();
+  var qFace  = new THREE.Quaternion(-piv.quaternion.x, -piv.quaternion.y, -piv.quaternion.z, piv.quaternion.w);
+
+  piv.userData.frozen = true; // para a órbita e o giro próprio — os outros seguem intactos
+
+  // Fase 0 — o eco da antiga mensagem, ainda com o peso do que ficou (950ms)
+  icaroMain.textContent  = 'voou perto demais.';
+  icaroSub.textContent   = 'prometia renascer';
+  icaroSub.style.display = '';
+  icaroMain.style.color  = '';
+  icaroMsg.style.opacity = '1';
+
+  setTimeout(function() {
+    icaroMsg.style.opacity = '0';
+
+    // Fase 1 — convergência ao centro, já de frente para o usuário (1600ms)
+    var durConv = 1600, t0 = performance.now();
+    (function converge(now) {
+      var t = Math.min((now - t0) / durConv, 1);
+      var e = 1 - Math.pow(1 - t, 3); // ease-out cúbico
+      g.position.x = startX * (1 - e);
+      g.quaternion.copy(qStart).slerp(qFace, e);
+      g.children.forEach(function(o) {
+        o.material.emissiveIntensity = o.userData.baseEI + 0.22 * e;
+      });
+      if (t < 1) requestAnimationFrame(converge);
+      else reconstruir();
+    })(t0);
+  }, 950);
+
+  // Fase 2 — reconstrução: o raio quebrado regenera, tudo se acende (1900ms)
+  function reconstruir() {
+    var durReb = 1900, t1 = performance.now();
+    (function rebuild(now) {
+      var t = Math.min((now - t1) / durReb, 1);
+      var e = t*t*(3-2*t); // smoothstep
+
+      var novoLen = brokenRay.userData.brokenLen + (brokenRay.userData.healthyLen - brokenRay.userData.brokenLen) * e;
+      brokenRay.geometry.dispose();
+      brokenRay.geometry = icaroRayShape(novoLen);
+
+      g.children.forEach(function(o) {
+        o.material.color.copy(lerpHex(o.userData.baseColor, 0xFF8C3A, e));
+        o.material.emissive.copy(lerpHex(o.userData.baseEmissive, 0xFF6A10, e));
+        o.material.emissiveIntensity = 0.5 + e * 0.5;
+      });
+
+      var s = 1 + Math.sin(e * Math.PI) * 0.10; // leve pulso de escala
+      g.scale.setScalar((g.userData.baseScale || 1) * s);
+
+      if (t < 1) requestAnimationFrame(rebuild);
+      else concluir();
+    })(t1);
+  }
+
+  // Fase 3 — mensagem final, cortina, navegação
+  function concluir() {
+    icaroMain.textContent  = 'renascido.';
+    icaroMain.style.color  = 'rgba(255,150,60,.92)';
+    icaroSub.style.display = 'none';
+    icaroMsg.style.opacity = '1';
+
+    setTimeout(function() {
+      icaroMsg.style.opacity = '0';
+      curtain.style.opacity = '1'; curtain.style.pointerEvents = 'all';
+      setTimeout(function() { window.location.href = def.href; }, 700);
+    }, 900);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   VERIFICAÇÃO DE DESTINO — evita animar até um link morto
+   Sob file://, checar existência de outro arquivo local via fetch()
+   não é confiável (a maioria dos navegadores bloqueia por segurança) —
+   nesse caso assume que está tudo bem e não atrapalha o teste local.
+   Sob http(s), faz uma checagem HEAD de verdade.
+═══════════════════════════════════════════ */
+var mensagensQueda = {
+  zelda:     'a lenda ainda dorme.',
+  valtheris: 'o véu não se abriu.',
+  diary:     'as cidades ficaram longe demais.',
+  book:      'a pergunta não encontrou resposta.',
+  icaro:     'voou perto demais.',
+  origem:    'o ponto de partida não respondeu.',
+  covers:    'a voz não atravessou o véu.',
+  recordacoes: 'as fotos ainda não revelaram.',
+  mal:       'a luz ainda está a caminho.'
+};
+
+function checarDestino(href) {
+  if (window.location.protocol === 'file:') return Promise.resolve(true);
+  return fetch(href, { method: 'HEAD', cache: 'no-store' })
+    .then(function(r) { return r.ok; })
+    .catch(function() { return false; });
+}
+
+function mostrarLinkCaido(def) {
+  var msgMain = linkDownMsg.querySelector('.linkdown-main');
+  var msgSub  = linkDownMsg.querySelector('.linkdown-sub');
+  msgMain.textContent = mensagensQueda[def.id] || 'este caminho não responde.';
+  msgMain.style.color = corComAlpha(def.color, 0.7);
+  msgSub.style.color  = corComAlpha(def.color, 0.3);
+  linkDownMsg.style.opacity = '1';
+  setTimeout(function() {
+    linkDownMsg.style.opacity = '0';
+    navegando = false;
+    cnv.style.pointerEvents = ''; // libera pra tentar outro portal
+  }, 2600);
+}
+
+/* ═══════════════════════════════════════════
+   DISPATCH DE CLIQUE / TOQUE
+═══════════════════════════════════════════ */
+function triggerSymbol(group) {
+  var def = group.userData.def;
+  if (def.sealed) { triggerSealedFallback(def); return; }
+  bloquear();
+  checarDestino(def.href).then(function(ok) {
+    if (!ok) { mostrarLinkCaido(def); return; }
+    if      (def.id==='zelda')     triggerZelda(def);
+    else if (def.id==='valtheris') triggerValtheris(def);
+    else if (def.id==='diary')     triggerDiario(def);
+    else if (def.id==='book')      triggerBook(def);
+    else if (def.id==='icaro')     triggerIcaroAwaken(def);
+    else if (def.id==='origem')    triggerOrigem(def);
+    else if (def.id==='covers')    triggerCovers(def);
+    else if (def.id==='recordacoes') triggerRecordacoes(def);
+    else if (def.id==='mal')       triggerMal(def);
+  });
+}
+
+cnv.addEventListener('click', function(e) {
+  if (hitDrill(e)) { toggleDrillPause(); return; }
+  if (navegando) return;
+  var g = getSymbol(e); if (g) triggerSymbol(g);
+});
+
+cnv.addEventListener('touchstart', function(e) {
+  if (drillPhase === 'docked') return; // deixa o touchend cuidar do toque nela
+  if (navegando) return;
+  e.preventDefault();
+  touchGroup = getSymbol(e);
+  if (touchGroup) setHover(touchGroup);
+}, { passive: false });
+
+cnv.addEventListener('touchend', function(e) {
+  if (hitDrill(e)) { e.preventDefault(); toggleDrillPause(); return; }
+  if (navegando || !touchGroup) { touchGroup = null; return; }
+  e.preventDefault();
+  var g = touchGroup; touchGroup = null;
+  triggerSymbol(g);
+}, { passive: false });
+
+/* ═══════════════════════════════════════════
+   PAGESHOW — reset bfcache
+═══════════════════════════════════════════ */
+window.addEventListener('pageshow', function(e) {
+  if (!e.persisted) return;
+  navegando = false; cnv.style.pointerEvents = '';
+  zeldaPulseActive = false;
+  curtain.style.opacity = '0'; curtain.style.pointerEvents = 'none';
+  bookOverlay.style.opacity = '0'; bookOverlay.style.pointerEvents = 'none';
+  diarioOverlay.style.opacity = '0'; diarioOverlay.style.pointerEvents = 'none';
+  veilOverlay.style.opacity = '0'; veilOverlay.style.background = ''; veilOverlay.style.pointerEvents = 'none';
+  icaroMsg.style.opacity = '0';
+  icaroMain.textContent = 'voou perto demais.'; icaroMain.style.color = '';
+  icaroSub.textContent  = 'prometia renascer';  icaroSub.style.display = '';
+  linkDownMsg.style.opacity = '0';
+  bookTyped.textContent = '';
+  diarioCidade.style.opacity = '0'; diarioAno.style.opacity = '0'; diarioFrase.style.opacity = '0';
+  setHover(null);
+  pivots.forEach(function(piv) {
+    piv.userData.frozen = false;
+    var g = piv.userData.group;
+    g.userData.baseScale = responsiveScale;
+    g.scale.setScalar(responsiveScale);
+    g.rotation.set(0, 0, 0); // reseta a reorientação de frente para o usuário
+    g.position.set(g.userData.def.orbit.r * orbitScale, 0, 0); // reseta a convergência de qualquer símbolo
+    if (g.userData.id === 'icaro') {
+      var broken = g.children.find(function(c){ return c.userData.isBrokenRay; });
+      if (broken) { broken.geometry.dispose(); broken.geometry = icaroRayShape(broken.userData.brokenLen); }
+    }
+    if (g.userData.id === 'book') {
+      var pr = g.children.find(function(c){ return c.userData.isPageRight; });
+      var pl = g.children.find(function(c){ return c.userData.isPageLeft;  });
+      if (pr) pr.rotation.y = -Math.PI / 2; // fechado é o estado padrão agora
+      if (pl) pl.rotation.y =  Math.PI / 2;
+    }
+    if (g.userData.id === 'covers') {
+      g.children.forEach(function(c) { if (c.userData.isFaceReveal) c.material.opacity = 0; });
+    }
+    g.traverse(function(o) {
+      if (!o.isMesh) return;
+      o.material.emissiveIntensity = o.userData.baseEI;
+      o.scale.set(1, 1, 1);
+      if (g.userData.id === 'zelda' || g.userData.id === 'icaro' || g.userData.id === 'recordacoes') {
+        o.material.color.setHex(o.userData.baseColor);
+        o.material.emissive.setHex(o.userData.baseEmissive);
+      }
+    });
+  });
+});
+
+/* ═══════════════════════════════════════════
+   PAINEL DAS ESFERAS DO DRAGÃO
+═══════════════════════════════════════════ */
+(function () {
+  var painel = document.getElementById('dragonball-panel');
+  if (!painel || !window.NexusEsferas) return;
+
+  // Arranjos de estrela originais (não são as posições exatas de nenhuma
+  // obra específica) — só o bastante pra dar pra contar 1 a 7 de relance.
+  var POSICOES_ESTRELA = {
+    1: [[0,0]],
+    2: [[-4,-3],[4,3]],
+    3: [[0,-6],[-5,4],[5,4]],
+    4: [[-5,-5],[5,-5],[-5,5],[5,5]],
+    5: [[0,-7],[-6,-1],[6,-1],[-4,6],[4,6]],
+    6: [[-5,-6],[5,-6],[-5,0],[5,0],[-5,6],[5,6]],
+    7: [[0,-7],[-6,-4],[6,-4],[-6,3],[6,3],[-3,7],[3,7]]
+  };
+
+  // Só toca a cutscene (som + pulso + painel forçado aberto) na primeira
+  // vez que o conjunto se completa nesse navegador — depois disso o
+  // painel fica com o brilho dourado permanente (o "troféu"), sem repetir
+  // o efeito toda vez que o Nexus for recarregado.
+  var CHAVE_CUTSCENE_VISTA = 'nexus_esferas_cutscene_vista';
+  // Sinal que o Segredo grava antes de redirecionar pra cá, avisando que
+  // um desejo acabou de ser concedido — ver dispersarEsferas() abaixo.
+  var CHAVE_DISPERSAR = 'nexus_esferas_dispersar';
+  // Marca PERMANENTE (nunca limpa pelo resetar()) provando que o
+  // conjunto já foi completado ao menos uma vez neste navegador.
+  var CHAVE_COMPLETOU_ANTES = 'nexus_esferas_completado_antes';
+  var esferasAudio = null;
+  var _gestoRegistradoParaSom = false;
+
+  // O navegador bloqueia áudio que não vem de uma ação direta do usuário
+  // (clique, toque, tecla) NESTA página — como a celebração dispara
+  // sozinha (ao carregar, ou via evento de outra aba), o play() é sempre
+  // rejeitado nesse primeiro disparo. O brilho e o painel expandido
+  // continuam automáticos (isso não é bloqueado); o som espera o
+  // próximo gesto do usuário na página pra tocar.
+  function aguardarGestoParaTocarSom() {
+    if (_gestoRegistradoParaSom) return;
+    _gestoRegistradoParaSom = true;
+
+    function tentarNovamente() {
+      window.removeEventListener('click', tentarNovamente);
+      window.removeEventListener('touchstart', tentarNovamente);
+      window.removeEventListener('keydown', tentarNovamente);
+      try {
+        esferasAudio.currentTime = 0;
+        esferasAudio.play().catch(function () {});
+      } catch (e) {}
+    }
+
+    window.addEventListener('click', tentarNovamente);
+    window.addEventListener('touchstart', tentarNovamente);
+    window.addEventListener('keydown', tentarNovamente);
+  }
+
+  function tocarSomConclusao() {
+    try {
+      if (!esferasAudio) esferasAudio = new Audio('Assets/esferas-completas.mp3');
+      esferasAudio.currentTime = 0;
+      esferasAudio.volume = 0.85;
+      var promessa = esferasAudio.play();
+      if (promessa && typeof promessa.catch === 'function') {
+        promessa.catch(function () { aguardarGestoParaTocarSom(); });
+      }
+    } catch (e) { aguardarGestoParaTocarSom(); }
+  }
+
+  function celebrarSePrimeiraVez() {
+    var jaViu = false;
+    try { jaViu = localStorage.getItem(CHAVE_CUTSCENE_VISTA) === '1'; } catch (e) {}
+    if (jaViu) return;
+    try { localStorage.setItem(CHAVE_CUTSCENE_VISTA, '1'); } catch (e) {}
+    // Um ciclo novo de verdade se completou — qualquer escolha antiga
+    // do Segredo (de um desejo já concedido antes) agora é de um ciclo
+    // encerrado, então pode expirar. Ver o comentário em
+    // Segredo/index.html sobre por que isso NÃO é limpo antes disso.
+    try { sessionStorage.removeItem('segredo_escolha_feita'); } catch (e) {}
+
+    painel.classList.add('expandido', 'celebrando');
+    tocarSomConclusao();
+    setTimeout(function () { painel.classList.remove('celebrando'); }, 8000);
+  }
+
+  // Link "Reivindicar o desejo" — só existe/aparece quando o painel está
+  // .completo (ver CSS). Leva pra cena do Shen Long, compilada à parte
+  // via Haxe/OpenFL e publicada em Segredo/index.html (irmã de Assets/ e
+  // Lib/ na raiz do Nexus — ver o projeto "SegredoNexus" pra recompilar).
+  var linkResgatar = painel.querySelector('.db-resgatar');
+  if (linkResgatar) {
+    linkResgatar.addEventListener('click', function () {
+      window.location.href = 'Segredo/index.html';
+    });
+  }
+
+  function montarOrb(n, completo) {
+    var orb = document.createElement('div');
+    orb.className = 'db-orb' + (n ? ' achada' : '') + (completo ? ' completo' : '');
+    if (n) {
+      POSICOES_ESTRELA[n].forEach(function (p) {
+        var e = document.createElement('span');
+        e.className = 'estrela';
+        e.style.left = (12 + p[0] - 2) + 'px';
+        e.style.top  = (12 + p[1] - 2) + 'px';
+        orb.appendChild(e);
+      });
+    }
+    return orb;
+  }
+
+  function aplicarMarcaCompletouAntes() {
+    var jaCompletouAntes = false;
+    try { jaCompletouAntes = localStorage.getItem(CHAVE_COMPLETOU_ANTES) === '1'; } catch (e) {}
+    var miniOrb = painel.querySelector('.db-mini-orb');
+    if (miniOrb) miniOrb.classList.toggle('ja-completou', jaCompletouAntes);
+  }
+
+  // As esferas saem do slot, giram, e voam pra fora em direções
+  // diferentes antes de sumir — só depois disso terminar é que os dados
+  // são resetados de verdade (ver uso logo abaixo, perto de atualizarPainel).
+  function dispersarEsferas(aoTerminar) {
+    painel.classList.add('expandido');
+    var orbs = painel.querySelectorAll('.db-orb.completo');
+    var atraso = 0;
+    orbs.forEach(function (orb, i) {
+      var angulo = (i / orbs.length) * Math.PI * 2 + (Math.random() - .5);
+      var distancia = 90 + Math.random() * 70;
+      orb.style.setProperty('--dx', (Math.cos(angulo) * distancia).toFixed(1) + 'px');
+      orb.style.setProperty('--dy', (Math.sin(angulo) * distancia).toFixed(1) + 'px');
+      setTimeout(function () { orb.classList.add('dispersando'); }, atraso);
+      atraso += 70;
+    });
+    var duracaoAnimacao = reduzMovimentoPanel() ? 500 : 1300;
+    setTimeout(aoTerminar, atraso + duracaoAnimacao);
+  }
+
+  function reduzMovimentoPanel() {
+    try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
+  }
+
+  function atualizarPainel() {
+    var achadas = NexusEsferas.getEncontradas(); // ex.: [3, 7]
+    var completo = achadas.length === NexusEsferas.TOTAL;
+    painel.querySelector('.db-mini-count').textContent = achadas.length + '/' + NexusEsferas.TOTAL;
+    var grid = painel.querySelector('.db-grid');
+    grid.innerHTML = '';
+    for (var n = 1; n <= NexusEsferas.TOTAL; n++) {
+      grid.appendChild(montarOrb(achadas.indexOf(n) !== -1 ? n : 0, completo));
+    }
+    painel.classList.toggle('completo', completo);
+    aplicarMarcaCompletouAntes();
+    if (completo) celebrarSePrimeiraVez();
+  }
+
+  atualizarPainel();
+
+  // O Segredo avisou (antes de redirecionar) que um desejo acabou de
+  // ser concedido — o painel ainda está com as 7 esferas (o reset de
+  // dados só acontece DEPOIS da animação, de propósito, pra ter algo
+  // "cheio" pra animar saindo).
+  var pedindoDispersao = false;
+  try { pedindoDispersao = localStorage.getItem(CHAVE_DISPERSAR) === '1'; } catch (e) {}
+  if (pedindoDispersao) {
+    painel.classList.add('expandido');
+    setTimeout(function () {
+      dispersarEsferas(function () {
+        try {
+          // concederDesejo() (não resetar() puro) — além de zerar os
+          // dados, bloqueia novas esferas por um ano, igual ao cânone:
+          // as esferas viram pedra e ficam espalhadas pelo mundo até
+          // poderem ser reunidas de novo.
+          NexusEsferas.concederDesejo();
+          localStorage.removeItem(CHAVE_CUTSCENE_VISTA);
+          localStorage.removeItem(CHAVE_DISPERSAR);
+          localStorage.setItem(CHAVE_COMPLETOU_ANTES, '1');
+        } catch (e) {}
+        atualizarPainel();
+      });
+    }, 900);
+  }
+
+  // Desktop: abre no hover, fecha ao tirar o mouse. Mobile: alterna no toque
+  // (sem depender de :hover, que em touch se comporta de forma inconsistente
+  // entre navegadores).
+  if (mob) {
+    painel.addEventListener('click', function () { painel.classList.toggle('expandido'); });
+  } else {
+    painel.addEventListener('mouseenter', function () { painel.classList.add('expandido'); });
+    painel.addEventListener('mouseleave', function () { painel.classList.remove('expandido'); });
+  }
+
+  // Se o progresso mudar em outra aba (storage) ou ao voltar de uma página
+  // de projeto (pageshow, cobre o bfcache), atualiza sem precisar recarregar.
+  window.addEventListener('storage', atualizarPainel);
+  window.addEventListener('pageshow', atualizarPainel);
+})();
+
+})(); // IIFE
+</script>
+
+<!-- ═══ BOTÃO MESTRE (escondido) ═══
+     Pra testar o Segredo sem precisar juntar as 7 esferas de verdade.
+     Fica quase invisível de propósito — um pontinho no canto, parecido
+     com mais uma estrela do fundo. Só quem já sabe que ele existe vai
+     reparar. Clicar nele marca o "modo criador" (só pra essa próxima
+     carga do Segredo, não fica permanente) e já leva pra lá direto. -->
+<button id="botao-mestre" type="button" aria-hidden="true" tabindex="-1" title=""></button>
+<style>
+  #botao-mestre {
+    position: fixed; bottom: 10px; left: 10px; width: 14px; height: 14px;
+    padding: 0; margin: 0; border: none; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,.5), transparent 70%);
+    opacity: .08; cursor: default; z-index: 9999;
+    transition: opacity .3s ease;
+  }
+  #botao-mestre:hover { opacity: .25; cursor: pointer; }
+</style>
+<script>
+(function () {
+  var botao = document.getElementById('botao-mestre');
+  if (!botao) return;
+  botao.addEventListener('click', function () {
+    try { localStorage.setItem('nexus_modo_criador', '1'); } catch (e) {}
+    window.location.href = 'Segredo/index.html';
+  });
+})();
+</script>
+
+<!-- ═══ Canção da Tempestade — painel de progresso dos fragmentos ═══
+     O painel (nota prateada → azul) já se cria e se atualiza sozinho ao
+     incluir o script; a única coisa que falta resolver aqui é a posição:
+     por padrão ele mora no mesmo canto inferior esquerdo que o
+     #dragonball-panel desta página, então colidiria com ele — e também
+     com o #valtheris-painel, que fica empilhado entre os dois (e agora
+     também sobe sozinho quando o de Esferas expande — ver o script logo
+     depois do #valtheris-painel, mais acima no arquivo).
+     Em vez de ler a posição do #valtheris-painel ao vivo (ele tem seu
+     próprio ResizeObserver reagindo ao de Esferas, e não dá pra garantir
+     que os dois observers rodem sempre nessa ordem), este painel soma a
+     altura atual do de Esferas + a altura fixa do de Valtheris (que não
+     muda de tamanho, só de posição) + as folgas entre os três — assim
+     não depende de ler um valor que outro script também está
+     escrevendo, só de medir os dois de forma independente. Um
+     ResizeObserver no de Esferas recalcula tudo sempre que ele mudar de
+     tamanho. ── -->
+<script src="Lib/cancao-tempestade.js"></script>
+<script>
+(function () {
+  if (!window.NexusCancao) return;
+  var painelEsferas = document.getElementById('dragonball-panel');
+  var painelValtheris = document.getElementById('valtheris-painel');
+  if (!painelEsferas) return;
+
+  // aoPainelPronto entrega o #cancao-painel assim que ele existir de
+  // verdade — pegar o elemento direto com getElementById aqui não é
+  // seguro (ver o comentário no fim de cancao-tempestade.js).
+  NexusCancao.aoPainelPronto(function (painelCancao) {
+    function reposicionar() {
+      var topeEsferas = window.innerHeight - painelEsferas.getBoundingClientRect().top;
+      var alturaValtheris = painelValtheris ? painelValtheris.offsetHeight : 0;
+      var acimaDeValtheris = topeEsferas + 20 + alturaValtheris; // onde o topo do valtheris-painel também se apoia
+      painelCancao.style.bottom = (acimaDeValtheris + 20) + 'px'; // acima do valtheris + 20px de respiro
+    }
+    reposicionar();
+
+    if (window.ResizeObserver) {
+      new ResizeObserver(reposicionar).observe(painelEsferas);
+    } else {
+      // sem ResizeObserver: ainda cobre o caso mais comum (hover no desktop,
+      // toque no mobile) que é o que muda a altura desse painel.
+      painelEsferas.addEventListener('mouseenter', reposicionar);
+      painelEsferas.addEventListener('mouseleave', reposicionar);
+      painelEsferas.addEventListener('click', reposicionar);
+      window.addEventListener('resize', reposicionar);
+    }
+  });
+})();
+
+/* ═══ Irmãos Compositores reunidos — só quando os 3 fragmentos da
+   Canção da Tempestade já foram todos encontrados (OOT + MM +
+   Recordações). Antes disso o painel continua só o ícone simples. ═══ */
+(function () {
+  if (!window.NexusCancao || !NexusCancao.completaTudo()) return;
+
+  NexusCancao.aoPainelPronto(function (painel) {
+
+  painel.classList.add('expansivel');
+
+  // notas decorativas subindo no fundo do painel expandido — só visual,
+  // posições/tempos fixos (não precisa ser aleatório de verdade aqui)
+  var NOTAS = [
+    { left:'6%',  dur:'7.5s', delay:'0s',   desvio:'-12px' },
+    { left:'22%', dur:'9s',   delay:'1.6s', desvio:'14px'  },
+    { left:'40%', dur:'6.8s', delay:'.5s',  desvio:'-8px'  },
+    { left:'58%', dur:'8.4s', delay:'2.3s', desvio:'16px'  },
+    { left:'75%', dur:'7.2s', delay:'1.1s', desvio:'-10px' },
+    { left:'90%', dur:'9.6s', delay:'3.1s', desvio:'9px'   }
+  ];
+  var GLIFOS = ['\u266A', '\u266B', '\u266C'];
+  var notasHtml = NOTAS.map(function (n, i) {
+    return '<span style="left:' + n.left + ';animation-duration:' + n.dur +
+      ';animation-delay:' + n.delay + ';--desvio:' + n.desvio + ';">' + GLIFOS[i % GLIFOS.length] + '</span>';
+  }).join('');
+
+  var expandido = document.createElement('div');
+  expandido.className = 'cancao-expandido';
+  expandido.style.display = 'none';
+  expandido.innerHTML =
+    '<div class="cancao-notas-fundo">' + notasHtml + '</div>' +
+    '<img class="cancao-irmaos-img" src="Assets/irmaos-compositores.png" alt="Os dois Irmãos Compositores, lado a lado, reunidos">' +
+    '<div class="cancao-dialogo"></div>';
+  painel.appendChild(expandido);
+
+  // abre/fecha em dois passos redundantes de propósito: a classe (que já
+  // cuida do visual completo) E o display inline direto no elemento — não
+  // depender só do seletor composto #cancao-painel.expandido funcionando
+  // é o que garante que isso aparece mesmo se algum outro CSS da página
+  // interferir de um jeito que eu não previ.
+  function abrirPainel() {
+    painel.classList.add('expandido');
+    expandido.classList.add('aberto');
+    expandido.style.display = 'block';
+  }
+  function fecharPainel() {
+    painel.classList.remove('expandido');
+    expandido.classList.remove('aberto');
+    expandido.style.display = 'none';
+  }
+
+  var textoDialogo = expandido.querySelector('.cancao-dialogo');
+  var CANCAO_SRC = "TLOZ/music/Song of Storms (Zelda's Vocal OST Extended Remix).mp3"; // mesmo arquivo referenciado em MM.html
+  var audioCancao = null;
+  var brocaSequenciaAtiva = false; // true assim que a sequência é reconhecida até a duração real da libera-me-from-hell se esgotar
+  var DURACAO_LIBERA_ME_FROM_HELL_MS = 289000; // 4min49s — ela mesma não "termina" sozinha (a tempestade fica no centro depois), então uso um timer com a duração real em vez de esperar o 'ended' dela
+  var timerBroca = null;
+
+  function tocarCancao() {
+    try {
+      if (!audioCancao) {
+        audioCancao = new Audio(CANCAO_SRC);
+        audioCancao.addEventListener('ended', function () { NexusCancao.marcarCancaoOuvida(); });
+      }
+      if (audioCancao.ended) audioCancao.currentTime = 0; // já tinha terminado antes — toca nova vez do início
+      audioCancao.volume = .8;
+      audioCancao.play().catch(function () {});
+    } catch (e) {}
+  }
+
+  function estaTocandoAgora() {
+    return !!(audioCancao && !audioCancao.paused && !audioCancao.ended);
+  }
+
+  function iniciarDialogo() {
+    NexusCancao.marcarConversouComIrmaos(); // qualquer abertura já conta como "ter conversado" com eles
+
+    // já está tocando agora mesmo — não repete a pergunta (o usuário
+    // já respondeu sim antes; só fechou e abriu o painel de novo)
+    if (estaTocandoAgora()) {
+      textoDialogo.innerHTML = '<p>A canção já está tocando.</p>';
+      return;
+    }
+    // a sequência da tempestade espiral foi reconhecida (mesmo que a
+    // libera-me-from-hell ainda não tenha começado a tocar de verdade —
+    // ver brocaSequenciaAtiva) até ela terminar — reação ao vivo, não
+    // fica presa depois que termina.
+    if (brocaSequenciaAtiva) {
+      textoDialogo.innerHTML = '<p>Os irmãos te olham com admiração.</p>';
+      return;
+    }
+    // já ouviu ela inteira em alguma visita — dá a dica de tocar aqui no
+    // nexus, MAS só se o viajante ainda não tiver mostrado que já sabe
+    // fazer isso (senão a dica não faz mais sentido nenhum)
+    if (NexusCancao.cancaoJaOuvida() && !NexusCancao.irmaosJaImpressionados()) {
+      textoDialogo.innerHTML = '<p>Ei, tente tocar nossa canção aqui no Nexus, você já a conhece, não precisa de mais instruções.</p>';
+      return;
+    }
+    // pergunta padrão — volta a aparecer normalmente depois que a reação
+    // ao vivo (broca tocando) termina, mesmo pra quem já impressionou os
+    // irmãos antes
+    textoDialogo.innerHTML =
+      '<p>Você nos trouxe de volta um para o outro. Depois de tanto tempo separados, finalmente estamos juntos de novo — e é graças a você.</p>' +
+      '<p>Gostaria de ouvir a canção que nos uniu?</p>' +
+      '<div class="cancao-escolha">' +
+        '<button type="button" data-resp="sim">Sim</button>' +
+        '<button type="button" data-resp="nao">Não</button>' +
+      '</div>';
+    textoDialogo.querySelector('[data-resp="sim"]').addEventListener('click', function (e) {
+      e.stopPropagation(); // não deixa esse toque também alternar o painel no mobile
+      textoDialogo.innerHTML = '<p>A melodia começa a soar, como há muito tempo não soava.</p>';
+      tocarCancao(); // segue tocando independente do painel — fechar não interrompe
+    });
+    textoDialogo.querySelector('[data-resp="nao"]').addEventListener('click', function (e) {
+      e.stopPropagation();
+      textoDialogo.innerHTML = '<p>Tudo bem. Boa viagem, viajante — e obrigado, por tudo.</p>';
+      setTimeout(fecharPainel, 2600);
+    });
+  }
+
+  // ── Nunca deve tocar junto com o som do despertar da broca. Se a canção
+  //    do painel estiver tocando quando a sequência da tempestade espiral
+  //    for reconhecida, ela pausa e o painel abre sozinho pra comentar.
+  //    brocaSequenciaAtiva liga JÁ AQUI — não espera a libera-me-from-hell
+  //    realmente começar (~2.7s de animação de invocação depois) — porque
+  //    a partir deste instante o diálogo não pode mais ser a pergunta de
+  //    sim/não, então se o painel já estiver aberto, atualiza a hora. ──
+  window.aoTempestadeEspiralDisparar = function () {
+    NexusCancao.marcarIrmaosImpressionados();
+    brocaSequenciaAtiva = true;
+
+    if (estaTocandoAgora()) {
+      audioCancao.pause();
+      abrirPainel();
+      textoDialogo.innerHTML = '<p>E quem imaginaria que você tocaria nossa canção aqui, isso nos surpreendeu tanto que até tivemos que parar.</p>';
+      setTimeout(fecharPainel, 4200);
+      return;
+    }
+    if (painel.classList.contains('expandido')) iniciarDialogo();
+  };
+
+  // ── Dispara quando libera-me-from-hell realmente começa a tocar (dentro
+  //    de awakenDrill, ~2.7s depois do gatilho acima). Confere de novo se
+  //    a canção do painel não começou a tocar durante essa janela (senão
+  //    tocaria junto com a libera-me-from-hell). A tempestade em si não
+  //    "termina" — ela fica ali no centro depois que a broca desperta —
+  //    então em vez de esperar um 'ended' que pode nunca disparar, uso um
+  //    timer com a duração real da faixa, contado a partir de agora (que é
+  //    quando ela genuinamente começa a tocar). ──
+  window.aoBrocaComecouATocar = function () {
+    if (estaTocandoAgora()) audioCancao.pause();
+
+    clearTimeout(timerBroca);
+    timerBroca = setTimeout(function () {
+      brocaSequenciaAtiva = false;
+      if (painel.classList.contains('expandido')) iniciarDialogo();
+    }, DURACAO_LIBERA_ME_FROM_HELL_MS);
+
+    if (painel.classList.contains('expandido')) iniciarDialogo();
+  };
+
+  // mesmo padrão de interação do #dragonball-panel: hover no desktop,
+  // toque no mobile (variável `mob`, já compartilhada nesta página — mas
+  // sem presumir que ela exista: se algo mais cedo na página falhar antes
+  // de defini-la, isso não deveria derrubar este painel também)
+  var ehMobile = (typeof mob !== 'undefined') ? mob : (window.innerWidth < 768);
+  if (ehMobile) {
+    painel.addEventListener('click', function () {
+      var vaiAbrir = !painel.classList.contains('expandido');
+      if (vaiAbrir) { abrirPainel(); iniciarDialogo(); }
+      else { fecharPainel(); }
+    });
+  } else {
+    painel.addEventListener('mouseenter', function () {
+      abrirPainel();
+      iniciarDialogo();
+    });
+    painel.addEventListener('mouseleave', fecharPainel);
+  }
+  }); // fim do NexusCancao.aoPainelPronto
+})();
+</script>
+</body>
+</html>
