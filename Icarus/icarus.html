@@ -1,0 +1,3176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ícarus Reborn</title>
+<link rel="icon" type="image/svg+xml" href="icarus-favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400&family=Cinzel+Decorative:wght@400&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --bg:#0c0704; --chocolate:#D2691E; --burlywood:#DEB887; --wheat:#F5DEB3;
+    --text:#F0E4D0; --dim:rgba(240,228,208,.45);
+  }
+  html,body{background:var(--bg); color:var(--text); font-family:'EB Garamond',Georgia,serif;}
+  body{min-height:100vh; position:relative; overflow-x:hidden;}
+
+  .nexus-return{
+    display:inline-block; position:absolute; top:0; left:0; z-index:10;
+    font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.28em; text-transform:uppercase;
+    text-decoration:none; color:var(--dim); padding:1rem 1.2rem; background:none;
+    text-shadow:0 1px 4px rgba(0,0,0,.7);
+  }
+  .nexus-return:hover{color:var(--chocolate);}
+
+  .hero-bg{
+    position:fixed; inset:0; z-index:0;
+    background-image:
+      linear-gradient(180deg, rgba(12,7,4,.35) 0%, rgba(12,7,4,.55) 40%, var(--bg) 88%),
+      url('images/icarus-paren-krylia-padaet.jpg');
+    background-size:cover;
+    background-position:center 25%;
+    filter:saturate(.85) brightness(.62);
+  }
+
+  .mascote-wrap{position:relative; width:110px; height:110px; margin:0 auto 1rem; display:flex; align-items:center; justify-content:center;}
+
+  .mascote{position:relative; z-index:1; width:60px; height:auto;
+    filter:drop-shadow(0 2px 10px rgba(0,0,0,.5)); image-rendering:pixelated;}
+
+  .ember{position:fixed; top:-5%; width:5px; height:5px; border-radius:50%;
+    background:radial-gradient(circle, var(--wheat), var(--chocolate) 70%, transparent);
+    opacity:0; pointer-events:none; z-index:500; animation:fall linear infinite;}
+  @keyframes fall{
+    0%{opacity:0; transform:translateY(0) translateX(0);}
+    8%{opacity:.55;} 92%{opacity:.3;}
+    100%{opacity:0; transform:translateY(108vh) translateX(var(--drift,20px));}
+  }
+  /* dentro da Peça 05 o terminal emulado precisa de um fundo realmente opaco —
+     as brasas, com z-index acima do próprio painel, atravessavam visualmente por cima da arte ASCII */
+  body.sem-brasas #embers{display:none;}
+
+  .bg-glow{position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:radial-gradient(ellipse 60% 45% at 50% 8%, rgba(210,105,30,.16), transparent 60%),
+               radial-gradient(ellipse 80% 60% at 50% 100%, rgba(20,10,4,.9), transparent 70%);}
+
+  .wrap{position:relative; z-index:1; max-width:900px; margin:0 auto; padding:3rem 1.5rem 5rem;}
+
+  header{text-align:center; margin-bottom:2.6rem;}
+  .sun-emblem{position:absolute; inset:0; width:100%; height:100%; z-index:0;
+    filter:drop-shadow(0 0 26px rgba(232,130,30,.55)); animation:sun-spin 70s linear infinite;}
+  @keyframes sun-spin{ to{ transform:rotate(360deg); } }
+
+  h1{font-family:'Cinzel Decorative',serif; font-weight:400; font-size:clamp(1.7rem,5vw,2.7rem);
+    letter-spacing:.14em; background:linear-gradient(135deg,var(--wheat),var(--chocolate) 55%,#8B4A1E);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    text-shadow:0 0 34px rgba(210,105,30,.28);}
+  .tagline{font-style:italic; color:var(--dim); font-size:.95rem; letter-spacing:.05em; margin-top:.6rem;}
+
+  /* ─── INTRODUÇÃO DO MUSEU ─────────────────────────────── */
+  .intro{max-width:640px; margin:0 auto 3.4rem; text-align:center;}
+  .intro p{font-size:.98rem; color:var(--dim); line-height:1.8; margin-bottom:.9rem;}
+  .intro p:last-child{margin-bottom:0;}
+  .intro em{color:var(--burlywood); font-style:italic;}
+
+  /* ─── PEÇAS DO MUSEU ───────────────────────────────────── */
+  .peca{margin-bottom:4rem; padding-bottom:3.6rem; border-bottom:1px solid rgba(222,184,135,.12);}
+  .peca:last-of-type{border-bottom:none;}
+  .peca-eyebrow{font-family:'Cinzel',serif; font-size:.62rem; letter-spacing:.26em; text-transform:uppercase;
+    color:rgba(210,105,30,.75); margin-bottom:.7rem;}
+  .peca h2{font-family:'Cinzel',serif; font-weight:400; font-size:clamp(1.35rem,3.4vw,1.75rem);
+    color:var(--wheat); margin-bottom:1rem; letter-spacing:.01em;}
+  .peca-nota{font-size:.92rem; color:var(--dim); line-height:1.8; margin-bottom:1.6rem; max-width:640px;}
+  .peca-nota strong{color:var(--burlywood); font-weight:400; font-style:italic;}
+
+  .sub{margin:1.8rem 0;}
+  .sub-titulo{font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--burlywood); margin-bottom:.5rem;}
+  .sub-nota{font-size:.86rem; color:var(--dim); line-height:1.7; margin-bottom:.8rem;}
+
+  /* código — mesma linguagem visual que a camada arqueológica sempre usou */
+  .cap{font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.2em; text-transform:uppercase;
+    color:rgba(210,105,30,.6); margin:1.2rem 0 .5rem;}
+  pre{background:#0a0603; border-left:2px solid rgba(210,105,30,.4); padding:1rem 1.2rem;
+    overflow-x:auto; font-size:.78rem; line-height:1.6; color:#c4ab86; font-family:ui-monospace,Menlo,Consolas,monospace;}
+  .dado{font-size:.78rem; color:rgba(196,171,134,.75); font-family:ui-monospace,Menlo,Consolas,monospace;
+    background:#0a0603; border-left:2px solid rgba(222,184,135,.2); padding:.7rem 1rem; overflow-x:auto;}
+
+  /* terminal emulado — aptitude moo, Peça 05 */
+  .aptitude-emul{margin:.7rem 0 1rem;}
+  .aptitude-tela{background:#0a0603; border-left:2px solid rgba(210,105,30,.4); padding:.85rem 1.1rem;
+    font-size:.76rem; line-height:1.65; color:#c4ab86; font-family:ui-monospace,Menlo,Consolas,monospace;
+    max-height:14rem; overflow-y:auto; white-space:pre-wrap;}
+  .aptitude-tela .aptitude-cmd{color:var(--wheat); display:block;}
+  .aptitude-tela .aptitude-resp{color:rgba(196,171,134,.85); display:block; margin:.1rem 0 .8rem;}
+  .aptitude-arte{display:block; white-space:pre; overflow-x:auto; max-width:100%;
+    -webkit-overflow-scrolling:touch;}
+  .aptitude-cursor{animation:aptitude-pisca 1s step-end infinite;}
+  @keyframes aptitude-pisca{50%{opacity:0;}}
+  .aptitude-controles{margin-top:.55rem; display:flex; align-items:center; gap:.9rem;}
+  .aptitude-botao{background:rgba(210,105,30,.1); border:1px solid rgba(210,105,30,.4);
+    color:var(--burlywood); font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.74rem;
+    padding:.5rem .9rem; border-radius:3px; cursor:pointer;}
+  .aptitude-botao:hover{background:rgba(210,105,30,.2);}
+  .aptitude-botao:disabled{opacity:.35; cursor:default;}
+  .aptitude-reiniciar{background:none; border:none; color:var(--dim); font-size:.72rem;
+    text-decoration:underline; cursor:pointer; font-family:inherit; padding:0;}
+
+  .elenco{list-style:none; margin:.4rem 0 1.6rem; padding:0;}
+  .planilha-wrap{overflow-x:auto; margin:.6rem 0 1rem; border-left:2px solid rgba(210,105,30,.4); -webkit-overflow-scrolling:touch;}
+  .planilha{border-collapse:collapse; font-size:.76rem; white-space:nowrap; font-family:ui-monospace,Menlo,Consolas,monospace;}
+  .planilha th, .planilha td{border:1px solid rgba(222,184,135,.15); padding:.35rem .6rem; text-align:left; color:rgba(196,171,134,.85);}
+  .planilha th{color:var(--burlywood); font-weight:600; background:rgba(210,105,30,.08);}
+  .grafico{max-width:100%; border-radius:3px; margin:.5rem 0 .9rem; display:block;}
+  .elenco li{padding:.5rem 0; border-bottom:1px solid rgba(222,184,135,.08); font-size:.88rem; color:var(--dim);}
+  .elenco li b{color:var(--burlywood); font-weight:400; font-style:italic;}
+
+  .tabela-pm{width:100%; border-collapse:collapse; margin:.4rem 0 1.6rem; font-size:.82rem;}
+  .tabela-pm th{font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--burlywood); text-align:left; padding:.5rem .7rem; border-bottom:1px solid rgba(222,184,135,.25);}
+  .tabela-pm td{padding:.5rem .7rem; border-bottom:1px solid rgba(222,184,135,.08); color:var(--dim);}
+  .tabela-pm td.num{font-family:ui-monospace,Menlo,Consolas,monospace; color:var(--burlywood); white-space:nowrap;}
+  .tabela-pm td.verde{color:#8FB88A;} .tabela-pm td.amarelo{color:#D9BB6C;} .tabela-pm td.vermelho{color:#C4776A;}
+
+  .vpl{background:#150d08; border:1px solid rgba(222,184,135,.15); border-radius:6px; padding:1.2rem 1.4rem; margin:.4rem 0 1.6rem;}
+  .vpl .formula{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.78rem; color:rgba(196,171,134,.8); display:block; margin-bottom:.6rem;}
+  .vpl .resultado{font-family:'Cinzel',serif; color:var(--burlywood); font-size:1.1rem;}
+
+  /* evidência — capturas de tela como peça de museu, não como print solto */
+  .evidencia{background:#150d08; border:1px solid rgba(222,184,135,.15); border-radius:6px;
+    padding:.7rem; margin:1.4rem 0 .5rem;}
+  .evidencia img{width:100%; height:auto; display:block; border-radius:3px; opacity:.92;}
+  .evidencia-cap{font-size:.74rem; color:var(--dim); font-style:italic; text-align:center;
+    margin-top:.6rem; letter-spacing:.02em;}
+
+  .evidencia-grade{display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:.5rem;
+    margin:1rem 0 .3rem;}
+  .evidencia-grade figure{margin:0; background:#150d08; border:1px solid rgba(222,184,135,.15);
+    border-radius:5px; padding:.35rem; overflow:hidden;}
+  .evidencia-grade img{width:100%; height:auto; display:block; border-radius:2px; opacity:.9;}
+  .evidencia-grade figcaption{font-family:'Cinzel',serif; font-size:.56rem; letter-spacing:.08em;
+    color:var(--dim); text-align:center; margin-top:.3rem;}
+
+  .xd-widget{display:flex; flex-direction:column; align-items:center; gap:.6rem; margin:1.2rem 0;}
+  .xd-tela-nome{font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--burlywood); min-height:1.2em; text-align:center;}
+  .xd-frame{width:220px; padding:10px 8px; background:linear-gradient(160deg,#2a1c10,#150d08);
+    border:1px solid rgba(222,184,135,.25); border-radius:22px; box-shadow:0 10px 30px rgba(0,0,0,.5);}
+  .xd-frame svg{width:100%; display:block; border-radius:10px; background:#fff;}
+  .xd-hit{cursor:pointer;}
+  .xd-hit:hover{fill:rgba(97,164,49,.12) !important;}
+  .xd-reiniciar{font-family:'Cinzel',serif; font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--dim); background:none; border:1px solid rgba(222,184,135,.3); border-radius:20px;
+    padding:.35rem .9rem; cursor:pointer; transition:color .2s,border-color .2s;}
+  .xd-reiniciar:hover{color:var(--wheat); border-color:var(--chocolate);}
+
+  .app-widget{display:flex; flex-direction:column; align-items:center; gap:.7rem; margin:1.2rem 0;}
+  .app-tela-nome{font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--burlywood); text-align:center;}
+  .app-frame{width:100%; max-width:620px; background:linear-gradient(160deg,#2a1c10,#150d08);
+    border:1px solid rgba(222,184,135,.25); border-radius:10px; padding:8px 8px 10px;
+    box-shadow:0 10px 30px rgba(0,0,0,.5);}
+  .app-frame-bar{display:flex; gap:5px; padding:0 2px 8px;}
+  .app-frame-bar span{width:9px; height:9px; border-radius:50%; background:rgba(222,184,135,.25);}
+  .app-frame img{width:100%; display:block; border-radius:4px; background:#fff;}
+  .app-tela{position:relative; line-height:0;}
+  .app-hotspot{position:absolute; cursor:pointer; background:rgba(97,164,49,0); transition:background .15s;}
+  .app-hotspot:hover{background:rgba(97,164,49,.16);}
+  .app-reiniciar{font-family:'Cinzel',serif; font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--dim); background:none; border:1px solid rgba(222,184,135,.3); border-radius:20px;
+    padding:.35rem .9rem; cursor:pointer; transition:color .2s,border-color .2s;}
+  .app-reiniciar:hover{color:var(--wheat); border-color:var(--chocolate);}
+
+  .pptx-widget{display:flex; flex-direction:column; align-items:center; gap:.6rem; margin:1.1rem 0;}
+  .pptx-frame{width:100%; max-width:560px; background:#0f0906; border:1px solid rgba(222,184,135,.25);
+    border-radius:8px; padding:6px; box-shadow:0 8px 24px rgba(0,0,0,.45);}
+  .pptx-frame img{width:100%; display:block; border-radius:3px; background:#fff;}
+  .pptx-controls{display:flex; align-items:center; gap:.9rem;}
+  .pptx-controls button{width:34px; height:34px; border-radius:50%; border:1px solid rgba(222,184,135,.3);
+    background:none; color:var(--burlywood); font-size:1.1rem; cursor:pointer;
+    transition:color .2s,border-color .2s,opacity .2s;}
+  .pptx-controls button:hover:not(:disabled){color:var(--wheat); border-color:var(--chocolate);}
+  .pptx-controls button:disabled{opacity:.3; cursor:default;}
+  .pptx-contador{font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.08em; color:var(--dim);
+    min-width:3.6em; text-align:center;}
+
+  /* fios soltos — o que veio junto mas ainda não virou peça própria */
+  .fio-solto{background:rgba(255,255,255,.02); border:1px dashed rgba(222,184,135,.18); border-radius:6px;
+    padding:1.1rem 1.3rem; margin-top:1.6rem;}
+  .fio-solto p{font-size:.84rem; color:var(--dim); line-height:1.7; font-style:italic;}
+  .fio-solto p strong{color:rgba(210,105,30,.7); font-style:normal;}
+
+  /* ─── PRATELEIRA 3D ────────────────────────────────────── */
+  .prateleira3d{display:none; width:100%; max-width:720px; margin-left:auto; margin-right:auto; height:300px; margin-bottom:1.2rem; border-radius:10px;
+    overflow:hidden; position:relative; background:radial-gradient(ellipse at 50% 40%, rgba(210,105,30,.05), transparent 70%);}
+  .prateleira3d canvas{display:block; width:100%; height:100%;}
+
+  .prat-nav{position:absolute; top:50%; transform:translateY(-50%); z-index:2;
+    width:34px; height:34px; border-radius:50%; border:1px solid rgba(222,184,135,.25);
+    background:rgba(12,7,4,.55); color:var(--burlywood); font-size:1.2rem; line-height:1;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; transition:border-color .2s, color .2s, background .2s;}
+  .prat-nav:hover{color:var(--wheat); border-color:rgba(210,105,30,.55); background:rgba(12,7,4,.8);}
+  .prat-nav-esq{left:.6rem;} .prat-nav-dir{right:.6rem;}
+  .prat-nav:disabled{opacity:.25; cursor:default;}
+  .prat-paginas{position:absolute; bottom:.6rem; left:50%; transform:translateX(-50%); z-index:2;
+    display:flex; gap:.4rem;}
+  .prat-ponto{width:6px; height:6px; border-radius:50%; background:rgba(240,228,208,.2);}
+  .prat-ponto.ativo{background:var(--chocolate);}
+  .prateleira3d.pronta{display:block;}
+
+  .relic3d-label{position:absolute; transform:translate(-50%,0); font-family:'Cinzel',serif;
+    font-size:.72rem; letter-spacing:.08em; color:var(--burlywood); text-shadow:0 1px 6px rgba(0,0,0,.9);
+    white-space:nowrap; cursor:pointer; padding:.2rem .5rem; user-select:none; transition:opacity .3s ease;}
+  .relic3d-label:hover{color:var(--wheat);}
+
+  /* ─── PRATELEIRA ───────────────────────────────────────── */
+  .prateleira{display:grid; grid-template-columns:repeat(2,1fr); gap:1.1rem; margin-bottom:1rem;}
+  .prat-pagina-nota{text-align:center; font-size:.72rem; font-style:italic; color:var(--dim); opacity:.6; margin:-.3rem 0 1.4rem;}
+  @media(max-width:640px){ .prateleira{grid-template-columns:1fr;} }
+
+  .relic{background:rgba(255,255,255,.015); border:1px solid rgba(222,184,135,.16); border-radius:8px;
+    padding:1.5rem 1.4rem; text-align:left; cursor:pointer; font-family:inherit; color:inherit;
+    transition:border-color .25s, transform .25s, background .25s;}
+  .relic:hover,.relic:focus-visible{border-color:rgba(210,105,30,.55); transform:translateY(-3px);
+    background:rgba(210,105,30,.04); outline:none;}
+  .relic-icone{width:34px; height:34px; color:rgba(210,105,30,.75); margin-bottom:.9rem;}
+  .relic-num{font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.24em; color:rgba(210,105,30,.55); margin-bottom:.4rem;}
+  .relic h3{font-family:'Cinzel',serif; font-weight:400; font-size:1.05rem; color:var(--wheat); margin-bottom:.5rem;}
+  .relic-gancho{font-size:.82rem; font-style:italic; color:var(--dim); line-height:1.5;}
+
+  /* ─── FOCO (peça aberta) ───────────────────────────────── */
+  .foco-overlay{position:fixed; inset:0; z-index:50; background:rgba(6,3,1,.85); backdrop-filter:blur(3px);
+    opacity:0; pointer-events:none; transition:opacity .35s ease; overflow-y:auto;}
+  .foco-overlay.aberto{opacity:1; pointer-events:auto;}
+  .wrap.recuado{filter:blur(2px) brightness(.55); transition:filter .35s ease;}
+
+  .foco-painel{display:none; max-width:760px; margin:3.5rem auto 5rem; padding:0 1.5rem;
+    animation:foco-entra .4s ease;}
+  .foco-painel.ativo{display:block;}
+  @keyframes foco-entra{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+
+  .foco-fechar{position:sticky; top:1rem; float:right; background:rgba(12,7,4,.7); border:1px solid rgba(222,184,135,.2);
+    color:var(--dim); font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.14em; text-transform:uppercase;
+    padding:.5rem .9rem; border-radius:20px; cursor:pointer; margin-bottom:1rem;}
+  .foco-fechar:hover{color:var(--chocolate); border-color:rgba(210,105,30,.5);}
+
+  @media(prefers-reduced-motion:reduce){
+    .foco-painel{animation:none;} .foco-overlay,.wrap.recuado{transition:none;}
+  }
+
+  footer{text-align:center; margin-top:4rem; font-size:.68rem; color:rgba(240,228,208,.14); letter-spacing:.14em;}
+
+  @media(max-width:600px){ .peca-eyebrow{letter-spacing:.18em;} }
+
+  /* ── Esfera do Dragão (easter egg secreto) ── */
+  #dragonball-sphere{ display:none; position:fixed; right:1.2rem; bottom:1.2rem; z-index:999999; cursor:pointer; animation:dbFloat 3.4s ease-in-out infinite; }
+  @keyframes dbFloat{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .db-sphere-orb{ position:relative; width:64px; height:64px; border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #FFE9B0 0%, #FFC24D 18%, #E8891A 55%, #A34E08 85%, #6B3204 100%);
+    box-shadow:0 0 22px rgba(232,137,26,.55), inset -6px -6px 14px rgba(0,0,0,.35), inset 4px 6px 10px rgba(255,255,255,.25);
+    animation:dbSpin 9s linear infinite; }
+  @keyframes dbSpin{ to{ transform:rotate(360deg); } }
+  #dragonball-sphere:hover .db-sphere-orb{ box-shadow:0 0 32px rgba(232,137,26,.8), inset -6px -6px 14px rgba(0,0,0,.35), inset 4px 6px 10px rgba(255,255,255,.35); }
+  .db-sphere-orb .estrela{ position:absolute; width:9px; height:9px; background:#C21818; clip-path:polygon(50% 0%, 61% 35%, 98% 35%, 68% 56%, 79% 91%, 50% 69%, 21% 91%, 32% 56%, 2% 35%, 39% 35%); filter:drop-shadow(0 1px 1px rgba(0,0,0,.55)); }
+</style>
+</head>
+<body>
+
+<script>try{ if (window.top !== window) window.top.postMessage({ tipo:'nexus-visita', id:'icaro' }, '*'); }catch(e){}</script>
+
+<a class="nexus-return" href="../nexus.html">◆ Nexus</a>
+
+<div class="hero-bg"></div>
+<div class="bg-glow"></div>
+<div id="embers"></div>
+
+<div class="wrap">
+  <header>
+    <div class="mascote-wrap">
+      <svg class="sun-emblem" viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FFD08A"/>
+            <stop offset="55%" stop-color="#E8821E"/>
+            <stop offset="100%" stop-color="#8B4A1E"/>
+          </radialGradient>
+        </defs>
+        <g fill="url(#sunGrad)">
+          <polygon points="50,2 55,24 45,24"/>
+          <polygon points="50,2 55,24 45,24" transform="rotate(45 50 50)"/>
+          <polygon points="50,2 55,24 45,24" transform="rotate(90 50 50)"/>
+          <polygon points="50,2 55,24 45,24" transform="rotate(135 50 50)"/>
+          <polygon points="50,2 55,24 45,24" transform="rotate(180 50 50)"/>
+          <polygon points="50,2 55,24 45,24" transform="rotate(225 50 50)"/>
+          <polygon points="50,2 55,24 45,24" transform="rotate(270 50 50)"/>
+          <polygon points="50,2 55,24 45,24" transform="rotate(315 50 50)"/>
+        </g>
+        <circle cx="50" cy="50" r="20" fill="url(#sunGrad)"/>
+      </svg>
+      <img class="mascote" src="images/icaro-sprite.png" alt="Ícaro" width="64">
+    </div>
+    <h1>Ícarus Reborn</h1>
+    <p class="tagline">o que caiu, insiste em arder de novo</p>
+  </header>
+
+  <div class="intro">
+    <p>Isto não é mais um catálogo — o <em>M.A.L.</em> já faz esse trabalho, e faz melhor.</p>
+    <p>Virou museu: peças da faculdade que não acharam onde encaixar em nenhuma outra página do site. Cada uma com sua placa, do jeito que a camada arqueológica sempre tratou o banco de dados original — só que agora esse é o formato de tudo aqui, não mais uma exceção escondida atrás de um botão.</p>
+  </div>
+
+  <!-- ═══════════════ PEÇA 01 — O ACERVO ANTERIOR ═══════════════ -->
+  <div id="prateleira3d" class="prateleira3d" aria-label="Prateleira 3D — toque numa peça pra abrir">
+    <button class="prat-nav prat-nav-esq" id="pratAnterior" aria-label="Página anterior da prateleira" style="display:none">‹</button>
+    <button class="prat-nav prat-nav-dir" id="pratProxima" aria-label="Próxima página da prateleira" style="display:none">›</button>
+    <div class="prat-paginas" id="pratPaginas" style="display:none"></div>
+  </div>
+
+  <div class="prateleira">
+    <button class="relic" data-foco="foco01" aria-label="Abrir peça 01">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <ellipse cx="20" cy="10" rx="12" ry="4" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M8,10 L8,30 A12,4 0 0,0 32,30 L32,10" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M8,20 A12,4 0 0,0 32,20" stroke="currentColor" stroke-width="1.3"/>
+      </svg>
+      <p class="relic-num">Peça 01</p>
+      <h3>O Acervo Anterior</h3>
+      <p class="relic-gancho">o catálogo que este museu substituiu</p>
+    </button>
+
+    <button class="relic" data-foco="foco02" aria-label="Abrir peça 02">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <path d="M20,20 m-1,0 a1,1 0 1,1 2,0 a3,3 0 1,1 -6,0 a6,6 0 1,1 12,0 a10,10 0 1,1 -20,0 a15,15 0 0,1 15,-15" stroke="currentColor" stroke-width="1.3"/>
+      </svg>
+      <p class="relic-num">Peça 02</p>
+      <h3>Fibonacci</h3>
+      <p class="relic-gancho">recursão até estourar a pilha</p>
+    </button>
+
+    <button class="relic" data-foco="foco03" aria-label="Abrir peça 03">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <path d="M8,4 C16,10 4,16 12,22 C20,28 8,34 16,40" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M24,4 C16,10 28,16 20,22 C12,28 24,34 16,40" stroke="currentColor" stroke-width="1.3"/>
+        <line x1="10" y1="8" x2="22" y2="8" stroke="currentColor" stroke-width="1"/>
+        <line x1="8" y1="17" x2="20" y2="17" stroke="currentColor" stroke-width="1"/>
+        <line x1="12" y1="26" x2="24" y2="26" stroke="currentColor" stroke-width="1"/>
+        <line x1="10" y1="35" x2="22" y2="35" stroke="currentColor" stroke-width="1"/>
+      </svg>
+      <p class="relic-num">Peça 03</p>
+      <h3>DNA — Rosalind</h3>
+      <p class="relic-gancho">contar, transcrever, complementar, achar um padrão</p>
+    </button>
+
+    <button class="relic" data-foco="foco04" aria-label="Abrir peça 04">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="currentColor" aria-hidden="true">
+        <path d="M20,4 C12,14 10,20 14,26 C13,22 15,20 17,19 C16,24 19,27 22,27 C27,27 30,22 27,16 C26,20 24,20 24,18 C26,14 24,8 20,4 Z"/>
+      </svg>
+      <p class="relic-num">Peça 04</p>
+      <h3>RescueTechSolutions</h3>
+      <p class="relic-gancho">um corpo de bombeiros que não existe</p>
+    </button>
+
+    <button class="relic" data-foco="foco05" aria-label="Abrir peça 05">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <rect x="4" y="10" width="11" height="8" transform="rotate(-12 9.5 14)" stroke="currentColor" stroke-width="1.3"/>
+        <circle cx="27" cy="14" r="6" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M18,34 L24,22 L30,34 Z" transform="rotate(8 24 28)" stroke="currentColor" stroke-width="1.3"/>
+      </svg>
+      <p class="relic-num">Peça 05</p>
+      <h3>Fragmentos</h3>
+      <p class="relic-gancho">sobras sem coleção nenhuma</p>
+    </button>
+
+    <button class="relic" data-foco="foco06" aria-label="Abrir peça 06">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <rect x="17" y="18" width="6" height="16" stroke="currentColor" stroke-width="1.3"/>
+        <ellipse cx="20" cy="10" rx="9" ry="4" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M20,3 L20,7 M12,6 L15,9 M28,6 L25,9" stroke="currentColor" stroke-width="1.1"/>
+      </svg>
+      <p class="relic-num">Peça 06</p>
+      <h3>Tesla</h3>
+      <p class="relic-gancho">a torre que não terminou</p>
+    </button>
+
+    <button class="relic" data-foco="foco07" aria-label="Abrir peça 07">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <rect x="10" y="8" width="20" height="15" rx="1" stroke="currentColor" stroke-width="1.3"/>
+        <rect x="14" y="12" width="12" height="7" fill="currentColor" opacity="0.55"/>
+        <path d="M20,23 L20,28 M14,32 L26,32" stroke="currentColor" stroke-width="1.3"/>
+      </svg>
+      <p class="relic-num">Peça 07</p>
+      <h3>URI</h3>
+      <p class="relic-gancho">o nome que morreu, não a plataforma</p>
+    </button>
+
+    <button class="relic" data-foco="foco08" aria-label="Abrir peça 08">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <rect x="4" y="12" width="6" height="23" stroke="currentColor" stroke-width="1.2"/>
+        <rect x="11" y="8" width="6" height="27" stroke="currentColor" stroke-width="1.2"/>
+        <rect x="18" y="14" width="6" height="21" stroke="currentColor" stroke-width="1.2"/>
+        <circle cx="30" cy="13" r="6" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M27,19 L26,27 L30,24.5 L34,27 L33,19" stroke="currentColor" stroke-width="1.1"/>
+      </svg>
+      <p class="relic-num">Peça 08</p>
+      <h3>Clarice</h3>
+      <p class="relic-gancho">uma pesquisa que virou prêmio</p>
+    </button>
+
+    <button class="relic" data-foco="foco09" aria-label="Abrir peça 09">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <rect x="5" y="9" width="21" height="15" rx="3" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M10,24 L10,29 L15,24 Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+        <line x1="9" y1="14" x2="22" y2="14" stroke="currentColor" stroke-width="1"/>
+        <line x1="9" y1="18.5" x2="18" y2="18.5" stroke="currentColor" stroke-width="1"/>
+        <rect x="23" y="6" width="12" height="9" rx="2" stroke="currentColor" stroke-width="1.1"/>
+        <path d="M27,15 L27,19 L31,15 Z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+      </svg>
+      <p class="relic-num">Peça 09</p>
+      <h3>PDAES</h3>
+      <p class="relic-gancho">a resposta que também é aula</p>
+    </button>
+
+    <button class="relic" data-foco="foco10" aria-label="Abrir peça 10">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <path d="M6,20 L20,8 L34,20" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+        <path d="M10,18 L10,33 L30,33 L30,18" stroke="currentColor" stroke-width="1.3"/>
+        <rect x="16.5" y="23" width="7" height="10" stroke="currentColor" stroke-width="1.1"/>
+        <rect x="13" y="21" width="4" height="4" stroke="currentColor" stroke-width="0.9"/>
+      </svg>
+      <p class="relic-num">Peça 10</p>
+      <h3>Guts</h3>
+      <p class="relic-gancho">o Airbnb que ganhou nome próprio</p>
+    </button>
+
+    <button class="relic" data-foco="foco11" aria-label="Abrir peça 11">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <rect x="6" y="10" width="26" height="18" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M15,15 L15,23 L23,19 Z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+        <rect x="10" y="30" width="18" height="2" fill="currentColor" opacity="0.5"/>
+      </svg>
+      <p class="relic-num">Peça 11</p>
+      <h3>Slides</h3>
+      <p class="relic-gancho">quatro decks que não se conhecem</p>
+    </button>
+
+    <button class="relic" data-foco="foco12" aria-label="Abrir peça 12">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <ellipse cx="20" cy="10" rx="13" ry="5" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M7,10 L7,30 C7,32.76 12.82,35 20,35 C27.18,35 33,32.76 33,30 L33,10" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M7,20 C7,22.76 12.82,25 20,25 C27.18,25 33,22.76 33,20" stroke="currentColor" stroke-width="1.1"/>
+      </svg>
+      <p class="relic-num">Peça 12</p>
+      <h3>SQL</h3>
+      <p class="relic-gancho">expressão por expressão</p>
+    </button>
+
+    <button class="relic" data-foco="foco13" aria-label="Abrir peça 13">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <path d="M28,12 A13,13 0 1,0 31,24" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M25,7 L28,12 L33,10" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+        <path d="M20,14 L26,20 L20,26 L14,20 Z" stroke="currentColor" stroke-width="1.2"/>
+      </svg>
+      <p class="relic-num">Peça 13</p>
+      <h3>6ADS</h3>
+      <p class="relic-gancho">quarenta exercícios, um de cada vez</p>
+    </button>
+
+    <button class="relic" data-foco="foco14" aria-label="Abrir peça 14">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <rect x="7" y="5" width="22" height="15" rx="1.5" stroke="currentColor" stroke-width="1.1" stroke-dasharray="3,2"/>
+        <rect x="5" y="24" width="11" height="8" rx="1" stroke="currentColor" stroke-width="1.3"/>
+        <rect x="18" y="26" width="11" height="8" rx="1" stroke="currentColor" stroke-width="1.3"/>
+        <circle cx="9" cy="27" r="1" fill="currentColor"/>
+        <circle cx="22" cy="29" r="1" fill="currentColor"/>
+      </svg>
+      <p class="relic-num">Peça 14</p>
+      <h3>POO</h3>
+      <p class="relic-gancho">uma classe, dez saldos</p>
+    </button>
+
+    <button class="relic" data-foco="foco15" aria-label="Abrir peça 15">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <path d="M6,32 C14,30 26,18 34,6" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M6,6 C14,10 26,26 34,32" stroke="currentColor" stroke-width="1.3"/>
+        <circle cx="20" cy="19" r="1.6" fill="currentColor"/>
+        <line x1="20" y1="19" x2="20" y2="36" stroke="currentColor" stroke-width="0.8" stroke-dasharray="1.5,1.5"/>
+        <line x1="4" y1="19" x2="20" y2="19" stroke="currentColor" stroke-width="0.8" stroke-dasharray="1.5,1.5"/>
+      </svg>
+      <p class="relic-num">Peça 15</p>
+      <h3>Economia</h3>
+      <p class="relic-gancho">a peça mais velha depois da URI e da Guts</p>
+    </button>
+
+    <button class="relic" data-foco="foco16" aria-label="Abrir peça 16">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <path d="M9,17 L11,31 Q11,33 13,33 L25,33 Q27,33 27,31 L29,17 Z" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M28,19.5 Q35,19.5 34,25 Q33,29.5 26.5,28.5" stroke="currentColor" stroke-width="1.3"/>
+        <line x1="9" y1="17" x2="29" y2="17" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M14,13.5 Q12,9.5 15,6" stroke="currentColor" stroke-width="1.1"/>
+        <path d="M20.5,13.5 Q18.5,8.5 21.5,4.5" stroke="currentColor" stroke-width="1.1"/>
+      </svg>
+      <p class="relic-num">Peça 16</p>
+      <h3>Java</h3>
+      <p class="relic-gancho">quinze meses, antes de tudo o resto</p>
+    </button>
+
+    <button class="relic" data-foco="foco17" aria-label="Abrir peça 17">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <path d="M5,26 Q20,9 35,26" stroke="currentColor" stroke-width="1.3"/>
+        <line x1="3" y1="27" x2="37" y2="27" stroke="currentColor" stroke-width="1.3"/>
+        <line x1="12" y1="27" x2="12" y2="33" stroke="currentColor" stroke-width="1.1"/>
+        <line x1="20" y1="27" x2="20" y2="33" stroke="currentColor" stroke-width="1.1"/>
+        <line x1="28" y1="27" x2="28" y2="33" stroke="currentColor" stroke-width="1.1"/>
+      </svg>
+      <p class="relic-num">Peça 17</p>
+      <h3>COBIT</h3>
+      <p class="relic-gancho">a ponte entre risco e controle</p>
+    </button>
+
+    <button class="relic" data-foco="foco18" aria-label="Abrir peça 18">
+      <svg class="relic-icone" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <line x1="5" y1="34" x2="35" y2="34" stroke="currentColor" stroke-width="1.3"/>
+        <rect x="8" y="22" width="6" height="12" stroke="currentColor" stroke-width="1.2"/>
+        <rect x="17" y="12" width="6" height="22" stroke="currentColor" stroke-width="1.2"/>
+        <rect x="26" y="26" width="6" height="8" stroke="currentColor" stroke-width="1.2"/>
+      </svg>
+      <p class="relic-num">Peça 18</p>
+      <h3>Planilhas</h3>
+      <p class="relic-gancho">cada gráfico, um fundo diferente</p>
+    </button>
+  </div>
+
+  <p class="prat-pagina-nota">peças 01–05 na página 1 · peças 06–10 na página 2 · peças 11–15 na página 3 · peças 16–18 na página 4 — na prateleira 3D, vira a página pra ver</p>
+
+
+  <footer>
+    ◆ &nbsp; Ícarus Reborn — Museu do Esquecido &nbsp; ◆
+  </footer>
+</div>
+
+  <div class="foco-overlay" id="focoOverlay">
+  <article class="peca foco-painel" id="foco01">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 01 · dez 2022 — jul 2026</p>
+    <h2>O Acervo Anterior</h2>
+    <p class="peca-nota">Até pouco tempo, esta página era um catálogo de animes e jogos — nascido de um projeto de faculdade em Java, JSP e MySQL, de dezembro de 2022, depois reconstruído em JavaScript puro pra funcionar sem servidor nenhum. O <strong>M.A.L.</strong> faz o mesmo trabalho hoje. Então o catálogo se aposenta — e vira a primeira peça do museu que ele mesmo ajudou a inspirar.</p>
+
+    <p class="cap">obras.sql — estrutura e dados originais</p>
+    <pre>CREATE TABLE `animes` (
+  `id_Anime` int(11) NOT NULL AUTO_INCREMENT,
+  `nome_Anime` varchar(45) DEFAULT NULL,
+  `autor_Anime` varchar(45) DEFAULT NULL,
+  `estudio_Anime` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id_Anime`)
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `animes` (`id_Anime`, `nome_Anime`, `autor_Anime`, `estudio_Anime`) VALUES
+(6, 'Castlevania', 'Koji', 'Netflix'),
+(8, 'Dragon Ball', 'Akyra', 'Shounem Jump'),
+(12, '', '', '');</pre>
+    <p class="sub-nota">Uma quarta obra foi criada — id 12 — mas nunca recebeu nome, autor ou estúdio. Continua vazia até hoje: uma cadeira reservada que ninguém chegou a ocupar.</p>
+
+    <p class="cap">inserirAnime.jsp — 09/12/2022</p>
+    <pre>&lt;%
+    try {
+        AnimeDTO objAnimeDTO = new AnimeDTO();
+        objAnimeDTO.setNome_Anime(request.getParameter("nome"));
+        objAnimeDTO.setAutor_Anime(request.getParameter("autor"));
+        objAnimeDTO.setEstudio_Anime(request.getParameter("estudio"));
+
+        AnimeDAO objAnimeDAO = new AnimeDAO();
+        objAnimeDAO.CadastrarAnime(objAnimeDTO);
+
+    } catch (Exception e) {
+
+    }
+%&gt;</pre>
+    <p class="sub-nota">Java, JSP, um DAO conversando com um MySQL local. Funcionava — só que apenas dentro de um quarto específico, com um servidor específico ligado. A versão em JavaScript que substituiu tudo isso — botões de adicionar, exportar, importar — também se aposenta agora. Também funcionava. Só que, hoje, em outro lugar, alguém já faz melhor.</p>
+  </article>
+
+  <!-- ═══════════════ PEÇA 02 — FIBONACCI ═══════════════ -->
+  <article class="peca foco-painel" id="foco02">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 02 · Programação Dinâmica</p>
+    <h2>Fibonacci: ingênuo vs. memorizado</h2>
+    <p class="peca-nota">Duas formas de calcular a mesma sequência. A primeira recalcula tudo, sempre, do zero — funciona, mas fica lenta rápido. A segunda guarda o que já foi calculado, e só resolve o que falta. É o tipo de exercício que ensina programação dinâmica antes mesmo de dar nome a ela: a diferença aparece na velocidade, não na teoria.</p>
+
+    <p class="cap">fibonacci.py — recursão ingênua</p>
+    <pre>def fib(n):
+	if (n &lt;= 1):
+		return n
+	return fib(n-1) + fib(n-2)
+
+for i in range(40):
+	print (fib(i))</pre>
+
+    <p class="cap">ProgDinamicafibonacci.py — com memorização</p>
+    <pre>def lookup_fibo(f,n):
+	if (f[n] > 0):
+		return f[n]
+	if (n &lt;= 1):
+		f[n] = n
+	else:
+		f[n] = lookup_fibo(f, n-1) + lookup_fibo(f, n-2)
+	return f[n]
+
+def memoria(f,n):
+	for i in range(0,n):
+		f[i] = -1
+	return lookup_fibo(f,n-1)
+
+f={}
+try:
+	for i in range (1,2000):
+		print (memoria(f,i))
+except Exception as e:
+	print("numero muito alto!", e)</pre>
+    <p class="sub-nota">Mesmo memorizado, o Python tem um limite de profundidade de recursão — em algum lugar perto de <em>i=1000</em> este script esbarra nele e cai no <code>except</code>. "número muito alto" não é bem sobre o número: é sobre a pilha de chamadas por trás dele.</p>
+  </article>
+
+  <!-- ═══════════════ PEÇA 03 — DNA / ROSALIND ═══════════════ -->
+  <article class="peca foco-painel" id="foco03">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 03 · abril 2023 · Rosalind</p>
+    <h2>DNA: os primeiros problemas do Rosalind</h2>
+    <p class="peca-nota">Rosalind é uma plataforma de exercícios de bioinformática: cada problema dá uma sequência de DNA ou RNA e pede uma transformação sobre ela. Estes quatro são os clássicos de quem está começando — contar, transcrever, complementar, encontrar um padrão — nessa ordem, um apoiado no anterior. Tem um quinto, mas ele não é dessa leva — veio antes de tudo, sozinho.</p>
+
+    <div class="sub">
+      <p class="sub-titulo">3.0 — Conteúdo de GC (antes de tudo)</p>
+      <p class="sub-nota">Antes dos quatro abaixo — quase um ano antes — um problema Rosalind resolvido sozinho: <em>Computing GC Content</em>, o percentual de G+C de cada gene, usado aqui pra achar qual sequência de um FASTA tem a maior concentração. Nem veio do Colab como os outros três: o rodapé aponta pra um arquivo temporário local (<code>tmp9wcbb0il.html</code>), impresso direto do navegador. Não é o mesmo lote de março–abril de 2023 — é mais velho, e ficou sozinho até agora.</p>
+      <p class="cap">gc.py</p>
+      <pre>def calculaGC(dna):
+    contCG=0
+    for i in dna:
+        if i == 'C' or i == "c" or i == "G" or i == "g":
+            contCG+=1
+    GCContent=(contCG/len(dna))*100
+    return GCContent
+
+#GC CONTENT
+arq=open("c:\\python-data\\rosalind_gc.txt","r")
+geneMaior=0
+GCContentMaior=0
+gene=""
+dna =""
+dados ={}
+first = True
+for linha in arq:
+    linha = linha.strip()
+    if first != True:
+        if linha[0] == ">":
+            dados[gene]=dna
+            gene = linha[1:]
+            dna=""
+        else:
+            dna = dna+ linha
+    else:
+        first = False
+        gene = linha[1:]
+dados[gene]=dna
+for gene, dna in dados.items():
+    GCContent=calculaGC(dna)
+    if GCContent > GCContentMaior:
+        GCContentMaior=GCContent
+        geneMaior=gene
+print(geneMaior)
+print(GCContentMaior)</pre>
+      <p class="cap">02 de maio de 2022</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">3.1 — Contar nucleotídeos</p>
+      <p class="cap">ex01.py</p>
+      <pre>def lerArq(arquivo):
+    dna = ""
+    f = open(arquivo, "r")
+    linhas = f.readlines()
+    for linha in linhas:
+        linha = linha.strip()
+        dna = dna + linha
+    return dna
+	
+# A C G T
+dna=lerArq('dna.txt')
+contA = 0
+contC = 0
+contG = 0
+contT = 0
+for l in dna:
+	if (l == 'A'):
+		contA += 1
+	elif (l == 'C'):
+		contC += 1
+	elif (l == 'G'):
+		contG += 1
+	elif (l == 'T'):
+		contT += 1
+	else:
+		print ("caracter ",l,"fora do padrão")
+print("{} {} {} {}".format(contA, contC, contG, contT))</pre>
+      <p class="cap">dna.txt — 920 nucleotídeos</p>
+      <div class="dado">GGTCTGTGGGGGAATGAGGTAGGTGTAATTCAGATACAGATCCTTATC…</div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">3.2 — Transcrever DNA em RNA</p>
+      <p class="cap">ex02.py</p>
+      <pre>def dnaTorna(dna):
+	rnaTemp=''
+	for l in dna:
+		if (l!='T'):
+			rnaTemp += l
+		elif (l=='T'):
+			rnaTemp += 'U'
+	return rnaTemp
+f = open ('rna.txt','r')
+linhas = f.readlines()
+dna=''
+rna=''
+for linha in linhas:
+	linha = linha.strip()
+	dna += linha
+rna = dnaTorna(dna)
+print(rna)</pre>
+      <p class="cap">rna.txt — 936 nucleotídeos (a fita de DNA de entrada)</p>
+      <div class="dado">CTCAAGAAGACGGTCTTGTCATGTGCGAAGGTGTTACCATCTTCACAC…</div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">3.3 — Complemento reverso</p>
+      <p class="cap">ex03.py</p>
+      <pre>def lerArq(arquivo):
+    dna = ""
+    f = open(arquivo, "r")
+    linhas = f.readlines()
+    for linha in linhas:
+        linha = linha.strip()
+        dna = dna + linha
+    return dna
+	
+# A C G T
+dna=lerArq('dnaRC.txt')
+
+compl = ''
+
+for l in dna:
+        if(l == 'T'):
+            compl = compl +'A'
+        elif(l == 'A'):
+            compl = compl +'T'
+        elif(l == 'C'):
+            compl = compl +'G'
+        elif(l == 'G'):
+            compl = compl +'C'
+        
+compl = compl [::-1]
+
+print("{} ".format(compl))</pre>
+      <p class="sub-nota">Uma versão anterior deste script (<em>ex03_py.bak</em>) ainda apontava pro arquivo errado — <code>dna.txt</code> em vez de <code>dnaRC.txt</code>. Pequeno, mas é o tipo de erro que ensina a conferir a entrada antes de desconfiar da lógica.</p>
+      <p class="cap">dnaRC.txt — 885 nucleotídeos</p>
+      <div class="dado">GAGCCAGCTCATTGCGCAGGAATTTAGACCCCTTAAGGGTACCTGTGC…</div>
+      <div class="evidencia">
+        <img src="images/rosalind-complemento-dna.png" alt="Rosalind — Complementing a Strand of DNA, resolvido por VitorGrc">
+        <p class="evidencia-cap">Rosalind — Complementing a Strand of DNA · resolvido na 3ª tentativa, 15 de março de 2023</p>
+      </div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">3.4 — Encontrar um motivo em DNA</p>
+      <p class="cap">Motifindna.py</p>
+      <pre>with open("rosalind_subs.txt", "r") as f:
+    s = f.readline().strip() 
+    t = f.readline().strip() 
+
+
+positions = []
+for i in range(len(s)):
+    if s[i:i+len(t)] == t:
+        positions.append(str(i+1))
+
+
+print(" ".join(positions))</pre>
+      <p class="cap">rosalind_subs.txt</p>
+      <div class="dado">GATATATGCATATACTTATAT</div>
+      <div class="evidencia">
+        <img src="images/rosalind-motivo-dna.png" alt="Rosalind — Finding a Motif in DNA, resolvido por VitorGrc">
+        <p class="evidencia-cap">Rosalind — Finding a Motif in DNA · resolvido na 2ª tentativa, 15 de abril de 2023</p>
+      </div>
+    </div>
+
+    <div class="fio-solto">
+      <p><strong>Fios soltos —</strong> <em>Motif.fasta</em> (mais um padrão repetido, 114 nt) e <em>rosalind_prot.txt</em> (uma sequência de RNA de 9.162 nt, esperando virar proteína — o próximo problema sugerido). Vieram junto nessa leva, mas sem script ainda. Ficam aqui, à espera.</p>
+    </div>
+  </article>
+
+  <!-- ═══════════════ PEÇA 04 — RESCUETECHSOLUTIONS ═══════════════ -->
+  <article class="peca foco-painel" id="foco04">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 04 · outubro 2023 · Projeto Integrador · trabalho em grupo</p>
+    <h2>RescueTechSolutions: um Corpo de Bombeiros que não existe</h2>
+    <p class="peca-nota">Um Projeto Integrador de gerenciamento de projetos — em grupo, com <strong>Jéssica Aparecida Pessoa</strong>, <strong>Nauam Moises da Cruz Garcia</strong> e Vitor Gabriel Ramos Campos simulando o ciclo inteiro do PMBOK pra uma empresa de software que também não existe: abertura, plano de gerenciamento, autorização, aceitação e encerramento — cinco documentos completos por trás do que está resumido aqui. O time deu nome de personagem emprestado pra cada stakeholder fictício. Um patrocinador chamado Shinra Kusakabe, de <em>Fire Force</em>, autorizando um software pro Corpo de Bombeiros não é coincidência.</p>
+
+    <div class="sub">
+      <p class="sub-titulo">O elenco</p>
+      <ul class="elenco">
+        <li><b>Chronya Bunninull</b> — Gerente de Projeto</li>
+        <li><b>Clover Lenfield</b> — Especialista em Requisitos</li>
+        <li><b>Caim Dracdemis</b> — Especialista em Comunicação e Integração</li>
+        <li><b>Joel Lore</b> — Especialista em Treinamento e Documentação</li>
+        <li><b>Ivy Claire</b> — Gerente de Implantação</li>
+        <li><b>Ellie Eviline</b> — Suporte Técnico e Manutenção Contínua</li>
+        <li><b>Shinra Kusakabe</b> — Patrocinador, representando o Corpo de Bombeiros</li>
+        <li><b>Geralt Minakami</b> — Representante da Equipe de Desenvolvimento</li>
+        <li><b>CEO Brojack</b> — autorização e orçamento</li>
+        <li><b>Gabriel Mightli</b> — Coordenador do Encerramento</li>
+        <li><b>Danher</b> — Responsável pelo Gerenciamento de Riscos</li>
+        <li><b>Chris</b> — Responsável pelo Orçamento e Recursos</li>
+        <li><b>Alana</b> — Responsável pelo Cronograma</li>
+        <li><b>Dwight Crow</b> — Responsável pela Qualidade</li>
+      </ul>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">A EAP — quatro entregas, dezoito pacotes de trabalho</p>
+      <p class="sub-nota">Software RescueTechSolutions (8 pacotes) · Implantação do Software (5) · Documentação e Manuais do Usuário (3) · Comunicação e Treinamento Contínuos (2).</p>
+      <p class="sub-nota">Essa é a EAP do produto. A Declaração de Escopo revela outra, do processo, em quatro fases — a primeira leva do Termo de Abertura só ia até a execução: Iniciação · Planejamento · Execução · <b style="color:var(--burlywood);font-style:italic">Encerramento</b> (encerramento do projeto, termo de aceitação, lições aprendidas, documentação final).</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Fora do escopo</p>
+      <p class="sub-nota">A Declaração de Escopo também diz o que o RescueTechSolutions não é — e é disciplinada nisso: não realiza operações de resgate em si, apenas dá suporte à gestão e coordenação; não oferece treinamento intensivo em combate a incêndios; não desenvolve hardware personalizado; não cobre treinamento em segurança cibernética, apesar de mencionar a preocupação com dados. Um projeto de faculdade que sabia dizer não.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Os marcos</p>
+      <table class="tabela-pm">
+        <tr><th>Marco</th><th>Previsão</th></tr>
+        <tr><td>Aprovação do Termo de Abertura</td><td class="num">7 dias</td></tr>
+        <tr><td>Conclusão da Análise de Requisitos</td><td class="num">21 dias</td></tr>
+        <tr><td>Conclusão do Design do Sistema</td><td class="num">42 dias</td></tr>
+        <tr><td>Desenvolvimento do Software Concluído</td><td class="num">60 dias</td></tr>
+        <tr><td>Testes e Qualidade Bem-Sucedidos</td><td class="num">40 dias</td></tr>
+        <tr><td>Implantação Inicial</td><td class="num">20 dias</td></tr>
+        <tr><td>Aceitação pelo Cliente</td><td class="num">10 dias</td></tr>
+        <tr><td>Encerramento do Projeto</td><td class="num">20 dias</td></tr>
+      </table>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">O número</p>
+      <div class="vpl">
+        <span class="formula">VPL = [(1.000.000 + 500.000 + 300.000) − (1.800.000 + 150.000 + 450.000 + 300.000 + 300.000 + 300.000 + 300.000)]</span>
+        <span class="resultado">VPL = R$ 50.000,00</span>
+      </div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">O semáforo</p>
+      <p class="sub-nota">Acompanhamento semanal, valor agregado, dois índices e três cores.</p>
+      <table class="tabela-pm">
+        <tr><th>Indicador</th><th>Verde</th><th>Amarelo</th><th>Vermelho</th></tr>
+        <tr><td>SPI</td><td class="verde">≥ 1.0</td><td class="amarelo">≥ 0.9 &lt; 1.0</td><td class="vermelho">&lt; 0.9</td></tr>
+        <tr><td>CPI</td><td class="verde">≥ 1.0</td><td class="amarelo">≥ 0.9 &lt; 1.0</td><td class="vermelho">&lt; 0.9</td></tr>
+      </table>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Os diagramas</p>
+      <p class="sub-nota">A única peça de design de sistema no meio de tanto formulário — cinco vistas UML do mesmo software imaginado.</p>
+      <div class="evidencia">
+        <img src="images/uml-atividades.png" alt="Diagrama de Atividades do RescueTechSolutions">
+        <p class="evidencia-cap">Diagrama de Atividades — do alarme soando até o relatório chegar ao banco de dados</p>
+      </div>
+      <div class="evidencia">
+        <img src="images/uml-casos-de-uso.png" alt="Diagrama de Casos de Uso do RescueTechSolutions">
+        <p class="evidencia-cap">Diagrama de Casos de Uso — superiores, gerência e bombeiros, cada um com seu papel</p>
+      </div>
+      <div class="evidencia">
+        <img src="images/uml-sequencia.png" alt="Diagrama de Sequência do RescueTechSolutions">
+        <p class="evidencia-cap">Diagrama de Sequência — do alerta ao banco de dados, chamada por chamada</p>
+      </div>
+      <div class="evidencia">
+        <img src="images/uml-classes.png" alt="Diagrama de Classes do RescueTechSolutions">
+        <p class="evidencia-cap">Diagrama de Classes — Funcionário, Gerência, Emergência e Sistema</p>
+      </div>
+      <div class="evidencia">
+        <img src="images/uml-componentes.png" alt="Diagrama de Componentes do RescueTechSolutions">
+        <p class="evidencia-cap">Diagrama de Componentes — dispositivos, aplicação, alarme e banco de dados</p>
+      </div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Tarefa abandonada, tarefa terminada</p>
+      <p class="sub-nota">Dois arquivos, o mesmo esqueleto — quinze tarefas do módulo 1, Análise de Requisitos. Um fica no meio do caminho: só as três primeiras ganham nome (elaborar o questionário, aplicá-lo, transcrevê-lo), as outras doze ficam em branco, e os módulos 2, 3 e 4 nunca chegam a começar. O outro é o gêmeo que terminou — rede PERT completa, cronograma de 73 dias, barras coloridas de verdade.</p>
+      <p class="sub-nota"><b style="color:var(--burlywood);font-style:italic">Caminho crítico</b> — T1 → T2 → T3 → T5 → T6 → T7 → T8 → T10 → T12 → T13 → T14 → T15, do dia 1 ao dia 73, sem folga em nenhum elo.</p>
+      <p class="sub-nota"><b style="color:var(--burlywood);font-style:italic">Com folga</b> — T4, T9 e T11 correm em paralelo ao caminho principal, cada uma com espaço pra atrasar sem atrasar o projeto inteiro.</p>
+      <p class="sub-nota">Terminado não é o mesmo que nomeado, porém: mesmo na versão completa, só as três primeiras tarefas têm descrição de verdade — da quarta em diante é só "Tarefa 4", "Tarefa 5"... a estrutura chegou ao fim antes do vocabulário.</p>
+      <p class="sub-nota">O plano de gerenciamento do cronograma (PGT) que devia amarrar os dois é sobretudo processo, não substância — metodologia genérica, uma lista de ferramentas (MS Project, Jira, Trello, Slack) e mais uma tabela de papéis nunca preenchida.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">O custo, por pessoa e por peça</p>
+      <p class="sub-nota">A versão final do Plano de Custos — diferente de uma cópia anterior, essa incompleta — foi levada a sério: nomeou ferramentas (ProjectMaster 365, CloudSimi), abriu um cargo novo, Analista Financeiro, e estimou o projeto peça por peça.</p>
+      <table class="tabela-pm">
+        <tr><th>Pessoa</th><th>Valor-hora</th><th>Horas</th><th>Total</th></tr>
+        <tr><td>Chronya Bunninull</td><td class="num">R$ 180</td><td class="num">7</td><td class="num">R$ 1.260</td></tr>
+        <tr><td>Clover Lenfield</td><td class="num">R$ 120</td><td class="num">21</td><td class="num">R$ 2.520</td></tr>
+        <tr><td>Caim Dracdemis</td><td class="num">R$ 100</td><td class="num">21</td><td class="num">R$ 2.100</td></tr>
+        <tr><td>Joel Lore</td><td class="num">R$ 110</td><td class="num">60</td><td class="num">R$ 6.600</td></tr>
+        <tr><td>Ivy Claire</td><td class="num">R$ 150</td><td class="num">40</td><td class="num">R$ 6.000</td></tr>
+        <tr><td>Ellie Evilline</td><td class="num">R$ 80</td><td class="num">20</td><td class="num">R$ 1.600</td></tr>
+      </table>
+      <p class="sub-nota">Mais uma estimativa por funcionalidade — gestão de recursos, rastreamento de incidentes, relatórios e análise, integração de dados, interface, segurança, documentação — somando R$ 1.350.000 dos R$ 3.000.000 do projeto inteiro. Assinado por Shinra Kusakabe e Chronya Bunninull, 30 de novembro de 2023.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">A reserva</p>
+      <p class="sub-nota">O Plano de Gerenciamento de Riscos, na versão certa, também não é genérico: reserva de contingência de 5% do orçamento e 5% do cronograma (20 dias úteis), um procedimento de controle com checklist próprio, assinado em 17 de outubro de 2023. A estrutura de categorias de risco foi pensada com cuidado — Organizacional, Gerenciamento do Projeto, Técnico, Externo, cada uma com suas subcategorias.</p>
+      <p class="sub-nota">Mas o Registro de Riscos em si — a lista de riscos específicos que essa estrutura existia pra receber — nunca ganhou uma linha. A categoria pronta, esperando um risco que não chegou a ser escrito.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">A matriz das comunicações</p>
+      <p class="sub-nota">O único documento genérico do projeto levado até o fim — descreve, em detalhe real, pra que serve cada um dos outros documentos que passaram por essa peça. Entre o Termo de Abertura assinado e o Registro de Riscos vazio, o padrão certo não é "ficou tudo pela metade": o planejamento — termos, planos, orçamento — quase sempre foi levado a sério. O que parou no ar foram as ferramentas de acompanhamento contínuo, os registros e checklists que só existem se o projeto continuar rodando depois de criados.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">O encerramento</p>
+      <table class="tabela-pm">
+        <tr><th>Versão</th><th>Autor</th><th>Descrição</th></tr>
+        <tr><td class="num">1.0</td><td>Vitor Gabriel Ramos Campos</td><td>Estabelecimento de todos os tópicos.</td></tr>
+        <tr><td class="num">2.0</td><td>Jéssica Aparecida Pessoa</td><td>Estabelecimento de todos os tópicos e formatação.</td></tr>
+      </table>
+      <p class="sub-nota">Das considerações finais: "o desenvolvimento de software é uma área que desempenha um papel crucial em diversos setores, incluindo a segurança pública" — um projeto de faculdade levando a sério, por um instante, o peso do que estava simulando.</p>
+      <div class="evidencia" style="max-width:280px">
+        <img src="images/te-cabecalho.jpeg" alt="Cabeçalho do Termo de Encerramento">
+        <p class="evidencia-cap">o único elemento visual entre os cinco documentos — cabeçalho do Termo de Encerramento</p>
+      </div>
+    </div>
+  </article>
+
+  <article class="peca foco-painel" id="foco05">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 05 · cinco fragmentos, nenhuma ligação</p>
+    <h2>Fragmentos</h2>
+    <p class="peca-nota">Cinco arquivos soltos, sem projeto em comum e sem tentativa de fingir que têm. Não são um trabalho — são o que sobra ao redor de um: anotação de aula, rascunho de prova, comando copiado no calor da hora, um banco de dados exportado e nunca mais aberto, uma comparação de ferramentas que não virou projeto nenhum. Cada placa fala só de si.</p>
+
+    <div class="sub">
+      <p class="sub-titulo">Linux — comandos básicos</p>
+      <p class="cap">Novo Documento de Texto.txt</p>
+      <pre>usuario: root
+password: fatec
+
+whoami: demonstra o usuario.
+pwd: diretório.
+ls: lista.
+touch: adciona arquivos.
+mkdir: cria pastas.
+chmod +x script.py
+cd /tmp: muda o diretório.
+grep: mostra arquivos que seguem um padrão. -c: conta ocorrências.
+wc -l: mostra quantas linhas tem.
+|: redireciona a saída de um comando pra entrada de outro.
+$?: se o comando der certo 0, se der erro, diferente de 0
+/dev/null: buraco negro.
+poweroff: desliga a máquina.</pre>
+      <p class="sub-nota">No meio da lista, um desvio: <code>aptitude -vv moo</code> responde "Didn't I already tell you that there are no Easter Eggs in this program?" — e em <code>-vvv</code>, só "Stop it!". O arquivo termina num link solto pra uma plataforma de aulas, sem dizer pra onde leva.</p>
+      <p class="cap">aptitude moo, emulado</p>
+      <div class="aptitude-emul">
+        <div class="aptitude-tela" id="aptTela"><span class="aptitude-linha-vazia">$ <span class="aptitude-cursor">▌</span></span></div>
+        <div class="aptitude-controles">
+          <button class="aptitude-botao" id="aptBotao" type="button">rodar aptitude moo</button>
+          <button class="aptitude-reiniciar" id="aptReset" type="button" hidden>reiniciar</button>
+        </div>
+      </div>
+      <p class="sub-nota">A piada de verdade vai além do que o arquivo mostrou: sete níveis ao todo, terminando numa referência ao <i>Pequeno Príncipe</i>. Clique quantas vezes quiser.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">MySQL / MariaDB</p>
+      <p class="cap">Aula 1 comandos básicos.txt</p>
+      <pre>MariaDB [(none)]> create database aula;
+MariaDB [(none)]> use aula;
+
+create table autor (cod_autor integer not null, nome varchar(30) not null,
+  nascimento date null, primary key (cod_autor));
+
+create table editora (cod_editora integer not null, razao varchar(35) not null,
+  cnpj varchar(16) not null, endereco varchar(30) not null, cidade varchar(25) not null,
+  primary key (cod_editora), unique key (cnpj));
+
+create table livro (titulo varchar(30) not null, cod_autor integer not null,
+  cod_editora integer not null, valor real not null, publicado date null,
+  primary key (titulo, cod_autor),
+  foreign key (cod_autor) references autor (cod_autor),
+  foreign key (cod_editora) references editora (cod_editora));</pre>
+      <p class="sub-nota">Uma livraria — autor, editora, livro — até a metade do arquivo. Depois, sem transição nenhuma, o exercício muda pra uma clínica: <code>medicos</code>, <code>pacientes</code>, <code>consultas</code>, com as mesmas chaves estrangeiras amarrando tudo. Duas aulas diferentes, aparentemente, salvas no mesmo arquivo.</p>
+      <p class="sub-nota">Uma coincidência real, sem virar fio narrativo: é a mesma tecnologia por trás do banco de dados original da Peça 01 — só que essa aqui é de uma aula qualquer, não tem nada a ver com Ícaro nem com o catálogo antigo.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Gerenciamento de Riscos — outro exemplo</p>
+      <p class="sub-nota">Avaliação Qualitativa de riscos categoriza por probabilidade e impacto — baixo, médio, alto — numa matriz de risco. Avaliação Quantitativa vai além: calcula um valor esperado, probabilidade vezes impacto financeiro.</p>
+      <p class="sub-nota">O exemplo aqui não é o RescueTechSolutions — é um software de melhoria pra academia. Risco: atraso na entrega. Suposição: 20% de chance, 100 clientes em potencial perdidos, R$ 50.000 de impacto. <b style="color:var(--burlywood);font-style:italic">20% × R$ 50.000 = R$ 10.000</b> de valor esperado.</p>
+      <p class="sub-nota">O arquivo pede pelo menos três situações de risco com seus mecanismos de acompanhamento — e corta bem onde a resposta deveria começar. Fica em aberto, do jeito que chegou.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Produto — um dump isolado</p>
+      <p class="cap">sistemaproduto.sql</p>
+      <pre>CREATE TABLE `produto` (
+  `id_produto` int(11) NOT NULL,
+  `nome_produto` varchar(100) DEFAULT NULL,
+  `preco_produto` double DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `produto` (`id_produto`, `nome_produto`, `preco_produto`) VALUES
+(1, 'Sabao', 3.7),
+(3, 'Amaciante', 5.9),
+(5, 'Acucar', 12.99),
+(6, 'Leite', 3.99),
+(7, 'Macarrao', 3.29),
+(9, 'Bolacha', 2.39),
+(10, 'Maionese', 8.89);</pre>
+      <p class="sub-nota">Uma terceira aparição da mesma dupla — phpMyAdmin exportando MariaDB — depois do Linux/clínica acima e do catálogo original da Peça 01. Sem PHP, sem formulário, nada que de fato consultasse essa tabela: só a estrutura e sete produtos de mercado, gravados em 14 de dezembro de 2022. Os ids pulam 2, 4 e 8 — o <code>AUTO_INCREMENT</code> parado em 11 confirma que existiram dez linhas, três já apagadas antes desse dump.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Ferramentas de IA — comparação</p>
+      <p class="cap">Atividade Avaliativa 13/5</p>
+      <p class="sub-nota">Três ferramentas, três finalidades: Gencraft gera imagens (dez por dia, de graça, sem plano), Shazam identifica música pelo som, ChatGPT gera texto a partir de uma base de dados. A avaliação é só de acessibilidade e finalidade — nada de comparar qualidade de resultado, só o que cada uma faz e quanto custa pra usar.</p>
+    </div>
+  </article>
+
+  <article class="peca foco-painel" id="foco06">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 06 · março – junho de 2023 · Escola de Inovadores</p>
+    <h2>Tesla, entre o comprovante e a torre que não terminou</h2>
+    <p class="peca-nota">Dois registros que não vêm do mesmo lugar, juntos aqui só pelo tema. De um lado, a Escola de Inovadores — extracurricular, 16ª edição, programa da INOVACPS, o braço de inovação do Centro Paula Souza, sete módulos online de 30 de março a 3 de junho de 2023. De outro, uma pesquisa independente sobre Nikola Tesla, que não nasceu de nenhuma tarefa desse curso. A ligação entre os dois é só conceitual: Tesla como gênio da inovação — o único paralelo que dá pra traçar.</p>
+
+    <div class="sub">
+      <p class="sub-titulo">A inscrição</p>
+      <p class="sub-nota">Confirmada em 13 de março de 2023, ingresso nº 34698152, categoria participante, evento inteiramente online.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Sete módulos</p>
+      <p class="sub-nota">Engajar & Mapear, Entender, Testar — e mais quatro depois disso —, cada um encerrado com uma tela de presença validada. Não é o conteúdo do curso, é a prova de ter passado por ele: sete capturas de tela, uma por módulo.</p>
+      <div class="evidencia-grade">
+        <figure><img src="images/inova-mod01.png" alt="MOD01 – Engajar & Mapear"><figcaption>MOD01 — Engajar & Mapear</figcaption></figure>
+        <figure><img src="images/inova-mod02.png" alt="MOD02 – Entender"><figcaption>MOD02 — Entender</figcaption></figure>
+        <figure><img src="images/inova-mod03.png" alt="MOD03"><figcaption>MOD03</figcaption></figure>
+        <figure><img src="images/inova-mod04.png" alt="MOD04"><figcaption>MOD04</figcaption></figure>
+        <figure><img src="images/inova-mod05.png" alt="MOD05 – Testar"><figcaption>MOD05 — Testar</figcaption></figure>
+        <figure><img src="images/inova-mod06.png" alt="MOD06 – Formalizar"><figcaption>MOD06 — Formalizar</figcaption></figure>
+        <figure><img src="images/inova-mod07.png" alt="MOD07"><figcaption>MOD07</figcaption></figure>
+      </div>
+    </div>
+
+    <p class="sub-nota" style="text-align:center;opacity:.55;margin:.5rem 0 1.6rem">◆ &nbsp; daqui pra frente, pesquisa à parte — sem relação com o curso acima, além do tema &nbsp; ◆</p>
+
+    <div class="sub">
+      <p class="sub-titulo">Nikola Tesla</p>
+      <div class="evidencia" style="max-width:260px">
+        <img src="images/tesla-retrato.png" alt="Retrato colorizado de Nikola Tesla">
+        <p class="evidencia-cap">pesquisada, colorida, recortada — e nunca usada em lugar nenhum até agora</p>
+      </div>
+      <p class="sub-nota">O trabalho percorre as empresas de Tesla, sua história, os maiores feitos, as características que o texto destaca, e fecha com referências reais — quatro fontes, não uma bibliografia de enfeite.</p>
+
+      <p class="cap">Empresas</p>
+      <p class="sub-nota">Tesla Electric Company (1887), motores e transformadores. Em 1900, a Tesla Wardenclyffe Company — criada pra erguer a torre de transmissão de energia sem fio. Fechou em 1917, antes do projeto terminar, por falta de dinheiro. Antes disso, passou pela Edison Machine Works e pela Westinghouse Electric Company.</p>
+
+      <p class="cap">Maiores feitos</p>
+      <p class="sub-nota">Corrente alternada — mais eficiente que a corrente contínua de Edison, virou padrão mundial de distribuição de energia. O motor elétrico de corrente alternada. O transformador que leva seu nome. Experimentos com raios-X, entre os primeiros a perceber o potencial pra medicina. Uma patente de 1898 pra um barco controlado por rádio — marco no controle remoto.</p>
+
+      <p class="cap">Características, segundo o trabalho</p>
+      <p class="sub-nota">Criatividade, perspicácia técnica, tenacidade, paixão, foco, humildade, curiosidade — sete qualidades, um parágrafo cada no original. A tenacidade é a que mais ecoa: ele seguia nos projetos mesmo quando nada saía como planejado.</p>
+
+      <p class="cap">Referências</p>
+      <p class="sub-nota">A biografia de W. Bernard Carlson, a de Robert Lomas, a biografia ilustrada de Carol Dommermuth-Costa, e o documentário <em>Tesla: Master of Lightning</em>, da PBS.</p>
+
+      <p class="sub-nota">A torre de Wardenclyffe está lá, coberta duas vezes — nas empresas e na história: o projeto mais ambicioso de Tesla, energia sem fio pro mundo inteiro, fechado antes de terminar, por falta de dinheiro. O próprio trabalho já registra o que esse museu também guarda: não é força de expressão chamar isso de eco — uma coisa que caiu por falta de recurso, não de ideia, insistindo em arder de novo, aqui, numa vitrine que existe justamente pra isso.</p>
+    </div>
+  </article>
+
+  <article class="peca foco-painel" id="foco07">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 07 · maio – junho de 2020 · a peça mais antiga do acervo</p>
+    <h2>URI: o nome que morreu, a plataforma que não</h2>
+    <p class="peca-nota">O URI Online Judge não fechou — virou <em>beecrowd</em>, e continua no ar até hoje sob esse nome. O que morreu foi a marca: esse logo, essa interface, esse "URI" no canto superior esquerdo. É esse nome extinto que essas duas capturas de tela preservam — não a plataforma em si, só a pele que ela já teve.</p>
+
+    <div class="sub">
+      <p class="sub-titulo">O perfil</p>
+      <p class="sub-nota">Vitor Campos, FATEC, Brasil — posição 54.236ª, 134.844 pontos, 36 problemas resolvidos em 36 tentativas, 136 submissões, tudo em C++17. Ativo desde 06/05/2020: a data mais antiga de qualquer coisa nesse museu.</p>
+      <div class="evidencia">
+        <img src="images/uri-perfil-2.jpeg" alt="Perfil URI Online Judge — lista de problemas 1001 a 1044">
+        <p class="evidencia-cap">problemas 1001–1044 — a série clássica de iniciante</p>
+      </div>
+      <div class="evidencia">
+        <img src="images/uri-perfil-1.jpeg" alt="Perfil URI Online Judge — lista de problemas 1045 a 1050">
+        <p class="evidencia-cap">problemas 1045–1050, submetidos em 05/06/2020</p>
+      </div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Os problemas</p>
+      <p class="sub-nota">Extremamente Básico, Área do Círculo, Soma Simples, Produto Simples, Média 1 e 2, Diferença, Salário, Salário com Bônus, Cálculo Simples, Esfera, Área, O Maior, Consumo, Distância Entre Dois Pontos, Distância, Gasto de Combustível, Cédulas, Conversão de Tempo, Idade em Dias, Notas e Moedas, Teste de Seleção 1, Fórmula de Bhaskara, Intervalo, Lanche, Média 3, Coordenadas de um Ponto, Sort Simples, Triângulo, Múltiplos, Tipos de Triângulos, Tempo de Jogo, Tempo de Jogo com Minutos, Aumento de Salário, Animal, DDD — trinta e seis problemas, entrada e saída, condicional, laço, sem nada além disso ainda.</p>
+    </div>
+  </article>
+
+  <article class="peca foco-painel" id="foco08">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 08 · SESC · clube de leitura</p>
+    <h2>Clarice, um desafio, dois livros de prêmio</h2>
+    <p class="peca-nota">Do clube de leitura do SESC — não é FATEC, não é curso, é comunidade. Três livros como lembrança de leitura, e uma pesquisa que nasceu de outro motivo: um desafio com premiação, sobre a vida de Clarice Lispector.</p>
+
+    <div class="sub">
+      <p class="sub-titulo">O clube</p>
+      <p class="sub-nota"><em>O lustre</em>, de Clarice Lispector — o romance provavelmente lido no clube. <em>Histórias que os jornais não contam</em>, de Moacyr Scliar (L&amp;PM, 2017). E as <em>Memórias Póstumas de Brás Cubas</em>, de Machado de Assis, 1880 — o único dos três já em domínio público. Citados aqui como lembrança, não reproduzidos: são obra de outra pessoa, não deste museu.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">O desafio</p>
+      <p class="sub-nota">Um desafio com premiação no SESC, tema Clarice Lispector: quem respondesse mais perguntas corretas sobre a vida dela, vencia. A pesquisa que segue foi feita pra isso — fundo demais pro que qualquer resenha exige, a ponto de chegar até a família dela. Funcionou: o prêmio foram dois livros da Clarice, dentro de uma caixa de proteção personalizada.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">A pesquisa</p>
+      <p class="sub-nota">Chaya Pinkhasovna Lispector — o nome por trás de "Clarice" — nasceu em 10 de dezembro de 1920, na aldeia de Chechelnyk, região da Podólia, Ucrânia. Escritora e jornalista brasileira, judia, do modernismo, 37 obras ao todo. Morou em Maceió, Recife e no Rio de Janeiro, depois Estados Unidos, Itália, Suíça e Inglaterra.</p>
+
+      <p class="cap">Antes do Brasil</p>
+      <p class="sub-nota">Em 1910, o aumento dos pogroms levou Pinkhas, pai de Clarice, a aceitar a ideia de emigrar. Em 1918, a pobreza levou a família a Haisyn, ainda na Podólia. Em 1919 — um ano antes de Clarice nascer — sua mãe, Mania, foi estuprada por um grupo de soldados, que teriam lhe transmitido sífilis. A primeira tentativa de emigração falhou; mudaram-se pra Chechelnyk, onde Clarice nasceria. No inverno de 1921 deixaram a Ucrânia pelo rio Dniestre até Soroca, então romena, hoje moldava, onde viveram num albergue. Em 27 de janeiro de 1922, o consulado russo em Bucareste concedeu passaportes pro Brasil — Hamburgo, Budapeste, Praga, e por navio até Maceió, onde a irmã de Mania, Zicela, e o marido dela, José Rabin, esperavam.</p>
+
+      <p class="cap">Infância e primeiros passos</p>
+      <p class="sub-nota">Aos quatro anos, em 1924, entrou no jardim de infância. Em 1925 mudou-se com a mãe e as irmãs pra Recife, pouco depois do pai. Aos sete, em 1928, aprendeu a ler e escrever. Em 1930, inspirada por uma peça que tinha visto, escreveu sua primeira peça teatral — "Pobre menina rica", três atos, páginas hoje perdidas. Em 1931 mandou contos pra página infantil do Diário de Pernambuco; não foram publicados. Sua mãe morreu em 1930, aos 42 — possivelmente pela sífilis do estupro.</p>
+
+      <p class="cap">Rio de Janeiro e carreira</p>
+      <p class="sub-nota">Tinha 15 anos quando chegou ao Rio, em 1935; estudou Direito na Universidade do Brasil. O primeiro conto publicado foi "Triunfo", na revista Pan, 1940 — mesmo ano em que o pai morreu, aos 55. Namorou a partir de 1942, trabalhou como redatora do jornal "A Noite". O primeiro livro, <em>Perto do coração selvagem</em>, recebeu o Prêmio Graça Aranha. Casou com Maury Gurgel Valente em 1943; separaram-se em 1959. Na Itália, foi voluntária da Força Expedicionária Brasileira. Pedro, o primeiro filho, nasceu na Suíça em 1948 — diagnosticado depois com esquizofrenia. Em 1952 assinava "Entre Mulheres" no jornal "Comício" como Tereza Quadros. Paulo, o segundo filho, nasceu nos Estados Unidos em 1953. De volta ao Rio em 1959, assinava "Correio feminino" no "Correio da Manhã" como Helen Palmer, e colunou ainda no "Jornal do Brasil".</p>
+
+      <p class="cap">Os últimos anos</p>
+      <p class="sub-nota">Em 1966, dormiu com um cigarro aceso, provocou um incêndio no próprio quarto e quase perdeu a mão direita — meses internada. Em 1974, uma mordida de cachorro no rosto exigiu cirurgia com Ivo Pitanguy. Morreu de câncer em 9 de dezembro de 1977, um dia antes de completar 57 anos, no Rio. Sepultada no Cemitério Israelita do Caju, dois dias depois.</p>
+
+      <p class="cap">Além dela</p>
+      <p class="sub-nota">Irmãs: Tania Lispector Kaufmann (1915) e Leah — Elisa Lispector (1911). A tia Zicela Krimgold e o tio José Rabin, primos-irmãos entre si, os que esperavam a família em Maceió. E um detalhe do tipo que só aparece quando a pesquisa vai fundo pra valer: o cachorro de Clarice se chamava Ulisses.</p>
+
+      <p class="cap">Fontes</p>
+      <p class="sub-nota">Instituto Moreira Salles (claricelispectorims.com.br), um repositório acadêmico da UFPE, e reportagens — entre outras buscas, inclusive pra achar o nome do cachorro.</p>
+    </div>
+  </article>
+
+  <!-- ═══════════════ PEÇA 09 — TG / PDAES ═══════════════ -->
+  <article class="peca foco-painel" id="foco09">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 09 · 2022 · Trabalho de Graduação · em dupla</p>
+    <h2>PDAES: a dúvida que vira aula</h2>
+    <p class="peca-nota">Trabalho de Graduação do curso de Análise e Desenvolvimento de Sistemas, FATEC Ourinhos, 2022 — em dupla, com <strong>Letícia da Silva Careli</strong> e Vitor Gabriel Ramos Campos, orientação de Viviane de Fátima Bartholo. A ideia: um portal de discussão pra quem trava em Engenharia de Software. Brainly serviu de referência pelo design leve e acessível; Stack Overflow, pelo sistema de tags que filtra dúvida por dúvida — mas nenhum dos dois ensina a disciplina especificamente. A diferença que o projeto tenta fazer valer está numa frase do próprio resumo: "em vez de simplesmente obter a resposta, ela é lecionada."</p>
+
+    <div class="sub">
+      <p class="sub-titulo">Os modelos</p>
+      <p class="sub-nota">Dois diagramas atravessam o projeto inteiro — entidade-relacionamento e casos de uso, a dupla clássica que qualquer Engenharia de Software usa pra desenhar o sistema antes da primeira linha de código (GUEDES, 2018). Na primeira versão, o banco ainda chamava as matérias de <em>materias</em> e não sabia nada sobre dúvida nenhuma — só instituições, cursos, professores, alunos, o esqueleto genérico de qualquer plataforma acadêmica. A versão final é outra coisa: dezesseis tabelas, com DUVIDAS, TAGS, TOPICOS e MIDIAS formando a espinha dorsal específica de um fórum de perguntas. Só que, mesmo nessa versão final, nenhuma tabela chegou a se chamar RESPOSTAS — o caso de uso já sabia que um moderador ia cadastrar respostas; o banco, na hora de guardar essas respostas, ainda não tinha decidido onde.</p>
+      <div class="evidencia">
+        <img src="images/pdaes-diagrama-er.jpeg" alt="Diagrama de Entidade-Relacionamento da plataforma, versão final">
+        <p class="evidencia-cap">modelo de entidade-relacionamento — versão final, dezesseis tabelas</p>
+      </div>
+      <div class="evidencia">
+        <img src="images/pdaes-diagrama-casos-uso.jpeg" alt="Diagrama de Casos de Uso da plataforma, versão final">
+        <p class="evidencia-cap">diagrama de casos de uso — versão final, cinco atores</p>
+      </div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">A stack</p>
+      <p class="sub-nota">Front-end em HTML, CSS e Bootstrap, Node.js e JavaScript por cima. Back-end em Laravel, banco modelado no MySQL Workbench, editor VSCode. Prototipação no Figma, seguindo UX/UI Design — telas antes do código. Gerenciamento de projeto pelas diretrizes do PMBOK; versionamento no Git e GitHub, artigo e código sob o mesmo controle.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Os requisitos</p>
+      <table class="tabela-pm">
+        <tr><th>Papel</th><th>Nº</th><th>Alguns exemplos</th></tr>
+        <tr><td>Todos</td><td class="num">9</td><td>login, criar conta, perfil, pesquisar dúvida</td></tr>
+        <tr><td>Aluno</td><td class="num">4</td><td>cadastrar dúvida, fechar post, avaliar resposta</td></tr>
+        <tr><td>Docente</td><td class="num">2</td><td>postar material, cadastrar disciplina lecionada</td></tr>
+        <tr><td>Moderador</td><td class="num">3</td><td>cadastrar resposta, cadastrar tags, analisar respostas</td></tr>
+        <tr><td>Administrador</td><td class="num">5</td><td>instituições, cursos, disciplinas, tipo de usuário, relatórios</td></tr>
+      </table>
+      <p class="sub-nota">Vinte e três ao todo. O último item da lista, <em>emitir relatórios</em>, carrega uma anotação que nenhum dos outros vinte e dois tem: "(verificar)" — entre planejado e confirmado, a única linha do documento que admite a própria dúvida. Não funcionais: backup, interface só via web, segurança — três linhas sem número, o tipo de requisito que não aparece em tela nenhuma mas decide se o sistema aguenta o uso de verdade.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">O que rodou</p>
+      <p class="sub-nota">Nem tudo saiu do papel. Das vinte e três funcionalidades planejadas, só as telas principais chegaram a existir de verdade — login, cadastro de usuário, cadastro de dúvidas e de respostas —, testadas pelos próprios colaboradores do projeto contra os requisitos propostos. O motivo, sem rodeio: pouco tempo por dia, reuniões curtas e esparsas com a orientadora, e ferramentas e linguagens aprendidas na prática, ao mesmo tempo em que precisavam ser usadas pra valer.</p>
+      <div class="evidencia">
+        <img src="images/pdaes-tela-pergunta.png" alt="Tela de Nova pergunta — cadastro de dúvida">
+        <p class="evidencia-cap">Nova pergunta — cadastro de dúvida, uma das telas que realmente rodou</p>
+      </div>
+      <div class="evidencia">
+        <img src="images/pdaes-tela-resposta.png" alt="Tela de Nova resposta">
+        <p class="evidencia-cap">Nova resposta — a outra tela que saiu do papel</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- ═══════════════ PEÇA 10 — GUTS ═══════════════ -->
+  <article class="peca foco-painel" id="foco10">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 10 · 2020–2022 · Engenharia de Software · de grupo a dupla</p>
+    <h2>Guts: o Airbnb que ganhou nome próprio</h2>
+    <p class="peca-nota">Engenharia de Software 1, FATEC Ourinhos, 2020, em home office — professor Marcos Antônio Martuchi. Nasceu com o nome Airbnb, grupo de cinco: Bruna Braz, Gabriel Rigonati, Letícia da Silva Careli, Vitor Gabriel Ramos Campos e Wisley Felipe da Silva. Virou Guts mais adiante, já sem Gabriel Rigonati na lista de autores, e o escopo cresceu junto: de "alugar um imóvel com rapidez" pra "aplicativo para compra e locação de imóveis", com análise de crédito e regras de negócio que a versão Airbnb não tinha.</p>
+
+    <div class="sub">
+      <p class="sub-titulo">Os subsistemas</p>
+      <p class="sub-nota">Na versão Airbnb, cada seção tem dono declarado no próprio texto: Letícia assina a introdução e os objetivos — alugar rápido, e pra quem tem imóvel, virar negócio próprio, moradia temporária ou hospedagem. Bruna e Wisley assinam os quatro subsistemas — Gerenciamento de Documentação, de Imóveis, Financeiro e Administrativo. Vitor assina a estrutura de dados. Na virada pra Guts essa autoria por seção desaparece, mas a lista cresce e fica mais concreta: login, cadastro de locatário, locador e imóvel, agendamento de visita, pagamento a prazo ou à vista, localização com redirecionamento pro Google Maps, análise de crédito direto com SPC/Serasa, contrato, suporte por chat ou SAC.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">As regras, por papel</p>
+      <p class="sub-nota">O Bizagi guarda três fluxos completos, um por papel, modificados pela última vez em 4 de dezembro de 2020. O locador: login, cadastro do imóvel no app — se houver interesse em anunciar —, agendamento de visita. O locatário: login, busca de imóveis, e — se houver interesse em alugar ou comprar — agendamento de visita em paralelo ao envio de documento pelo app, análise de crédito, e, se estiver tudo certo, compra ou aluguel finalizado com sucesso. A imobiliária fica no meio dos dois: verifica agendamentos com o locador, faz a visita, auxilia no cadastro do imóvel — e, por outro lado, verifica pendência de pagamento dos locatários, cobra, paga o locador. As regras de negócio da versão Guts — fiador, caução, credpago, termo de responsabilidade no pagamento — são a tradução em texto do que esses três fluxogramas já desenhavam em forma.</p>
+      <div class="evidencia">
+        <img src="images/guts-fluxo-locador.png" alt="Fluxo BPMN do papel Locador">
+        <p class="evidencia-cap">locador — anunciar, agendar, esperar dar certo</p>
+      </div>
+      <div class="evidencia">
+        <img src="images/guts-fluxo-locatario.png" alt="Fluxo BPMN do papel Locatário">
+        <p class="evidencia-cap">locatário — buscar, visitar, comprovar, esperar a aprovação</p>
+      </div>
+      <div class="evidencia">
+        <img src="images/guts-fluxo-imobiliaria.png" alt="Fluxo BPMN do papel Imobiliária">
+        <p class="evidencia-cap">imobiliária — o papel que corre atrás dos outros dois</p>
+      </div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">O protótipo</p>
+      <p class="sub-nota">Criado em 8 de dezembro de 2020: doze telas em formato iPhone 6/7/8, ligadas por dezenove transições de toque — um protótipo clicável de verdade, não só imagem estática. A escolha do modelo teve justificativa própria, registrada à parte: prototipação, porque "nunca desenvolvemos um software antes" e algum requisito "pode faltar" na primeira tentativa. A vantagem é validar — ou não — o que foi levantado; a desvantagem é ter que alterar o sistema de novo, e de novo, até acertar.</p>
+      <div class="xd-widget">
+        <p class="xd-tela-nome" id="xdNome">entrar</p>
+        <div class="xd-frame">
+          <svg id="xdSvg" viewBox="0 0 375 667" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <button class="xd-reiniciar" id="xdReiniciar" type="button">&#8634; reiniciar o protótipo</button>
+      </div>
+      <p class="evidencia-cap">as doze telas de verdade, extraídas do .xd — toque pra navegar de verdade</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Quatro títulos, nenhuma linha</p>
+      <p class="sub-nota">No pptx do Guts, Objetivos, Subsistema, Regras de negócio e Estrutura de dados existem só como cabeçalho — nenhum ganhou uma linha de conteúdo abaixo do título. O texto que preenche essas mesmas seções sobreviveu em outro lugar, num .txt solto, não no slide que devia apresentá-las.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">2021: o time encolhe, o documento cresce</p>
+      <p class="sub-nota">Três nomes na capa dos documentos de 2021, não mais quatro: Bruna Braz Frazato de Freitas (pesquisadora), Letícia da Silva Careli (programadora web full-stack e UX/UI) e Vitor Gabriel Ramos Campos (engenheiro de software, UX writing e CIO) — Wisley não aparece mais em lugar nenhum. A metodologia vira híbrida, prototipação, espiral e Scrum rodando juntas, citando Pressman (2001), e o mapa mental do projeto é redesenhado entre maio e agosto. Os requisitos amadurecem junto: em maio ainda pensavam por tipo de cadastro — inquilino, proprietário, imóvel, funcionário, com um "?????" nunca preenchido —; em agosto e novembro, viram quatro perfis de acesso — Administrador, Funcionário, Locador, Locatário — e a aprovação de um imóvel ganha três estágios: primeira análise dos documentos, segunda análise com visita e fotos profissionais, e validação final que gera o contrato.</p>
+      <div class="evidencia" style="max-width:420px">
+        <img src="images/guts-mapa-mental-2021.png" alt="Mapa mental do projeto Guts, versão de agosto de 2021">
+        <p class="evidencia-cap">o mapa mental redesenhado — de tecnologia pra papel de usuário</p>
+      </div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">O banco que sonhou vinte tabelas</p>
+      <p class="sub-nota">O documento de novembro de 2021 desenha um banco de dados enorme: tipos de imóvel separados por categoria — apartamento, comercial, rural, terreno —, cada um com suas próprias subdivisões; tabelas pra situação do imóvel, tipo de transação (locação agora, venda "no longo prazo"), documentos enviados, perfil de cada usuário, funcionário, características, instalações, acabamento, lazer, placa de anúncio, registro legal, galeria de fotos guardada no OneDrive. Uma imobiliária inteira, modelada peça por peça antes de existir uma linha de código.</p>
+      <div class="evidencia" style="max-width:420px">
+        <img src="images/guts-diagrama-classes-2021.png" alt="Diagrama de Classes do projeto, novembro de 2021">
+        <p class="evidencia-cap">diagrama de classes — o banco sonhado, em UML</p>
+      </div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">O que ficou de pé</p>
+      <p class="sub-nota">Em março de 2022 o documento passa por uma revisão de verdade, não só o nome: quatro diagramas repetidos viram dois, "pagamentos recebidos" some da lista do locador, o terceiro estágio da aprovação vira "validação", não mais "cadastro". A autoria muda de novo — Bruna sai da capa. Sobram Letícia e Vitor. O cronograma de agosto de 2022 é o registro mais honesto do projeto inteiro: cada tarefa concluída está debaixo do nome da Letícia, sozinha; Vitor aparece na correção do documento e nas entregas gerais. O Laravel que rodou de fato tem doze tabelas, bem menos que as vinte sonhadas em novembro — tipos de imóvel unificados em vez de separados por categoria, sem perfil, documento, placa, registro ou galeria como tabela própria. Não é o banco que sonharam. É o banco que deu tempo de fazer.</p>
+      <table class="tabela-pm">
+        <tr><th>Tarefa</th><th>Responsável</th><th>Status</th></tr>
+        <tr><td>Cadastro de usuário, login, imóvel</td><td>Letícia</td><td>Concluído</td></tr>
+        <tr><td>Solicitação de locação</td><td>Letícia</td><td>Concluído</td></tr>
+        <tr><td>Busca por cidade, filtros</td><td>Letícia</td><td>Concluído</td></tr>
+        <tr><td>Banco de dados e conexão</td><td>Letícia</td><td>Concluído</td></tr>
+        <tr><td>Gerar Contrato</td><td>—</td><td>—</td></tr>
+        <tr><td>Emitir Relatórios</td><td>—</td><td>—</td></tr>
+      </table>
+      <p class="sub-nota">As seis telas abaixo vieram de um Laravel de verdade, rodando: subi com SQLite, rodei as dezenove migrations sem um erro sequer, e corrigi uma única linha de compatibilidade — o Carbon esperava um retorno que o PHP 8.3 já não dá. O que ficou aqui são essas capturas, navegáveis pelos mesmos botões que existem na tela: clique em Imóvel, Cliente, Funcionário ou Locação na inicial, ou na seta pra voltar.</p>
+      <div class="app-widget">
+        <p class="app-tela-nome" id="appNome">login</p>
+        <div class="app-frame">
+          <div class="app-frame-bar"><span></span><span></span><span></span></div>
+          <div class="app-tela" id="appTela">
+            <img id="appImg" src="images/guts-app-login.png" alt="Tela do app Guts rodando de verdade">
+          </div>
+        </div>
+        <button class="app-reiniciar" id="appReiniciar" type="button">&#8634; voltar ao login</button>
+      </div>
+      <p class="evidencia-cap">seis telas capturadas do app rodando — clique nos próprios botões da tela pra navegar</p>
+    </div>
+  </article>
+
+  <!-- ═══════════════ PEÇA 11 — QUATRO APRESENTAÇÕES ═══════════════ -->
+  <article class="peca foco-painel" id="foco11">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 11 · 2020–2023 · oito cadeiras, oito temas</p>
+    <h2>TV LG: oito slides que não se conhecem</h2>
+    <p class="peca-nota">Oito apresentações sem nada em comum além de terem sido feitas na FATEC — de junho de 2020 a junho de 2023, três anos entre a primeira e a última. Cinco são só de Vitor, salvas sob os nomes de usuário que foi trocando pelo caminho (GM, depois TV LG). As outras três — outubro e novembro de 2020, dentro de cinco semanas uma da outra — têm Letícia da Silva Careli como autora nos metadados: o mesmo trio que funda a Guts na Peça 10, documentando três trabalhos de grupo diferentes quase em sequência. Cada uma abaixo é o arquivo original, página por página.</p>
+
+    <div class="sub">
+      <p class="sub-titulo">Futuro do universo cibernético</p>
+      <p class="sub-nota">23 de junho de 2020 — a mais antiga de todas, seis dias antes da próxima. Caminhos da robótica e da inteligência artificial, quinze slides sem autor declarado no texto, só o registro de criação. O tom é de pesquisa pessoal, não de trabalho encomendado: "dentre as opções, estas foram as que mais me agradaram". Termina admitindo que o assunto rendeu mais perguntas do que o esperado.</p>
+      <div class="pptx-widget" data-deck="robotica" data-total="15">
+        <div class="pptx-frame"><img class="pptx-img" src="images/p11-robotica-01.jpg" alt="Slide 1 de Futuro do universo cibernético"></div>
+        <div class="pptx-controls">
+          <button class="pptx-prev" type="button" aria-label="Slide anterior">‹</button>
+          <span class="pptx-contador">1 / 15</span>
+          <button class="pptx-next" type="button" aria-label="Próximo slide">›</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Manutenção de Hardwares/software</p>
+      <p class="sub-nota">29 de junho de 2020. Uma bancada de manutenção de computadores, dezesseis slides — cuidados preventivos, ferramentas corretivas numeradas de uma a dezesseis, chave de fenda a câmera térmica. Os últimos slides de imagem foram passados por um upscaler (waifu2x) antes de entrar na apresentação. "Aluno: Vitor Gabriel Ramos Campos", assinado no final, não no início.</p>
+      <div class="pptx-widget" data-deck="manutencao" data-total="16">
+        <div class="pptx-frame"><img class="pptx-img" src="images/p11-manutencao-01.jpg" alt="Slide 1 de Manutenção de Hardwares/software"></div>
+        <div class="pptx-controls">
+          <button class="pptx-prev" type="button" aria-label="Slide anterior">‹</button>
+          <span class="pptx-contador">1 / 16</span>
+          <button class="pptx-next" type="button" aria-label="Próximo slide">›</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">IoT</p>
+      <p class="sub-nota">8 de outubro de 2020, modificada seis dias depois. Vinte e dois slides — a maior apresentação desta peça: o que é IoT, exemplos (um relógio comum ao lado de um smartwatch, uma geladeira comum ao lado de uma inteligente), tecnologias, o ponto fraco dos sensores, segurança, considerações finais, cinco referências. Grupo: Letícia da Silva Careli, Wisley Felipe da Silva, Vitor e Gabriel Rigonati — o mesmo quarteto que vira Airbnb na Peça 10, antes de virar Guts.</p>
+      <div class="pptx-widget" data-deck="iot" data-total="22">
+        <div class="pptx-frame"><img class="pptx-img" src="images/p11-iot-01.jpg" alt="Slide 1 de IoT"></div>
+        <div class="pptx-controls">
+          <button class="pptx-prev" type="button" aria-label="Slide anterior">‹</button>
+          <span class="pptx-contador">1 / 22</span>
+          <button class="pptx-next" type="button" aria-label="Próximo slide">›</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Gestão de Custos do Vestibular</p>
+      <p class="sub-nota">5 de novembro de 2020. Oito slides que não são bem uma apresentação — é um exercício de SCRUM: backlog de nove itens pra um sistema de gestão de custos do próprio vestibular da FATEC Ourinhos, dividido em quatro sprints. Vitor aparece creditado como Product Owner. Grupo: Ana Carolina Cardozo, Letícia, Wisley e Vitor — o trio de sempre, mais uma.</p>
+      <div class="pptx-widget" data-deck="custo" data-total="8">
+        <div class="pptx-frame"><img class="pptx-img" src="images/p11-custo-01.jpg" alt="Slide 1 de Gestão de Custos do Vestibular"></div>
+        <div class="pptx-controls">
+          <button class="pptx-prev" type="button" aria-label="Slide anterior">‹</button>
+          <span class="pptx-contador">1 / 8</span>
+          <button class="pptx-next" type="button" aria-label="Próximo slide">›</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Redação Inquieta — Capítulo Método</p>
+      <p class="sub-nota">13 de novembro de 2020, modificada no dia seguinte. Onze slides sobre o capítulo "Método" do livro de Gustavo Bernardo — silogismo, dilema, redução ao absurdo, indução, dedução, os limites de cada uma, o que é verdade. Os últimos dois slides de conteúdo são assinados só "Vitor Gabriel Ramos Campos", separado do resto do grupo, como se aquele trecho específico fosse dele.</p>
+      <div class="pptx-widget" data-deck="redacao" data-total="11">
+        <div class="pptx-frame"><img class="pptx-img" src="images/p11-redacao-01.jpg" alt="Slide 1 de Redação Inquieta"></div>
+        <div class="pptx-controls">
+          <button class="pptx-prev" type="button" aria-label="Slide anterior">‹</button>
+          <span class="pptx-contador">1 / 11</span>
+          <button class="pptx-next" type="button" aria-label="Próximo slide">›</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Análise de segurança em Cloud Computing</p>
+      <p class="sub-nota">4 de outubro de 2022, dois anos depois — 5º ADS, vespertino, ISG003. Em dupla com Jéssica Aparecida Pessoa, a mesma colaboradora da RescueTechSolutions na peça 04. Onze slides sobre o que é a nuvem, como funciona, riscos, e os três tipos de serviço — SaaS, PaaS, IaaS — desenhados como pirâmide.</p>
+      <div class="pptx-widget" data-deck="cloud" data-total="11">
+        <div class="pptx-frame"><img class="pptx-img" src="images/p11-cloud-01.jpg" alt="Slide 1 de Análise de segurança em Cloud Computing"></div>
+        <div class="pptx-controls">
+          <button class="pptx-prev" type="button" aria-label="Slide anterior">‹</button>
+          <span class="pptx-contador">1 / 11</span>
+          <button class="pptx-next" type="button" aria-label="Próximo slide">›</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">WebSocket</p>
+      <p class="sub-nota">2 de dezembro de 2022 — a única solo deste grupo de quatro mais recente, mais de dois anos depois das três de 2020. Cinco slides sobre o protocolo: o que é, como funciona, vantagens, uma referência citada. Criada sob "GM", modificada duas horas depois sob "TV LG" — a mesma dupla de nomes que a Equipe, logo abaixo, registra em abril de 2023. As datas não deveriam coexistir se a troca fosse única e definitiva: ou o nome do Office não anda junto com o do Windows, ou trocou mais de uma vez. Fica em aberto.</p>
+      <div class="pptx-widget" data-deck="websocket" data-total="5">
+        <div class="pptx-frame"><img class="pptx-img" src="images/p11-websocket-01.jpg" alt="Slide 1 de WebSocket"></div>
+        <div class="pptx-controls">
+          <button class="pptx-prev" type="button" aria-label="Slide anterior">‹</button>
+          <span class="pptx-contador">1 / 5</span>
+          <button class="pptx-next" type="button" aria-label="Próximo slide">›</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Equipe: formação e evolução</p>
+      <p class="sub-nota">Criada em 30 de abril de 2023 sob "GM" — o nome antigo do usuário de Vitor no computador, antes de virar "TV LG" —, e modificada por último em 19 de junho, quase dois meses depois. Oito slides sobre teoria de gestão de equipes: papéis, metas, comunicação, avaliação de desempenho. A mais recente de todas, e a segunda a guardar o rastro dessa troca de nome de usuário.</p>
+      <div class="pptx-widget" data-deck="equipe" data-total="8">
+        <div class="pptx-frame"><img class="pptx-img" src="images/p11-equipe-01.jpg" alt="Slide 1 de Equipe: formação e evolução"></div>
+        <div class="pptx-controls">
+          <button class="pptx-prev" type="button" aria-label="Slide anterior">‹</button>
+          <span class="pptx-contador">1 / 8</span>
+          <button class="pptx-next" type="button" aria-label="Próximo slide">›</button>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ═══════════════ PEÇA 12 — BANCO DE DADOS / SQL ═══════════════ -->
+  <article class="peca foco-painel" id="foco12">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 12 · 2022 · Banco de Dados · ILP540-T</p>
+    <h2>Da Álgebra Relacional ao SQL, expressão por expressão</h2>
+    <p class="peca-nota">ILP540-T, vespertino, 2022.2 — mesmo semestre da peça 11. A base usada nos exercícios era compartilhada por toda a turma: 86 tabelas cobrindo banco, saúde, biblioteca, oficina, varejo, RH e transporte ao mesmo tempo, um esqueleto genérico grande o bastante pra qualquer pergunta caber nele. O que segue abaixo é só o que Vitor escreveu — as traduções, os gatilhos, o exercício de achar o erro —, não o material do professor.</p>
+
+    <div class="sub">
+      <p class="sub-titulo">Álgebra Relacional → SQL</p>
+      <p class="sub-nota">O enunciado pedia tradução expressão por expressão, não só o resultado final. Um dos casos mais completos: quais professores ministram todas as disciplinas — um problema de divisão relacional, resolvido em sete tabelas temporárias encadeadas. Produto cartesiano entre professores e disciplinas, subtração do que já está atribuído, e uma segunda subtração pra sobrar só quem dá conta de tudo.</p>
+      <p class="cap">pratica-sql-vitor.pdf — questão 4</p>
+      <pre>CREATE TEMPORARY TABLE P AS (SELECT idprofessor as professorid FROM professores);
+CREATE TEMPORARY TABLE D AS (SELECT iddisciplina as disciplinaid FROM disciplinas);
+CREATE TEMPORARY TABLE PD AS (SELECT professorid, disciplinaid FROM atribuicoes);
+
+-- produto cartesiano: todo professor cruzado com toda disciplina
+CREATE TEMPORARY TABLE A AS (SELECT * FROM P CROSS JOIN D);
+
+-- subtração: tira do produto cartesiano o que já está atribuído de fato
+CREATE TEMPORARY TABLE B AS (SELECT * FROM A EXCEPT (SELECT * FROM PD));
+CREATE TEMPORARY TABLE C AS (SELECT professorid FROM B);
+
+-- segunda subtração: quem sobra em P depois de tirar quem tem alguma falta em C
+-- são os professores sem NENHUMA disciplina faltando — ou seja, dão todas
+CREATE TEMPORARY TABLE E AS (SELECT * FROM P EXCEPT (SELECT * FROM C));
+
+SELECT idprofessor, txnomeprofessor
+FROM E
+INNER JOIN professores ON E.professorid = professores.idprofessor;</pre>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Os gatilhos</p>
+      <p class="sub-nota">Dois gatilhos em PL/pgSQL escritos sem o passo a passo guiado que o professor dava nos exercícios modelo — só a solução direta. Os dois usam <em>raise notice</em>, não <em>raise exception</em>: o aviso aparece no console, mas o INSERT segue de qualquer jeito, mesmo quando a condição falha.</p>
+      <p class="cap">gatilho08.sql — limite de sinistros por veículo</p>
+      <pre>CREATE OR REPLACE FUNCTION public.sinistrosBI()
+RETURNS trigger
+LANGUAGE 'plpgsql'
+AS $BODY$
+declare
+  vQtdSinistro smallint;
+begin
+  select count(*) into vQtdSinistro
+  from sinistros
+  where veiculoid = NEW.veiculoid;
+
+  if (vQtdSinistro >= 3) then
+    raise notice 'O veículo (%) já atingiu o limite de sinistros permitido', NEW.veiculoid;
+  end if;
+
+  return new;
+end;
+$BODY$;</pre>
+      <p class="cap">gatilho11.sql — disponibilidade mínima na biblioteca</p>
+      <pre>CREATE OR REPLACE FUNCTION public.emprestimosBI()
+RETURNS trigger
+LANGUAGE 'plpgsql'
+AS $BODY$
+declare
+  vQtdDisponivel smallint;
+begin
+  select qtdisponivel into vQtdDisponivel
+  from livros
+  where idlivro = NEW.livroid;
+
+  if (vQtdDisponivel <= 0) then
+    raise notice 'O livro (%) não tem exemplares disponíveis', NEW.livroid;
+  end if;
+
+  return new;
+end;
+$BODY$;</pre>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Achar o erro</p>
+      <p class="sub-nota">O exercício 16 dá um comando pronto — "de outro analista", diz o enunciado — tentando resolver uma divisão relacional entre oficinas, serviços e o que cada oficina presta. O comando está errado, e a tarefa é achar onde. O erro: <code>MINUS</code> não existe em PostgreSQL — é sintaxe de Oracle. A correção troca a palavra por <code>except</code>, e o resto do comando, que já estava certo, continua igual.</p>
+      <p class="cap">a linha que muda</p>
+      <pre>-- errado (sintaxe Oracle, não existe em PostgreSQL):
+SELECT * FROM A MINUS (SELECT * FROM ACAOSEMP)
+
+-- corrigido:
+SELECT * FROM A except (SELECT * FROM ACAOSEMP)</pre>
+    </div>
+  </article>
+
+  <!-- ═══════════════ PEÇA 13 — 6ADS / LÓGICA DE PROGRAMAÇÃO ═══════════════ -->
+  <article class="peca foco-painel" id="foco13">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 13 · março 2023 · 6ADS</p>
+    <h2>Lógica de Programação: sequencial, seleção, repetição, vetores</h2>
+    <p class="peca-nota">Antes do Rosalind, teve isso: uma lista de quarenta exercícios pra aprender a pensar em Python — quatro blocos, cada um construindo sobre o anterior. Impresso do Colab em 1º de março de 2023, duas semanas antes do primeiro problema do Rosalind. Um exercício de cada categoria mostrado aqui; o resto ficou de fora, mas não é menos real.</p>
+
+    <div class="sub">
+      <p class="sub-titulo">Estrutura Sequencial — 4 exercícios</p>
+      <p class="cap">Questão 3 — salário do funcionário</p>
+      <pre>salario_base = float(input("Digite o salário-base do funcionário: "))
+gratificacao = salario_base * 0.05
+salario_bruto = salario_base + gratificacao
+imposto = salario_bruto * 0.07
+salario_liquido = salario_bruto - imposto
+print("O salário-base é R$", salario_base)
+print("A gratificação é R$", gratificacao)
+print("O imposto é R$", imposto)
+print("O salário a receber é R$", salario_liquido)</pre>
+      <p class="cap">saída</p>
+      <div class="dado">Digite o salário-base do funcionário: 1300
+O salário-base é R$ 1300.0
+A gratificação é R$ 65.0
+O imposto é R$ 95.55000000000001
+O salário a receber é R$ 1269.45</div>
+      <p class="sub-nota">O imposto vem com onze casas decimais atrás — <code>float</code> fazendo o que <code>float</code> faz. Ninguém corrigiu; o print saiu assim e ficou assim.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Estrutura de Seleção — 10 exercícios</p>
+      <p class="cap">Questão 8 — lanchonete</p>
+      <pre>codigo = int(input("Digite o código do item: "))
+quantidade = int(input("Digite a quantidade: "))
+if codigo == 100:
+    preco = 1.20
+    nome = "Cachorro Quente"
+elif codigo == 101:
+    preco = 1.30
+    nome = "Bauru Simples"
+elif codigo == 102:
+    preco = 1.50
+    nome = "Bauru com Ovo"
+elif codigo == 103:
+    preco = 1.20
+    nome = "Hamburguer"
+elif codigo == 104:
+    preco = 1.30
+    nome = "Cheeseburguer"
+elif codigo == 105:
+    preco = 1.00
+    nome = "Refrigerante"
+else:
+    print("Código inválido!")
+    preco = 0
+    nome = ""
+total = preco * quantidade
+print(f"{quantidade}x {nome} - Total: R$ {total:.2f}")</pre>
+      <p class="cap">saída</p>
+      <div class="dado">Digite o código do item: 100
+Digite a quantidade: 5
+5x Cachorro Quente - Total: R$ 6.00</div>
+      <p class="sub-nota">Um cardápio de seis itens dentro de uma cadeia de <code>elif</code> — a mesma estrutura da Questão 9, que reajusta salário por cargo e, no teste registrado, usa "101" tanto pro salário quanto pro código do cargo. Coincidência de quem só queria ver se rodava.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Estrutura de Repetição — 21 exercícios</p>
+      <p class="cap">Questão 20 — Chico e Juca</p>
+      <pre>altura_chico = 1.50
+altura_juca = 1.10
+crescimento_chico = 0.02
+crescimento_juca = 0.03
+anos = 0
+while altura_juca &lt;= altura_chico:
+    altura_chico += crescimento_chico
+    altura_juca += crescimento_juca
+    anos += 1
+print(f'Serão necessários {anos} anos para Juca ser maior que Chico.')</pre>
+      <p class="cap">saída</p>
+      <div class="dado">Serão necessários 41 anos para Juca ser maior que Chico.</div>
+      <p class="sub-nota">O bloco mais longo da lista — de tabuada e fatorial a checagem de número primo por raiz quadrada. Chico e Juca crescendo a taxas diferentes até um ultrapassar o outro é só o mais bem-humorado dos vinte e um.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Vetores — 4 exercícios</p>
+      <p class="cap">Questão 4 — sena, quina, quadra</p>
+      <pre>gabarito = []
+for i in range(6):
+    num = int(input("Digite o número do gabarito (entre 1 e 60): "))
+    gabarito.append(num)
+
+aposta = []
+for i in range(10):
+    num = int(input("Digite um número da aposta (entre 1 e 60): "))
+    aposta.append(num)
+
+acertos = 0
+for num in aposta:
+    if num in gabarito:
+        acertos += 1
+
+print("Você acertou", acertos, "números.")
+if acertos == 6:
+    print("Parabéns! Você fez a sena!")
+elif acertos == 5:
+    print("Você fez a quina!")
+elif acertos == 4:
+    print("Você fez a quadra!")
+else:
+    print("Não foi desta vez...")</pre>
+      <p class="cap">saída</p>
+      <div class="dado">Você acertou 1 números.
+Não foi desta vez...</div>
+      <p class="sub-nota">Uma sena simulada — seis números de gabarito contra dez de aposta, um acerto só no teste. O <code>in</code> comparando lista contra lista é o mesmo instinto que, um mês depois, vira busca por nome na Peça 14.</p>
+    </div>
+  </article>
+
+  <!-- ═══════════════ PEÇA 14 — CONTA PYTHON E POO ═══════════════ -->
+  <article class="peca foco-painel" id="foco14">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 14 · abril 2023 · Programação Orientada a Objetos</p>
+    <h2>Conta: uma classe, dez saldos</h2>
+    <p class="peca-nota">Um mês depois do 6ADS (Peça 13), o primeiro <code>class</code>. Uma conta bancária simplificada — nome e saldo, nada de métodos além do construtor — instanciada dez vezes e buscada por nome numa lista. É pouco, mas é o suficiente pra virar o gancho de tudo que a POO ainda ia exigir depois.</p>
+
+    <div class="sub">
+      <p class="cap">Conta Python e POO.ipynb</p>
+      <pre>#Class Conta
+
+class Conta:
+    def __init__(self, nome, saldo):
+        self.nome = nome
+        self.saldo = saldo
+
+conta1 = Conta("Geraldo",30000)
+conta2 = Conta("Tálita",12000)
+conta3 = Conta("Jessica",12000)
+conta4 = Conta("Silvana",30000)
+conta5 = Conta("Vitor",1500)
+conta6 = Conta("Nauam",15000)
+conta7 = Conta("Bruna",15000)
+conta8 = Conta("Debora",14000)
+conta9 = Conta("André",16000)
+conta10 = Conta("João",17000)
+
+lista_contas = [conta1, conta2, conta3, conta4, conta5, conta6, conta7, conta8, conta9, conta10]
+
+nome_cliente = input("Escreva o nome do cliente: ")
+saldo_cliente = None
+for conta in lista_contas:
+    if conta.nome == nome_cliente:
+        saldo_cliente = conta.saldo
+        break
+
+if saldo_cliente:
+    print(f"O saldo de {nome_cliente} é de R${saldo_cliente}")
+else:
+    print(f"Cliente {nome_cliente} não encontrado")</pre>
+      <p class="cap">saída</p>
+      <div class="dado">Escreva o nome do cliente: Tálita
+O saldo de Tálita é de R$12000</div>
+      <p class="sub-nota">Duas das dez contas têm nome de gente de verdade: "Jessica" e "Nauam" — os mesmos primeiros nomes de Jéssica Aparecida Pessoa e Nauam Moises da Cruz Garcia, que seis meses depois virariam colegas de grupo na RescueTechSolutions (Peça 04). Em abril, ainda são só nomes emprestados pra um exercício.</p>
+    </div>
+  </article>
+
+  <!-- ═══════════════ PEÇA 15 — ECONOMIA / OFERTA E DEMANDA ═══════════════ -->
+  <article class="peca foco-painel" id="foco15">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 15 · junho de 2021 · Economia</p>
+    <h2>Oferta e demanda: onde as curvas se cruzam</h2>
+    <p class="peca-nota">A única peça inteira em R. Um projeto RStudio guardado como <code>.rar</code> — histórico de sessão, cache, workspace, e o script principal salvo, por engano ou não, dentro do arquivo que deveria só guardar as configurações do projeto (<code>Economia.Rproj</code>). O que importa: duas curvas bézier representando oferta e demanda, o ponto onde elas se cruzam calculado primeiro à mão, depois generalizado numa função. 6 de junho de 2021 — mais velho que quase tudo neste museu, atrás só da URI e da raiz da Guts, as duas de 2020.</p>
+
+    <div class="sub">
+      <p class="sub-titulo">As curvas e a interseção</p>
+      <p class="cap">Economia.Rproj</p>
+      <pre>library(dplyr)
+library(ggplot2)
+
+supply &lt;- Hmisc::bezier(x = c(1, 8, 9), y = c(1, 5, 9)) %>%
+  as_data_frame()
+
+demand &lt;- Hmisc::bezier(c(1, 3, 9), c(9, 3, 1)) %>%
+  as_data_frame()
+
+ggplot(mapping = aes(x = x, y = y)) + 
+  geom_path(data = supply, color = "#0073D9", size = 2) +
+  geom_path(data = demand, color = "#FF4036", size = 2) +
+  theme_classic() +
+  coord_equal()
+
+fun_supply &lt;- approxfun(supply$x, supply$y, rule = 2)
+fun_demand &lt;- approxfun(demand$x, demand$y, rule = 2)
+
+intersection_funs &lt;- uniroot(function(x) fun_supply(x) - fun_demand(x), c(1, 9))</pre>
+      <p class="sub-nota">Azul sobe, vermelho desce, <code>uniroot()</code> encontra onde as duas funções de interpolação empatam — o ponto de equilíbrio, em termos de mercado. A primeira versão do gráfico só desenhava as curvas; essa já resolve a interseção.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Generalizando — e comparando duas demandas</p>
+      <p class="cap">curve_intersect()</p>
+      <pre>curve_intersect &lt;- function(curve1, curve2) {
+  curve1_f &lt;- approxfun(curve1$x, curve1$y, rule = 2)
+  curve2_f &lt;- approxfun(curve2$x, curve2$y, rule = 2)
+  point_x &lt;- uniroot(function(x) curve1_f(x) - curve2_f(x), c(min(curve1$x), max(curve1$x)))$root
+  point_y &lt;- curve2_f(point_x)
+  return(list(x = point_x, y = point_y))
+}
+
+demand2 &lt;- Hmisc::bezier(c(3, 5, 11), c(11, 5, 3)) %>%
+  as_data_frame()
+
+intersections &lt;- bind_rows(curve_intersect(supply, demand), curve_intersect(supply, demand2))
+
+ggplot(mapping = aes(x = x, y = y)) +
+  geom_path(data = supply, color = "#0073D9", size = 1) +
+  geom_path(data = demand, color = "#FF4036", size = 1, linetype = "dashed") +
+  geom_path(data = demand2, color = "#FF4036", size = 1) +
+  geom_segment(data = intersections, aes(x = x, y = 0, xend = x, yend = y), lty = "dotted") +
+  geom_segment(data = intersections, aes(x = 0, y = y, xend = x, yend = y), lty = "dotted") +
+  geom_point(data = intersections, size = 3) +
+  labs(x = "Quantity", y = "Price") +
+  theme_classic() +
+  coord_equal()</pre>
+      <p class="sub-nota">A função reaproveita a mesma lógica pra qualquer par de curvas — chamada duas vezes contra uma segunda curva de demanda, os dois pontos de equilíbrio lado a lado no mesmo gráfico. Entre a primeira versão e essa, seis blocos de <code>ggplot</code> a mais; o <code>.Rhistory</code> guarda todos.</p>
+    </div>
+  </article>
+
+  <!-- ═══════════════ PEÇA 16 — PROGRAMAÇÃO ORIENTADA A OBJETOS (JAVA) ═══════════════ -->
+  <article class="peca foco-painel" id="foco16">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 16 · agosto de 2021 – novembro de 2022 · Programação Orientada a Objetos</p>
+    <h2>O ano de Java</h2>
+    <p class="peca-nota">Oitenta e dois arquivos, cerca de dezoito pastas de projeto, guardados numa pasta batizada com o nome do professor, provavelmente — "Jean" não aparece em nenhum comentário de código nem nos metadados da máquina, só no nome da pasta; o resto (anotação à mão, contas de usuário genéricas) aponta sempre pro mesmo autor de todo o resto deste museu. Quinze meses de aula, de agosto de 2021 a novembro de 2022 — antes do Rosalind, antes do 6ADS, antes da Conta em Python da Peça 14. Não cabe tudo aqui; o que segue é uma amostra.</p>
+
+    <div class="sub">
+      <p class="sub-titulo">O começo — 20 de agosto de 2021</p>
+      <p class="cap">Lista 1 Java / EX1.java</p>
+      <pre>import javax.swing.JOptionPane;
+
+public class EX1 {
+public static void main(String args[]) {
+	int i,previous,after;
+	i = Integer.parseInt(JOptionPane.showInputDialog("Digite um valor"));
+previous = i - 1;
+after = i + 1 ;
+JOptionPane.showMessageDialog(null, previous);
+JOptionPane.showMessageDialog(null, after);
+}
+}</pre>
+      <p class="sub-nota">A data mais antiga desta peça, e a segunda mais antiga do museu inteiro — só a URI vem antes. E o problema é literalmente o primeiro exercício do 6ADS (Peça 13): antecessor e sucessor de um número. Ali, dezenove meses depois, em Python com <code>input()</code>; aqui, em Java, com caixas de diálogo do Swing. EX2, na mesma lista, converte polegadas em centímetros com o mesmo fator 2,54 da Questão 2 do 6ADS; EX15 calcula fatorial, um ano antes da Questão 21. O mesmo caderno de exercícios, reaberto em outra linguagem.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Contas bancárias — maio de 2022</p>
+      <p class="cap">Conta.java</p>
+      <pre>public class Conta {
+
+    private String nome;
+    private String endereço;
+    private String rg;
+    private String telefone;
+    private String agência;
+    private String numero;
+    private Double saldo;
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getEndereço() {
+        return endereço;
+    }
+
+    public void setEndereço(String endereço) {
+        this.endereço = endereço;
+    }
+
+    public String getRg() {
+        return rg;
+    }
+
+    public void setRg(String rg) {
+        this.rg = rg;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public String getAgência() {
+        return agência;
+    }
+
+    public void setAgência(String agência) {
+        this.agência = agência;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public Double getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(Double saldo) {
+        this.saldo = saldo;
+    }
+
+}</pre>
+      <p class="cap">ContaCorrente.java / Poupanca.java</p>
+      <pre>public class ContaCorrente extends Conta {
+      private Double limite;
+
+    public Double getLimite() {
+        return limite;
+    }
+
+    public void setLimite(Double limite) {
+        this.limite = limite;
+    }
+
+}
+
+public class Poupança {
+       private Double rendimento;
+
+    public Double getRendimento() {
+        return rendimento;
+    }
+
+    public void setRendimento(Double rendimento) {
+        this.rendimento = rendimento;
+    }
+
+}</pre>
+      <p class="sub-nota"><code>ContaCorrente extends Conta</code> — certo. <code>Poupança</code> devia ter herdado também, mas o <code>extends Conta</code> nunca foi escrito: do jeito que está, uma poupança não tem nome nem saldo, só rendimento. Onze meses depois, a mesma ideia — uma classe <code>Conta</code>, saldo buscado por nome — volta em Python na Peça 14, dessa vez sem herança nenhuma, só instâncias soltas numa lista.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Herança com formulário — novembro de 2022</p>
+      <p class="cap">Pessoa.java / Amigo.java</p>
+      <pre>public class Pessoa {
+    private String nome;
+    private String sexo;
+    private int idade;
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getSexo() {
+        return sexo;
+    }
+
+    public void setSexo(String sexo) {
+        this.sexo = sexo;
+    }
+
+    public int getIdade() {
+        return idade;
+    }
+
+    public void setIdade(int idade) {
+        this.idade = idade;
+    }
+
+}
+
+public class Amigo {
+    private String dtaniver;
+
+    public String getDtaniver() {
+        return dtaniver;
+    }
+
+    public void setDtaniver(String dtaniver) {
+        this.dtaniver = dtaniver;
+    }
+
+}</pre>
+      <p class="sub-nota">De novo: <code>Amigo</code> devia estender <code>Pessoa</code> e não estende — a mesma lacuna da Poupança, em outra pasta, seis meses depois. O formulário (Tela.java, gerado pelo editor visual do NetBeans) trata os quatro campos como se fossem de uma coisa só; as classes, sozinhas, discordam.</p>
+      <p class="cap">Tela.java — o botão "Exibir"</p>
+      <pre>private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+     String nome = txtNome.getText();
+     String sexo = txtSexo.getText();
+     int idade = (Integer.parseInt(txtIdade.getText()));
+     String dtaniver = txtDtaniver.getText();
+
+    JOptionPane.showConfirmDialog(rootPane, nome + "\n" + sexo + "\n" + idade + "\n" + dtaniver);
+}</pre>
+      <p class="sub-nota">O resto do arquivo — mais de cem linhas — é <code>initComponents()</code>, regravado automaticamente a cada arraste de campo no editor visual. Só esse trecho, o clique do botão, foi escrito à mão.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Associação — 29 de novembro de 2022</p>
+      <p class="cap">ExecutaCodigo.java</p>
+      <pre>public class ExecutaCodigo {
+
+    public static void main (String[] args) {
+
+          Inquilino  i = new Inquilino("Pedro", "29739872", 2.800, "Enfermeiro");
+          i.status();
+
+          Proprietario p = new Proprietario("Julio", "1926916129" ,"Ana Paula");
+          p.status();
+
+          Contrato c = new Contrato("5 de Janeiro de 2023");
+          c.status();
+
+          Imovel m = new Imovel(5.000, "São Pedro", "24", "Jardim Real", "Londrina");
+          m.status();
+
+    }
+}</pre>
+      <p class="sub-nota">Pessoa, Endereco, Inquilino, Proprietario, Imovel, Contrato — seis classes, mas o que a pasta chama de "associação" nunca chega a acontecer: os quatro objetos aqui em cima são criados e impressos lado a lado, sem nenhum se referenciar — o contrato não sabe qual imóvel é dele, o imóvel não sabe quem é o proprietário. A ponte, a associação de verdade, ainda por vir. E o vocabulário — inquilino, proprietário, imóvel — é o mesmo que a Peça 10 registra como o primeiro rascunho de requisitos da Guts, seis meses antes.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Ecos</p>
+      <p class="sub-nota">Duas lacunas de herança, meio ano de distância uma da outra (Poupança/Conta em maio, Amigo/Pessoa em novembro) — o mesmo hábito de escrever a classe filha sem lembrar do <code>extends</code>. Três exercícios repetidos em Python, um a dois anos depois (antecessor/sucessor, polegadas, fatorial). Um domínio inteiro — morar, alugar, ser dono — ensaiado numa aula de POO seis meses antes de virar a Guts de verdade. Nada disso foi planejado assim; é só o que sobra quando quinze meses de aula ficam guardados numa pasta só.</p>
+    </div>
+  </article>
+
+  <!-- ═══════════════ PEÇA 17 — GOVERNANÇA DE TI / COBIT ═══════════════ -->
+  <article class="peca foco-painel" id="foco17">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 17 · Governança de TI</p>
+    <h2>COBIT e ITIL: pontes e bibliotecas</h2>
+    <p class="peca-nota">Dois frameworks de governança de TI, dois trabalhos diferentes — o COBIT com dez perguntas dissertativas, o ITIL com estudos de caso curtos, cada um pedindo qual processo resolve qual situação. Nenhum dos dois tem código ou print de terminal, só texto corrido: as duas primeiras peças deste museu que são inteiramente respostas escritas. O assunto ecoa direto na Peça 05, que já guarda um exemplo solto de gerenciamento de riscos — os dois lados da mesma disciplina, controle e risco, vistos de ângulos diferentes.</p>
+
+    <p class="cap">COBIT</p>
+
+    <div class="sub">
+      <p class="sub-titulo">2 — O que é o COBIT</p>
+      <p class="sub-nota">"COBIT é uma metodologia para a Governança de TI que ajuda a estabelecer uma ponte entre os riscos do negócio, as necessidades de controle e questões técnicas. Provê as melhores práticas, através de um framework para domínio e processos, e apresenta atividades em uma forma lógica e gerenciável."</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">7 — Os quatro domínios</p>
+      <ul class="elenco">
+        <li><b>Alinhar, Planejar e Organizar (APO)</b> — plano estratégico de TI, arquitetura da informação, direção tecnológica, riscos, projetos, qualidade.</li>
+        <li><b>Construir, Adquirir e Implementar (BAI)</b> — soluções de automação, softwares, infraestrutura tecnológica, mudanças.</li>
+        <li><b>Entregar, Servir e Suportar (DSS)</b> — SLAs, performance, continuidade, segurança, custos, incidentes.</li>
+        <li><b>Monitorar, Avaliar e Medir (MEA)</b> — monitora processos, analisa controles internos, promove auditorias independentes.</li>
+      </ul>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">9 — Os recursos de TI</p>
+      <ul class="elenco">
+        <li><b>Aplicações</b> — sistemas automatizados e procedimentos manuais que processam informações.</li>
+        <li><b>Informação</b> — o dado em todas as formas de entrada, processamento e saída.</li>
+        <li><b>Infraestrutura</b> — hardware, sistemas operacionais, bancos de dados, rede: o que possibilita o processamento.</li>
+        <li><b>Pessoas</b> — quem planeja, organiza, entrega, suporta, monitora. Internas, terceirizadas ou sob demanda.</li>
+      </ul>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">10 — Os sete critérios da informação</p>
+      <ul class="elenco">
+        <li><b>Eficácia</b> — relevância, disponibilidade em prazo, formato adequado.</li>
+        <li><b>Eficiência</b> — a melhor forma de utilização dos recursos.</li>
+        <li><b>Confidencialidade</b> — proteção contra divulgação não autorizada.</li>
+        <li><b>Integridade</b> — precisão e validade de acordo com padrões estabelecidos.</li>
+        <li><b>Disponibilidade</b> — a informação no momento em que é requerida.</li>
+        <li><b>Conformidade</b> — cumprimento de leis, regulamentos, cláusulas contratuais.</li>
+        <li><b>Confiabilidade</b> — informação apropriada pra tomada de decisão e relatórios.</li>
+      </ul>
+    </div>
+
+    <p class="cap">ITIL</p>
+
+    <div class="sub">
+      <p class="sub-titulo">Gerenciamento de Incidentes</p>
+      <p class="sub-nota">O cenário: administradores de rede sobrecarregados, afogados em contato direto de usuário. A resposta: "Centralização e padronização do processo de relato de incidentes... evita que os usuários entrem em contato diretamente com os administradores de rede" — e escalonamento por prioridade, pra separar o crítico do que pode esperar.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">A biblioteca Service Quality</p>
+      <ul class="elenco">
+        <li><b>Gerenciamento de Qualidade de Serviço</b> — define e monitora padrões de qualidade, métricas, melhoria contínua.</li>
+        <li><b>Gerenciamento de Nível de Serviço</b> — acordos de nível de serviço, metas de desempenho, resolução de problemas de qualidade.</li>
+        <li><b>Gerenciamento de Continuidade de Serviço de TI</b> — recuperação de serviços em interrupções ou desastres.</li>
+        <li><b>Gerenciamento de Disponibilidade</b> — garante que os serviços estejam disponíveis quando necessários, com testes de recuperação.</li>
+      </ul>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">ISO 20.000, a partir de uma notícia real</p>
+      <p class="sub-nota">O exercício parte de uma notícia de 2014 sobre a Sonda IT conquistando a certificação ISO/IEC 20000. A resposta situa os dois no mesmo mapa: "a ITIL fornece uma abordagem e um conjunto de melhores práticas... e a ISO/IEC 20000 é uma norma que estabelece os requisitos para a implementação efetiva" — a ITIL não é norma nenhuma, é o caminho que várias empresas usam pra chegar lá.</p>
+    </div>
+  </article>
+
+  <!-- ═══════════════ PEÇA 18 — PLANILHAS E GRÁFICOS ═══════════════ -->
+  <article class="peca foco-painel" id="foco18">
+    <button class="foco-fechar" data-fechar>✕ fechar</button>
+    <p class="peca-eyebrow">Peça 18 · junho de 2020 · Planilhas</p>
+    <h2>TV LG aprende a fazer gráfico</h2>
+    <p class="peca-nota">Duas planilhas, a mesma assinatura "TV LG" de sempre, três e onze dias de diferença uma da outra — 3 e 14 de junho de 2020, mais cedo que qualquer coisa hoje na Peça 11. A primeira é um exercício de livraria com fórmulas de referência cruzada; a segunda aba dela não tenta esconder que são três assuntos sem ligação nenhuma. A segunda planilha é inteira sobre anime, cinco gráficos, cada um com sua própria imagem de fundo. As tabelas abaixo são valores exatos, extraídos direto do arquivo; os gráficos são capturas do original — o parser mais rigoroso rejeita um deles, XML de fonte corrompido, mas os dados continuam de pé.</p>
+
+    <div class="sub">
+      <p class="sub-titulo">Atv10_06_2020 — Livraria</p>
+      <p class="cap">Plan1 — código do gênero, autor, editora, livro</p>
+      <div class="planilha-wrap">
+        <table class="planilha">
+          <tr><th>Cód. Livro</th><th>Título</th><th>Gênero</th><th>Autor</th><th>Editora</th><th>Cidade da Editora</th><th>Preço</th><th>Páginas</th></tr>
+          <tr><td>100</td><td>Cry For Eternity</td><td>Comédia</td><td>Nathan</td><td>Paradox</td><td>Risigin City</td><td>R$ 50</td><td>200</td></tr>
+          <tr><td>101</td><td>Kansas</td><td>Horror</td><td>Alexia</td><td>Slice</td><td>Silent Hill</td><td>R$ 46</td><td>162</td></tr>
+          <tr><td>102</td><td>Toxicity</td><td>Suspense</td><td>George</td><td>Golden Era</td><td>Winterfell</td><td>R$ 60</td><td>230</td></tr>
+          <tr><td>103</td><td>Dallas</td><td>Aventura</td><td>David</td><td>Garden</td><td>Metropolis</td><td>R$ 43</td><td>150</td></tr>
+          <tr><td>150</td><td>Sins Of Chaos</td><td>Drama</td><td>Luci</td><td>Oasis</td><td>Central City</td><td>R$ 93</td><td>666</td></tr>
+          <tr><td>160</td><td>Winchester's Nf</td><td>Investigação</td><td>Arya</td><td>Heaven</td><td>Star City</td><td>R$ 47</td><td>333</td></tr>
+        </table>
+      </div>
+      <p class="sub-nota">Trinta e seis fórmulas de referência cruzada por trás dessa tabela — cada célula puxando de uma das três tabelas de apoio (gênero, autor, editora) com <code>=A2</code>, não digitado de novo. As editoras moram em Metropolis, Central City, Star City, Risigin City, Silent Hill e Winterfell — DC, Silent Hill e Game of Thrones, sem aviso nenhum de que são referências. E "Winchester's Nf" fica cortado assim mesmo, sem completar o nome.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">Atv10_06_2020 — sem eixo nenhum</p>
+      <p class="sub-nota">A segunda aba não tenta esconder que são três assuntos sem ligação: quantas séries de cada gênero foram vistas, quantos eventos naturais aconteceram por ano, e os atributos de RPG de um personagem só. Cinco gráficos pra três tabelas pequenas.</p>
+      <div class="planilha-wrap">
+        <table class="planilha">
+          <tr><th>Gênero</th><th>Nº de Séries Vistas</th></tr>
+          <tr><td>Suspense</td><td>4</td></tr>
+          <tr><td>Comédia</td><td>6</td></tr>
+          <tr><td>Investigação</td><td>2</td></tr>
+          <tr><td>Aventura</td><td>3</td></tr>
+        </table>
+      </div>
+      <img class="grafico" src="images/p18-atv-col3d.jpg" alt="Gráfico de colunas 3D — N de Séries Vistas por gênero">
+      <img class="grafico" src="images/p18-atv-bar3d.jpg" alt="Gráfico de barras 3D — mesma tabela, tipo diferente">
+      <img class="grafico" src="images/p18-atv-pizza.jpg" alt="Gráfico de pizza 3D — mesma tabela outra vez">
+      <div class="planilha-wrap">
+        <table class="planilha">
+          <tr><th>Ano</th><th>Erupção</th><th>Tsunami</th><th>Tornados</th><th>Terremotos</th></tr>
+          <tr><td>2012</td><td>2</td><td>3</td><td>4</td><td>6</td></tr>
+          <tr><td>2013</td><td>1</td><td>2</td><td>3</td><td>3</td></tr>
+          <tr><td>2014</td><td>1</td><td>1</td><td>4</td><td>5</td></tr>
+        </table>
+      </div>
+      <img class="grafico" src="images/p18-atv-linha.jpg" alt="Gráfico de linha, eventos naturais por ano">
+      <div class="planilha-wrap">
+        <table class="planilha">
+          <tr><th>Velocidade</th><th>Força</th><th>Vida</th><th>Defesa</th><th>Ataque</th></tr>
+          <tr><td>20</td><td>50</td><td>500</td><td>130</td><td>150</td></tr>
+        </table>
+      </div>
+      <img class="grafico" src="images/p18-atv-radar.jpg" alt="Gráfico de radar, atributos de RPG">
+      <p class="sub-nota">O gráfico de linha herdou o título "N de Séries Vistas" do primeiro gráfico, e ninguém trocou — ele mostra eventos naturais. O radar de atributos não tem nome de personagem, só "Row 2": o rótulo padrão do Excel pra uma linha sem cabeçalho próprio.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">TabelasDOV — Completos e Lançamentos</p>
+      <p class="sub-nota">3 de junho de 2020, onze dias antes do Atv10_06 — a mais antiga desta peça. Cinco abas, todas sobre anime, cada gráfico com uma imagem de fundo diferente por trás — um catálogo pessoal disfarçado de exercício de aula.</p>
+      <div class="planilha-wrap">
+        <table class="planilha">
+          <tr><th>Tipo de anime</th><th>Completos</th></tr>
+          <tr><td>Shounen</td><td>13</td></tr>
+          <tr><td>Comédia</td><td>11</td></tr>
+          <tr><td>Romance</td><td>16</td></tr>
+          <tr><td>Drama</td><td>2</td></tr>
+          <tr><td>Mistério</td><td>8</td></tr>
+        </table>
+      </div>
+      <img class="grafico" src="images/p18-dov-pizza.jpg" alt="Gráfico de pizza, animes completos por tipo, fundo de cena de anime">
+      <div class="planilha-wrap">
+        <table class="planilha">
+          <tr><th>Ano</th><th>Primavera</th><th>Verão</th><th>Outono</th><th>Inverno</th></tr>
+          <tr><td>2020</td><td>26</td><td>32</td><td>0</td><td>0</td></tr>
+          <tr><td>2019</td><td>27</td><td>30</td><td>30</td><td>22</td></tr>
+          <tr><td>2018</td><td>23</td><td>31</td><td>33</td><td>18</td></tr>
+          <tr><td>2017</td><td>28</td><td>29</td><td>27</td><td>19</td></tr>
+        </table>
+      </div>
+      <img class="grafico" src="images/p18-dov-barras.jpg" alt="Gráfico de barras, lançamentos por temporada e ano, fundo de personagem de anime">
+      <p class="sub-nota">2020 tem zero em Outono e Inverno — não é dado perdido, é o calendário: a planilha foi salva em junho, e essas duas estações daquele ano ainda não tinham acontecido.</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">TabelasDOV — Visualizações e Atributos</p>
+      <div class="planilha-wrap">
+        <table class="planilha">
+          <tr><th>Anime</th><th>Média de Visualizações</th></tr>
+          <tr><td>Berserk</td><td>247.410</td></tr>
+          <tr><td>Kuroko no Basket</td><td>206.643</td></tr>
+          <tr><td>Oregairu</td><td>207.693</td></tr>
+          <tr><td>Erased</td><td>96.971</td></tr>
+          <tr><td>Steins;Gate</td><td>204.088</td></tr>
+        </table>
+      </div>
+      <img class="grafico" src="images/p18-dov-viewership.jpg" alt="Gráfico de barras horizontais, média de visualizações, fundo de Oregairu">
+      <div class="planilha-wrap">
+        <table class="planilha">
+          <tr><th></th><th>Ataque</th><th>Defesa</th><th>Vida</th><th>Resistência</th><th>Força Base</th></tr>
+          <tr><td>Personagem 1</td><td>400</td><td>320</td><td>1000</td><td>360</td><td>20</td></tr>
+          <tr><td>Personagem 2</td><td>320</td><td>240</td><td>900</td><td>290</td><td>15</td></tr>
+        </table>
+      </div>
+      <img class="grafico" src="images/p18-dov-radar.jpg" alt="Gráfico de radar, dois personagens, fundo cósmico com o texto The End">
+      <p class="sub-nota">Berserk na frente por quase quarenta mil visualizações. Os dois personagens do radar não têm nome — só "Personagem 1" e "Personagem 2" — mas o fundo atrás deles diz "The End".</p>
+    </div>
+
+    <div class="sub">
+      <p class="sub-titulo">TabelasDOV — Número de Animes completos por ano</p>
+      <div class="planilha-wrap">
+        <table class="planilha">
+          <tr><th>2020</th><th>2019</th><th>2018</th><th>2017</th><th>2016</th><th>2015</th><th>2014</th></tr>
+          <tr><td>100</td><td>80</td><td>60</td><td>40</td><td>30</td><td>20</td><td>10</td></tr>
+        </table>
+      </div>
+      <img class="grafico" src="images/p18-dov-linha.jpg" alt="Gráfico de linha decrescente, número de animes completos por ano, fundo com efeito brilhante">
+      <p class="sub-nota">Não é um registro real — a progressão é limpa demais (100, 80, 60, 40, 30, 20, 10) pra ser contagem de verdade. É só o quinto gráfico precisando de dado, e um dado inventado que serve bem o suficiente.</p>
+    </div>
+  </article>
+  </div>
+
+<div id="dragonball-sphere" role="button" aria-label="Esfera do Dragão">
+
+  <div class="db-sphere-orb"></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+var overlay = document.getElementById('focoOverlay');
+var wrap = document.querySelector('.wrap');
+
+function abrir(id){
+  document.querySelectorAll('.foco-painel').forEach(function(p){ p.classList.remove('ativo'); });
+  var alvo = document.getElementById(id);
+  if (!alvo) return;
+  alvo.classList.add('ativo');
+  overlay.classList.add('aberto');
+  wrap.classList.add('recuado');
+  overlay.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+  document.body.classList.toggle('sem-brasas', id === 'foco05');
+}
+function fechar(){
+  overlay.classList.remove('aberto');
+  wrap.classList.remove('recuado');
+  document.body.style.overflow = '';
+  document.body.classList.remove('sem-brasas');
+}
+
+document.querySelectorAll('.relic[data-foco]').forEach(function(r){
+  r.addEventListener('click', function(){ abrir(r.getAttribute('data-foco')); });
+});
+document.querySelectorAll('[data-fechar]').forEach(function(b){
+  b.addEventListener('click', fechar);
+});
+overlay.addEventListener('click', function(e){ if (e.target === overlay) fechar(); });
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') fechar(); });
+
+window.abrirPeca = abrir; // pra prateleira 3D chamar o mesmo painel, sem duplicar a lógica
+
+})();
+</script>
+
+<script>
+(function(){
+  // emulação do easter egg aptitude moo — Peça 05, sub Linux
+  // texto verificado contra a sequência clássica documentada (aptitude 0.4.x+); a arte ASCII final
+  // foi lida coluna por coluna (grade de 8px/caractere) contra um screenshot real de terminal —
+  // a primeira tentativa tinha perdido o lado direito da forma (o "elefante" cortado)
+  var respostas = [
+    "There are no Easter Eggs in this program.",
+    "There really are no Easter Eggs in this program.",
+    "Didn't I already tell you that there are no Easter Eggs in this program?",
+    "Stop it!",
+    "Okay, okay, if I give you an Easter Egg, will you go away?",
+    "All right, you win.\n\n                               /----\\\n                       -------/      \\\n                      /               \\\n                     /                |\n   -----------------/                  --------\\\n   ----------------------------------------------",
+    "What is it?\nIt's an elephant being eaten by a snake, of course."
+  ];
+  var tela = document.getElementById('aptTela');
+  var botao = document.getElementById('aptBotao');
+  var reset = document.getElementById('aptReset');
+  if (!tela || !botao || !reset) return;
+  var nivel = -1;
+
+  function escapa(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+  function rodar(){
+    if (nivel === -1) tela.innerHTML = '';
+    nivel = Math.min(nivel + 1, respostas.length - 1);
+    var vs = nivel === 0 ? '' : ' -' + 'v'.repeat(nivel);
+    var respostaHtml = escapa(respostas[nivel]);
+    // nível 5 é o único com arte ASCII de largura fixa (49 colunas) — não pode quebrar
+    // linha em tela estreita, ou a forma se perde; os outros níveis são só prosa e
+    // devem continuar quebrando normalmente no mobile.
+    if (nivel === 5) respostaHtml = '<span class="aptitude-arte">' + respostaHtml + '</span>';
+    var bloco = document.createElement('div');
+    bloco.innerHTML = '<span class="aptitude-cmd">$ aptitude' + vs + ' moo</span>'
+      + '<span class="aptitude-resp">' + respostaHtml + '</span>';
+    tela.appendChild(bloco);
+    tela.scrollTop = tela.scrollHeight;
+    if (nivel >= respostas.length - 1){
+      botao.textContent = 'sem mais o que dizer';
+      botao.disabled = true;
+      reset.hidden = false;
+    } else {
+      botao.textContent = 'de novo, com mais -v';
+    }
+  }
+  botao.addEventListener('click', rodar);
+  reset.addEventListener('click', function(){
+    nivel = -1;
+    tela.innerHTML = '<span class="aptitude-linha-vazia">$ <span class="aptitude-cursor">▌</span></span>';
+    botao.textContent = 'rodar aptitude moo';
+    botao.disabled = false;
+    reset.hidden = true;
+  });
+})();
+</script>
+
+<script>
+(function(){
+'use strict';
+var GX = {"telas":{"0935c83a":{"nome":"nova senha","w":375,"h":667,"bg":"rgba(255,255,255,1)","formas":[{"id":"9797053f","kind":"rect","x":45,"y":406,"w":286,"h":45,"r":[9,9,9,9],"fill":"rgba(255,255,255,1)","stroke":"rgba(97,164,49,1)","strokeW":1},{"id":"f3679e35","kind":"rect","x":54,"y":552,"w":267,"h":43,"r":[22,22,22,22],"fill":"rgba(97,164,49,1)","stroke":"rgba(255,255,255,1)","strokeW":1},{"id":"c4094616","kind":"text","x":140,"y":582,"linhas":[{"x":0,"y":0,"t":"FINALIZAR"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(255,255,255,1)","align":"left"},{"id":"03f94d58","kind":"rect","x":46,"y":470,"w":286,"h":45,"r":[9,9,9,9],"fill":"rgba(255,255,255,1)","stroke":"rgba(97,164,49,1)","strokeW":1},{"id":"59b883f0","kind":"text","x":61,"y":435,"linhas":[{"x":0,"y":0,"t":"Nova senha"}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Regular","color":"rgba(97,164,49,1)","align":"left"},{"id":"0b8bb7d7","kind":"text","x":61,"y":501,"linhas":[{"x":0,"y":0,"t":"Confirmar nova senha"}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Regular","color":"rgba(97,164,49,1)","align":"left"},{"id":"f6a00a37","kind":"rect","x":26,"y":135,"w":324,"h":216,"r":[0,0,0,0],"strokeW":0},{"id":"d174ce24","kind":"text","x":81,"y":42,"linhas":[{"x":0,"y":0,"t":"Cadastrar nova senha"}],"fontSize":22,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"}]},"10aa14fe":{"nome":"entrar","w":375,"h":667,"bg":"rgba(255,255,255,1)","formas":[{"id":"7c75021c","kind":"rect","x":40,"y":430,"w":295,"h":43,"r":[22,22,22,22],"fill":"rgba(97,164,49,1)","stroke":"rgba(255,255,255,1)","strokeW":1},{"id":"24bf44d7","kind":"rect","x":40,"y":485,"w":295,"h":43,"r":[22,22,22,22],"fill":"rgba(255,255,255,1)","stroke":"rgba(97,164,49,1)","strokeW":1},{"id":"c1053051","kind":"text","x":152,"y":438,"linhas":[{"x":0.47,"y":22,"t":"ENTRAR"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(255,255,255,1)","w":76,"h":27,"align":"center"},{"id":"86bf0311","kind":"text","x":126,"y":515,"linhas":[{"x":0,"y":0,"t":"CRIAR CONTA"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"}]},"289919d2":{"nome":"cadastro · cpf e celular","w":375,"h":667,"bg":"rgba(255,255,255,1)","formas":[{"id":"484b5947","kind":"rect","x":45,"y":409,"w":286,"h":45,"r":[9,9,9,9],"fill":"rgba(255,255,255,1)","stroke":"rgba(97,164,49,1)","strokeW":1},{"id":"8d80c6ee","kind":"text","x":60,"y":438,"linhas":[{"x":0,"y":0,"t":"CPF (obrigatório)"}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Italic","color":"rgba(158,161,173,1)","align":"left"},{"id":"d2291942","kind":"rect","x":45,"y":474,"w":286,"h":45,"r":[9,9,9,9],"fill":"rgba(255,255,255,1)","stroke":"rgba(97,164,49,1)","strokeW":1},{"id":"ebe42908","kind":"text","x":60,"y":503,"linhas":[{"x":0,"y":0,"t":"Celular (obrigatório)"}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Italic","color":"rgba(158,161,173,1)","align":"left"},{"id":"d0e7e109","kind":"rect","x":54,"y":556,"w":267,"h":43,"r":[22,22,22,22],"fill":"rgba(97,164,49,1)","stroke":"rgba(255,255,255,1)","strokeW":1},{"id":"638a8684","kind":"text","x":143,"y":586,"linhas":[{"x":0,"y":0,"t":"PRÓXIMO"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(255,255,255,1)","align":"left"},{"id":"81c9e7c1","kind":"rect","x":0,"y":10,"w":45,"h":45,"r":[9,9,9,9],"strokeW":0},{"id":"d5d66c1e","kind":"text","x":95,"y":42,"linhas":[{"x":0,"y":0,"t":"Estamos quase lá..."}],"fontSize":22,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"},{"id":"7d44eccf","kind":"text","x":20,"y":375,"linhas":[{"x":0,"y":0,"t":"Por favor, insira seu CPF e seu número do celular. "}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"},{"id":"8d539082","kind":"rect","x":48,"y":80,"w":280,"h":247,"r":[0,0,0,0],"strokeW":0}]},"2ea8332e":{"nome":"cadastro · nome e e-mail","w":375,"h":667,"bg":"rgba(255,255,255,1)","formas":[{"id":"b556efdb","kind":"rect","x":45,"y":410,"w":286,"h":45,"r":[9,9,9,9],"fill":"rgba(255,255,255,1)","stroke":"rgba(97,164,49,1)","strokeW":1},{"id":"68df713e","kind":"text","x":60,"y":439,"linhas":[{"x":0,"y":0,"t":"Nome (obrigatório)"}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Italic","color":"rgba(158,161,173,1)","align":"left"},{"id":"f62f5b95","kind":"rect","x":45,"y":474,"w":286,"h":45,"r":[9,9,9,9],"fill":"rgba(255,255,255,1)","stroke":"rgba(97,164,49,1)","strokeW":1},{"id":"3dc5fed4","kind":"text","x":65,"y":503,"linhas":[{"x":0,"y":0,"t":"E-mail (obrigatório)"}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Italic","color":"rgba(158,161,173,1)","align":"left"},{"id":"59a6cd09","kind":"rect","x":54,"y":554,"w":267,"h":43,"r":[22,22,22,22],"fill":"rgba(97,164,49,1)","stroke":"rgba(255,255,255,1)","strokeW":1},{"id":"bdaf6c79","kind":"text","x":143,"y":584,"linhas":[{"x":0,"y":0,"t":"PRÓXIMO"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(255,255,255,1)","align":"left"},{"id":"7588bde7","kind":"rect","x":0,"y":10,"w":45,"h":45,"r":[9,9,9,9],"strokeW":0},{"id":"9595751e","kind":"text","x":102,"y":42,"linhas":[{"x":0,"y":0,"t":"Vamos começar..."}],"fontSize":22,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"},{"id":"c2675349","kind":"text","x":67,"y":375,"linhas":[{"x":0,"y":0,"t":"Por favor, insira seu nome e e-mail. "}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"},{"id":"ac2d9b00","kind":"rect","x":24,"y":75,"w":327,"h":253,"r":[0,0,0,0],"strokeW":0}]},"39ed9273":{"nome":"cadastro · senha","w":375,"h":667,"bg":"rgba(255,255,255,1)","formas":[{"id":"d04d15ac","kind":"rect","x":45,"y":406,"w":286,"h":45,"r":[9,9,9,9],"fill":"rgba(255,255,255,1)","stroke":"rgba(97,164,49,1)","strokeW":1},{"id":"319639b5","kind":"rect","x":54,"y":552,"w":267,"h":43,"r":[22,22,22,22],"fill":"rgba(97,164,49,1)","stroke":"rgba(255,255,255,1)","strokeW":1},{"id":"bb27ecd1","kind":"text","x":140,"y":582,"linhas":[{"x":0,"y":0,"t":"FINALIZAR"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(255,255,255,1)","align":"left"},{"id":"d9c0a9d4","kind":"rect","x":46,"y":470,"w":286,"h":45,"r":[9,9,9,9],"fill":"rgba(255,255,255,1)","stroke":"rgba(97,164,49,1)","strokeW":1},{"id":"caa20563","kind":"text","x":61,"y":435,"linhas":[{"x":0,"y":0,"t":"Senha"}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Regular","color":"rgba(97,164,49,1)","align":"left"},{"id":"a3cb68c6","kind":"text","x":61,"y":501,"linhas":[{"x":0,"y":0,"t":"Confirmar senha"}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Regular","color":"rgba(97,164,49,1)","align":"left"},{"id":"e542647b","kind":"rect","x":26,"y":135,"w":324,"h":216,"r":[0,0,0,0],"strokeW":0},{"id":"3b8a982c","kind":"text","x":35,"y":42,"linhas":[{"x":0,"y":0,"t":"Agora vamos definir sua senha"}],"fontSize":22,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"}]},"4c91f3b3":{"nome":"recuperar · opção","w":375,"h":667,"bg":"rgba(255,255,255,1)","formas":[{"id":"702d45dc","kind":"rect","x":54,"y":486,"w":267,"h":43,"r":[22,22,22,22],"fill":"rgba(97,164,49,1)","stroke":"rgba(255,255,255,1)","strokeW":1},{"id":"f9cf2b31","kind":"text","x":85,"y":516,"linhas":[{"x":0,"y":0,"t":"let********@gmail.com"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(255,255,255,1)","align":"left"},{"id":"a5b35c6f","kind":"text","x":188,"y":394,"linhas":[{"x":-23.53,"y":0,"t":"Letícia,"},{"x":-160.62,"y":20,"t":"escolha uma opção para recuperação de senha."}],"multi":true,"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"center"},{"id":"7e76f1ca","kind":"rect","x":54,"y":549,"w":267,"h":43,"r":[22,22,22,22],"fill":"rgba(255,255,255,1)","stroke":"rgba(97,164,49,1)","strokeW":1},{"id":"25b13fa5","kind":"text","x":117,"y":579,"linhas":[{"x":0,"y":0,"t":"(14) ***** - 1085"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"},{"id":"9417db01","kind":"rect","x":30,"y":74,"w":316,"h":234,"r":[0,0,0,0],"strokeW":0},{"id":"0ae97fc3","kind":"rect","x":0,"y":10,"w":45,"h":45,"r":[9,9,9,9],"strokeW":0}]},"78360912":{"nome":"login","w":375,"h":667,"bg":"rgba(255,255,255,1)","formas":[{"id":"4633bc4b","kind":"rect","x":45,"y":235,"w":286,"h":45,"r":[9,9,9,9],"fill":"rgba(255,255,255,1)","stroke":"rgba(97,164,49,1)","strokeW":1},{"id":"c4029ea9","kind":"rect","x":45,"y":300,"w":286,"h":45,"r":[9,9,9,9],"fill":"rgba(255,255,255,1)","stroke":"rgba(97,164,49,1)","strokeW":1},{"id":"04563637","kind":"rect","x":54,"y":390,"w":267,"h":43,"r":[22,22,22,22],"fill":"rgba(97,164,49,1)","stroke":"rgba(255,255,255,1)","strokeW":1},{"id":"61d26603","kind":"text","x":150,"y":420,"linhas":[{"x":0,"y":0,"t":"ENTRAR"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(255,255,255,1)","align":"left"},{"id":"0867e93d","kind":"text","x":125,"y":486,"linhas":[{"x":0,"y":0,"t":"Esqueceu a senha?"}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(158,161,173,1)","align":"left"},{"id":"34ba0ad3","kind":"text","x":60,"y":264,"linhas":[{"x":0,"y":0,"t":"CPF"}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Regular","color":"rgba(97,164,49,1)","align":"left"},{"id":"44c0e28b","kind":"text","x":60,"y":329,"linhas":[{"x":0,"y":0,"t":"Senha"}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Regular","color":"rgba(97,164,49,1)","align":"left"},{"id":"0780c457","kind":"rect","x":0,"y":10,"w":45,"h":45,"r":[9,9,9,9],"strokeW":0},{"id":"89cd9b9a","kind":"text","x":160,"y":42,"linhas":[{"x":0,"y":0,"t":"Login"}],"fontSize":22,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"}]},"af7a10a3":{"nome":"código de verificação","w":375,"h":667,"bg":"rgba(255,255,255,1)","formas":[{"id":"6cc5edd5","kind":"rect","x":45,"y":470,"w":286,"h":45,"r":[9,9,9,9],"fill":"rgba(255,255,255,1)","stroke":"rgba(97,164,49,1)","strokeW":1},{"id":"b4365c80","kind":"text","x":70,"y":398,"linhas":[{"x":0,"y":0,"t":"Por favor, insira o código recebido."}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"},{"id":"741fb6f0","kind":"rect","x":54,"y":552,"w":267,"h":43,"r":[22,22,22,22],"fill":"rgba(97,164,49,1)","stroke":"rgba(255,255,255,1)","strokeW":1},{"id":"1535e239","kind":"text","x":140,"y":582,"linhas":[{"x":0,"y":0,"t":"VERIFICAR"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(255,255,255,1)","align":"left"},{"id":"cc6a91df","kind":"text","x":99,"y":503,"linhas":[{"x":0,"y":0,"t":"___ ___ ___ ___ ___ ___"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"},{"id":"22ca3032","kind":"rect","x":13,"y":75,"w":350,"h":240,"r":[0,0,0,0],"strokeW":0},{"id":"2e61f286","kind":"rect","x":0,"y":10,"w":45,"h":45,"r":[9,9,9,9],"strokeW":0}]},"bf927587":{"nome":"recuperar senha","w":375,"h":667,"bg":"rgba(255,255,255,1)","formas":[{"id":"e091feea","kind":"text","x":105,"y":42,"linhas":[{"x":0,"y":0,"t":"Recuperar senha"}],"fontSize":22,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"},{"id":"83c8914b","kind":"rect","x":18,"y":97,"w":339,"h":246,"r":[0,0,0,0],"strokeW":0},{"id":"0d165307","kind":"rect","x":45,"y":459,"w":286,"h":45,"r":[6,6,6,6],"fill":"rgba(255,255,255,1)","stroke":"rgba(97,164,49,1)","strokeW":1},{"id":"e1020f8b","kind":"text","x":61,"y":487,"linhas":[{"x":0,"y":0,"t":"CPF"}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Regular","color":"rgba(97,164,49,1)","align":"left"},{"id":"e4f6a353","kind":"rect","x":54,"y":549,"w":267,"h":43,"r":[22,22,22,22],"fill":"rgba(97,164,49,1)","stroke":"rgba(255,255,255,1)","strokeW":1},{"id":"39dbf6bf","kind":"text","x":150,"y":579,"linhas":[{"x":0,"y":0,"t":"ENVIAR"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(255,255,255,1)","align":"left"},{"id":"60f67ea3","kind":"text","x":104,"y":403,"linhas":[{"x":0,"y":0,"t":"Por favor, digite seu CPF."}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"},{"id":"671cca1a","kind":"rect","x":0,"y":10,"w":45,"h":45,"r":[9,9,9,9],"strokeW":0}]},"c0edf449":{"nome":"verificação completa","w":375,"h":667,"bg":"rgba(255,255,255,1)","formas":[{"id":"3a469379","kind":"rect","x":19,"y":159,"w":338,"h":269,"r":[0,0,0,0],"strokeW":0},{"id":"0d379eb4","kind":"rect","x":54,"y":549,"w":267,"h":43,"r":[22,22,22,22],"fill":"rgba(97,164,49,1)","stroke":"rgba(255,255,255,1)","strokeW":1},{"id":"b2779165","kind":"text","x":140,"y":579,"linhas":[{"x":0,"y":0,"t":"CONTINUAR"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(255,255,255,1)","align":"left"},{"id":"a641aba7","kind":"text","x":84,"y":42,"linhas":[{"x":0,"y":0,"t":"Verificação completa"}],"fontSize":22,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"}]},"dc61f86a":{"nome":"verificação completa","w":375,"h":667,"bg":"rgba(255,255,255,1)","formas":[{"id":"aa888b54","kind":"rect","x":19,"y":159,"w":338,"h":269,"r":[0,0,0,0],"strokeW":0},{"id":"9d1fca50","kind":"rect","x":54,"y":549,"w":267,"h":43,"r":[22,22,22,22],"fill":"rgba(97,164,49,1)","stroke":"rgba(255,255,255,1)","strokeW":1},{"id":"9e9edd44","kind":"text","x":140,"y":579,"linhas":[{"x":0,"y":0,"t":"CONTINUAR"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(255,255,255,1)","align":"left"},{"id":"b6523eb9","kind":"text","x":84,"y":42,"linhas":[{"x":0,"y":0,"t":"Verificação completa"}],"fontSize":22,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"}]},"ea8ff1d9":{"nome":"código de verificação","w":375,"h":667,"bg":"rgba(255,255,255,1)","formas":[{"id":"16c85fce","kind":"rect","x":45,"y":470,"w":286,"h":45,"r":[9,9,9,9],"fill":"rgba(255,255,255,1)","stroke":"rgba(97,164,49,1)","strokeW":1},{"id":"ff8a7143","kind":"text","x":70,"y":398,"linhas":[{"x":0,"y":0,"t":"Por favor, insira o código recebido."}],"fontSize":15,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"},{"id":"313d9c7a","kind":"rect","x":54,"y":552,"w":267,"h":43,"r":[22,22,22,22],"fill":"rgba(97,164,49,1)","stroke":"rgba(255,255,255,1)","strokeW":1},{"id":"4dbe790c","kind":"text","x":140,"y":582,"linhas":[{"x":0,"y":0,"t":"VERIFICAR"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(255,255,255,1)","align":"left"},{"id":"4e0fc370","kind":"text","x":99,"y":503,"linhas":[{"x":0,"y":0,"t":"___ ___ ___ ___ ___ ___"}],"fontSize":20,"fontFamily":"Segoe UI","fontWeight":"Semibold","color":"rgba(97,164,49,1)","align":"left"},{"id":"bb666cd1","kind":"rect","x":13,"y":75,"w":350,"h":240,"r":[0,0,0,0],"strokeW":0},{"id":"73df38f1","kind":"rect","x":0,"y":10,"w":45,"h":45,"r":[9,9,9,9],"strokeW":0}]}},"transicoes":{"7c75021c":"78360912","0867e93d":"bf927587","e4f6a353":"4c91f3b3","24bf44d7":"2ea8332e","59a6cd09":"289919d2","7e76f1ca":"af7a10a3","741fb6f0":"dc61f86a","9d1fca50":"0935c83a","702d45dc":"af7a10a3","d0e7e109":"ea8ff1d9","7588bde7":"10aa14fe","81c9e7c1":"2ea8332e","73df38f1":"289919d2","313d9c7a":"c0edf449","0d379eb4":"39ed9273","0780c457":"10aa14fe","671cca1a":"78360912","0ae97fc3":"bf927587","2e61f286":"4c91f3b3"},"inicial":"10aa14fe"};
+var svg = document.getElementById('xdSvg');
+var nomeEl = document.getElementById('xdNome');
+var reiniciarBtn = document.getElementById('xdReiniciar');
+if (!svg || !GX) return;
+var NS = 'http://www.w3.org/2000/svg';
+
+function no(tag, attrs){
+  var e = document.createElementNS(NS, tag);
+  for (var k in attrs){ if (attrs[k] !== null && attrs[k] !== undefined) e.setAttribute(k, attrs[k]); }
+  return e;
+}
+
+function desenharTelaXD(id){
+  var tela = GX.telas[id];
+  if (!tela) return;
+  svg.textContent = '';
+  svg.setAttribute('viewBox', '0 0 ' + tela.w + ' ' + tela.h);
+  svg.appendChild(no('rect', {x:0,y:0,width:tela.w,height:tela.h,fill:tela.bg || '#fff'}));
+
+  var hits = [];
+  tela.formas.forEach(function(f){
+    if (f.kind === 'rect'){
+      var rx = Array.isArray(f.r) ? f.r[0] : (f.r || 0);
+      svg.appendChild(no('rect', {
+        x:f.x, y:f.y, width:f.w, height:f.h, rx:rx,
+        fill: f.fill || 'none',
+        stroke: f.stroke || null,
+        'stroke-width': f.stroke ? (f.strokeW || 1) : null
+      }));
+      if (!f.fill && !f.stroke && f.id && GX.transicoes[f.id]){
+        var seta = no('text', {x:f.x+f.w/2, y:f.y+f.h/2+6, 'text-anchor':'middle', 'font-size':18, fill:'#61A431', 'font-family':'sans-serif'});
+        seta.textContent = '‹';
+        svg.appendChild(seta);
+      }
+    } else if (f.kind === 'text'){
+      var wlow = (f.fontWeight || '').toLowerCase();
+      var peso = wlow.indexOf('bold') > -1 ? (wlow.indexOf('semi') > -1 ? 600 : 700) : 400;
+      var italico = wlow.indexOf('italic') > -1;
+      var fam = "'" + f.fontFamily + "', 'Segoe UI', system-ui, sans-serif";
+      var linhas = f.linhas || [{x:0, y:0, t:f.text||''}];
+      var ln0 = linhas[0];
+      var largEstimada = (ln0.t || '').length * f.fontSize * 0.55;
+      var margemEsq = f.x + ln0.x;
+      var espacoDisp = tela.w - margemEsq * 2;
+      // só trata como parágrafo pra quebrar se for texto longo (não um header/label curto
+      // cujo x pode ser um offset de centralização, não uma margem de verdade)
+      var precisaQuebrar = !f.multi && linhas.length === 1 &&
+        (ln0.t || '').length > 28 && largEstimada > (tela.w - 80);
+
+      if (!precisaQuebrar){
+        linhas.forEach(function(ln){
+          var t = no('text', {
+            x: f.x + ln.x, y: f.y + ln.y,
+            'font-size': f.fontSize, 'font-family': fam,
+            'font-weight': peso, 'font-style': italico ? 'italic' : 'normal',
+            fill: f.color || '#333'
+          });
+          t.textContent = ln.t;
+          svg.appendChild(t);
+        });
+      } else {
+        var fo = no('foreignObject', {
+          x: margemEsq, y: (f.y + ln0.y) - f.fontSize*0.85,
+          width: Math.max(80, espacoDisp), height: f.fontSize*6
+        });
+        var div = document.createElement('div');
+        div.style.cssText = 'font-family:' + fam + ';font-size:' + f.fontSize + 'px;' +
+          'font-weight:' + peso + ';font-style:' + (italico?'italic':'normal') + ';' +
+          'color:' + (f.color||'#333') + ';line-height:1.3;';
+        div.textContent = ln0.t;
+        fo.appendChild(div);
+        svg.appendChild(fo);
+      }
+    }
+    if (f.id && GX.transicoes[f.id]) hits.push(f);
+  });
+
+  hits.forEach(function(f){
+    var dest = GX.transicoes[f.id];
+    if (!GX.telas[dest]) return;
+    var hit = no('rect', {
+      x:f.x, y:f.y,
+      width: f.w || (f.text ? f.text.length*(f.fontSize||14)*0.62 : 40),
+      height: f.h || ((f.fontSize||14)*1.6),
+      fill:'transparent'
+    });
+    hit.setAttribute('class','xd-hit');
+    hit.setAttribute('data-dest', dest);
+    hit.addEventListener('click', function(){ desenharTelaXD(dest); });
+    svg.appendChild(hit);
+  });
+
+  if (nomeEl) nomeEl.textContent = tela.nome;
+}
+
+if (reiniciarBtn) reiniciarBtn.addEventListener('click', function(){ desenharTelaXD(GX.inicial); });
+desenharTelaXD(GX.inicial);
+
+})();
+</script>
+
+<script>
+(function(){
+'use strict';
+var APP_TELAS = {
+  login: {nome:'login', img:'images/guts-app-login.png', hotspots:[
+    {x:6.64,y:28.89,w:5.00,h:3.56, to:'home'}
+  ]},
+  home: {nome:'início', img:'images/guts-app-home.png', hotspots:[
+    {x:6.64,y:10.67,w:7.11,h:7.89, to:'imovel'},
+    {x:14.69,y:10.67,w:7.34,h:7.89, to:'cliente'},
+    {x:22.97,y:10.67,w:9.61,h:7.89, to:'funcionario'},
+    {x:33.52,y:10.67,w:8.05,h:7.89, to:'locacao'}
+  ]},
+  imovel: {nome:'cadastro · imóvel', img:'images/guts-app-imovel.png', hotspots:[
+    {x:6.64,y:3.56,w:3.13,h:4.44, to:'home'}
+  ]},
+  cliente: {nome:'cadastro · cliente', img:'images/guts-app-cliente.png', hotspots:[
+    {x:6.64,y:3.13,w:3.13,h:3.91, to:'home'}
+  ]},
+  funcionario: {nome:'cadastro · funcionário', img:'images/guts-app-funcionario.png', hotspots:[
+    {x:6.64,y:3.13,w:3.13,h:3.91, to:'home'}
+  ]},
+  locacao: {nome:'cadastro · locação', img:'images/guts-app-locacao.png', hotspots:[
+    {x:6.64,y:3.56,w:3.13,h:4.44, to:'home'}
+  ]}
+};
+var img = document.getElementById('appImg');
+var nomeEl = document.getElementById('appNome');
+var telaWrap = document.getElementById('appTela');
+var reiniciarBtn2 = document.getElementById('appReiniciar');
+if (!img || !telaWrap) return;
+
+function mostrarApp(id){
+  var t = APP_TELAS[id];
+  if (!t) return;
+  img.src = t.img;
+  img.alt = 'Tela ' + t.nome + ' do app Guts, capturada do servidor real';
+  if (nomeEl) nomeEl.textContent = t.nome;
+
+  var antigos = telaWrap.querySelectorAll('.app-hotspot');
+  for (var i = 0; i < antigos.length; i++){ antigos[i].parentNode.removeChild(antigos[i]); }
+
+  t.hotspots.forEach(function(h){
+    var hs = document.createElement('div');
+    hs.className = 'app-hotspot';
+    hs.style.left = h.x + '%';
+    hs.style.top = h.y + '%';
+    hs.style.width = h.w + '%';
+    hs.style.height = h.h + '%';
+    hs.title = APP_TELAS[h.to] ? APP_TELAS[h.to].nome : '';
+    hs.addEventListener('click', function(){ mostrarApp(h.to); });
+    telaWrap.appendChild(hs);
+  });
+}
+
+if (reiniciarBtn2) reiniciarBtn2.addEventListener('click', function(){ mostrarApp('login'); });
+mostrarApp('login');
+})();
+</script>
+
+<script>
+(function(){
+'use strict';
+var widgets = document.querySelectorAll('.pptx-widget');
+widgets.forEach(function(w){
+  var deck = w.getAttribute('data-deck');
+  var total = parseInt(w.getAttribute('data-total'), 10);
+  var img = w.querySelector('.pptx-img');
+  var contador = w.querySelector('.pptx-contador');
+  var prev = w.querySelector('.pptx-prev');
+  var next = w.querySelector('.pptx-next');
+  if (!img || !total) return;
+  var atual = 1;
+
+  function render(){
+    var n = atual < 10 ? '0' + atual : String(atual);
+    img.src = 'images/p11-' + deck + '-' + n + '.jpg';
+    img.alt = 'Slide ' + atual + ' de ' + total;
+    if (contador) contador.textContent = atual + ' / ' + total;
+    if (prev) prev.disabled = (atual === 1);
+    if (next) next.disabled = (atual === total);
+  }
+  if (prev) prev.addEventListener('click', function(){ if (atual > 1){ atual--; render(); } });
+  if (next) next.addEventListener('click', function(){ if (atual < total){ atual++; render(); } });
+  render();
+});
+})();
+</script>
+
+<script src="../Lib/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+
+var container = document.getElementById('prateleira3d');
+var fallback = document.querySelector('.prateleira');
+var reduzMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function suportaWebGL(){
+  try {
+    var c = document.createElement('canvas');
+    return !!(window.WebGLRenderingContext && (c.getContext('webgl') || c.getContext('experimental-webgl')));
+  } catch(e){ return false; }
+}
+
+if (typeof THREE === 'undefined' || !suportaWebGL()) return; // fica no fallback em CSS, que já está visível
+
+try {
+
+  var largura = Math.min(container.parentElement.clientWidth, 720); // espelha o max-width do CSS
+  var altura = 300; // bate com a altura fixa do .prateleira3d no CSS
+  var DIST_CAM = 7.6;
+  var ALVO_METADE_H = 6.0; // mais folga que antes — a 4.3 ainda ficava grande demais
+
+  var scene = new THREE.Scene();
+  var vFOV = 2 * Math.atan(ALVO_METADE_H / (DIST_CAM * (largura/altura))) * (180/Math.PI);
+  vFOV = Math.max(26, Math.min(60, vFOV)); // trava contra proporções extremas (tela ultrawide, etc.)
+  var camera = new THREE.PerspectiveCamera(vFOV, largura/altura, 0.1, 100);
+  camera.position.set(0, 1.7, DIST_CAM);
+  camera.lookAt(0, 0.2, 0);
+
+  var renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+  renderer.setSize(largura, altura);
+  renderer.setClearColor(0x000000, 0);
+  container.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0x6b4a2e, 0.7));
+  var spot1 = new THREE.PointLight(0xE8821E, 1.3, 25); spot1.position.set(-3,4,5); scene.add(spot1);
+  var spot2 = new THREE.PointLight(0xF5DEB3, 0.9, 25); spot2.position.set(3,3,4); scene.add(spot2);
+
+  var shelfGeo = new THREE.BoxGeometry(10.2, 0.25, 1.7);
+  var shelfMat = new THREE.MeshStandardMaterial({ color:0x2a1810, roughness:0.8, metalness:0.1 });
+  var shelf = new THREE.Mesh(shelfGeo, shelfMat);
+  shelf.position.set(0,-0.6,0);
+  scene.add(shelf);
+
+  // normaliza a base do objeto pra y=0 antes de escalar — sem isso, escalar em torno da
+  // origem local (que nem sempre é a base visual do objeto) faz ele flutuar ou afundar
+  function assentar(obj, escala){
+    var g = obj.isGroup ? obj : new THREE.Group().add(obj);
+    g.updateMatrixWorld(true);
+    var caixa = new THREE.Box3().setFromObject(g);
+    var dy = -caixa.min.y;
+    g.children.forEach(function(c){ c.position.y += dy; });
+    g.scale.setScalar(escala);
+    return g;
+  }
+
+  function criarAcervo(){
+    var g = new THREE.Group();
+    var coresBase = [0x5c4a2c, 0x6b5636, 0x4d3d24];
+    for (var i=0;i<3;i++){
+      var geo = new THREE.CylinderGeometry(0.5,0.55,0.2,24);
+      var mat = new THREE.MeshStandardMaterial({ color:coresBase[i], roughness:0.7, metalness:0.15 });
+      var m = new THREE.Mesh(geo, mat);
+      m.position.set(-0.15, i*0.22, 0);
+      m.rotation.y = i*0.3;
+      g.add(m);
+    }
+    // livros apoiados ao lado — dá mais silhueta que só discos empilhados
+    var coresLivro = [0x7a3b2e, 0x8a6a3e, 0x5c4a2c];
+    var angulos = [-0.35, 0.1, 0.4];
+    var alturas = [0.75, 0.62, 0.68];
+    for (var j=0;j<3;j++){
+      var livro = new THREE.Mesh(new THREE.BoxGeometry(0.5, alturas[j], 0.34),
+        new THREE.MeshStandardMaterial({ color:coresLivro[j], roughness:0.75, metalness:0.05 }));
+      livro.position.set(0.42+j*0.06, alturas[j]/2-0.1, 0.15-j*0.1);
+      livro.rotation.z = angulos[j];
+      livro.rotation.y = 0.15;
+      g.add(livro);
+    }
+    return g;
+  }
+
+  function criarEspiral(){
+    var g = new THREE.Group();
+    var pts = [];
+    var voltas=2.4, passos=100;
+    for (var i=0;i<=passos;i++){
+      var t=i/passos;
+      var ang=t*Math.PI*2*voltas;
+      var r=0.15+t*0.75;
+      pts.push(new THREE.Vector3(Math.cos(ang)*r, t*1.5-0.2, Math.sin(ang)*r));
+    }
+    var curve = new THREE.CatmullRomCurve3(pts);
+    var tuboMat = new THREE.MeshStandardMaterial({ color:0xC9A227, roughness:0.35, metalness:0.55, emissive:0x7A5E10, emissiveIntensity:0.15 });
+    g.add(new THREE.Mesh(new THREE.TubeGeometry(curve,120,0.05,8,false), tuboMat));
+    // contas crescendo ao longo da curva — a própria ideia da sequência, em forma
+    var contaMat = new THREE.MeshStandardMaterial({ color:0xF0D060, roughness:0.25, metalness:0.6, emissive:0x8a6a20, emissiveIntensity:0.25 });
+    var marcos = [0.08,0.22,0.38,0.55,0.72,0.88,1.0];
+    marcos.forEach(function(t,i){
+      var p = curve.getPointAt(Math.min(t,0.999));
+      var raio = 0.05 + i*0.018;
+      var conta = new THREE.Mesh(new THREE.SphereGeometry(raio,12,12), contaMat);
+      conta.position.copy(p);
+      g.add(conta);
+    });
+    return g;
+  }
+
+  function criarDNA(){
+    var g = new THREE.Group();
+    var altura=1.7, voltas=2.1, passos=80, raio=0.5;
+    var pts1=[], pts2=[];
+    for (var i=0;i<=passos;i++){
+      var t=i/passos;
+      var ang=t*Math.PI*2*voltas;
+      var y=t*altura-altura/2;
+      pts1.push(new THREE.Vector3(Math.cos(ang)*raio, y, Math.sin(ang)*raio));
+      pts2.push(new THREE.Vector3(Math.cos(ang+Math.PI)*raio, y, Math.sin(ang+Math.PI)*raio));
+    }
+    var fitaMat = new THREE.MeshStandardMaterial({ color:0xB87333, roughness:0.4, metalness:0.5 });
+    [pts1,pts2].forEach(function(pts){
+      var curve = new THREE.CatmullRomCurve3(pts);
+      var geo = new THREE.TubeGeometry(curve,100,0.05,6,false);
+      g.add(new THREE.Mesh(geo, fitaMat));
+    });
+    var rungMat = new THREE.MeshStandardMaterial({ color:0xE8C39E, roughness:0.4, metalness:0.3 });
+    var atomMat = new THREE.MeshStandardMaterial({ color:0xF5DEB3, roughness:0.3, metalness:0.4, emissive:0x8a5a2e, emissiveIntensity:0.2 });
+    for (var i=5;i<passos;i+=8){
+      var a=pts1[i], b=pts2[i];
+      var mid=a.clone().lerp(b,0.5);
+      var dist=a.distanceTo(b);
+      var rungGeo=new THREE.CylinderGeometry(0.032,0.032,dist,6);
+      var rung=new THREE.Mesh(rungGeo, rungMat);
+      rung.position.copy(mid);
+      rung.lookAt(b);
+      rung.rotateX(Math.PI/2);
+      g.add(rung);
+      // "átomos" nas pontas — visual de modelo molecular, não só cano com barrinhas
+      [a,b].forEach(function(p){
+        var atomo = new THREE.Mesh(new THREE.SphereGeometry(0.07,10,10), atomMat);
+        atomo.position.copy(p);
+        g.add(atomo);
+      });
+    }
+    return g;
+  }
+
+  function criarChama(){
+    var g = new THREE.Group();
+    // perfil revolvido — silhueta de chama de verdade, não dois cones empilhados
+    var perfil = [
+      new THREE.Vector2(0.0, 0.0),
+      new THREE.Vector2(0.30, 0.02),
+      new THREE.Vector2(0.36, 0.22),
+      new THREE.Vector2(0.30, 0.48),
+      new THREE.Vector2(0.33, 0.62),
+      new THREE.Vector2(0.20, 0.85),
+      new THREE.Vector2(0.24, 0.95),
+      new THREE.Vector2(0.08, 1.12),
+      new THREE.Vector2(0.0, 1.32)
+    ];
+    var mat = new THREE.MeshStandardMaterial({ color:0xCC3B14, roughness:0.4, metalness:0.15, emissive:0x8a2200, emissiveIntensity:0.35 });
+    g.add(new THREE.Mesh(new THREE.LatheGeometry(perfil,28), mat));
+    var perfil2 = perfil.map(function(p){ return new THREE.Vector2(p.x*0.55, p.y*0.72+0.1); });
+    var mat2 = new THREE.MeshStandardMaterial({ color:0xFFC93C, roughness:0.3, metalness:0.1, emissive:0xE8821E, emissiveIntensity:0.55 });
+    g.add(new THREE.Mesh(new THREE.LatheGeometry(perfil2,20), mat2));
+    return g;
+  }
+
+  function criarTerminal(){
+    var g = new THREE.Group();
+    var term = new THREE.Mesh(new THREE.BoxGeometry(0.5,0.34,0.07),
+      new THREE.MeshStandardMaterial({ color:0x1a1410, roughness:0.6, metalness:0.2 }));
+    g.add(term);
+    var cursor = new THREE.Mesh(new THREE.BoxGeometry(0.12,0.03,0.012),
+      new THREE.MeshStandardMaterial({ color:0xC9A227, emissive:0xC9A227, emissiveIntensity:0.8 }));
+    cursor.position.set(-0.05,-0.06,0.042);
+    g.add(cursor);
+    return assentar(g, 2.6);
+  }
+
+  function criarBancoDados(){
+    var m = new THREE.Mesh(new THREE.CylinderGeometry(0.24,0.27,0.36,22),
+      new THREE.MeshStandardMaterial({ color:0x8a7a5e, roughness:0.5, metalness:0.35 }));
+    return assentar(m, 2.6);
+  }
+
+  function criarRiscoCone(){
+    var m = new THREE.Mesh(new THREE.ConeGeometry(0.25,0.42,4),
+      new THREE.MeshStandardMaterial({ color:0xB0442E, roughness:0.4, metalness:0.15, emissive:0x5a1a10, emissiveIntensity:0.25 }));
+    return assentar(m, 2.6);
+  }
+
+  function criarVagaGenerica(){
+    var geo = new THREE.BoxGeometry(0.5,0.6,0.5);
+    var mat = new THREE.MeshBasicMaterial({ color:0xDEB887, wireframe:true, transparent:true, opacity:0.25 });
+    var m = new THREE.Mesh(geo, mat);
+    return assentar(m, 2.6);
+  }
+
+  function criarBobinaTesla(){
+    var g = new THREE.Group();
+    var base = new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.11,0.06,16),
+      new THREE.MeshStandardMaterial({ color:0x2a1810, roughness:0.7, metalness:0.1 }));
+    g.add(base);
+    var bobina = new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.16,0.55,22),
+      new THREE.MeshStandardMaterial({ color:0x8a6a3e, roughness:0.5, metalness:0.4 }));
+    bobina.position.y = 0.32;
+    g.add(bobina);
+    var toroide = new THREE.Mesh(new THREE.TorusGeometry(0.22,0.065,12,26),
+      new THREE.MeshStandardMaterial({ color:0xC9C9D0, roughness:0.3, metalness:0.7, emissive:0x6a7a9a, emissiveIntensity:0.15 }));
+    toroide.rotation.x = Math.PI/2;
+    toroide.position.y = 0.64;
+    g.add(toroide);
+    var raioMat = new THREE.MeshStandardMaterial({ color:0xB8D4F0, emissive:0x8ac8ff, emissiveIntensity:0.9 });
+    for (var i=0;i<5;i++){
+      var ang = (i/5)*Math.PI*2;
+      var raio = new THREE.Mesh(new THREE.CylinderGeometry(0.008,0.008,0.13,4), raioMat);
+      raio.position.set(Math.cos(ang)*0.24, 0.68, Math.sin(ang)*0.24);
+      raio.rotation.z = Math.PI/2;
+      raio.rotation.y = ang;
+      raio.rotation.x = (i%2===0 ? 1 : -1) * 0.35;
+      g.add(raio);
+    }
+    return assentar(g, 2.6);
+  }
+
+  function criarMonitor(){
+    var g = new THREE.Group();
+    var tela = new THREE.Mesh(new THREE.BoxGeometry(0.5,0.38,0.06),
+      new THREE.MeshStandardMaterial({ color:0x141210, roughness:0.6, metalness:0.1 }));
+    g.add(tela);
+    var luz = new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.28),
+      new THREE.MeshStandardMaterial({ color:0x2a5e34, emissive:0x4a9e5c, emissiveIntensity:0.8, side:THREE.DoubleSide }));
+    luz.position.z = 0.032;
+    g.add(luz);
+    var suporte = new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.05,0.16,10),
+      new THREE.MeshStandardMaterial({ color:0x2a1810, roughness:0.7 }));
+    suporte.position.y = -0.27;
+    g.add(suporte);
+    var base = new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.15,0.03,16),
+      new THREE.MeshStandardMaterial({ color:0x2a1810, roughness:0.7 }));
+    base.position.y = -0.35;
+    g.add(base);
+    return assentar(g, 2.6);
+  }
+
+  function criarLivros(){
+    var g = new THREE.Group();
+    var coresLivro = [0x6b3a2e, 0x3a4a5e, 0x5c4a2c];
+    for (var i=0;i<3;i++){
+      var livro = new THREE.Mesh(new THREE.BoxGeometry(0.42,0.07,0.32),
+        new THREE.MeshStandardMaterial({ color:coresLivro[i], roughness:0.6, metalness:0.1 }));
+      livro.position.set(-0.02*i, i*0.08, 0);
+      livro.rotation.y = (i-1)*0.08;
+      g.add(livro);
+    }
+    var base = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.03,0.3),
+      new THREE.MeshStandardMaterial({ color:0x8a3020, roughness:0.55 }));
+    base.position.set(0.03, 0.265, 0);
+    g.add(base);
+    var pagMat = new THREE.MeshStandardMaterial({ color:0xE8DFC8, roughness:0.7 });
+    var pag1 = new THREE.Mesh(new THREE.BoxGeometry(0.18,0.015,0.28), pagMat);
+    pag1.position.set(-0.07,0.285,0); pag1.rotation.z = 0.12;
+    g.add(pag1);
+    var pag2 = new THREE.Mesh(new THREE.BoxGeometry(0.18,0.015,0.28), pagMat);
+    pag2.position.set(0.13,0.285,0); pag2.rotation.z = -0.12;
+    g.add(pag2);
+    var medMat = new THREE.MeshStandardMaterial({ color:0xD4AF37, roughness:0.3, metalness:0.75, emissive:0x8a6a10, emissiveIntensity:0.3 });
+    var medalha = new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.02,20), medMat);
+    medalha.position.set(0.22,0.31,0.14);
+    medalha.rotation.x = Math.PI/2 - 0.4;
+    medalha.rotation.z = 0.3;
+    g.add(medalha);
+    return assentar(g, 2.6);
+  }
+
+  function criarDuvida(){
+    var g = new THREE.Group();
+    var bolha = new THREE.Mesh(new THREE.BoxGeometry(0.5,0.34,0.05),
+      new THREE.MeshStandardMaterial({ color:0x2a1810, roughness:0.6, metalness:0.15 }));
+    g.add(bolha);
+    var linhaMat = new THREE.MeshStandardMaterial({ color:0xC9A227, emissive:0xC9A227, emissiveIntensity:0.5 });
+    var linha1 = new THREE.Mesh(new THREE.BoxGeometry(0.32,0.025,0.01), linhaMat);
+    linha1.position.set(-0.03,0.06,0.03);
+    g.add(linha1);
+    var linha2 = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.025,0.01), linhaMat);
+    linha2.position.set(-0.09,-0.02,0.03);
+    g.add(linha2);
+    // a bolha de resposta, menor e um pouco à frente — a mesma composição do ícone plano
+    var resposta = new THREE.Mesh(new THREE.BoxGeometry(0.26,0.2,0.045),
+      new THREE.MeshStandardMaterial({ color:0x5c4a2c, roughness:0.55, metalness:0.15, emissive:0x8a6a20, emissiveIntensity:0.12 }));
+    resposta.position.set(0.24,0.2,0.06);
+    g.add(resposta);
+    return assentar(g, 2.6);
+  }
+
+  function criarCasa(){
+    var g = new THREE.Group();
+    var corpo = new THREE.Mesh(new THREE.BoxGeometry(0.34,0.24,0.28),
+      new THREE.MeshStandardMaterial({ color:0x3a2a1c, roughness:0.7, metalness:0.1 }));
+    corpo.position.y = 0.12;
+    g.add(corpo);
+    var telhado = new THREE.Mesh(new THREE.ConeGeometry(0.26,0.16,4),
+      new THREE.MeshStandardMaterial({ color:0x6b3a1f, roughness:0.6, metalness:0.15 }));
+    telhado.position.y = 0.32;
+    telhado.rotation.y = Math.PI/4;
+    g.add(telhado);
+    // porta acesa — o mesmo acento dourado das outras peças recentes
+    var porta = new THREE.Mesh(new THREE.BoxGeometry(0.07,0.13,0.02),
+      new THREE.MeshStandardMaterial({ color:0xC9A227, emissive:0xC9A227, emissiveIntensity:0.4 }));
+    porta.position.set(0,0.065,0.15);
+    g.add(porta);
+    return assentar(g, 2.6);
+  }
+
+  function criarSlides(){
+    var g = new THREE.Group();
+    var cores = [0x3a2a1c, 0x4a3423, 0x5c4229];
+    for (var i = 0; i < 3; i++){
+      var placa = new THREE.Mesh(new THREE.BoxGeometry(0.4,0.28,0.02),
+        new THREE.MeshStandardMaterial({ color:cores[i], roughness:0.6, metalness:0.15 }));
+      placa.position.set(i*0.035, i*0.03, i*0.03);
+      placa.rotation.z = -i*0.05;
+      g.add(placa);
+    }
+    // o triangulo de play, o mesmo acento dourado das outras pecas recentes
+    var play = new THREE.Mesh(new THREE.ConeGeometry(0.045,0.08,3),
+      new THREE.MeshStandardMaterial({ color:0xC9A227, emissive:0xC9A227, emissiveIntensity:0.5 }));
+    play.rotation.z = -Math.PI/2;
+    play.position.set(0.07,0.09,0.09);
+    g.add(play);
+    return assentar(g, 2.6);
+  }
+
+  function criarConsulta(){
+    var g = new THREE.Group();
+    var raios = [0.22, 0.17, 0.13];
+    var y = 0;
+    for (var i = 0; i < 3; i++){
+      var alt = 0.12;
+      var cil = new THREE.Mesh(new THREE.CylinderGeometry(raios[i], raios[i], alt, 20),
+        new THREE.MeshStandardMaterial({ color: i===0 ? 0x5a4a30 : 0x3a2a1c, roughness:0.5, metalness:0.3 }));
+      cil.position.set(0.12*i, y + alt/2, -0.1*i);
+      g.add(cil);
+      y += alt + 0.04;
+    }
+    // o elo dourado, a mesma linguagem visual das outras peças recentes
+    var elo = new THREE.Mesh(new THREE.CylinderGeometry(0.015,0.015,0.5,8),
+      new THREE.MeshStandardMaterial({ color:0xC9A227, emissive:0xC9A227, emissiveIntensity:0.5 }));
+    elo.rotation.z = Math.PI/2.3;
+    elo.position.set(0.1, 0.2, -0.05);
+    g.add(elo);
+    return assentar(g, 2.6);
+  }
+
+  function criarLaco(){
+    // Peça 13 — laço de repetição em volta de uma decisão: sequencial, seleção, repetição, vetores
+    var g = new THREE.Group();
+    var anelMat = new THREE.MeshStandardMaterial({ color:0xC9752E, roughness:0.4, metalness:0.45 });
+    var anel = new THREE.Mesh(new THREE.TorusGeometry(0.3,0.032,10,32,Math.PI*1.68), anelMat);
+    anel.rotation.z = Math.PI*0.18;
+    g.add(anel);
+    var loMat = new THREE.MeshStandardMaterial({ color:0xF0D060, roughness:0.3, metalness:0.5, emissive:0x8a6a20, emissiveIntensity:0.25 });
+    g.add(new THREE.Mesh(new THREE.OctahedronGeometry(0.12,0), loMat));
+    return assentar(g, 2.6);
+  }
+
+  function criarInstancias(){
+    // Peça 14 — a classe (wireframe, o molde) e as instâncias (sólidas, cada uma com seu saldo)
+    var g = new THREE.Group();
+    var bpMat = new THREE.MeshBasicMaterial({ color:0xDEB887, wireframe:true, transparent:true, opacity:0.4 });
+    var blueprint = new THREE.Mesh(new THREE.BoxGeometry(0.5,0.34,0.34), bpMat);
+    blueprint.position.y = 0.24;
+    g.add(blueprint);
+    var instMat = new THREE.MeshStandardMaterial({ color:0x8a6a3e, roughness:0.5, metalness:0.35 });
+    var pontoMat = new THREE.MeshStandardMaterial({ color:0xC9A227, emissive:0xC9A227, emissiveIntensity:0.6 });
+    var offsets = [[-0.13,0,0.02],[0.11,-0.02,-0.06],[0.02,0.03,0.13]];
+    offsets.forEach(function(o){
+      var inst = new THREE.Mesh(new THREE.BoxGeometry(0.17,0.11,0.11), instMat);
+      inst.position.set(o[0], o[1], o[2]);
+      g.add(inst);
+      var ponto = new THREE.Mesh(new THREE.SphereGeometry(0.02,8,8), pontoMat);
+      ponto.position.set(o[0]+0.05, o[1]+0.03, o[2]+0.06);
+      g.add(ponto);
+    });
+    return assentar(g, 2.6);
+  }
+
+  function criarCurvas(){
+    // Peça 15 — oferta (azul) sobe, demanda (vermelho) desce, o ponto de equilíbrio onde se cruzam
+    var g = new THREE.Group();
+    var pts1 = [ new THREE.Vector3(-0.34,-0.22,0), new THREE.Vector3(-0.06,-0.16,0.05), new THREE.Vector3(0.16,0.05,0), new THREE.Vector3(0.34,0.26,-0.04) ];
+    var pts2 = [ new THREE.Vector3(-0.34,0.26,0.04), new THREE.Vector3(-0.06,0.14,-0.05), new THREE.Vector3(0.16,-0.05,0), new THREE.Vector3(0.34,-0.22,0) ];
+    var mat1 = new THREE.MeshStandardMaterial({ color:0x0073D9, roughness:0.35, metalness:0.4 });
+    var mat2 = new THREE.MeshStandardMaterial({ color:0xFF4036, roughness:0.35, metalness:0.4 });
+    [[pts1,mat1],[pts2,mat2]].forEach(function(par){
+      var curve = new THREE.CatmullRomCurve3(par[0]);
+      g.add(new THREE.Mesh(new THREE.TubeGeometry(curve,40,0.026,8,false), par[1]));
+    });
+    var eqMat = new THREE.MeshStandardMaterial({ color:0xF0D060, roughness:0.25, metalness:0.55, emissive:0x8a6a20, emissiveIntensity:0.35 });
+    g.add(new THREE.Mesh(new THREE.SphereGeometry(0.05,12,12), eqMat));
+    return assentar(g, 2.6);
+  }
+
+  function criarXicara(){
+    // Peça 16 — xícara de café: Java é a linguagem do grão. Cabo, corpo, dois fios de vapor.
+    var g = new THREE.Group();
+    var corpoMat = new THREE.MeshStandardMaterial({ color:0xB8794A, roughness:0.55, metalness:0.2 });
+    var corpo = new THREE.Mesh(new THREE.CylinderGeometry(0.19,0.16,0.26,20), corpoMat);
+    g.add(corpo);
+    var alca = new THREE.Mesh(new THREE.TorusGeometry(0.1,0.022,8,20,Math.PI*1.3), corpoMat);
+    alca.position.set(0.24,0,0);
+    alca.rotation.y = Math.PI/2;
+    g.add(alca);
+    var vaporMat = new THREE.MeshStandardMaterial({ color:0xEDEDED, roughness:0.9, transparent:true, opacity:0.55 });
+    [[-0.07,0],[0.06,0.1]].forEach(function(o){
+      var pts = [ new THREE.Vector3(o[0],0.14,o[1]), new THREE.Vector3(o[0]-0.03,0.24,o[1]), new THREE.Vector3(o[0]+0.02,0.32,o[1]), new THREE.Vector3(o[0]-0.02,0.4,o[1]) ];
+      var curve = new THREE.CatmullRomCurve3(pts);
+      g.add(new THREE.Mesh(new THREE.TubeGeometry(curve,20,0.012,6,false), vaporMat));
+    });
+    return assentar(g, 2.6);
+  }
+
+  function criarPonte(){
+    // Peça 17 — a ponte entre risco e controle, do jeito que o próprio texto do COBIT descreve
+    var g = new THREE.Group();
+    var mat = new THREE.MeshStandardMaterial({ color:0xB8935A, roughness:0.5, metalness:0.3 });
+    var arco = new THREE.Mesh(new THREE.TorusGeometry(0.28,0.025,10,32,Math.PI), mat);
+    arco.position.y = 0.1;
+    g.add(arco);
+    var deck = new THREE.Mesh(new THREE.BoxGeometry(0.62,0.025,0.06), mat);
+    deck.position.y = 0.1;
+    g.add(deck);
+    [-0.18,0,0.18].forEach(function(x){
+      var pilar = new THREE.Mesh(new THREE.BoxGeometry(0.03,0.14,0.03), mat);
+      pilar.position.set(x, 0.03, 0);
+      g.add(pilar);
+    });
+    return assentar(g, 2.6);
+  }
+
+  function criarGrafico(){
+    // Peça 18 — três barrinhas de altura desigual sobre uma base: o gráfico mais genérico possível
+    var g = new THREE.Group();
+    var baseMat = new THREE.MeshStandardMaterial({ color:0x8a6a3e, roughness:0.6, metalness:0.2 });
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(0.66,0.02,0.1), baseMat));
+    var alturas = [0.16,0.30,0.11];
+    var cores = [0x0073D9, 0xC9752E, 0xF0D060];
+    var xs = [-0.22,0,0.22];
+    for (var i=0;i<3;i++){
+      var mat = new THREE.MeshStandardMaterial({ color:cores[i], roughness:0.45, metalness:0.3 });
+      var barra = new THREE.Mesh(new THREE.BoxGeometry(0.14,alturas[i],0.09), mat);
+      barra.position.set(xs[i], 0.01+alturas[i]/2, 0);
+      g.add(barra);
+    }
+    return assentar(g, 2.6);
+  }
+
+  var posicoes = [
+    { porPagina:[ {objs:[criarAcervo()],  id:'foco01', titulos:['Acervo']},     {objs:[criarBobinaTesla()], id:'foco06', titulos:['Tesla']}, {objs:[criarSlides()], id:'foco11', titulos:['Slides']}, {objs:[criarXicara()], id:'foco16', titulos:['Java']} ] },
+    { porPagina:[ {objs:[criarEspiral()], id:'foco02', titulos:['Fibonacci']},  {objs:[criarMonitor()], id:'foco07', titulos:['URI']}, {objs:[criarConsulta()], id:'foco12', titulos:['SQL']}, {objs:[criarPonte()], id:'foco17', titulos:['COBIT']} ] },
+    { porPagina:[ {objs:[criarDNA()],     id:'foco03', titulos:['DNA']},       {objs:[criarLivros()], id:'foco08', titulos:['Clarice']}, {objs:[criarLaco()], id:'foco13', titulos:['6ADS']}, {objs:[criarGrafico()], id:'foco18', titulos:['Planilhas']} ] },
+    { porPagina:[ {objs:[criarChama()],   id:'foco04', titulos:['RescueTech']},{objs:[criarDuvida()], id:'foco09', titulos:['PDAES']}, {objs:[criarInstancias()], id:'foco14', titulos:['POO']}, {objs:[criarVagaGenerica()], id:null, titulos:['vaga']} ] },
+    { porPagina:[ {objs:[criarTerminal(),criarBancoDados(),criarRiscoCone()], id:'foco05', titulos:['Linux','MySQL','Riscos']}, {objs:[criarCasa()], id:'foco10', titulos:['Guts']}, {objs:[criarCurvas()], id:'foco15', titulos:['Economia']}, {objs:[criarVagaGenerica()], id:null, titulos:['vaga']} ] }
+  ];
+  // cada posição física da prateleira guarda uma PILHA de páginas — o giro de
+  // página troca todo mundo de uma vez, o mesmo jeito que a peça 05 já trocava
+  // sozinha entre Linux/MySQL/Riscos, só que agora nas cinco posições juntas.
+  var XS = [-4,-2,0,2,4];
+  var TOTAL_PAGINAS = posicoes[0].porPagina.length;
+  var paginaAtual = 0;
+  var paginaEmTransicao = false;
+
+  var TOPO_MESA = -0.6 + 0.25/2; // posição da mesa + metade da sua altura
+  var FOLGA = 0.02;
+  var DURACAO_TRANSICAO = reduzMovimento ? 1 : 700; // troca instantânea, sem giro, se o sistema pedir menos movimento
+  var meshesClicaveis = [];
+
+  posicoes.forEach(function(pos, i){
+    pos.x = XS[i];
+    pos.paginaAtiva = 0;
+    pos.ativoIdx = 0;
+    pos.transicao = null;
+
+    pos.porPagina.forEach(function(quadro, paginaIdx){
+      quadro.objs.forEach(function(obj, subIdx){
+        obj.position.set(pos.x, 0, 0);
+        // apoia pela caixa delimitadora de verdade, não por um número chutado —
+        // curvas, lathe e caixas rotacionadas descem de jeitos diferentes demais
+        // pra confiar de olho onde cada base realmente para.
+        var caixa = new THREE.Box3().setFromObject(obj);
+        obj.position.y += (TOPO_MESA + FOLGA) - caixa.min.y;
+        obj.scale.setScalar((paginaIdx === 0 && subIdx === 0) ? 1 : 0);
+        if (quadro.id){
+          obj.traverse(function(c){ if (c.isMesh){ c.userData.focoId = quadro.id; meshesClicaveis.push(c); } });
+        }
+        scene.add(obj);
+      });
+    });
+
+    if (pos.porPagina[0].id){
+      // spot suave só pra essa posição — cada exibição com seu próprio ponto de luz
+      var spotPeca = new THREE.PointLight(0xFFC97A, 0.55, 3.2);
+      spotPeca.position.set(pos.x, 0.6, 1.1);
+      scene.add(spotPeca);
+    }
+
+    // placa com o nome — maior alvo de toque que a peça em si, e o que faltava pra dar contexto
+    var label = document.createElement('div');
+    label.className = 'relic3d-label';
+    label.textContent = pos.porPagina[0].titulos[0];
+    label.addEventListener('click', function(){
+      var quadro = pos.porPagina[pos.paginaAtiva];
+      if (quadro.id && window.abrirPeca) window.abrirPeca(quadro.id);
+    });
+    container.appendChild(label);
+    pos.label = label;
+  });
+
+  // dispara a troca de uma posição pra outro quadro — usada tanto pelo giro
+  // automático dentro de uma peça (Linux → MySQL → Riscos) quanto pelo botão
+  // de virar a página inteira. Os dois usam exatamente a mesma animação.
+  function trocarQuadro(pos, novaPagina, novoIdx){
+    pos.transicao = {
+      inicio: performance.now(),
+      paginaDe: pos.paginaAtiva, idxDe: pos.ativoIdx,
+      paginaPara: novaPagina, idxPara: novoIdx
+    };
+    var quadroNovo = pos.porPagina[novaPagina];
+    pos.label.style.opacity = '0';
+    setTimeout(function(){
+      pos.label.textContent = quadroNovo.titulos[novoIdx];
+      pos.label.style.opacity = '1';
+    }, DURACAO_TRANSICAO * 0.45);
+  }
+
+  function resolverInstantaneo(pos){
+    if (!pos.transicao) return;
+    var t = pos.transicao;
+    pos.porPagina[t.paginaDe].objs[t.idxDe].scale.setScalar(0);
+    pos.porPagina[t.paginaPara].objs[t.idxPara].scale.setScalar(1);
+    pos.paginaAtiva = t.paginaPara;
+    pos.ativoIdx = t.idxPara;
+    pos.transicao = null;
+  }
+
+  // giro automático dentro de uma posição — só quando o quadro da página
+  // ativa tem mais de um objeto (hoje, só a peça 05: Linux/MySQL/Riscos)
+  posicoes.forEach(function(pos){
+    setInterval(function(){
+      if (paginaEmTransicao || pos.transicao) return;
+      var quadroAtivo = pos.porPagina[pos.paginaAtiva];
+      if (quadroAtivo.objs.length < 2) return;
+      var proximo = (pos.ativoIdx + 1) % quadroAtivo.objs.length;
+      trocarQuadro(pos, pos.paginaAtiva, proximo);
+    }, 3400);
+  });
+
+  // vira a prateleira inteira pra outra página — todas as cinco posições
+  // trocam juntas, reaproveitando a mesma transição de encolher/crescer
+  function irParaPagina(novaPagina){
+    if (paginaEmTransicao || novaPagina === paginaAtual) return;
+    novaPagina = ((novaPagina % TOTAL_PAGINAS) + TOTAL_PAGINAS) % TOTAL_PAGINAS;
+    paginaEmTransicao = true;
+    posicoes.forEach(function(pos){
+      resolverInstantaneo(pos); // termina qualquer giro interno em andamento antes de virar a página, pra não atrasar essa posição em relação às outras
+      trocarQuadro(pos, novaPagina, 0);
+    });
+    setTimeout(function(){
+      paginaAtual = novaPagina;
+      paginaEmTransicao = false;
+      atualizarPontos();
+    }, DURACAO_TRANSICAO + 50);
+  }
+  window.irParaPaginaPrateleira = irParaPagina;
+
+  // navegação — botões e pontinhos só existem de fato se houver mais de uma página
+  var btnAnterior = document.getElementById('pratAnterior');
+  var btnProxima  = document.getElementById('pratProxima');
+  var pontosBox   = document.getElementById('pratPaginas');
+  if (TOTAL_PAGINAS > 1){
+    btnAnterior.addEventListener('click', function(){ irParaPagina(paginaAtual - 1); });
+    btnProxima.addEventListener('click', function(){ irParaPagina(paginaAtual + 1); });
+    for (var pIdx=0; pIdx<TOTAL_PAGINAS; pIdx++){
+      var ponto = document.createElement('span');
+      ponto.className = 'prat-ponto' + (pIdx===0 ? ' ativo' : '');
+      pontosBox.appendChild(ponto);
+    }
+  }
+  function atualizarPontos(){
+    if (TOTAL_PAGINAS < 2) return;
+    Array.prototype.forEach.call(pontosBox.children, function(ponto, idx){
+      ponto.classList.toggle('ativo', idx === paginaAtual);
+    });
+  }
+
+  function atualizarCarrosseis(){
+    posicoes.forEach(function(pos){
+      if (!pos.transicao) return;
+      var t = (performance.now() - pos.transicao.inicio) / DURACAO_TRANSICAO;
+      if (t >= 1){ resolverInstantaneo(pos); return; }
+      var saindo = pos.porPagina[pos.transicao.paginaDe].objs[pos.transicao.idxDe];
+      var entrando = pos.porPagina[pos.transicao.paginaPara].objs[pos.transicao.idxPara];
+      saindo.scale.setScalar(1 - t);
+      saindo.rotation.y = t * Math.PI;
+      entrando.scale.setScalar(t);
+      entrando.rotation.y = -Math.PI + t * Math.PI;
+    });
+  }
+
+  function atualizarLabels(){
+    var w = container.clientWidth, h = container.clientHeight;
+    if (!w || !h) return;
+    posicoes.forEach(function(pos){
+      var p = new THREE.Vector3(pos.x, -0.5, 0.55); // base da peça, na altura da prateleira
+      p.project(camera);
+      pos.label.style.left = ((p.x*0.5+0.5) * w) + 'px';
+      pos.label.style.top  = ((-p.y*0.5+0.5) * h) + 'px';
+    });
+  }
+
+  var raycaster = new THREE.Raycaster();
+  var mouse = new THREE.Vector2();
+  function aoClicar(clientX, clientY){
+    var rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((clientX-rect.left)/rect.width)*2-1;
+    mouse.y = -((clientY-rect.top)/rect.height)*2+1;
+    raycaster.setFromCamera(mouse, camera);
+    var hits = raycaster.intersectObjects(meshesClicaveis);
+    if (hits.length && window.abrirPeca) window.abrirPeca(hits[0].object.userData.focoId);
+  }
+  renderer.domElement.addEventListener('click', function(e){ aoClicar(e.clientX, e.clientY); });
+  renderer.domElement.addEventListener('pointermove', function(e){
+    var rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((e.clientX-rect.left)/rect.width)*2-1;
+    mouse.y = -((e.clientY-rect.top)/rect.height)*2+1;
+    raycaster.setFromCamera(mouse, camera);
+    var hover = raycaster.intersectObjects(meshesClicaveis).length > 0;
+    renderer.domElement.style.cursor = hover ? 'pointer' : 'default';
+  });
+
+  function ajustarTamanho(){
+    var w = container.clientWidth, h = container.clientHeight;
+    if (!w || !h) return;
+    camera.aspect = w/h;
+    camera.fov = 2 * Math.atan(ALVO_METADE_H / (DIST_CAM * camera.aspect)) * (180/Math.PI);
+    camera.fov = Math.max(26, Math.min(60, camera.fov));
+    camera.updateProjectionMatrix();
+    renderer.setSize(w,h);
+  }
+  window.addEventListener('resize', ajustarTamanho);
+
+  var relogio = new THREE.Clock();
+  function animar(){
+    requestAnimationFrame(animar);
+    var t = relogio.getElapsedTime();
+    if (!reduzMovimento){
+      camera.position.y = 1.7 + Math.sin(t*0.5)*0.06;
+      camera.position.x = Math.sin(t*0.3)*0.12;
+      camera.lookAt(0,0.2,0);
+      posicoes.forEach(function(pos,i){
+        if (pos.transicao) return; // a transição do carrossel já controla a rotação enquanto dura
+        pos.porPagina[pos.paginaAtiva].objs[pos.ativoIdx].rotation.y = t*0.15 + i;
+      });
+    }
+    atualizarCarrosseis();
+    camera.updateMatrixWorld();
+    atualizarLabels();
+    renderer.render(scene, camera);
+  }
+  animar();
+
+  container.classList.add('pronta');
+  if (TOTAL_PAGINAS > 1){
+    btnAnterior.style.display = 'flex';
+    btnProxima.style.display = 'flex';
+    pontosBox.style.display = 'flex';
+  }
+  fallback.style.display = 'none';
+  ajustarTamanho(); // agora que está visível, confere se bate exato com o CSS renderizado
+  atualizarLabels();
+
+} catch(e){
+  console.warn('[Ícarus] prateleira 3D falhou, usando prateleira em CSS:', e);
+  container.classList.remove('pronta');
+}
+
+})();
+</script>
+<script>
+(function(){
+'use strict';
+
+var emberBox = document.getElementById('embers');
+for (var i=0;i<18;i++){
+  var e = document.createElement('div');
+  e.className='ember';
+  e.style.left = (Math.random()*100)+'vw';
+  e.style.setProperty('--drift', (Math.random()*60-30)+'px');
+  e.style.animationDuration = (9+Math.random()*8)+'s';
+  e.style.animationDelay = (Math.random()*12)+'s';
+  emberBox.appendChild(e);
+}
+
+})();
+</script>
+<script src="../Lib/dragonball.js"></script>
+<script>
+(function () {
+  if (!window.NexusEsferas) return;
+  var meuId = 'icaro';
+  var n = NexusEsferas.esferaDestaPagina(meuId);
+  if (n === null) return;
+
+  var POSICOES_ESTRELA = {
+    1:[[0,0]], 2:[[-11,-8],[11,8]], 3:[[0,-16],[-13,10],[13,10]],
+    4:[[-13,-13],[13,-13],[-13,13],[13,13]],
+    5:[[0,-18],[-15,-3],[15,-3],[-10,16],[10,16]],
+    6:[[-13,-15],[13,-15],[-13,0],[13,0],[-13,15],[13,15]],
+    7:[[0,-18],[-15,-10],[15,-10],[-15,9],[15,9],[-8,18],[8,18]]
+  };
+
+  var wrap = document.getElementById('dragonball-sphere');
+  var orb  = wrap.querySelector('.db-sphere-orb');
+  POSICOES_ESTRELA[n].forEach(function (p) {
+    var e = document.createElement('span');
+    e.className = 'estrela';
+    e.style.left = (32 + p[0] - 4.5) + 'px';
+    e.style.top  = (32 + p[1] - 4.5) + 'px';
+    orb.appendChild(e);
+  });
+  wrap.style.display = 'block';
+  wrap.setAttribute('aria-label', 'Esfera do Dragão de ' + n + ' estrela' + (n > 1 ? 's' : ''));
+
+  wrap.addEventListener('click', function () {
+    NexusEsferas.encontrar(meuId);
+    wrap.style.transition = 'opacity .5s ease, transform .5s ease';
+    wrap.style.opacity = '0';
+    wrap.style.transform = 'scale(.3)';
+    setTimeout(function () { wrap.style.display = 'none'; }, 550);
+  });
+})();
+</script>
+</body>
+</html>
