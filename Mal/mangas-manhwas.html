@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Mangás e Manhwas — registro de tudo que estou lendo, já terminei ou ainda pretendo começar.">
+<title>Mangás e Manhwas — Nexus</title>
+<link rel="icon" type="image/svg+xml" href="mangas-manhwas-favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0E0D;
+    --bg2:#0F1613;
+    --panel:#121A16;
+    --panel-line: rgba(95,168,138,0.16);
+    --accent:#5FA88A;
+    --accent-soft: rgba(95,168,138,0.14);
+    --accent-dim: rgba(95,168,138,0.42);
+    --text:#E7E7DE;
+    --dim: rgba(231,231,222,0.52);
+    --dimmer: rgba(231,231,222,0.28);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html,body{
+    background:
+      radial-gradient(ellipse 70% 40% at 50% -10%, rgba(95,168,138,0.08), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    font-family:'EB Garamond', Georgia, serif;
+  }
+
+  body{ padding-bottom:6rem; }
+
+  .nexus-return{
+    display:inline-block; position:absolute; top:0; left:0; z-index:10;
+    font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.28em; text-transform:uppercase;
+    text-decoration:none; color:var(--dim); padding:1rem 1.2rem; background:transparent; backdrop-filter:blur(6px);
+  }
+  .nexus-return:hover{ color:var(--accent); }
+
+  .mal-return{
+    display:inline-block; position:absolute; top:0; right:0; z-index:10;
+    font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.28em; text-transform:uppercase;
+    text-decoration:none; color:var(--dim); padding:1rem 1.2rem; background:transparent; backdrop-filter:blur(6px);
+  }
+  .mal-return:hover{ color:var(--accent); }
+
+  .wrap{ max-width:1180px; margin:0 auto; padding:5rem 1.5rem 0; }
+
+  .hero{ text-align:center; margin-bottom:2.4rem; }
+  .hero-eyebrow{
+    font-family:'Cinzel',serif; font-size:.66rem; letter-spacing:.32em; text-transform:uppercase;
+    color:var(--accent-dim); margin-bottom:.9rem;
+  }
+  .hero h1{
+    font-family:'Cinzel Decorative', serif; font-weight:700;
+    font-size:clamp(2.1rem, 6vw, 3.1rem); letter-spacing:.05em; color:var(--text);
+    text-shadow:0 0 40px rgba(95,168,138,.18);
+  }
+  .hero-tagline{ font-style:italic; color:var(--dim); font-size:1.02rem; margin-top:.7rem; }
+
+  .ledger-mini{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:1.6rem;
+    margin:1.8rem auto 0; max-width:700px; font-family:'Share Tech Mono', monospace;
+    font-size:.8rem; color:var(--dim);
+    border-top:1px solid var(--panel-line); border-bottom:1px solid var(--panel-line);
+    padding:1rem 0;
+  }
+  .ledger-mini span b{ color:var(--accent); font-weight:400; }
+
+  .controls{
+    display:flex; flex-wrap:wrap; align-items:center; gap:.9rem;
+    margin:2.8rem 0 .6rem;
+  }
+  .search-input{
+    flex:1 1 220px; background:var(--panel); border:1px solid var(--panel-line); border-radius:3px;
+    padding:.65rem .9rem; color:var(--text); font-family:'EB Garamond', serif; font-size:1rem;
+  }
+  .search-input::placeholder{ color:var(--dimmer); }
+  .search-input:focus{ outline:none; border-color:var(--accent-dim); }
+
+  .filters{ display:flex; flex-wrap:wrap; gap:.5rem; }
+  .filter-pill{
+    font-family:'Cinzel',serif; font-size:.62rem; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--dim); background:transparent; border:1px solid var(--panel-line); border-radius:20px;
+    padding:.45rem .9rem; cursor:pointer; transition:color .2s ease, border-color .2s ease, background .2s ease;
+  }
+  .filter-pill:hover{ color:var(--text); border-color:var(--accent-dim); }
+  .filter-pill.active{ color:var(--bg); background:var(--accent); border-color:var(--accent); }
+  .filter-pill:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  .result-count{
+    font-family:'Share Tech Mono', monospace; font-size:.72rem; color:var(--dimmer);
+    width:100%; margin-top:.2rem;
+  }
+
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));
+    gap:1.2rem; margin-top:1.6rem;
+  }
+
+  .card{
+    position:relative; background:linear-gradient(180deg, var(--panel), var(--bg2));
+    border:1px solid var(--panel-line); border-left:3px solid var(--accent-dim);
+    border-radius:3px; overflow:hidden; display:flex; flex-direction:column;
+    transition:border-color .3s ease, transform .2s ease;
+  }
+  .card:hover{ transform:translateY(-2px); border-color:var(--accent-dim); }
+  .card.st-completed{ border-left-color:var(--accent); }
+  .card.st-plan{ border-left:3px solid var(--panel-line); }
+
+  .card-cover{
+    width:100%; aspect-ratio:192/272; background:var(--bg2); overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .card-cover img{ width:100%; height:100%; object-fit:contain; display:block; }
+  .card-cover.placeholder{
+    font-family:'Cinzel Decorative', serif; font-size:2.6rem; color:var(--panel-line);
+  }
+
+  .card-status{
+    position:absolute; top:.6rem; right:.6rem;
+    font-family:'Cinzel',serif; font-size:.52rem; letter-spacing:.08em; text-transform:uppercase;
+    padding:.28rem .55rem; border-radius:12px; background:rgba(10,14,13,.78); backdrop-filter:blur(3px);
+    color:var(--dim);
+  }
+  .card.st-reading .card-status, .card.st-completed .card-status{ color:var(--accent); }
+
+  .card-body{ padding:.8rem .9rem 1rem; display:flex; flex-direction:column; flex:1; }
+  .card-title{
+    font-family:'Cinzel Decorative', serif; font-weight:700; font-size:.9rem;
+    line-height:1.35; color:var(--text);
+  }
+  .card-chapter{
+    font-family:'Share Tech Mono', monospace; font-size:.72rem; color:var(--accent);
+    margin-top:.5rem;
+  }
+  .card-chapter.none{ color:var(--dimmer); }
+
+  .empty-state{
+    text-align:center; padding:3.5rem 1rem; color:var(--dimmer); font-style:italic; grid-column:1/-1;
+  }
+
+  .hidden { display: none !important; }
+
+  #doujins-section {
+    margin-top: 5rem;
+    padding: 2.5rem;
+    background: #1a0000;
+    border: 2px solid #c44;
+    border-radius: 6px;
+  }
+  #doujins-section h2 {
+    color: #ff6666;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-family: 'Cinzel Decorative', serif;
+    letter-spacing: 0.05em;
+  }
+
+  footer{
+    margin-top:5rem; text-align:center; font-family:'Cinzel',serif; font-size:.68rem;
+    letter-spacing:.14em; color:var(--dimmer); text-transform:uppercase;
+  }
+
+  @media (max-width: 560px){
+    .wrap{ padding-top:4.2rem; }
+  }
+</style>
+</head>
+<body>
+<!-- avisa o mapa do Nexus (se estiver por perto) que esta página foi visitada -->
+<script>try{ if (window.top !== window) window.top.postMessage({ tipo:'nexus-visita', id:'mal_mangas' }, '*'); }catch(e){}</script>
+
+<a class="nexus-return" href="../nexus.html">◆ Nexus</a>
+<a class="mal-return" href="mal.html">◆ M.A.L</a>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero-eyebrow">Registro pessoal</div>
+    <h1>Mangás e Manhwas</h1>
+    <p class="hero-tagline">o que estou lendo, o que já terminei e o que ainda pretendo começar</p>
+
+    <div class="ledger-mini" id="ledgerMini"></div>
+  </header>
+
+  <div class="controls">
+    <input type="text" class="search-input" id="searchInput" placeholder="Buscar por título…" autocomplete="off">
+    <div class="filters" id="filters">
+      <button class="filter-pill active" data-filter="all">Todos</button>
+      <button class="filter-pill" data-filter="reading">Lendo</button>
+      <button class="filter-pill" data-filter="completed">Completo</button>
+      <button class="filter-pill" data-filter="plan">Pretendo Ler</button>
+    </div>
+    <div class="result-count" id="resultCount"></div>
+  </div>
+
+  <main class="grid" id="grid"></main>
+
+  <!-- ====================== SEÇÃO DOUJINS (+18) ====================== -->
+  <section id="doujins-section" class="hidden">
+    <h2>📕 Doujins Lidos (+18)</h2>
+    <div id="doujins-grid" class="grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));"></div>
+  </section>
+
+</div>
+
+<footer>◆ &nbsp; Mangás e Manhwas — Registro de Leitura &nbsp; ◆</footer>
+
+<script type="application/json" id="manhwaData">[{"t":"3CM Hunter","s":"plan","ch":null},{"t":"99 Reinforced Wood Stick","s":"reading","ch":18},{"t":"A Knight With a Time Limit","s":"plan","ch":null},{"t":"A Returner's Magic Should Be Special","s":"reading","ch":70},{"t":"Absolute Necromancer","s":"plan","ch":null},{"t":"Academy's Genius Swordmaster","s":"plan","ch":null},{"t":"Angel Densetsu","s":"plan","ch":null},{"t":"All Rounder","s":"reading","ch":36},{"t":"Apocalyptic Survival: I Can See Hidden Clues","s":"reading","ch":52},{"t":"Apocalyptic Thief","s":"reading","ch":52},{"t":"Arcane Sniper","s":"reading","ch":134},{"t":"Astral Pet Store","s":"reading","ch":113},{"t":"Back To The City: The Strongest Investment King","s":"reading","ch":41},{"t":"Becoming a Legendary Ace Employee","s":"reading","ch":27},{"t":"Backseating Heavenly Demon","s":"completed","ch":null},{"t":"Berserk","s":"plan","ch":null},{"t":"BJ Archmage","s":"reading","ch":71},{"t":"Blood Revenger","s":"plan","ch":null},{"t":"Boss In School","s":"plan","ch":null},{"t":"Boundless Necromancer","s":"reading","ch":115},{"t":"Bug Player","s":"reading","ch":48},{"t":"Capture The Golem And Escape Poverty","s":"plan","ch":null},{"t":"Catastrophic Priest","s":"reading","ch":33},{"t":"Champion's Path to Murim","s":"plan","ch":null},{"t":"Childhood Friend of the Zenith","s":"reading","ch":18},{"t":"Crisalis","s":"reading","ch":4},{"t":"Dangerous Dungeon Escape","s":"plan","ch":null},{"t":"Damn Reincarnation","s":"plan","ch":null},{"t":"Death Row Boy","s":"plan","ch":null},{"t":"Delivery Man From Murim","s":"plan","ch":null},{"t":"Director Kim","s":"plan","ch":null},{"t":"Doctor Player","s":"reading","ch":65},{"t":"Doctor's Rebirth","s":"reading","ch":97},{"t":"Double Click","s":"plan","ch":null},{"t":"Dragon Ego","s":"plan","ch":null},{"t":"Dungeon Athlete","s":"plan","ch":null},{"t":"Dungeon House","s":"plan","ch":null},{"t":"Dungeon Odyssey","s":"plan","ch":null},{"t":"Dungeon Reset","s":"plan","ch":null},{"t":"Dungeons & Artfacts","s":"plan","ch":null},{"t":"Eternally Regressing Knight","s":"reading","ch":43},{"t":"Entomologist in Sichuan Tang Clan","s":"plan","ch":null},{"t":"Everyone Else is A Returnee","s":"plan","ch":null},{"t":"Existence","s":"reading","ch":51},{"t":"FFF-Class Trashero","s":"plan","ch":null},{"t":"From Earth's Weakest To The Universe's Strongest","s":"plan","ch":null},{"t":"From Goblin to Goblin God","s":"reading","ch":6},{"t":"Forging an Industrial Empire in a Magical World","s":"plan","ch":null},{"t":"Gale Sword of Mountain","s":"plan","ch":null},{"t":"Game Master","s":"reading","ch":35},{"t":"Genius Martial Arts Trainer","s":"plan","ch":null},{"t":"Get Schooled","s":"plan","ch":null},{"t":"Global Ghost","s":"plan","ch":null},{"t":"Gods'Gambit","s":"plan","ch":null},{"t":"Guard Pass","s":"plan","ch":null},{"t":"Hajime No Ippo","s":"plan","ch":null},{"t":"Hectopascal","s":"plan","ch":null},{"t":"Hero has Returned","s":"reading","ch":84},{"t":"Hero With Another Opinion","s":"plan","ch":null},{"t":"Heavenly Sword's Grand Saga","s":"reading","ch":40},{"t":"Highly Skilled Doctor","s":"plan","ch":null},{"t":"Highschool Lunch Dad","s":"plan","ch":null},{"t":"Hoarding In Hell","s":"plan","ch":null},{"t":"Homunculus","s":"completed","ch":null},{"t":"How to Fight","s":"plan","ch":null},{"t":"I'm a Mom","s":"plan","ch":null},{"t":"I'M Really Not The Demon God'S Lackey","s":"plan","ch":null},{"t":"I'm Stuck On The Same Day For A Thousand Years","s":"plan","ch":null},{"t":"I Am The Strongest Lord In Another World","s":"plan","ch":null},{"t":"I Became a Childhood Friend of a Mid-Level Boss","s":"reading","ch":12},{"t":"I Became A Part Time Employee For Gods","s":"reading","ch":35},{"t":"I Became the Tyrant of a Defense Game","s":"reading","ch":40},{"t":"I Can Evolve Everything","s":"reading","ch":9},{"t":"I Can See the Success Rate","s":"plan","ch":null},{"t":"I Contracted Myself","s":"reading","ch":43},{"t":"I'll be Taking a Break for Personal Reasons","s":"plan","ch":null},{"t":"I Got Lucky And Pulled A 10th Rank Summon","s":"plan","ch":null},{"t":"I Got The Weakest Class, Dragon Tamer!?","s":"plan","ch":null},{"t":"I Have to be a Monster","s":"plan","ch":null},{"t":"I Just Want To Game In Peace","s":"reading","ch":78},{"t":"I Killed an Academy Player","s":"reading","ch":24},{"t":"I Picked A Hammer To Save The World","s":"plan","ch":null},{"t":"I Reincarnated as a Legendary Surgeon","s":"reading","ch":90},{"t":"I Took Over the Academy With a Single Sashimi Knife","s":"plan","ch":null},{"t":"I Used To Be a Boss","s":"plan","ch":null},{"t":"i will raise this family to greatness","s":"plan","ch":null},{"t":"Is This Warrior Real?","s":"plan","ch":null},{"t":"It All Starts With a Group of Primitive People","s":"reading","ch":19},{"t":"It All Starts With Playing Seriously","s":"plan","ch":null},{"t":"Jungle Juice","s":"plan","ch":null},{"t":"Juvenile Prision","s":"reading","ch":12},{"t":"Kaiju No.8","s":"reading","ch":108},{"t":"Kalli the Champion","s":"plan","ch":null},{"t":"Kanzen Kaihi Healer no Kiseki","s":"reading","ch":6},{"t":"Killer Peter","s":"plan","ch":null},{"t":"Killer Police","s":"plan","ch":null},{"t":"Killing Honey","s":"plan","ch":null},{"t":"King of Violence","s":"plan","ch":null},{"t":"King of the Octagon","s":"plan","ch":null},{"t":"Legend of Sura The Venom Dragon","s":"plan","ch":null},{"t":"Legend Of The Northern Blade","s":"plan","ch":null},{"t":"Levelling Up In An Exclusive Dungeon","s":"reading","ch":20},{"t":"Leveling With The Gods","s":"reading","ch":119},{"t":"Leviathan","s":"plan","ch":null},{"t":"Light of Arad: Forerunner","s":"reading","ch":14},{"t":"Limit Breaker","s":"reading","ch":47},{"t":"Logging 10000 Years into the Future","s":"reading","ch":106},{"t":"Lookism","s":"plan","ch":null},{"t":"Magic Academy's Genius Blinker","s":"reading","ch":26},{"t":"Magical Realm Shopkeeper","s":"reading","ch":18},{"t":"Martial Peak","s":"plan","ch":null},{"t":"Mashle","s":"completed","ch":null},{"t":"Maxed Out Leveling","s":"plan","ch":null},{"t":"Mythic Item Obtained","s":"reading","ch":66},{"t":"MR Z0MBI3","s":"plan","ch":null},{"t":"Modern Day Hero","s":"plan","ch":null},{"t":"Monster Eater Adventurer","s":"reading","ch":19},{"t":"Monster Hunter","s":"plan","ch":null},{"t":"Monster Pet Evolution","s":"plan","ch":null},{"t":"Monsters (Dream Factory)","s":"plan","ch":null},{"t":"Moon Slayer","s":"plan","ch":null},{"t":"My Cells Kingdom","s":"plan","ch":null},{"t":"My Daughter Is The Final Boss","s":"plan","ch":null},{"t":"My Disciples Are Constellations","s":"reading","ch":68},{"t":"My Disciples Cultivate, While I Slack Off!","s":"plan","ch":null},{"t":"My Dragon System","s":"plan","ch":null},{"t":"My Exclusive Tower Guide","s":"plan","ch":null},{"t":"Murim Login","s":"reading","ch":212},{"t":"Mushroom Brave","s":"plan","ch":null},{"t":"Nano Machine","s":"plan","ch":null},{"t":"Necromancer: King of The Scourge","s":"plan","ch":null},{"t":"Necromancer's Evolutionary Traits","s":"plan","ch":null},{"t":"Omnipotent Warrior","s":"plan","ch":null},{"t":"Omnsicient And Omnipotent","s":"plan","ch":null},{"t":"Omniscient Reader's Viewpoint","s":"plan","ch":null},{"t":"One Punch-Man","s":"reading","ch":235},{"t":"Overgeard","s":"reading","ch":237},{"t":"Peerless dad","s":"reading","ch":234},{"t":"Player Starting From Today","s":"plan","ch":null},{"t":"Player Who Returned 10.000 Years Later","s":"plan","ch":null},{"t":"Plunder Countless Talents, I Became a God","s":"reading","ch":100},{"t":"Quest Supremacy","s":"reading","ch":1},{"t":"Ranker's Return","s":"reading","ch":12},{"t":"Reality Quest","s":"reading","ch":38},{"t":"Rebirth in the End Times: I Reached the Top by Opening Boxes","s":"reading","ch":28},{"t":"Reborn As A Big Mouth Flower","s":"reading","ch":43},{"t":"Reborn As A Monster","s":"plan","ch":null},{"t":"Reborn As The Enemy Prince","s":"plan","ch":null},{"t":"Reborn As the Heavenly Martial Demon","s":"plan","ch":null},{"t":"Records of the Martial God's Return","s":"plan","ch":null},{"t":"Reformation Of The Deadbeat Noble","s":"plan","ch":null},{"t":"Regressing as the Reincarnated Bastard of the Sword Clan","s":"plan","ch":null},{"t":"Regressor of the Fallen Family","s":"plan","ch":null},{"t":"Release That Witch","s":"plan","ch":null},{"t":"Returned By The King","s":"reading","ch":65},{"t":"Return Survival","s":"reading","ch":23},{"t":"Return of the Disaster-Class Hero","s":"plan","ch":null},{"t":"Return of the Genius Player","s":"reading","ch":12},{"t":"Return Of The Legendary Spear Knight","s":"plan","ch":null},{"t":"Return Of The Mad Demon","s":"reading","ch":13},{"t":"Return of the Runebound Professor","s":"reading","ch":11},{"t":"Return To Player","s":"plan","ch":null},{"t":"Rise From The Rubbie","s":"plan","ch":null},{"t":"Rooftop Sword Master","s":"reading","ch":92},{"t":"Second Life Ranker","s":"plan","ch":null},{"t":"Seoul Station Druid","s":"plan","ch":null},{"t":"Seoul Station Necromancer","s":"plan","ch":null},{"t":"Shadow's Resurgence","s":"reading","ch":18},{"t":"Shi Shen Ji - God Slayer","s":"plan","ch":null},{"t":"Shotgun Boy","s":"plan","ch":null},{"t":"Skeleton Soldier Couldnt Protect The Dungeon","s":"plan","ch":null},{"t":"Slave B","s":"plan","ch":null},{"t":"Sleeping Ranker","s":"plan","ch":null},{"t":"Solo Leveling","s":"completed","ch":null},{"t":"Solo Max-Level NewBie","s":"plan","ch":null},{"t":"Solo Necromancy","s":"plan","ch":null},{"t":"Sono Mono Nochi Ni","s":"plan","ch":null},{"t":"Son's Retribution","s":"plan","ch":null},{"t":"SSS-Class Suicide Hunter","s":"reading","ch":115},{"t":"Standard Of Reincarnation","s":"plan","ch":null},{"t":"Survival Of The Sword King","s":"reading","ch":152},{"t":"Surviving As a Fish","s":"plan","ch":null},{"t":"Surviving the Game as a Barbarian","s":"reading","ch":53},{"t":"Sweet Home","s":"completed","ch":null},{"t":"Swordmaster's Youngest Son","s":"plan","ch":null},{"t":"Taming Master","s":"plan","ch":null},{"t":"Tensei Shitara SSS-Kyuu Goblin Ni Narimashita","s":"plan","ch":null},{"t":"The Begnning After The End","s":"reading","ch":199},{"t":"The Boxer","s":"reading","ch":69},{"t":"The Charm of Soul Pets","s":"plan","ch":null},{"t":"The Constellation That Returned From Hell","s":"plan","ch":null},{"t":"The Daily Life Of The Immortal King","s":"plan","ch":null},{"t":"The End of the World is Just a Game to Me","s":"plan","ch":null},{"t":"The Extra's Academy Survival Guide","s":"plan","ch":null},{"t":"The Game That I Came From","s":"plan","ch":null},{"t":"The Genius Assassin Who TakesIt All","s":"plan","ch":null},{"t":"The Greatest Estate Designer","s":"reading","ch":168},{"t":"The Greatest In The World","s":"plan","ch":null},{"t":"The God Of Professional Wrestling","s":"plan","ch":null},{"t":"The Hero Became the Duke's Eldest Son","s":"reading","ch":44},{"t":"The Heavenly Demon can't Live a Normal Life","s":"reading","ch":39},{"t":"The Holy Power of Modern Medicine","s":"reading","ch":93},{"t":"The Indomitable Martial King","s":"reading","ch":37},{"t":"The King Of Bugs","s":"reading","ch":52},{"t":"The Last Adventurer","s":"plan","ch":null},{"t":"The Last Human","s":"plan","ch":null},{"t":"The Legendary Moonlight Sculptor","s":"reading","ch":95},{"t":"The Live","s":"plan","ch":null},{"t":"The Max Level Hero Has Returned","s":"plan","ch":null},{"t":"The Max Level Player's 100th Regression","s":"plan","ch":null},{"t":"The Newbie is Too Strong","s":"plan","ch":null},{"t":"The Novel's Extra","s":"plan","ch":null},{"t":"The NPCs in This Village Sim Game Must Be Real!","s":"reading","ch":16.2},{"t":"The Player That Can't Level Up","s":"plan","ch":null},{"t":"The Regressed Demon Lord Is Kind","s":"plan","ch":null},{"t":"The Regressed Mercenary's Machinations","s":"plan","ch":null},{"t":"The Regressed Son of a Duke is an Assassin","s":"reading","ch":62},{"t":"The Return of the Iron-Blood Sword Hound","s":"reading","ch":74},{"t":"The S-Classes That I Raised","s":"plan","ch":null},{"t":"The Scholars Reincarnation","s":"plan","ch":null},{"t":"The Secret of My Next Classmate","s":"plan","ch":null},{"t":"The Stellar Swordmaster","s":"plan","ch":null},{"t":"The Ten Thousand Clans Invasion: Guardian of the Rear","s":"plan","ch":null},{"t":"The Tutorial Is Too Hard","s":"plan","ch":null},{"t":"The Tutorial Tower Of The Advanced Player","s":"plan","ch":null},{"t":"The Villain Wants To Live","s":"reading","ch":26},{"t":"The World After The End","s":"plan","ch":null},{"t":"There Are No Bad Heroes In This World","s":"plan","ch":null},{"t":"Time-Limited Genius Dark Knight","s":"reading","ch":59},{"t":"Trash of the Count's Family","s":"plan","ch":null},{"t":"Transcendental Mechanic","s":"plan","ch":null},{"t":"To Not Die","s":"plan","ch":null},{"t":"Top 1 Fighting Tutoring","s":"plan","ch":null},{"t":"Tokyo Revegers","s":"completed","ch":null},{"t":"Undefeated God of War","s":"plan","ch":null},{"t":"Ultra Alter","s":"plan","ch":null},{"t":"Undead King","s":"plan","ch":null},{"t":"Updater","s":"plan","ch":null},{"t":"Upgrade From Wild Monsters","s":"reading","ch":50},{"t":"Unparalleled ??? Rank Hidden Equipment","s":"reading","ch":14},{"t":"Vagabound","s":"completed","ch":null},{"t":"Warrior High School Dungeon Raid Cours","s":"plan","ch":null},{"t":"Weapon Maker","s":"reading","ch":25},{"t":"Wind Breaker","s":"plan","ch":null},{"t":"Worthless Regression","s":"reading","ch":62}]</script>
+
+<script>
+(function(){
+  const DATA = JSON.parse(document.getElementById('manhwaData').textContent);
+  const STATUS_LABELS = { reading:'Lendo', completed:'Completo', plan:'Pretendo Ler' };
+
+  let currentFilter = 'all';
+  let currentSearch = '';
+
+  const grid = document.getElementById('grid');
+  const searchInput = document.getElementById('searchInput');
+  const resultCount = document.getElementById('resultCount');
+  const filterPills = document.querySelectorAll('.filter-pill');
+
+  function escapeHtml(s){
+    const d = document.createElement('div');
+    d.textContent = s == null ? '' : String(s);
+    return d.innerHTML;
+  }
+
+  function matchesFilters(item){
+    if(currentFilter !== 'all' && item.s !== currentFilter) return false;
+    if(currentSearch && !item.t.toLowerCase().includes(currentSearch.toLowerCase())) return false;
+    return true;
+  }
+
+  function initial(title){
+    return title.trim().charAt(0).toUpperCase();
+  }
+
+  function slug(title){
+    return title.toLowerCase()
+      .replace(/['’]/g, '')
+      .replace(/[^\w\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-');
+  }
+
+  window.handleImgError = function(img){
+    const cover = img.parentElement;
+    cover.classList.add('placeholder');
+    cover.textContent = cover.dataset.initial || '';
+  };
+
+  function cardHtml(item){
+    const initialLetter = escapeHtml(initial(item.t));
+    const coverHtml = '<div class="card-cover" data-initial="' + initialLetter + '">' +
+      '<img src="capas-leitura/' + slug(item.t) + '.jpg" alt="" loading="lazy" onerror="handleImgError(this)">' +
+    '</div>';
+
+    const chapterHtml = item.ch
+      ? '<div class="card-chapter">cap. ' + escapeHtml(item.ch) + '</div>'
+      : '<div class="card-chapter none">' + (item.s === 'completed' ? 'completo' : 'sem progresso') + '</div>';
+
+    return (
+      '<article class="card st-' + item.s + '">' +
+        coverHtml +
+        '<div class="card-status">' + STATUS_LABELS[item.s] + '</div>' +
+        '<div class="card-body">' +
+          '<div class="card-title">' + escapeHtml(item.t) + '</div>' +
+          chapterHtml +
+        '</div>' +
+      '</article>'
+    );
+  }
+
+  function render(){
+    const filtered = DATA.filter(matchesFilters);
+    filtered.sort((a, b) => a.t.localeCompare(b.t));
+
+    if(filtered.length === 0){
+      grid.innerHTML = '<p class="empty-state">Nada encontrado por aqui.</p>';
+    } else {
+      grid.innerHTML = filtered.map(cardHtml).join('');
+    }
+    resultCount.textContent = filtered.length + ' de ' + DATA.length;
+  }
+
+  searchInput.addEventListener('input', (e) => {
+    currentSearch = e.target.value;
+    render();
+  });
+
+  filterPills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      filterPills.forEach((p) => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentFilter = pill.dataset.filter;
+      render();
+    });
+  });
+
+  const counts = { plan:0, reading:0, completed:0 };
+  DATA.forEach(d => counts[d.s]++);
+  document.getElementById('ledgerMini').innerHTML =
+    '<span>Total <b>' + DATA.length + '</b></span>' +
+    '<span>Lendo <b>' + counts.reading + '</b></span>' +
+    '<span>Completo <b>' + counts.completed + '</b></span>' +
+    '<span>Pretendo Ler <b>' + counts.plan + '</b></span>';
+
+  render();
+
+  // ====================== DOUJINS - TECLADO ======================
+  const doujinsSection = document.getElementById('doujins-section');
+  let sequence = '';
+
+  const doujinData = [
+    // trava 1 (digitar "doujin") revela a seção; trava 2 (digitar o autor) revela as obras dele
+    { t: "Chinchin ga Ookiku Naru Mahou", author: "Zhen Lu" },
+    { t: "Moto Mahou Shoujo no Kazoku Banashi Tsuki", author: "Zhen Lu" },
+    { t: "Moto Mahou Shoujo no Kazoku Banashi Tsuki 2", author: "Zhen Lu" },
+    { t: "Moto Mahou Shoujo no Shigoto Hanashi Ao", author: "Zhen Lu" },
+    { t: "Moto Mahou Shoujo no Shigoto Hanashi Ao Zenjitsutan", author: "Zhen Lu" },
+    { t: "Pet na Kanojo no Choukyouroku", author: "Yumoteliuce" },
+    { t: "Sisters Dildo", author: "Yumoteliuce" },
+    { t: "Fuwafuwa labyrinth", author: "Yoshiragi" },
+    { t: "Mama wa Muchi Muchi", author: "Yokkora" },
+    { t: "Stalking Girl", author: "Yokkora" },
+    { t: "Stalking Girl 2", author: "Yokkora" },
+    { t: "Stalking Girl 3", author: "Yokkora" },
+    { t: "The widow", author: "Yokkora" },
+    { t: "Youen Mama no Injiru Kakuteru", author: "Yokkora" }
+  ];
+
+  // códigos derivados de doujinData: "doujin" continua revelando a seção;
+  // o nome de cada autor (sem espaços, minúsculo) desbloqueia só as obras dele
+  function normalizeCode(str){ return str.toLowerCase().replace(/\s+/g, ''); }
+  const SECTION_CODE = normalizeCode('doujin');
+  const AUTHOR_CODES = [...new Set(doujinData.map(d => d.author).filter(Boolean))]
+    .map(author => ({ author, code: normalizeCode(author) }));
+  const MAX_CODE_LENGTH = Math.max(SECTION_CODE.length, ...AUTHOR_CODES.map(a => a.code.length));
+  const unlockedAuthors = new Set();
+
+  function createDoujinCard(item) {
+    return `
+      <article class="card">
+        <div class="card-cover" data-initial="${item.t.charAt(0).toUpperCase()}">
+          <img src="capas-leitura/${slug(item.t)}.jpg" 
+               alt="" loading="lazy" onerror="handleImgError(this)">
+        </div>
+        <div class="card-body">
+          <div class="card-title">${item.t}</div>
+          ${item.author ? `<div class="card-chapter" style="color:#ff9999;">${item.author}</div>` : ''}
+        </div>
+      </article>
+    `;
+  }
+
+  function renderDoujins() {
+    const container = document.getElementById('doujins-grid');
+    // só mostra obras sem autor definido, ou de autores já desbloqueados pela trava 2
+    const visiveis = doujinData.filter(item => !item.author || unlockedAuthors.has(item.author));
+    container.innerHTML = visiveis.map(createDoujinCard).join('');
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
+      sequence += e.key.toLowerCase();
+      if (sequence.length > MAX_CODE_LENGTH) sequence = sequence.slice(-MAX_CODE_LENGTH);
+
+      // trava 1: revela a seção de doujins
+      if (sequence.endsWith(SECTION_CODE) && doujinsSection.classList.contains('hidden')) {
+        doujinsSection.classList.remove('hidden');
+        renderDoujins();
+        doujinsSection.scrollIntoView({ behavior: "smooth" });
+        sequence = '';
+        return;
+      }
+
+      // trava 2: desbloqueia as obras de um autor específico
+      for (const { author, code } of AUTHOR_CODES) {
+        if (!unlockedAuthors.has(author) && sequence.endsWith(code)) {
+          unlockedAuthors.add(author);
+          if (!doujinsSection.classList.contains('hidden')) renderDoujins();
+          sequence = '';
+          break;
+        }
+      }
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>
