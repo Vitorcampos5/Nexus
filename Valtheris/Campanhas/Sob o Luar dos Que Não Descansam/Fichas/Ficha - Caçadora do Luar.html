@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caçadora do Luar — Ficha de Personagem</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --moon:         #c8d8e8;
+    --moon-bright:  #e8f0f8;
+    --silver:       #9ab0c4;
+    --specter:      #4ec4c4;
+    --specter-dim:  #2a7a7a;
+    --pearl:        #dde8f0;
+    --pearl-dark:   #a8bfcc;
+    --lune:         #b0c8e0;
+    --ink-blue:     #08101a;
+    --ode:          #7060a0;
+    --ode-light:    #c0a8e8;
+    --amor-light:   #d06080;
+    --green-light:  #60d090;
+    --white-soul:   #e8eef4;
+    --blue-light:   #6090d8;
+    --gold:         #c9a84c;
+    --gold-light:   #e8c97a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--ink-blue);
+    background-image:
+      radial-gradient(ellipse at 15% 8%,  #0a1525 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 92%, #060e18 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 0%,  rgba(78,196,196,0.04) 0%, transparent 40%),
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+    font-family: 'EB Garamond', serif;
+    color: var(--pearl);
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .sheet { max-width: 900px; margin: 0 auto; }
+
+  /* ── HEADER ── */
+  .header { text-align: center; margin-bottom: 36px; }
+  .header::before, .header::after { display: none; }
+  .header-line {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--specter), var(--moon), var(--specter), transparent);
+    margin: 12px 0;
+    transform-origin: center;
+  }
+  .bloodline-tag {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--specter);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .char-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 42px;
+    color: var(--moon-bright);
+    text-shadow: 0 0 50px rgba(78,196,196,0.4), 0 0 20px rgba(180,220,255,0.2), 0 2px 4px rgba(0,0,0,0.9);
+    letter-spacing: 3px;
+    line-height: 1.1;
+  }
+  .char-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--pearl-dark);
+    margin-top: 8px;
+    font-style: italic;
+  }
+  .alignment-badge {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    background: rgba(14,21,32,0.6);
+    border: 1px solid rgba(78,196,196,0.35);
+    color: var(--specter);
+    border-radius: 2px;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--specter);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(78,196,196,0.28);
+  }
+
+  /* ── VITALS ── */
+  .vitals-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .vital-card {
+    background: rgba(6,12,22,0.75);
+    border: 1px solid rgba(78,196,196,0.18);
+    border-radius: 4px;
+    padding: 14px;
+  }
+  .vital-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--silver);
+    opacity: 0.85;
+    margin-bottom: 8px;
+  }
+  .vital-numbers { display: flex; align-items: baseline; gap: 4px; margin-bottom: 8px; }
+  .vital-current { font-family: 'Cinzel Decorative', serif; font-size: 30px; line-height: 1; }
+  .vital-current.hp   { color: var(--specter); }
+  .vital-current.san  { color: var(--lune); }
+  .vital-current.ac   { color: var(--moon-bright); }
+  .vital-current.sin  { color: var(--ode-light); }
+  .vital-max { font-family: 'Cinzel', serif; font-size: 13px; color: var(--pearl-dark); }
+  .bar-track { height: 5px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+  .bar-fill  { height: 100%; border-radius: 2px; }
+  .bar-fill.hp  { background: linear-gradient(to right, var(--specter-dim), var(--specter)); width: 100%; }
+  .bar-fill.san { background: linear-gradient(to right, #1a3050, var(--lune)); width: 67.5%; }
+  .bar-fill.sin { background: linear-gradient(to right, var(--ode), var(--ode-light)); width: 90%; }
+  .vital-note {
+    font-size: 10px; color: var(--pearl-dark);
+    opacity: 0.65; margin-top: 6px;
+    font-style: italic; line-height: 1.4;
+  }
+
+  /* ── IMPRESSÃO ESPECTRAL box ── */
+  .nature-box {
+    background: rgba(6,12,22,0.5);
+    border: 1px solid rgba(78,196,196,0.17);
+    border-radius: 4px;
+    padding: 14px;
+    margin-bottom: 24px;
+  }
+  .nature-box-title {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--specter);
+    margin-bottom: 10px;
+  }
+  .nature-rows { display: flex; flex-wrap: wrap; gap: 7px; }
+  .nature-row {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(78,196,196,0.12);
+    border-radius: 3px;
+    padding: 6px 12px;
+    flex: 1; min-width: 200px;
+  }
+  .nature-badge {
+    font-family: 'Cinzel', serif; font-size: 10px; font-weight: 600;
+    padding: 2px 7px; border-radius: 2px; white-space: nowrap;
+  }
+  .badge-unique   { background: rgba(14,30,50,0.6);  color: var(--specter);    border: 1px solid rgba(78,196,196,0.45); }
+  .badge-passive  { background: rgba(30,60,30,0.5);  color: #60d090;           border: 1px solid rgba(30,80,30,0.5); }
+  .badge-weakness { background: rgba(60,40,0,0.5);   color: var(--gold);       border: 1px solid rgba(90,70,10,0.5); }
+  .badge-bond     { background: rgba(60,20,80,0.45); color: var(--ode-light);  border: 1px solid rgba(100,40,140,0.4); }
+  .badge-secret   { background: rgba(10,10,30,0.6);  color: var(--moon);       border: 1px solid rgba(100,130,180,0.35); }
+  .nature-text { font-size: 12px; color: var(--pearl-dark); font-style: italic; flex: 1; }
+
+  /* ── STATS ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .stat-box {
+    background: rgba(6,12,22,0.75);
+    border: 1px solid rgba(78,196,196,0.18);
+    border-radius: 4px;
+    padding: 12px 8px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .stat-box:hover { border-color: rgba(78,196,196,0.45); }
+  .stat-label { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px; color: var(--silver); text-transform: uppercase; margin-bottom: 5px; opacity: 0.85; }
+  .stat-value { font-family: 'Cinzel Decorative', serif; font-size: 27px; color: var(--moon-bright); line-height: 1; }
+  .stat-mod   { font-family: 'Cinzel', serif; font-size: 11px; color: var(--pearl-dark); margin-top: 3px; }
+
+  /* ── LAYOUTS ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+  .panel {
+    background: rgba(6,12,22,0.65);
+    border: 1px solid rgba(78,196,196,0.14);
+    border-radius: 4px;
+    padding: 18px;
+  }
+
+  /* ── ABILITIES ── */
+  .ability-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .ability-item:last-child { border-bottom: none; }
+  .ability-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--specter);
+    margin-top: 6px; flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(78,196,196,0.6);
+  }
+  .ability-name { font-family: 'Cinzel', serif; font-size: 11px; color: var(--moon-bright); margin-bottom: 2px; }
+  .ability-desc { font-size: 12px; color: var(--pearl-dark); line-height: 1.5; font-style: italic; opacity: 0.85; }
+  .ability-status {
+    font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px;
+    padding: 1px 6px; border-radius: 2px; margin-left: auto; flex-shrink: 0;
+  }
+  .status-ready  { background: rgba(30,80,30,0.5);  color: #6abf6a; border: 1px solid rgba(30,80,30,0.6); }
+  .status-active { background: rgba(14,30,50,0.6);  color: var(--specter); border: 1px solid rgba(78,196,196,0.4); }
+  .status-react  { background: rgba(60,20,80,0.5);  color: var(--ode-light); border: 1px solid rgba(100,40,140,0.45); }
+
+  /* ── CRISTALIZADOS ── */
+  .cryst-grid {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .cryst-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 12px;
+    border-radius: 3px;
+    flex: 1; min-width: 120px;
+  }
+  .cryst-gem {
+    width: 10px; height: 10px; border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 8px currentColor;
+  }
+  .cryst-name { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 1px; }
+  .cryst-desc { font-size: 11px; font-style: italic; opacity: 0.7; margin-top: 1px; }
+
+  .cryst-odio    { background: rgba(60,5,5,0.5);   border: 1px solid rgba(160,20,20,0.45); color: #e08080; }
+  .cryst-amor    { background: rgba(50,5,20,0.5);  border: 1px solid rgba(140,40,60,0.45); color: var(--amor-light); }
+  .cryst-feliz   { background: rgba(10,50,20,0.5); border: 1px solid rgba(40,120,60,0.45); color: var(--green-light); }
+  .cryst-paz     { background: rgba(20,30,40,0.5); border: 1px solid rgba(180,200,220,0.3); color: var(--white-soul); }
+  .cryst-vazio   { background: rgba(10,20,50,0.5); border: 1px solid rgba(60,100,200,0.4); color: var(--blue-light); }
+
+  /* ── ATTACKS ── */
+  .attack-item { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .attack-item:last-child { border-bottom: none; }
+  .attack-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .attack-icon { font-size: 15px; }
+  .attack-bonus { margin-left: auto; font-family: 'Cinzel', serif; font-size: 13px; color: var(--moon-bright); }
+  .attack-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+  .attack-note { font-size: 12px; color: var(--pearl-dark); font-style: italic; opacity: 0.8; margin-top: 3px; }
+
+  /* ── SAVES & SKILLS ── */
+  .saves-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .save-item {
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 7px;
+    background: rgba(4,8,16,0.55);
+    border: 1px solid rgba(78,196,196,0.08);
+    border-radius: 3px;
+  }
+  .save-dot { width: 7px; height: 7px; border-radius: 50%; border: 1px solid rgba(78,196,196,0.4); flex-shrink: 0; }
+  .save-dot.prof { background: var(--specter); border-color: var(--specter); }
+  .save-name { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; color: var(--pearl-dark); text-transform: uppercase; flex: 1; }
+  .save-val  { font-family: 'Cinzel', serif; font-size: 12px; color: var(--moon-bright); }
+
+  .skill-row { display: flex; align-items: center; gap: 7px; padding: 4px 5px; }
+  .skill-dot { width: 6px; height: 6px; border-radius: 50%; border: 1px solid rgba(78,196,196,0.4); flex-shrink: 0; }
+  .skill-dot.prof { background: var(--specter); border-color: var(--specter); }
+  .skill-dot.exp  { background: var(--moon-bright); border-color: var(--moon-bright); }
+  .skill-name { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; color: var(--pearl-dark); text-transform: uppercase; flex: 1; }
+  .skill-val  { font-family: 'Cinzel', serif; font-size: 11px; color: var(--moon-bright); }
+  .skill-legend { margin-top: 6px; font-size: 10px; color: var(--pearl-dark); opacity: 0.5; font-style: italic; }
+
+  /* ── EQUIPMENT ── */
+  .equip-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 13px; }
+  .equip-item:last-child { border-bottom: none; }
+  .equip-icon { font-size: 15px; width: 22px; text-align: center; }
+  .equip-name { color: var(--pearl); flex: 1; }
+  .equip-name em { font-style: italic; font-size: 11px; color: var(--pearl-dark); opacity: 0.72; display: block; margin-top: 1px; }
+  .equip-count { font-family: 'Cinzel', serif; font-size: 10px; color: var(--silver); opacity: 0.8; }
+  .equip-note {
+    margin-top: 10px; padding: 7px 10px;
+    background: rgba(14,25,40,0.4);
+    border: 1px solid rgba(78,196,196,0.15);
+    border-radius: 3px;
+    font-size: 11px; color: var(--pearl-dark); font-style: italic;
+  }
+
+  /* ── TAGS ── */
+  .tag {
+    display: inline-block; font-family: 'Cinzel', serif;
+    font-size: 9px; letter-spacing: 1px;
+    padding: 2px 7px; border-radius: 2px; margin: 2px 2px 0 0;
+  }
+  .tag-specter { background: rgba(14,50,50,0.5);  color: var(--specter);    border: 1px solid rgba(78,196,196,0.35); }
+  .tag-moon    { background: rgba(20,30,50,0.5);  color: var(--moon);       border: 1px solid rgba(160,190,220,0.3); }
+  .tag-ode     { background: rgba(50,20,70,0.45); color: var(--ode-light);  border: 1px solid rgba(100,40,140,0.4); }
+  .tag-red     { background: rgba(60,5,5,0.45);   color: #e07070;           border: 1px solid rgba(140,20,20,0.4); }
+  .tag-gold    { background: rgba(60,45,5,0.4);   color: var(--gold-light); border: 1px solid rgba(201,168,76,0.3); }
+  .tag-silver  { background: rgba(20,35,48,0.45); color: var(--silver);     border: 1px solid rgba(100,150,180,0.3); }
+
+  /* ── LORE ── */
+  .lore-panel {
+    background: rgba(6,12,22,0.65);
+    border: 1px solid rgba(78,196,196,0.12);
+    border-radius: 4px;
+    padding: 18px;
+    margin-bottom: 24px;
+  }
+  .lore-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .lore-item:last-child { border-bottom: none; }
+  .lore-icon { font-size: 17px; flex-shrink: 0; width: 24px; text-align: center; margin-top: 1px; }
+  .lore-key  { font-family: 'Cinzel', serif; font-size: 11px; color: var(--silver); margin-bottom: 3px; letter-spacing: 1px; }
+  .lore-val  { font-size: 13px; color: var(--pearl-dark); line-height: 1.5; }
+  .lore-val strong { color: var(--pearl); font-weight: 500; }
+
+  /* ── APPEARANCE & PERSONALITY ── */
+  .char-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .char-item:last-child { border-bottom: none; }
+  .char-icon { font-size: 16px; flex-shrink: 0; width: 22px; text-align: center; margin-top: 2px; }
+  .char-key  { font-family: 'Cinzel', serif; font-size: 10px; color: var(--silver); margin-bottom: 2px; letter-spacing: 1px; }
+  .char-val  { font-size: 12px; color: var(--pearl-dark); line-height: 1.5; }
+  .char-val strong { color: var(--pearl); font-weight: 500; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center; margin-top: 36px; padding-top: 18px;
+    border-top: 1px solid rgba(78,196,196,0.12);
+  }
+  .footer-quote { font-style: italic; font-size: 15px; color: var(--pearl-dark); opacity: 0.6; line-height: 1.7; }
+  .footer-attr  { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px; color: var(--specter); opacity: 0.4; margin-top: 8px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    body { padding: 20px 12px; }
+    .char-name { font-size: 28px; }
+    .stats-row { grid-template-columns: repeat(3, 1fr); }
+    .vitals-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .two-col { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 420px) {
+    body { padding: 16px 8px; }
+    .char-name { font-size: 22px; letter-spacing: 1px; }
+    .stats-row { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .stat-value { font-size: 22px; }
+    .vital-current { font-size: 26px !important; }
+    .saves-grid { grid-template-columns: 1fr; }
+    .nature-row { min-width: 100%; }
+  }
+
+/* ══════════════════════════════════════
+   ANIMAÇÕES — CAÇADORA DO LUAR
+   ══════════════════════════════════════ */
+
+/* ── Keyframes base ── */
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-22px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Nome: letter-spacing abre + glow espectral acende ── */
+@keyframes nameReveal {
+  0%   { opacity: 0; letter-spacing: 26px; text-shadow: none; }
+  60%  { opacity: 1; letter-spacing: 5px; }
+  100% { opacity: 1; letter-spacing: 3px;
+         text-shadow: 0 0 50px rgba(78,196,196,.4), 0 0 20px rgba(180,220,255,.2), 0 2px 4px rgba(0,0,0,.9); }
+}
+
+/* ── Glow pulsante espectral ── */
+@keyframes specterGlow {
+  0%, 100% { text-shadow: 0 0 50px rgba(78,196,196,.3), 0 0 20px rgba(180,220,255,.15), 0 2px 4px rgba(0,0,0,.9); }
+  50%       { text-shadow: 0 0 80px rgba(78,196,196,.65), 0 0 35px rgba(180,220,255,.3), 0 0 15px rgba(78,196,196,.2), 0 2px 4px rgba(0,0,0,.9); }
+}
+
+/* ── Linhas header se desenham ── */
+@keyframes lineDraw {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* ── Dots espectrais respiram ── */
+@keyframes dotBreathe {
+  0%, 100% { box-shadow: 0 0 6px rgba(78,196,196,.55); transform: scale(1); }
+  50%       { box-shadow: 0 0 16px rgba(78,196,196,.95), 0 0 6px rgba(78,196,196,.4); transform: scale(1.3); }
+}
+
+/* ── Gemas cristalizadas pulsam ── */
+@keyframes gemPulse {
+  0%, 100% { box-shadow: 0 0 8px currentColor; transform: scale(1); }
+  50%       { box-shadow: 0 0 20px currentColor, 0 0 8px currentColor; transform: scale(1.2); }
+}
+
+/* ── Barras vitais crescem ── */
+@keyframes barGrow {
+  from { width: 0 !important; }
+  to   { width: var(--bar-target); }
+}
+
+/* ── Lua cheia aparece no fundo ── */
+@keyframes moonRise {
+  0%   { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 0.04; transform: translateY(0); }
+}
+
+/* ── Seções revelam ao rolar ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-18px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.reveal-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ── Header ── */
+.bloodline-tag { animation: fadeInDown 0.7s ease 0.1s both; }
+.header-line {
+  animation: lineDraw 0.9s cubic-bezier(.22,.68,0,1.2) 0.5s both;
+}
+.char-name {
+  animation: nameReveal 1.4s cubic-bezier(.22,.68,0,1.15) 0.4s both,
+             specterGlow 5s ease-in-out 1.9s infinite;
+}
+.char-subtitle { animation: fadeInDown 0.7s ease 1.2s both; }
+
+/* ── Portrait ── */
+.char-portrait {
+  transition: box-shadow 0.4s, filter 0.4s;
+}
+.portrait-wrap:hover .char-portrait {
+  box-shadow: 0 0 60px rgba(78,196,196,.55), 0 0 120px rgba(0,0,0,.85);
+  filter: saturate(1.1) contrast(1.07) brightness(1.05);
+}
+
+/* ── Vitais: barras animadas ── */
+.bar-fill {
+  animation: barGrow 1.1s cubic-bezier(.4,0,.2,1) 1.4s both;
+}
+.bar-fill.hp  { --bar-target: 100%; }
+.bar-fill.san { --bar-target: 67.5%; }
+.bar-fill.sin { --bar-target: 90%; }
+
+/* ── Números vitais pop ── */
+@keyframes numPop {
+  0%   { opacity: 0; transform: scale(.7); }
+  70%  { transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.vital-current {
+  animation: numPop 0.6s cubic-bezier(.34,1.56,.64,1) 1.0s both;
+}
+
+/* ── Gemas cristalizadas ── */
+.cryst-gem {
+  animation: gemPulse 2.5s ease-in-out infinite;
+}
+.cryst-pill:nth-child(2) .cryst-gem { animation-delay: 0.4s; }
+.cryst-pill:nth-child(3) .cryst-gem { animation-delay: 0.8s; }
+.cryst-pill:nth-child(4) .cryst-gem { animation-delay: 1.2s; }
+.cryst-pill:nth-child(5) .cryst-gem { animation-delay: 1.6s; }
+
+/* ── Dots espectrais pulsam ── */
+.ability-dot {
+  animation: dotBreathe 2.8s ease-in-out infinite;
+}
+.save-dot.prof {
+  animation: dotBreathe 3.2s ease-in-out infinite;
+}
+
+/* ── Status "pronto" pisca ── */
+@keyframes readyPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .65; }
+}
+.status-ready  { animation: readyPulse 3.5s ease-in-out infinite; }
+.status-active { animation: readyPulse 2.8s ease-in-out 0.5s infinite; }
+
+/* ── Stat boxes entram com stagger ── */
+.stats-row .stat-box {
+  animation: fadeInUp 0.5s ease both;
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+}
+.stats-row .stat-box:nth-child(1) { animation-delay: 0.05s; }
+.stats-row .stat-box:nth-child(2) { animation-delay: 0.12s; }
+.stats-row .stat-box:nth-child(3) { animation-delay: 0.19s; }
+.stats-row .stat-box:nth-child(4) { animation-delay: 0.26s; }
+.stats-row .stat-box:nth-child(5) { animation-delay: 0.33s; }
+.stats-row .stat-box:nth-child(6) { animation-delay: 0.40s; }
+.stats-row .stat-box:hover {
+  border-color: rgba(78,196,196,.55);
+  box-shadow: 0 0 14px rgba(78,196,196,.14);
+  transform: translateY(-2px);
+}
+
+/* ── Nature rows stagger ── */
+.nature-row {
+  animation: slideInLeft 0.45s ease both;
+  transition: border-color 0.25s, background 0.25s;
+}
+.nature-row:nth-child(1) { animation-delay: 0.05s; }
+.nature-row:nth-child(2) { animation-delay: 0.14s; }
+.nature-row:nth-child(3) { animation-delay: 0.23s; }
+.nature-row:nth-child(4) { animation-delay: 0.32s; }
+.nature-row:nth-child(5) { animation-delay: 0.41s; }
+.nature-row:nth-child(6) { animation-delay: 0.50s; }
+.nature-row:hover {
+  border-color: rgba(78,196,196,.35);
+  background: rgba(78,196,196,.04);
+}
+
+/* ── Panels hover ── */
+.panel {
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.panel:hover {
+  border-color: rgba(78,196,196,.28);
+  box-shadow: 0 0 22px rgba(78,196,196,.06);
+}
+
+/* ── Ability items hover ── */
+.ability-item { transition: background 0.2s; }
+.ability-item:hover {
+  background: rgba(78,196,196,.035);
+}
+.ability-item:hover .ability-dot {
+  transform: scale(1.4) translateX(2px);
+  box-shadow: 0 0 18px rgba(78,196,196,.9);
+}
+
+/* ── Attack items hover ── */
+.attack-item {
+  transition: background 0.2s, padding-left 0.2s;
+}
+.attack-item:hover {
+  background: rgba(78,196,196,.04);
+  padding-left: 4px;
+}
+
+/* ── Cryst pills hover ── */
+.cryst-pill {
+  transition: filter 0.25s, transform 0.2s;
+}
+.cryst-pill:hover {
+  filter: brightness(1.2);
+  transform: translateY(-1px);
+}
+
+/* ── Equip items hover ── */
+.equip-item {
+  transition: background 0.2s, padding-left 0.2s;
+}
+.equip-item:hover {
+  background: rgba(78,196,196,.03);
+  padding-left: 4px;
+}
+
+/* ── Lore items hover ── */
+.lore-item {
+  transition: background 0.2s;
+  border-radius: 3px;
+}
+.lore-item:hover {
+  background: rgba(78,196,196,.04);
+}
+
+/* ── Char items hover ── */
+.char-item {
+  transition: background 0.2s;
+  border-radius: 3px;
+}
+.char-item:hover {
+  background: rgba(78,196,196,.035);
+}
+
+/* ── Save items hover ── */
+.save-item {
+  transition: border-color 0.2s, background 0.2s;
+}
+.save-item:hover {
+  border-color: rgba(78,196,196,.3);
+  background: rgba(78,196,196,.04);
+}
+
+/* ── Alignment badge pulse ── */
+@keyframes badgePulse {
+  0%, 100% { opacity: .9; }
+  50%       { opacity: 1; box-shadow: 0 0 10px rgba(78,196,196,.3); }
+}
+.alignment-badge { animation: badgePulse 4s ease-in-out 2s infinite; }
+
+/* ── Tags hover lift ── */
+.tag { transition: transform 0.2s ease, filter 0.2s ease; }
+.tag:hover { transform: translateY(-1px); filter: brightness(1.2); }
+
+/* ── Footer ── */
+.footer { animation: fadeIn 1.2s ease 0.8s both; }
+@keyframes quoteFade {
+  0%, 100% { opacity: .55; }
+  50%       { opacity: .85; }
+}
+.footer-quote { animation: quoteFade 8s ease-in-out 2s infinite; }
+
+
+/* ── GOLEM INFO BUTTON ── */
+.golem-info-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: rgba(78,196,196,0.12);
+  border: 1px solid rgba(78,196,196,0.4);
+  color: var(--specter); font-family: 'Cinzel', serif;
+  font-size: 9px; font-style: italic; cursor: pointer;
+  margin-left: 6px; vertical-align: middle;
+  transition: background 0.2s, border-color 0.2s;
+  line-height: 1;
+}
+.golem-info-btn:hover { background: rgba(78,196,196,0.25); border-color: var(--specter); }
+
+/* ── GOLEM DETAIL OVERLAY ── */
+.golem-detail-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.82); z-index: 1000;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.golem-detail-overlay.open { display: flex; }
+.golem-detail-panel {
+  background: linear-gradient(135deg, #060e18, #0a1220);
+  border: 1px solid rgba(78,196,196,0.35);
+  border-radius: 6px; padding: 24px;
+  max-width: 480px; width: 100%; position: relative;
+  box-shadow: 0 0 60px rgba(78,196,196,0.12), 0 0 120px rgba(0,0,0,0.95);
+}
+.golem-detail-close {
+  position: absolute; top: 12px; right: 14px;
+  background: none; border: 1px solid rgba(78,196,196,0.3);
+  color: var(--specter); font-family: 'Cinzel', serif;
+  font-size: 11px; padding: 3px 10px; border-radius: 2px;
+  cursor: pointer; letter-spacing: 1px;
+}
+.golem-detail-close:hover { background: rgba(78,196,196,0.1); }
+.golem-detail-polo {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px;
+  color: var(--specter); text-transform: uppercase; margin-bottom: 6px;
+}
+.golem-detail-name {
+  font-family: 'Cinzel Decorative', serif; font-size: 20px;
+  color: var(--moon-bright); margin-bottom: 14px; line-height: 1.2;
+}
+.golem-detail-stats { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.golem-detail-desc {
+  font-size: 13px; color: var(--pearl-dark); line-height: 1.65;
+  border-top: 1px solid rgba(78,196,196,0.15); padding-top: 12px;
+}
+
+/* ── ACESSIBILIDADE: MOVIMENTO REDUZIDO ─────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal, .reveal-left { opacity: 1; transform: none; transition: none; }
+  .char-name { animation: none; }
+  .bloodline-tag, .header-line, .char-subtitle { animation: none; }
+  .bar-fill.hp  { width: 100%;  animation: none; }
+  .bar-fill.san { width: 67.5%; animation: none; }
+  .bar-fill.sin { width: 90%;   animation: none; }
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <!-- HEADER -->
+  <div class="header">
+	<div class="header-line"></div>
+    <div class="bloodline-tag">✦ Humana · Caçadora de Espectros · Portadora da Impressão Espectral · Nome Desconhecido ✦</div>
+    <h1 class="char-name">Caçadora do Luar</h1>
+    <div class="char-subtitle">
+      Humana Comum — Sintonizada ao Plano da Morte · Classe: Caçadora Espectral · Nível 5
+      <span class="alignment-badge">Neutro Verdadeiro</span>
+    </div>
+
+<main>
+    <div class="header-line"></div>
+  </div>
+
+
+
+  <!-- PORTRAIT -->
+  <div style="display:flex;justify-content:center;margin-bottom:32px;">
+    <div class="portrait-wrap" style="position:relative;width:240px;">
+		<img src="Perfil - Caçadora do Luar.png"
+		   alt="Caçadora do Luar"
+           style="width:240px;height:300px;object-fit:cover;object-position:top center;border-radius:4px;border:1px solid rgba(78,196,196,.4);box-shadow:0 0 50px rgba(78,196,196,.2), 0 0 90px rgba(0,0,0,.85);display:block;filter:saturate(0.85) contrast(1.05);">
+      <div style="position:absolute;bottom:0;left:0;right:0;height:70px;background:linear-gradient(to top,rgba(8,13,20,1),transparent);border-radius:0 0 4px 4px;"></div>
+    </div>
+  </div>
+  <!-- PONTOS VITAIS -->
+  <div class="vitals-grid">
+    <div class="vital-card">
+      <div class="vital-label">Pontos de Vida</div>
+      <div class="vital-numbers">
+        <div class="vital-current hp">33</div>
+        <div class="vital-max">/ 33</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill hp"></div></div>
+      <div class="vital-note">d8 · nível 5 · CON +1 · (9 + 4×6 = 33) · Humana comum — vulnerável fora do plano espectral</div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-label">Sanidade</div>
+      <div class="vital-numbers">
+        <div class="vital-current san">52</div>
+        <div class="vital-max">/ 77</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill san"></div></div>
+      <div class="vital-note">SAB 17 × 5 = 85 − Mythos 8% = <strong>77</strong> · Impressão Espectral não é loucura — é custo operacional</div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-label">Classe de Armadura</div>
+      <div class="vital-numbers">
+        <div class="vital-current ac">15</div>
+      </div>
+      <div class="vital-note">Couro Reforçado 12 + DEX +3 · Velocidade 30 pés · Iniciativa +5 (DEX +3 +2 classe — fonte a documentar)</div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-label">Sintonização Espectral</div>
+      <div class="vital-numbers">
+        <div class="vital-current sin">Alta</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill sin"></div></div>
+      <div class="vital-note">Impressão intacta · Cristalizados estáveis · Alcance de percepção: ~120 pés</div>
+    </div>
+  </div>
+
+  <!-- IMPRESSÃO ESPECTRAL -->
+  <div class="nature-box">
+    <div class="nature-box-title">✦ Impressão Espectral — Origem: Contato direto com espectro antigo · O Plano da Morte deixou marca permanente na superfície</div>
+    <div class="nature-rows">
+      <div class="nature-row">
+        <span class="nature-badge badge-passive">Racial</span>
+        <span class="nature-text">+1 em todos os atributos — versatilidade humana; nenhuma limitação inata de aptidão</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-passive">Racial</span>
+        <span class="nature-text">Tamanho Médio — deslocamento base 30 pés</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-passive">Racial</span>
+        <span class="nature-text">Idiomas — Comum + 1 idioma adicional à escolha</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-passive">Racial</span>
+        <span class="nature-text">Longevidade Humana — atinge maturidade no final da adolescência; raramente ultrapassa um século</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-unique">Único</span>
+        <span class="nature-text">Impressão Espectral — o toque do espectro antigo não criou trauma; criou sintonização permanente. O Plano da Morte deixou marca na superfície do ser. O mundo nunca mais pareceu completamente sólido</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATRIBUTOS -->
+  <div class="section-title">✦ Atributos — Bônus de Proficiência +3</div>
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-label">Força</div><div class="stat-value">9</div><div class="stat-mod">−1</div></div>
+    <div class="stat-box"><div class="stat-label">Destreza</div><div class="stat-value">17</div><div class="stat-mod">+3</div></div>
+    <div class="stat-box"><div class="stat-label">Constituição</div><div class="stat-value">12</div><div class="stat-mod">+1</div></div>
+    <div class="stat-box"><div class="stat-label">Inteligência</div><div class="stat-value">13</div><div class="stat-mod">+1</div></div>
+    <div class="stat-box"><div class="stat-label">Sabedoria</div><div class="stat-value">17</div><div class="stat-mod">+3</div></div>
+    <div class="stat-box"><div class="stat-label">Carisma</div><div class="stat-value">11</div><div class="stat-mod">+0</div></div>
+  </div>
+
+  <!-- HABILIDADES ESPECIAIS + CRISTALIZADOS -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="section-title">✦ Habilidades Especiais</div>
+
+      <div class="ability-item">
+        <div class="ability-dot"></div>
+        <div style="flex:1">
+          <div class="ability-name">Percepção Espectral</div>
+          <div class="ability-desc">Sente presença espectral como variação térmica direcional. Pode rastrear espectros invisíveis ou em outro plano até 120 pés sem teste. Não é detectável por espectros ao usar essa habilidade — a percepção não gera presença.</div>
+        </div>
+        <div class="ability-status status-active">Passivo</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--moon-bright)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Visão Lateral — A Arte de Não Olhar</div>
+          <div class="ability-desc">Ao se recusar a olhar diretamente para um espectro, pode observá-lo livremente pela periferia. Isso nega a habilidade natural dos espectros de usar o Recuo de Foco. Para quem observa de fora: ela sempre parece estar olhando para o lugar errado.</div>
+        </div>
+        <div class="ability-status status-active">Passivo</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--ode-light)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Leitura de Textura — Dissonância de Lugar</div>
+          <div class="ability-desc">Locais com presença espectral ativa têm textura perceptível diferente. Ao entrar num local, pode rolar Sabedoria CD 10 para detectar atividade espectral antes de qualquer confirmação visual ou auditiva. Recarrega sempre.</div>
+        </div>
+        <div class="ability-status status-active">Passivo</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--green-light)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Toque Sem Destruição — A Arma como Contato</div>
+          <div class="ability-desc">A arma morfológica não fere espectros no sentido físico — <em>toca</em> eles. A distinção é absoluta: ferir dispersa, tocar estabelece contato sem destruição. Isso é natureza da arma, não da usuária. Permite interagir, moldar e redirecionar presença espectral em vez de apenas dispersá-la.</div>
+        </div>
+        <div class="ability-status status-active">Passivo</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--gold-light)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Forma Autônoma — A Arma Processa Antes</div>
+          <div class="ability-desc">Em momentos de ameaça imediata alta ainda não processada conscientemente, a arma muda de forma antes que ela tenha formado intenção. Quando olha, já é outra coisa. Em termos mecânicos: 1× por combate, a arma concede uma Reação adicional exclusiva para Ataque de Oportunidade — não consome a Reação normal do turno.</div>
+        </div>
+        <div class="ability-status status-react">Reação</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--specter)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Presença Sem Nome — Invisibilidade Burocrática</div>
+          <div class="ability-desc">Não existe registro com nome em nenhuma região de Valtheris. Feitiços de localização por identidade falham automaticamente. Tentativas mágicas de ancoragem por nome encontram vazio.</div>
+        </div>
+        <div class="ability-status status-active">Passivo</div>
+      </div>
+    </div>
+
+    <!-- CRISTALIZADOS -->
+    <div class="panel">
+      <div class="section-title">✦ Os Cristalizados — Estados Emocionais Puros</div>
+      <div style="font-size:12px;color:var(--pearl-dark);font-style:italic;margin-bottom:14px;line-height:1.6;">
+        Cinco estados emocionais que sobreviveram à morte de quem os portava e colapsaram em forma própria. Encontrados numa instalação abandonada. Não são ferramentas nem prisioneiros — são reconhecidos como parte de si, porque ela reconhece em cada um algo que existe dentro dela também.
+      </div>
+
+      <div class="cryst-grid">
+        <div class="cryst-pill cryst-odio">
+          <div class="cryst-gem" style="background:#cc2020; color:#cc2020;"></div>
+          <div>
+            <div class="cryst-name">Ódio</div>
+            <div class="cryst-desc">Vermelho-sangue · chega a conclusões frias; a raiva é o motor, não o método</div>
+          </div>
+        </div>
+        <div class="cryst-pill cryst-amor">
+          <div class="cryst-gem" style="background:#902040; color:#902040;"></div>
+          <div>
+            <div class="cryst-name">Amor</div>
+            <div class="cryst-desc">Vermelho-vinho · contesta Ódio; emocional sem ser frágil</div>
+          </div>
+        </div>
+      </div>
+      <div class="cryst-grid">
+        <div class="cryst-pill cryst-feliz">
+          <div class="cryst-gem" style="background:#3a9060; color:#3a9060;"></div>
+          <div>
+            <div class="cryst-name">Felicidade</div>
+            <div class="cryst-desc">Verde · responde ao ambiente com leveza; confunde com Vazio às vezes</div>
+          </div>
+        </div>
+        <div class="cryst-pill cryst-paz">
+          <div class="cryst-gem" style="background:#c8d8e8; color:#c8d8e8;"></div>
+          <div>
+            <div class="cryst-name">Paz</div>
+            <div class="cryst-desc">Branco · nunca disse uma palavra; apenas está presente — e a presença é sentida</div>
+          </div>
+        </div>
+        <div class="cryst-pill cryst-vazio">
+          <div class="cryst-gem" style="background:#2050a0; color:#2050a0;"></div>
+          <div>
+            <div class="cryst-name">Vazio</div>
+            <div class="cryst-desc">Azul · absorve sem responder; externamente idêntico à Felicidade</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <div class="section-title">✦ Uso em Combate — Moldagem Espectral</div>
+        <div class="ability-item">
+          <div class="ability-dot" style="background:#cc2020"></div>
+          <div style="flex:1">
+            <div class="ability-name">Concentrar Ódio</div>
+            <div class="ability-desc">Usa a arma para amplificar e direcionar Ódio como vetor de análise. +1d6 de dano espectral. Custo: −3 Sanidade após o combate.</div>
+          </div>
+          <div class="ability-status status-ready">Pronto</div>
+        </div>
+        <div class="ability-item">
+          <div class="ability-dot" style="background:#902040"></div>
+          <div style="flex:1">
+            <div class="ability-name">Voz de Amor</div>
+            <div class="ability-desc">Amor contesta uma ação de Ódio em qualquer rodada. Pode transformar dispersão em contato — impede que a arma destrua um espectro que ela queria apenas tocar. Custo: gasta a reação da rodada.</div>
+          </div>
+          <div class="ability-status status-react">Reação</div>
+        </div>
+        <div class="ability-item">
+          <div class="ability-dot" style="background:#3a9060"></div>
+          <div style="flex:1">
+            <div class="ability-name">Leveza de Felicidade</div>
+            <div class="ability-desc">Felicidade atravessa o campo sem fricção — ao manifestá-la, pode se mover através de inimigos sem provocar Ataques de Oportunidade nessa rodada. Dano: 1d6+3 espectral. Velocidade de manifestação: 40 pés.</div>
+          </div>
+          <div class="ability-status status-ready">Pronto</div>
+        </div>
+        <div class="ability-item">
+          <div class="ability-dot" style="background:#2050a0"></div>
+          <div style="flex:1">
+            <div class="ability-name">Absorção de Vazio</div>
+            <div class="ability-desc">Vazio recebe dano sem reagir — e devolve. 1× por turno: absorve dano recebido e o redireciona como dano necrótico no próximo ataque. Dano base: 1d8+3 necrótico. O dano absorvido some; o dano devolvido é calculado separadamente.</div>
+          </div>
+          <div class="ability-status status-react">Reação</div>
+        </div>
+        <div class="ability-item">
+          <div class="ability-dot" style="background:#c8d8e8; box-shadow: 0 0 6px rgba(200,216,232,0.5);"></div>
+          <div style="flex:1">
+            <div class="ability-name">Presença de Paz</div>
+            <div class="ability-desc">Paz não age — mas sua presença estabiliza. 1× por descanso longo: quando a Sanidade cairia a 0, cai a 1 em vez disso. Ela não sabe quando Paz vai intervir. Apenas acontece.</div>
+          </div>
+          <div class="ability-status status-active">Passivo</div>
+        </div>
+        <div style="margin-top:16px; padding:10px 14px; background:rgba(14,21,32,0.6); border-left:2px solid var(--specter); border-radius:2px; font-size:11px; color:var(--pearl-dark); line-height:1.6;">
+          <strong style="color:var(--specter);">Nível 5 — Manifestação por Fusão</strong> · Custo base: <strong>8 SAN</strong> · Duração: 1 minuto · Todos os golems: <strong>+1 CA</strong> e <strong>+1d4 espectral</strong> adicional. A Arma Morfológica se funde ao Cristalizado — durante a manifestação, usar a Faca de Reserva como arma secundária.
+        </div>
+
+        <div style="margin-top:14px; padding:8px 12px; background:rgba(74,42,128,0.1); border-left:2px solid var(--ode-light); border-radius:2px; font-size:10.5px; color:var(--pearl-dark); line-height:1.6; font-style:italic;">
+          Os golems operam sob uma lógica de <strong style="color:var(--ode-light);">polaridade emocional</strong>: Ódio como vetor de extermínio; Amor e Paz como vetores de restauração. Felicidade e Vazio operam em eixo próprio — mobilidade e absorção. Nenhum polo cancela o outro. A Caçadora alterna.
+        </div>
+
+        <div style="margin-top:12px;">
+          <div style="font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; color:#cc3333; text-transform:uppercase; margin-bottom:6px; opacity:0.8;">Polo Letal</div>
+
+          <div class="ability-item">
+            <div class="ability-dot" style="background:#cc2020; box-shadow:0 0 5px rgba(200,30,30,0.5);"></div>
+            <div style="flex:1">
+              <div class="ability-name">Golem de Ódio — Manifestação por Fusão <button class="golem-info-btn" onclick="openGolemDetail('odio')">i</button></div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap; margin:4px 0;">
+                <span class="tag tag-red">1d10+3+1d4 espectral</span>
+                <span class="tag tag-silver">CA 15 · PV 60 · 30 pés</span>
+                <span class="tag tag-red">Fúria Fria</span>
+              </div>
+            </div>
+            <div class="ability-status status-ready">Pronto</div>
+          </div>
+
+          <div style="font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; color:var(--amor-light); text-transform:uppercase; margin-top:12px; margin-bottom:6px; opacity:0.8;">Polo Restaurativo</div>
+
+          <div class="ability-item">
+            <div class="ability-dot" style="background:#902040; box-shadow:0 0 5px rgba(144,32,64,0.5);"></div>
+            <div style="flex:1">
+              <div class="ability-name">Golem de Amor — Manifestação por Fusão <button class="golem-info-btn" onclick="openGolemDetail('amor')">i</button></div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap; margin:4px 0;">
+                <span class="tag tag-red" style="border-color:rgba(144,32,64,0.5); color:var(--amor-light);">1d8+4+1d4 espectral + cura 1d6</span>
+                <span class="tag tag-silver">CA 16 · PV 55 · 30 pés</span>
+                <span class="tag tag-ode">Contestar · Reação</span>
+              </div>
+            </div>
+            <div class="ability-status status-react">Reação</div>
+          </div>
+
+          <div class="ability-item">
+            <div class="ability-dot" style="background:#c8d8e8; box-shadow:0 0 6px rgba(200,216,232,0.5);"></div>
+            <div style="flex:1">
+              <div class="ability-name">Golem de Paz — Manifestação por Fusão <button class="golem-info-btn" onclick="openGolemDetail('paz')">i</button></div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap; margin:4px 0;">
+                <span class="tag tag-moon">Sem ataque direto</span>
+                <span class="tag tag-silver">CA 17 · PV 70 · 25 pés</span>
+                <span class="tag tag-specter">Aura Pacífica 15 pés</span>
+              </div>
+            </div>
+            <div class="ability-status status-active">Passivo</div>
+          </div>
+
+          <div style="font-family:'Cinzel',serif; font-size:9px; letter-spacing:3px; color:var(--silver-dim); text-transform:uppercase; margin-top:12px; margin-bottom:6px; opacity:0.8;">Eixo Neutro</div>
+
+          <div class="ability-item">
+            <div class="ability-dot" style="background:#3a9060;"></div>
+            <div style="flex:1">
+              <div class="ability-name">Golem de Felicidade — Manifestação por Fusão <button class="golem-info-btn" onclick="openGolemDetail('felicidade')">i</button></div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap; margin:4px 0;">
+                <span class="tag tag-gold" style="border-color:rgba(60,144,96,0.4); color:var(--green-light);">1d6+3+1d4 espectral</span>
+                <span class="tag tag-silver">CA 14 · PV 45 · 40 pés</span>
+                <span class="tag tag-gold" style="border-color:rgba(60,144,96,0.4); color:var(--green-light);">Leveza — sem AO</span>
+              </div>
+            </div>
+            <div class="ability-status status-ready">Pronto</div>
+          </div>
+
+          <div class="ability-item">
+            <div class="ability-dot" style="background:#2050a0;"></div>
+            <div style="flex:1">
+              <div class="ability-name">Golem de Vazio — Manifestação por Fusão <button class="golem-info-btn" onclick="openGolemDetail('vazio')">i</button></div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap; margin:4px 0;">
+                <span class="tag tag-silver" style="color:var(--blue-light); border-color:rgba(60,100,200,0.4);">1d8+3 necrótico · Absorção</span>
+                <span class="tag tag-silver">CA 15 · PV 53 · 30 pés</span>
+              </div>
+            </div>
+            <div class="ability-status status-react">Reação</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATAQUES + SALVAGUARDAS -->
+  <div class="panel" style="margin-bottom:24px">
+    <div class="section-title">✦ Ataques — Arma Morfológica sem Nome de Origem</div>
+
+    <div class="attack-item">
+      <div class="attack-header">
+        <span class="attack-icon">🌙</span>
+        <span class="ability-name">Forma Adaga — Contato Preciso</span>
+        <span class="attack-bonus">+6 atq</span>
+      </div>
+      <div class="attack-tags">
+        <span class="tag tag-specter">1d6+3 espectral</span>
+        <span class="tag tag-moon">toca em vez de ferir · não dispersa</span>
+        <span class="tag tag-silver">Corpo a corpo · 5 pés</span>
+      </div>
+      <div class="attack-note">Forma preferida para trabalho limpo — estabelece contato com espectros sem risco de dispersão acidental.</div>
+    </div>
+
+    <div class="attack-item">
+      <div class="attack-header">
+        <span class="attack-icon">✦</span>
+        <span class="ability-name">Forma Gancho — Ancoragem</span>
+        <span class="attack-bonus">+6 atq</span>
+      </div>
+      <div class="attack-tags">
+        <span class="tag tag-specter">1d8+3 espectral</span>
+        <span class="tag tag-ode">ancora espectro · impede dispersão involuntária</span>
+        <span class="tag tag-silver">5 / 10 pés</span>
+      </div>
+      <div class="attack-note">Usada quando precisa manter um espectro no lugar — para conversa, extração, ou moldagem com Cristalizados.</div>
+    </div>
+
+    <div class="attack-item">
+      <div class="attack-header">
+        <span class="attack-icon">⚡</span>
+        <span class="ability-name">Forma Pá — Dispersão Controlada</span>
+        <span class="attack-bonus">+6 atq</span>
+      </div>
+      <div class="attack-tags">
+        <span class="tag tag-red">2d6+3 espectral</span>
+        <span class="tag tag-gold">desvantagem no próximo turno do alvo</span>
+        <span class="tag tag-silver">Área 10 pés · arraste</span>
+      </div>
+      <div class="attack-note">Forma de alta energia. A arma raramente escolhe essa forma por conta própria — quando ocorre, a ameaça era mais grave do que ela percebeu conscientemente.</div>
+    </div>
+
+    <div class="attack-item">
+      <div class="attack-header">
+        <span class="attack-icon">🗡️</span>
+        <span class="ability-name">Faca de Reserva</span>
+        <span class="attack-bonus">+6 atq</span>
+      </div>
+      <div class="attack-tags">
+        <span class="tag tag-red">1d4+3 perfurante</span>
+        <span class="tag tag-silver">5 / 20 pés · mundano</span>
+      </div>
+      <div class="attack-note">Para situações onde a arma morfológica não é o instrumento certo. Não opera no plano espectral.</div>
+    </div>
+
+    <div style="margin-top:18px">
+      <div class="section-title">✦ Salvaguardas</div>
+      <div class="saves-grid">
+        <div class="save-item"><div class="save-dot"></div><span class="save-name">Força</span><span class="save-val">−1</span></div>
+        <div class="save-item"><div class="save-dot prof"></div><span class="save-name">Destreza</span><span class="save-val">+6</span></div>
+        <div class="save-item"><div class="save-dot"></div><span class="save-name">Constituição</span><span class="save-val">+1</span></div>
+        <div class="save-item"><div class="save-dot"></div><span class="save-name">Inteligência</span><span class="save-val">+1</span></div>
+        <div class="save-item"><div class="save-dot prof"></div><span class="save-name">Sabedoria</span><span class="save-val">+6</span></div>
+        <div class="save-item"><div class="save-dot"></div><span class="save-name">Carisma</span><span class="save-val">+0</span></div>
+      </div>
+      <div style="margin-top:6px;font-size:10px;color:var(--pearl-dark);opacity:0.55;font-style:italic">● Proficiente · ○ Sem prof. · Bônus: +3</div>
+    </div>
+  </div>
+
+  <!-- EQUIPAMENTO + PERÍCIAS -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="section-title">✦ Equipamento</div>
+
+      <div class="equip-item">
+        <div class="equip-icon">🌙</div>
+        <div class="equip-name">Arma Morfológica — Sem Marca de Origem<em>Opera no plano espectral · muda de forma por intenção ou situação</em></div>
+        <div class="equip-count"><span class="tag tag-specter">Única</span></div>
+      </div>
+      <div class="equip-item">
+        <div class="equip-icon">💎</div>
+        <div class="equip-name">Recipiente dos Cristalizados<em>Cinco espíritos emocionais · Ódio, Amor, Felicidade, Paz, Vazio</em></div>
+        <div class="equip-count"><span class="tag tag-ode">×5</span></div>
+      </div>
+      <div class="equip-item">
+        <div class="equip-icon">🗡️</div>
+        <div class="equip-name">Faca de Reserva<em>Mundana · para o plano dos vivos quando necessário</em></div>
+        <div class="equip-count"><span class="tag tag-silver">Equip.</span></div>
+      </div>
+      <div class="equip-item">
+        <div class="equip-icon">🌑</div>
+        <div class="equip-name">Capa Escura de Viagem<em>Sem insígnia · sem marca · passa despercebida</em></div>
+        <div class="equip-count"><span class="tag tag-silver">Equip.</span></div>
+      </div>
+      <div class="equip-item">
+        <div class="equip-icon">📜</div>
+        <div class="equip-name">Diário de Campo — Cifrado<em>Registro de instalações, padrões espectrais e comportamento dos Cristalizados</em></div>
+        <div class="equip-count"><span class="tag tag-moon">×1</span></div>
+      </div>
+      <div class="equip-item">
+        <div class="equip-icon">🧪</div>
+        <div class="equip-name">Compostos de Sal e Ferro<em>Barreira de emergência contra espectros físicos · uso mundano</em></div>
+        <div class="equip-count"><span class="tag tag-silver">×3</span></div>
+      </div>
+
+      <div class="equip-note">CA 15 = Couro Reforçado 12 + DEX +3 · Não usa armadura pesada — precisa de mobilidade para não olhar diretamente para o alvo · Sem emblema, sem filiação, sem rastro documental</div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">✦ Perícias D&D</div>
+      <div class="skill-row"><div class="skill-dot exp"></div><span class="skill-name">Percepção</span><span class="skill-val">+9</span></div>
+      <div class="skill-row"><div class="skill-dot exp"></div><span class="skill-name">Furtividade</span><span class="skill-val">+9</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Intuição</span><span class="skill-val">+6</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Investigação</span><span class="skill-val">+4</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Acrobacia</span><span class="skill-val">+6</span></div>
+      <div class="skill-row"><div class="skill-dot"></div><span class="skill-name">Demais perícias</span><span class="skill-val">+0/+1/+3</span></div>
+      <div class="skill-legend">◈◈ Especialista · ◈ Proficiente · ◯ Sem proficiência</div>
+
+      <div class="section-title" style="margin-top:18px">✦ Perícias CoC</div>
+      <div class="skill-row"><div class="skill-dot exp"></div><span class="skill-name">Ocultismo / Plano da Morte</span><span class="skill-val">75%</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Armas Brancas</span><span class="skill-val">60%</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Percepção</span><span class="skill-val">80%</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Furtividade</span><span class="skill-val">65%</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Psicologia</span><span class="skill-val">55%</span></div>
+      <div class="skill-row"><div class="skill-dot"></div><span class="skill-name">Intimidação</span><span class="skill-val">20%</span></div>
+      <div class="skill-row" style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(90,155,186,.18);">
+        <div class="skill-dot" style="background:var(--sanity,#3a6b8a); opacity:.7;"></div>
+        <span class="skill-name" style="color:var(--sanity-light,#5a9bba); font-style:italic;">Mythos de Cthulhu</span>
+        <span class="skill-val" style="color:var(--sanity-light,#5a9bba);">8%</span>
+      </div>
+      <div style="font-size:.72rem; color:var(--text-dim,#7a7090); font-style:italic; margin-top:3px; padding-left:20px; line-height:1.4;">
+        Cresce passivamente por exposição — nunca por escolha · Cada ponto reduz SAN máx em 1 permanentemente · Adquirido via textos e observação — nunca por contato direto com os Seres Antigos
+      </div>
+      <div class="skill-legend" style="margin-top:10px;">Rola 1d100 ≤ valor = sucesso · ≤ ½ = difícil · ≤ 1/5 = extremo</div>
+    </div>
+  </div>
+
+  <!-- LORE & IDENTIDADE -->
+  <div class="section-title">✦ Lore &amp; Identidade</div>
+  <div class="lore-panel">
+    <div class="lore-item">
+      <div class="lore-icon">🌙</div>
+      <div>
+        <div class="lore-key">Origem — O Toque que Não Matou</div>
+        <div class="lore-val">Antes de ser caçadora era uma pessoa comum que entrou num lugar errado na hora errada. O espectro não a matou — tocou-a. Contato espectral direto é raro nos vivos: a maioria desenvolve trauma permanente. Ela desenvolveu <strong>sintonização</strong>. Decidiu, com a clareza de quem entendeu algo irreversível, que isso tornava necessário aprender a operar no mundo de qualquer forma.</div>
+      </div>
+    </div>
+    <div class="lore-item">
+      <div class="lore-icon">🔮</div>
+      <div>
+        <div class="lore-key">A Arma — Natureza Desconhecida</div>
+        <div class="lore-val">Sem marca de origem conhecida. A versão autônoma ocorre em momentos de ameaça imediata que ela ainda não processou conscientemente. <strong>A arma processa antes.</strong> Opera no plano espectral de forma que nenhuma arma documentada em Valtheris replica.</div>
+      </div>
+    </div>
+    <div class="lore-item">
+      <div class="lore-icon">🌑</div>
+      <div>
+        <div class="lore-key">Ausência de Superfície — Invisível aos Seres Antigos</div>
+        <div class="lore-val">Em toda sua trajetória no limiar do oculto — Cristalizados, Plano da Morte, instalações espectrais — nunca foi percebida por um Ser Antigo. Não há registro, não há contato, não há atenção. Para entidades que operam em escala de existência e não de identidade física, ela simplesmente <em>não forma uma superfície de contato</em>. A razão disso ela não conhece. O fato, ela também não.</div>
+      </div>
+    </div>
+    <div class="lore-item">
+      <div class="lore-icon">🗺️</div>
+      <div>
+        <div class="lore-key">Reputação — Padrão sem Nome</div>
+        <div class="lore-val">Não existe registro com nome. Existe um padrão em relatos de múltiplas regiões: presença espectral resolvida, cabelos pretos, nenhuma conta pendente, nenhum nome deixado. Em algumas aldeias há histórias de uma mulher que passou e o fantasma que aterrorizava o lugar simplesmente parou. Ninguém conseguiu dizer mais do que isso.<div style="margin-top:5px"><span class="tag tag-moon">Caçadora do Luar — título surgido naturalmente</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APARÊNCIA + PERSONALIDADE -->
+  <div class="two-col" style="margin-bottom:28px">
+    <div class="panel">
+      <div class="section-title">✦ Aparência</div>
+      <div class="char-item">
+        <div class="char-icon">🌑</div>
+        <div><div class="char-key">Estrutura</div><div class="char-val">Estatura mediana, construção ágil. Sem marcas de combate pesado — move-se como alguém que raramente é atingida porque raramente é vista. Pele sem particularidade: humana comum na superfície.</div></div>
+      </div>
+      <div class="char-item">
+        <div class="char-icon">🌙</div>
+        <div><div class="char-key">Cabelos &amp; Capa</div><div class="char-val">Cabelos longos e pretos como a própria noite. Capa escura sem insígnia. A imagem que ficou gravada em quem a encontrou. Não é afetação — é o uniforme de quem trabalha no escuro por necessidade.</div></div>
+      </div>
+      <div class="char-item">
+        <div class="char-icon">👁️</div>
+        <div><div class="char-key">O Olhar que Nunca Fixa</div><div class="char-val">Nunca olha diretamente para o que persegue. Para quem a observa de fora parece que está sempre olhando para o lugar errado — até que se percebe que o lugar certo era onde ela estava olhando o tempo todo.</div></div>
+      </div>
+      <div class="char-item">
+        <div class="char-icon">💎</div>
+        <div><div class="char-key">Os Cristalizados Visíveis</div><div class="char-val">Carregados num recipiente junto de si — visíveis como cinco pontos de luz colorida para quem sabe o que procurar. Vermelho-sangue, vermelho-vinho, verde, branco, azul. Identificáveis por quem conhece espectros colapsados. Ela não os esconde ativamente.</div></div>
+      </div>
+      <div class="char-item">
+        <div class="char-icon">⚡</div>
+        <div><div class="char-key">A Arma — Presença Inconstante</div><div class="char-val">Quem observa de perto percebe que a arma nunca é a mesma forma duas vezes seguidas. A mudança é discreta — não dramática. Quando olham de novo já é outra coisa. A arma emite uma leve luminescência azul-fria no plano espectral.</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">✦ Personalidade</div>
+      <div class="char-item">
+        <div class="char-icon">🤫</div>
+        <div><div class="char-key">Silêncio que Não É Frieza</div><div class="char-val">Não fala porque guarda — não porque seja distante. Quem a viu trabalhar perceberá que ela <em>já sabia</em> o que ia encontrar antes de encontrar. A impressão de que sabe mais do que diz é precisa. Ela simplesmente não vê utilidade em confirmar.</div></div>
+      </div>
+      <div class="char-item">
+        <div class="char-icon">⚖️</div>
+        <div><div class="char-key">Ódio e Amor como Conselho</div><div class="char-val">Ódio e Amor são os Cristalizados que mais falam com ela. Ódio chega a conclusões frias partindo da raiva — a raiva é motor, não método. Amor contesta Ódio com frequência, perturbado pela frieza. Ela aprendeu a ouvi-los a ambos sem ser paralisada por nenhum.</div></div>
+      </div>
+      <div class="char-item">
+        <div class="char-icon">🌿</div>
+        <div><div class="char-key">Paz como Âncora</div><div class="char-val">Paz nunca disse uma palavra — e mesmo assim é o que impede que ela desapareça no ofício completamente. Não é voz nem conselho: é um peso quieto que persiste quando tudo o mais se move.</div></div>
+      </div>
+      <div class="char-item">
+        <div class="char-icon">🔍</div>
+        <div><div class="char-key">Espera Antes de Nomear</div><div class="char-val">Felicidade e Vazio ainda a confundem às vezes — externamente indistinguíveis. A diferença só aparece com tempo. Ela aprendeu a esperar antes de nomear qual é qual, e aplica esse princípio a pessoas também.</div></div>
+      </div>
+      <div class="char-item">
+        <div class="char-icon">🏚️</div>
+        <div><div class="char-key">Trabalho Sem Testemunha</div><div class="char-val">Passou e o fantasma simplesmente parou. Nunca ficou para a gratidão. Não é modéstia — é metodologia. Gratidão implica identificação. Identificação é risco operacional. O sorriso sem explicação para quem tenta descobrir seu nome é a única concessão que se permite.</div></div>
+      </div>
+      <div class="char-item">
+        <div class="char-icon">🌀</div>
+        <div><div class="char-key">Honestidade Interior</div><div class="char-val">Não trata os Cristalizados como ferramentas nem como prisioneiros — reconhece em cada um algo que existe dentro dela também. <strong>"Não é dom sobrenatural. É honestidade sobre o que habita qualquer pessoa que preste atenção suficiente ao próprio interior."</strong></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  </main>
+
+<div class="footer">
+    <div class="footer-quote">"Sentimentos não estagnam, eles vêm, às vezes permanecem por algum tempo mas sempre se vão.
+Memórias sim, elas ficam lá do jeito que são, marcas e cicatrizes."</div>
+    <div class="footer-attr">— Sob o Luar dos Que Não Descansam · Valtheris · Ficha v1.0</div>
+  </div>
+
+</div>
+
+<!-- GOLEM DETAIL OVERLAY -->
+<div class="golem-detail-overlay" id="golemDetailOverlay" onclick="closeGolemDetail(event)">
+  <div class="golem-detail-panel" id="golemDetailPanel">
+    <button class="golem-detail-close" onclick="closeGolemDetail()">✕ Fechar</button>
+    <div class="golem-detail-polo" id="gdPolo"></div>
+    <div class="golem-detail-name" id="gdName"></div>
+    <div class="golem-detail-stats" id="gdStats"></div>
+    <div class="golem-detail-desc" id="gdDesc"></div>
+  </div>
+</div>
+
+<script>
+/* ── GOLEM DATA ── */
+const GOLEM_DATA = {
+  odio: {
+    polo: 'Polo Letal · Vermelho-Sangue',
+    name: 'Ódio',
+    stats: ['Ação completa', '8 SAN', 'CA 15 · PV 60', '30 pés · 1 min', '1d10+3+1d4 espectral'],
+    desc: 'Em forma de golem, Ódio age no próprio turno — a Caçadora não controla o ritmo, apenas a invocação. É a diferença entre empunhar algo e liberar algo. O golem identifica o alvo mais vulnerável e avança sem instrução adicional.\n\nFúria Fria: qualquer ferimento preexistente no alvo adiciona +1d8 ao dano. A lógica é estrutural — uma integridade já comprometida oferece menos resistência. Ódio não precisa saber por que o alvo está ferido. Só precisa que esteja.\n\nO custo real de manifestá-lo não é os 8 SAN. É que enquanto o golem opera, a decisão de parar pertence à Caçadora — mas a decisão de continuar, a cada golpe, pertence a Ódio.'
+  },
+  amor: {
+    polo: 'Polo Restaurativo · Vermelho-Vinho',
+    name: 'Amor',
+    stats: ['Ação completa', '8 SAN', 'CA 16 · PV 55', '30 pés · 1 min', '1d8+4+1d4 espectral', 'Cura 1d6 · aliados próximos'],
+    desc: 'O que muda na forma de golem: Amor e a Caçadora agem em turnos separados. Ela pode trabalhar o ambiente espectral enquanto o golem sustenta aliados — ou atacar em conjunto no mesmo alvo com intenções opostas, uma dispersando, o outro recompondo.\n\nA cura de 1d6 em aliados próximos não é acionada separadamente — ocorre automaticamente quando o golem acerta. Não é direcionada. É consequência de algo que opera pelo princípio de devolver ao estado anterior: proximidade a isso afeta o que está ao redor.\n\nContestor, em forma de golem, se estende a qualquer aliado visível — não apenas à própria arma da Caçadora. É a única habilidade do sistema que pode anular dano depois que o ataque já foi declarado.'
+  },
+  paz: {
+    polo: 'Polo Restaurativo · Branco',
+    name: 'Paz',
+    stats: ['Ação completa', '8 SAN', 'CA 17 · PV 70', '25 pés · 1 min', 'Sem ataque direto', 'Aura Pacífica 15 pés'],
+    desc: 'O uso pré-fusão de Paz é reativo — intervém quando a Sanidade já estava prestes a colapsar. A forma de golem é diferente: a Aura Pacífica é sustentada, espacial e não depende de uma crise para ativar. Aliados dentro do raio de 15 pés ganham +2 em salvaguardas e não podem cair a 0 PV enquanto o golem existir.\n\nIsso muda o que é possível fazer no resto do combate. Com Paz segurando o chão, a Caçadora pode aplicar o Toque Sem Destruição em ambientes espectralmente instáveis sem calcular margem de erro — o campo ao redor não se desfaz enquanto o golem estiver presente.\n\nPaz tem 70 PV e CA 17. É o golem mais difícil de derrubar. A velocidade de 25 pés é o único custo operacional.'
+  },
+  felicidade: {
+    polo: 'Eixo Neutro · Verde',
+    name: 'Felicidade',
+    stats: ['Ação completa', '8 SAN', 'CA 14 · PV 45', '40 pés · 1 min', '1d6+3+1d4 espectral', 'Leveza — sem Ataques de Oportunidade'],
+    desc: 'A experiência de observar Felicidade operar de fora é diferente de senti-la através da arma. Como golem, ela se move a 40 pés por turno escolhendo seu próprio caminho — e a Caçadora nem sempre sabe onde vai chegar antes de chegar. O golem não telegrafeia intenção. Não constrói tensão antes de agir.\n\nCombatentes treinados leem o campo por antecipação. Felicidade oferece nada para antecipar. Ataques de Oportunidade requerem que o provocador seja reconhecido como ameaça no momento correto — o golem atravessa esse momento sem ocupá-lo.\n\nCA 14 é a mais baixa dos cinco. Felicidade não é construída para durar em campo aberto. É construída para já ter chegado e partido antes que a durabilidade seja testada.'
+  },
+  vazio: {
+    polo: 'Eixo Neutro · Azul',
+    name: 'Vazio',
+    stats: ['Ação completa', '8 SAN', 'CA 15 · PV 53', '30 pés · 1 min', '1d8+3 necrótico', 'Absorção · 1×/turno'],
+    desc: 'O que muda na forma de golem: a Caçadora pode observar a Absorção acontecer de fora. Ver a lâmina receber um golpe sem recuar é diferente de sentir isso através da arma. A ausência de resposta é mais legível quando não está no próprio corpo.\n\nAbsorção: uma vez por turno, o dano recebido pelo golem é cancelado e armazenado. No ataque seguinte, esse valor é adicionado ao dano necrótico. Se o próximo ataque não acontecer no mesmo turno, o acúmulo se dissipa — não transfere, não persiste.\n\nIsto cria uma janela tática específica: posicionar Vazio para absorver no turno do inimigo e atacar imediatamente depois no turno do golem. A janela é de exatamente um ataque. Vazio não acumula entre rodadas.'
+  }
+};
+
+function openGolemDetail(id) {
+  const g = GOLEM_DATA[id];
+  if (!g) return;
+  document.getElementById('gdPolo').textContent = g.polo;
+  document.getElementById('gdName').textContent = g.name;
+  const statsEl = document.getElementById('gdStats');
+  statsEl.innerHTML = g.stats.map(t => `<span class="tag tag-specter">${t}</span>`).join('');
+  document.getElementById('gdDesc').textContent = g.desc;
+  document.getElementById('golemDetailOverlay').classList.add('open');
+}
+
+function closeGolemDetail(e) {
+  if (!e || e.target === document.getElementById('golemDetailOverlay')) {
+    document.getElementById('golemDetailOverlay').classList.remove('open');
+  }
+}
+
+
+/* ── 1. IntersectionObserver: revela seções ao rolar ── */
+(function () {
+  const targets = [
+    '.nature-box', '.vitals-grid', '.stats-row',
+    '.two-col', '.panel', '.lore-panel',
+    '.lore-item', '.char-item', '.ability-item',
+    '.cryst-grid',
+  ];
+  targets.forEach(sel => {
+    document.querySelectorAll(sel).forEach((el, i) => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.88) return;
+      el.classList.add('reveal');
+      el.style.transitionDelay = (i * 0.055) + 's';
+    });
+  });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal, .reveal-left').forEach(el => io.observe(el));
+})();
+
+/* ── 2. Contador numérico nos atributos ── */
+(function () {
+  function animateCounter(el) {
+    const target = parseInt(el.textContent, 10);
+    if (isNaN(target)) return;
+    const steps = Math.floor(900 / 16);
+    let current = 0;
+    const inc = target / steps;
+    const timer = setInterval(() => {
+      current += inc;
+      if (current >= target) { el.textContent = target; clearInterval(timer); return; }
+      el.textContent = Math.floor(current);
+    }, 16);
+  }
+  const io2 = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { animateCounter(e.target); io2.unobserve(e.target); }
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.stat-value').forEach(el => io2.observe(el));
+})();
+
+/* ── 3. Stagger em listas de itens ── */
+(function () {
+  ['lore-item', 'char-item', 'ability-item', 'attack-item', 'equip-item', 'save-item'].forEach(cls => {
+    document.querySelectorAll('.' + cls).forEach((el, i) => {
+      el.style.transitionDelay = (i * 0.04) + 's';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

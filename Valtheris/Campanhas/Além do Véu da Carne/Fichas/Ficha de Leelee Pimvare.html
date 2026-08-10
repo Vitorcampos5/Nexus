@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leelee Pimvare — Ficha NPC</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --rose-lit:   #b02878;
+  --rose-glow:  #d040a0;
+  --amber-lit:  #e8b860;
+  --violet-lit: #8838a8;
+  --violet-glow:#a050c8;
+  --silver-lit: #ccdde8;
+  --ivory:      #ede4d0;
+  --ivory-dim:  #baa878;
+  --ink:        #080408;
+  --blood:      #480820;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  background-image:
+    radial-gradient(ellipse at 20% 8%,  #120408 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 92%, #080214 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, #0a0408 0%, transparent 70%);
+  font-family: 'EB Garamond', serif;
+  color: var(--ivory);
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.sheet { max-width: 900px; margin: 0 auto; }
+
+/* ── HEADER ── */
+.header { text-align: center; margin-bottom: 36px; }
+.header-line {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--rose-lit), transparent);
+  margin: 12px 0; transform-origin: center;
+}
+.bloodline-tag {
+  font-family: 'Cinzel', serif; font-size: 10px;
+  letter-spacing: 4px; color: var(--rose-lit);
+  text-transform: uppercase; opacity: .85; margin-bottom: 8px;
+}
+.char-name {
+  font-family: 'Cinzel Decorative', serif; font-size: 46px;
+  color: var(--ivory); letter-spacing: 5px; line-height: 1.1;
+}
+.char-subtitle {
+  font-family: 'Cinzel', serif; font-size: 13px;
+  letter-spacing: 3px; color: var(--ivory-dim); margin-top: 8px; font-style: italic;
+}
+.badge {
+  display: inline-block; font-family: 'Cinzel', serif;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 2px; margin-left: 8px; vertical-align: middle;
+}
+.badge-rose   { background: rgba(80,12,50,.45);  color: var(--rose-lit);   border: 1px solid rgba(140,30,80,.45); }
+.badge-amber  { background: rgba(70,45,5,.45);   color: var(--amber-lit);  border: 1px solid rgba(140,100,15,.45); }
+.badge-violet { background: rgba(50,10,70,.45);  color: var(--violet-glow);border: 1px solid rgba(100,30,140,.4); }
+
+/* ── SEC ── */
+.sec {
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 4px;
+  color: var(--rose-lit); text-transform: uppercase;
+  margin-bottom: 14px; padding-bottom: 6px; border-bottom: 1px solid rgba(180,40,100,.22);
+}
+.sec-vt    { color: var(--violet-lit); border-bottom-color: rgba(130,50,170,.22); }
+.sec-amber { color: var(--amber-lit);  border-bottom-color: rgba(200,145,60,.22); }
+
+/* ── VITALS ── */
+.vitals-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+.vital {
+  background: rgba(10,4,8,.7); border: 1px solid rgba(140,30,80,.2);
+  border-radius: 4px; padding: 14px; transition: border-color .3s;
+}
+.vital:hover { border-color: rgba(200,50,120,.4); }
+.vital-lbl { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--rose-lit); opacity: .8; margin-bottom: 8px; }
+.vital-nums { display: flex; align-items: baseline; gap: 4px; margin-bottom: 8px; }
+.vital-cur  { font-family: 'Cinzel Decorative', serif; font-size: 30px; line-height: 1; }
+.vital-cur.hp  { color: var(--rose-glow); }
+.vital-cur.san { color: var(--silver-lit); }
+.vital-cur.ca  { color: var(--violet-glow); }
+.vital-cur.cr  { color: var(--amber-lit); }
+.vital-max { font-family: 'Cinzel', serif; font-size: 13px; color: var(--ivory-dim); }
+.bar { height: 5px; background: rgba(255,255,255,.07); border-radius: 2px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 2px; animation: barGrow 1.1s cubic-bezier(.4,0,.2,1) 1.4s both; }
+.bar-fill.hp  { background: linear-gradient(to right, var(--blood), var(--rose-glow)); --bt:100%; }
+.bar-fill.san { background: linear-gradient(to right, #1a2838, var(--silver-lit)); --bt:79%; }
+.vital-note { font-size: 10px; color: var(--ivory-dim); opacity: .65; margin-top: 6px; font-style: italic; }
+
+/* ── NATUREZA DHAMPIR ── */
+.nature-box {
+  background: rgba(10,4,8,.6); border: 1px solid rgba(140,30,80,.2);
+  border-radius: 4px; padding: 14px 16px; margin-bottom: 24px;
+}
+.nature-rows { display: flex; flex-wrap: wrap; gap: 8px; }
+.nature-row {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(0,0,0,.3); border: 1px solid rgba(140,30,80,.1);
+  border-radius: 3px; padding: 7px 12px; flex: 1; min-width: 220px;
+  transition: border-color .25s, background .25s;
+}
+.nature-row:hover { border-color: rgba(200,50,120,.35); background: rgba(140,30,80,.05); }
+.nbadge {
+  font-family: 'Cinzel', serif; font-size: 10px; font-weight: 600;
+  padding: 2px 7px; border-radius: 2px; white-space: nowrap;
+}
+.nb-dhampir { background: rgba(80,12,50,.55);  color: var(--rose-lit);   border: 1px solid rgba(140,30,80,.55); }
+.nb-passive { background: rgba(50,10,70,.5);   color: var(--violet-glow);border: 1px solid rgba(90,30,120,.5); }
+.nb-amber   { background: rgba(70,45,5,.5);    color: var(--amber-lit);  border: 1px solid rgba(140,100,15,.5); }
+.nb-silver  { background: rgba(20,30,45,.5);   color: var(--silver-lit); border: 1px solid rgba(60,90,130,.5); }
+.nb-none    { background: rgba(18,10,18,.5);   color: var(--ivory-dim);  border: 1px solid rgba(80,50,90,.4); }
+.nature-text { font-size: 12px; color: var(--ivory-dim); font-style: italic; flex: 1; line-height: 1.55; }
+
+/* ── CoC ── */
+.coc-panel {
+  background: rgba(5,2,8,.5); border: 1px solid rgba(80,50,110,.2);
+  border-radius: 4px; padding: 14px 16px; margin-bottom: 24px;
+}
+.coc-row { display: grid; grid-template-columns: repeat(7,1fr); gap: 8px; margin-bottom: 12px; }
+.coc-box { background: rgba(5,2,8,.55); border: 1px solid rgba(80,50,110,.18); border-radius: 3px; padding: 8px 4px; text-align: center; }
+.coc-lbl { font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 1px; color: var(--violet-lit); text-transform: uppercase; margin-bottom: 4px; opacity: .8; }
+.coc-val { font-family: 'Cinzel', serif; font-size: 16px; color: var(--silver-lit); line-height: 1; }
+.coc-fifth { font-size: 9px; color: var(--ivory-dim); opacity: .5; margin-top: 2px; }
+.coc-derived { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+.coc-d { background: rgba(5,2,8,.5); border: 1px solid rgba(80,50,110,.15); border-radius: 3px; padding: 8px; text-align: center; }
+.coc-d-lbl { font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 2px; color: var(--violet-lit); text-transform: uppercase; margin-bottom: 4px; opacity: .75; }
+.coc-d-val { font-family: 'Cinzel', serif; font-size: 15px; color: var(--silver-lit); }
+.coc-d-note { font-size: 9px; color: var(--ivory-dim); opacity: .5; margin-top: 2px; }
+
+/* ── STATS ── */
+.stats-row { display: grid; grid-template-columns: repeat(6,1fr); gap: 10px; margin-bottom: 24px; }
+.stat-box {
+  background: rgba(8,4,10,.7); border: 1px solid rgba(140,30,80,.18);
+  border-radius: 4px; padding: 12px 8px; text-align: center;
+  transition: border-color .25s, box-shadow .25s, transform .2s;
+}
+.stat-box:hover { border-color: rgba(200,50,120,.5); box-shadow: 0 0 14px rgba(180,40,100,.12); transform: translateY(-2px); }
+.stat-lbl { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px; color: var(--rose-lit); text-transform: uppercase; margin-bottom: 6px; opacity: .8; }
+.stat-val { font-family: 'Cinzel Decorative', serif; font-size: 24px; color: var(--ivory); line-height: 1; }
+.stat-mod { font-family: 'Cinzel', serif; font-size: 11px; color: var(--ivory-dim); margin-top: 3px; }
+
+/* ── PANELS ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.panel {
+  background: rgba(8,4,10,.5); border: 1px solid rgba(140,30,80,.14);
+  border-radius: 4px; padding: 18px; transition: border-color .3s, box-shadow .3s;
+}
+.panel:hover { border-color: rgba(200,50,120,.28); box-shadow: 0 0 20px rgba(140,30,80,.06); }
+
+/* ── AB ITEMS ── */
+.ab-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.05); transition: background .2s; }
+.ab-item:last-child { border-bottom: none; }
+.ab-item:hover { background: rgba(140,30,80,.03); }
+.ab-item:hover .ab-dot { transform: scale(1.4) translateX(2px); box-shadow: 0 0 18px rgba(200,50,120,.9); }
+.ab-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--rose-lit); margin-top: 6px; flex-shrink: 0; box-shadow: 0 0 6px rgba(180,40,100,.5); animation: dotPulse 2.8s ease-in-out infinite; }
+.ab-name { font-family: 'Cinzel', serif; font-size: 12px; color: var(--rose-glow); margin-bottom: 2px; }
+.ab-desc { font-size: 12px; color: var(--ivory-dim); line-height: 1.5; font-style: italic; opacity: .85; }
+.ab-st { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; padding: 2px 6px; border-radius: 2px; margin-left: auto; flex-shrink: 0; white-space: nowrap; }
+.st-r { background: rgba(80,12,50,.5);  color: var(--rose-lit);   border: 1px solid rgba(140,30,80,.6); animation: readyBlink 3.5s ease-in-out infinite; }
+.st-p { background: rgba(50,10,70,.4);  color: var(--violet-glow);border: 1px solid rgba(90,30,120,.4); }
+
+/* ── ATTACKS ── */
+.atk-row { padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.05); transition: background .2s, padding-left .2s; }
+.atk-row:last-child { border-bottom: none; }
+.atk-row:hover { background: rgba(140,30,80,.04); padding-left: 4px; }
+.atk-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.atk-icon { font-size: 15px; }
+.atk-name { font-family: 'Cinzel', serif; font-size: 12px; color: var(--rose-glow); flex: 1; }
+.atk-bonus { font-family: 'Cinzel', serif; font-size: 12px; color: var(--ivory); }
+.tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 3px; }
+.atk-desc { font-size: 11px; color: var(--ivory-dim); font-style: italic; opacity: .8; }
+.tag { display: inline-block; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; padding: 2px 7px; border-radius: 2px; }
+.t-rose   { background: rgba(80,12,50,.4);  color: #e07090;          border: 1px solid rgba(140,30,80,.4); }
+.t-violet { background: rgba(50,10,70,.4);  color: var(--violet-glow);border: 1px solid rgba(100,30,140,.4); }
+.t-amber  { background: rgba(70,45,5,.4);   color: var(--amber-lit); border: 1px solid rgba(140,100,15,.4); }
+.t-silver { background: rgba(20,30,50,.4);  color: var(--silver-lit);border: 1px solid rgba(60,90,130,.4); }
+
+/* ── SAVES ── */
+.saves-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px; }
+.save-item { display: flex; align-items: center; gap: 7px; padding: 5px 7px; background: rgba(5,2,8,.5); border: 1px solid rgba(140,30,80,.1); border-radius: 3px; transition: border-color .2s; }
+.save-item:hover { border-color: rgba(200,50,120,.3); }
+.dot { width: 7px; height: 7px; border-radius: 50%; border: 1px solid rgba(200,50,120,.35); flex-shrink: 0; }
+.dot.on { background: var(--rose-lit); border-color: var(--rose-lit); animation: dotPulse 3.2s ease-in-out infinite; }
+.save-name { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; color: var(--ivory-dim); text-transform: uppercase; flex: 1; }
+.save-val  { font-family: 'Cinzel', serif; font-size: 12px; color: var(--ivory); }
+.sk-row { display: flex; align-items: center; gap: 7px; padding: 4px 5px; }
+.sk-dot { width: 6px; height: 6px; border-radius: 50%; border: 1px solid rgba(200,50,120,.4); flex-shrink: 0; }
+.sk-dot.prof { background: var(--rose-lit);   border-color: var(--rose-lit); }
+.sk-dot.exp  { background: var(--violet-glow);border-color: var(--violet-glow); }
+.sk-name { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; color: var(--ivory-dim); text-transform: uppercase; flex: 1; }
+.sk-val  { font-family: 'Cinzel', serif; font-size: 11px; color: var(--ivory); }
+.sk-leg  { margin-top: 6px; font-size: 10px; color: var(--ivory-dim); opacity: .5; font-style: italic; }
+
+/* ── LORE ── */
+.lore-panel { background: rgba(8,4,10,.5); border: 1px solid rgba(140,30,80,.12); border-radius: 4px; padding: 18px; margin-bottom: 24px; }
+.lore-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.05); transition: background .2s; border-radius: 3px; }
+.lore-item:last-child { border-bottom: none; }
+.lore-item:hover { background: rgba(140,30,80,.04); }
+.lore-icon { font-size: 17px; flex-shrink: 0; width: 24px; text-align: center; margin-top: 1px; }
+.lore-key { font-family: 'Cinzel', serif; font-size: 11px; color: var(--rose-lit); margin-bottom: 3px; letter-spacing: 1px; }
+.lore-val { font-size: 13px; color: var(--ivory-dim); line-height: 1.55; }
+
+/* ── PORTRAIT ── */
+.portrait-stack { position: relative; width: 240px; height: 300px; }
+.portrait-solo {
+  width: 240px; height: 300px; border-radius: 4px; overflow: hidden;
+  border: 1px solid rgba(180,40,100,.4);
+  box-shadow: 0 0 50px rgba(140,30,80,.2), 0 0 90px rgba(0,0,0,.85);
+}
+.p-label {
+  position: absolute; top: 8px; left: 8px;
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 2px; pointer-events: none; z-index: 10;
+  background: rgba(20,5,15,.8); color: var(--rose-lit); border: 1px solid rgba(140,30,80,.4);
+}
+.portrait-solo::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 70px;
+  background: linear-gradient(to top, rgba(8,4,10,1), transparent);
+  border-radius: 0 0 4px 4px; pointer-events: none;
+}
+
+/* ── SITUATION ── */
+.situation {
+  background: rgba(10,4,8,.25); border: 1px solid rgba(140,30,80,.3);
+  border-radius: 4px; padding: 16px 18px; margin-bottom: 24px;
+  animation: borderGlow 4.2s ease-in-out 2s infinite;
+}
+.sit-title { font-family: 'Cinzel Decorative', serif; font-size: 13px; color: var(--rose-glow); margin-bottom: 8px; }
+.sit-body { font-size: 13px; color: var(--ivory-dim); font-style: italic; line-height: 1.65; }
+
+/* ── APPEAR ── */
+.ap-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
+.ap-item:last-child { border-bottom: none; }
+.ap-icon { font-size: 17px; flex-shrink: 0; width: 24px; text-align: center; margin-top: 1px; }
+.ap-lbl { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--rose-lit); opacity: .8; margin-bottom: 4px; }
+.ap-val { font-size: 13px; color: var(--ivory-dim); line-height: 1.5; }
+
+/* ── FOOTER ── */
+.footer { text-align: center; margin-top: 36px; padding-top: 18px; border-top: 1px solid rgba(140,30,80,.12); }
+.footer-quote { font-style: italic; font-size: 15px; color: var(--ivory-dim); opacity: .5; line-height: 1.75; }
+.footer-attr  { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px; color: var(--rose-lit); opacity: .35; margin-top: 10px; }
+
+/* ── ANIM ── */
+@keyframes fadeInDown { from{opacity:0;transform:translateY(-18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeInUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:translateY(0)} }
+@keyframes lineDraw   { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+@keyframes slideLeft  { from{opacity:0;transform:translateX(-18px)} to{opacity:1;transform:translateX(0)} }
+@keyframes nameReveal {
+  0%  {opacity:0;letter-spacing:24px;text-shadow:none}
+  60% {opacity:1;letter-spacing:7px}
+  100%{opacity:1;letter-spacing:5px;text-shadow:0 0 50px rgba(180,40,100,.28),0 2px 4px rgba(0,0,0,.9)}
+}
+@keyframes roseGlow {
+  0%,100%{text-shadow:0 0 38px rgba(180,40,100,.2),0 2px 4px rgba(0,0,0,.9)}
+  50%    {text-shadow:0 0 72px rgba(200,50,120,.5),0 0 24px rgba(180,40,100,.25),0 2px 4px rgba(0,0,0,.9)}
+}
+@keyframes barGrow { from{width:0} to{width:var(--bt)} }
+@keyframes numPop  { 0%{opacity:0;transform:scale(.72)} 70%{transform:scale(1.07)} 100%{opacity:1;transform:scale(1)} }
+@keyframes dotPulse{ 0%,100%{box-shadow:0 0 5px rgba(180,40,100,.5)} 50%{box-shadow:0 0 13px rgba(200,50,120,.9)} }
+@keyframes readyBlink{0%,100%{opacity:1} 50%{opacity:.58}}
+@keyframes borderGlow{0%,100%{border-color:rgba(140,30,80,.3)} 50%{border-color:rgba(200,50,120,.65);box-shadow:0 0 18px rgba(140,30,80,.1)}}
+
+.bloodline-tag  { animation: fadeInDown .7s ease .1s both; }
+.header-line    { animation: lineDraw .9s cubic-bezier(.22,.68,0,1.2) .5s both; }
+.char-name      { animation: nameReveal 1.2s cubic-bezier(.22,.68,0,1.15) .4s both, roseGlow 5.5s ease-in-out 2s infinite; }
+.char-subtitle  { animation: fadeInDown .7s ease 1.1s both; }
+.vital-cur      { animation: numPop .6s cubic-bezier(.34,1.56,.64,1) 1.0s both; }
+.footer         { animation: fadeInDown 1.0s ease .5s both; }
+.stats-row .stat-box { animation: fadeInUp .5s ease both; }
+.stats-row .stat-box:nth-child(1){animation-delay:.04s}
+.stats-row .stat-box:nth-child(2){animation-delay:.11s}
+.stats-row .stat-box:nth-child(3){animation-delay:.18s}
+.stats-row .stat-box:nth-child(4){animation-delay:.25s}
+.stats-row .stat-box:nth-child(5){animation-delay:.32s}
+.stats-row .stat-box:nth-child(6){animation-delay:.39s}
+.nature-row{animation:slideLeft .45s ease both}
+.nature-row:nth-child(1){animation-delay:.04s}
+.nature-row:nth-child(2){animation-delay:.12s}
+.nature-row:nth-child(3){animation-delay:.20s}
+.nature-row:nth-child(4){animation-delay:.28s}
+.nature-row:nth-child(5){animation-delay:.36s}
+.nature-row:nth-child(6){animation-delay:.44s}
+
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.char-name{animation:none}.bar-fill.hp{width:100%;animation:none}.bar-fill.san{width:79%;animation:none}}
+@media(max-width:600px){.vitals-grid{grid-template-columns:1fr 1fr}.stats-row{grid-template-columns:repeat(3,1fr)}.two-col{grid-template-columns:1fr}.char-name{font-size:32px}}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-line"></div>
+  <div class="bloodline-tag">✦ Briarwood · Dhampir · Filha de Necrolai ✦</div>
+  <h1 class="char-name">Leelee Pimvare</h1>
+  <div class="char-subtitle">
+    Dhampir · Meio-Humana · Entre Dois Mundos
+    <span class="badge badge-violet">Caótico Bom</span>
+    <span class="badge badge-amber">CR 5</span>
+  </div>
+
+<main>
+  <div class="header-line"></div>
+</div>
+
+<!-- PORTRAIT -->
+<div style="display:flex;justify-content:center;margin-bottom:48px;">
+  <div class="portrait-stack">
+    <div class="portrait-solo">
+      <span class="p-label">Leelee Pimvare</span>
+      <img src="Perfil - Leelee Pimvare.png" alt="Leelee Pimvare"
+           style="width:100%;height:100%;object-fit:cover;object-position:top center;display:block;
+                  filter:saturate(0.88) contrast(1.06);">
+      <div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+                  z-index:8;pointer-events:none;display:flex;align-items:center;gap:6px;
+                  white-space:nowrap;">
+        <span style="font-size:18px;filter:drop-shadow(0 0 8px rgba(180,40,100,.8))">🌗</span>
+        <span style="font-family:'Cinzel Decorative',serif;font-size:7px;color:var(--rose-lit);
+                     letter-spacing:2px;opacity:.88">ENTRE DOIS MUNDOS</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VITAIS -->
+<div class="sec">✦ Pontos Vitais</div>
+<div class="vitals-grid">
+  <div class="vital">
+    <div class="vital-lbl">Pontos de Vida</div>
+    <div class="vital-nums"><div class="vital-cur hp">65</div><div class="vital-max">/ 65</div></div>
+    <div class="bar"><div class="bar-fill hp" style="width:100%"></div></div>
+    <div class="vital-note">10d8+20 · Resistência dhampir · Não regenera como vampira</div>
+  </div>
+  <div class="vital">
+    <div class="vital-lbl">Sanidade</div>
+    <div class="vital-nums"><div class="vital-cur san">55</div><div class="vital-max">/ 70</div></div>
+    <div class="bar"><div class="bar-fill san" style="width:79%"></div></div>
+    <div class="vital-note">SAB 14 × 5 = 70 máx · Mythos vida entre dois mundos: −15</div>
+  </div>
+  <div class="vital">
+    <div class="vital-lbl">Classe de Armadura</div>
+    <div class="vital-nums"><div class="vital-cur ca">15</div></div>
+    <div class="vital-note">Natural dhampir · Reflexos amplificados</div>
+  </div>
+  <div class="vital">
+    <div class="vital-lbl">Nível de Ameaça</div>
+    <div class="vital-nums"><div class="vital-cur cr" style="font-size:22px">CR 5</div></div>
+    <div class="vital-note">1.800 XP · Combatente físico · Sem magia ativa</div>
+  </div>
+</div>
+
+<!-- NATUREZA DHAMPIR -->
+<div class="nature-box reveal">
+  <div class="sec" style="margin-bottom:12px">✦ Natureza Dhampir — Meio-Humana, Meio-Vampira de Briarwood</div>
+  <div class="nature-rows">
+    <div class="nature-row">
+      <span class="nbadge nb-dhampir">Imunidade Solar</span>
+      <span class="nature-text">Anda à luz do dia sem restrição alguma. A imunidade solar de Necrolai passou integralmente para a filha. Nenhum artefato de luz ou cristal de aurora exerce efeito sobre Leelee.</span>
+    </div>
+    <div class="nature-row">
+      <span class="nbadge nb-passive">Controle Total da Fome</span>
+      <span class="nature-text">Pleno controle sobre o instinto vampírico. Pode se alimentar normalmente de comida humana. Sangue é opcional, não mandatório — e quando opta por consumi-lo, faz isso por escolha, não por compulsão. Nenhum gatilho de frenesi existe nela.</span>
+    </div>
+    <div class="nature-row">
+      <span class="nbadge nb-amber">Força & Reflexos Amplificados</span>
+      <span class="nature-text">Força e destreza acima do humano — suficiente para lutar corpo a corpo com Necrolai diretamente, e vencer a troca. Não é o patamar da mãe, mas é incomparavelmente superior ao humano comum.</span>
+    </div>
+    <div class="nature-row">
+      <span class="nbadge nb-passive">Canalização de Artefatos</span>
+      <span class="nature-text">Consegue ativar e canalizar artefatos mágicos de Briarwood que exigem vínculo místico. Usou o Cajado de Neve de Udonna para revivê-la no Submundo — feito que exigiu intenção e conexão genuínas, não apenas posse física.</span>
+    </div>
+    <div class="nature-row">
+      <span class="nbadge nb-silver">Sem Reflexo</span>
+      <span class="nature-text">Como a mãe — não aparece em espelhos, água parada ou superfícies reflexivas. Está ciente disso e evita situações onde isso seria revelador. É uma das poucas fraquezas vampíricas que herdou.</span>
+    </div>
+    <div class="nature-row">
+      <span class="nbadge nb-none">Fraquezas Ausentes</span>
+      <span class="nature-text">Alho, estacas, círculos desenhados, água corrente, prata — nenhum efeito. As fraquezas clássicas das proles de Necrolai não se aplicam a ela. Como dhampir, herda os traços positivos do vampirismo sem as vulnerabilidades impostas pelo processo de criação.</span>
+    </div>
+  </div>
+</div>
+
+<!-- CoC REFERÊNCIA -->
+<div class="coc-panel reveal">
+  <div class="sec sec-vt" style="margin-bottom:12px">✦ Referência CoC 7ª Ed.</div>
+  <div class="coc-row">
+    <div class="coc-box"><div class="coc-lbl">FOR</div><div class="coc-val">70</div><div class="coc-fifth">1/5=14</div></div>
+    <div class="coc-box"><div class="coc-lbl">CON</div><div class="coc-val">70</div><div class="coc-fifth">1/5=14</div></div>
+    <div class="coc-box"><div class="coc-lbl">TAM</div><div class="coc-val">60</div><div class="coc-fifth">1/5=12</div></div>
+    <div class="coc-box"><div class="coc-lbl">DES</div><div class="coc-val">80</div><div class="coc-fifth">1/5=16</div></div>
+    <div class="coc-box"><div class="coc-lbl">INT</div><div class="coc-val">65</div><div class="coc-fifth">1/5=13</div></div>
+    <div class="coc-box"><div class="coc-lbl">POD</div><div class="coc-val">55</div><div class="coc-fifth">1/5=11</div></div>
+    <div class="coc-box" style="border-color:rgba(80,110,180,.28)">
+      <div class="coc-lbl" style="color:var(--silver-lit)">SAB</div>
+      <div class="coc-val" style="color:var(--silver-lit)">55</div>
+      <div class="coc-fifth">Máx: 70</div>
+    </div>
+  </div>
+  <div class="coc-derived">
+    <div class="coc-d"><div class="coc-d-lbl">HP CoC</div><div class="coc-d-val">13</div><div class="coc-d-note">(CON+TAM)/10</div></div>
+    <div class="coc-d"><div class="coc-d-lbl">Bônus Dano</div><div class="coc-d-val">+1d4</div><div class="coc-d-note">FOR+TAM=130</div></div>
+    <div class="coc-d"><div class="coc-d-lbl">Movimento</div><div class="coc-d-val">9</div><div class="coc-d-note">Reflexos dhampir</div></div>
+    <div class="coc-d"><div class="coc-d-lbl">SAN Enc.</div><div class="coc-d-val">1d3</div><div class="coc-d-note">CD 9 SAB</div></div>
+  </div>
+  <div style="margin-top:10px;font-size:10px;color:var(--ivory-dim);opacity:.55;font-style:italic;border-left:2px solid rgba(80,50,110,.25);padding-left:8px">
+    SAN ao encontrar Leelee: CD 9. Falha: 1d3 SAN — o horror é de dissonância, não de perigo. Ela parece completamente humana. O que perturba é perceber que não é.
+  </div>
+</div>
+
+<!-- ATRIBUTOS -->
+<div class="sec reveal">✦ Atributos — Valtheris / D&D 5e (Sistema Primário)</div>
+<div class="stats-row reveal">
+  <div class="stat-box"><div class="stat-lbl">Força</div><div class="stat-val">16</div><div class="stat-mod">+3</div></div>
+  <div class="stat-box"><div class="stat-lbl">Destreza</div><div class="stat-val">18</div><div class="stat-mod">+4</div></div>
+  <div class="stat-box"><div class="stat-lbl">Constituição</div><div class="stat-val">16</div><div class="stat-mod">+3</div></div>
+  <div class="stat-box"><div class="stat-lbl">Inteligência</div><div class="stat-val">14</div><div class="stat-mod">+2</div></div>
+  <div class="stat-box"><div class="stat-lbl">Sabedoria</div><div class="stat-val">14</div><div class="stat-mod">+2</div></div>
+  <div class="stat-box"><div class="stat-lbl">Carisma</div><div class="stat-val">13</div><div class="stat-mod">+1</div></div>
+</div>
+
+<!-- HABILIDADES + SAVES -->
+<div class="two-col reveal">
+  <div class="panel">
+    <div class="sec">✦ Habilidades Especiais</div>
+    <div class="ab-item">
+      <div class="ab-dot"></div>
+      <div style="flex:1">
+        <div class="ab-name">Combate Corpo a Corpo — Nível de Mãe</div>
+        <div class="ab-desc">Treinamento e instinto dhampir combinados. Pode travar combate direto com Necrolai e sobreviver à troca — não superar, mas aguentar o suficiente para fazer diferença. Em combate contra vampiros especificamente, vantagem em testes de Intuição e Percepção.</div>
+      </div>
+      <div class="ab-st st-p">Passivo</div>
+    </div>
+    <div class="ab-item">
+      <div class="ab-dot" style="background:var(--violet-glow);box-shadow:0 0 6px rgba(160,80,200,.5)"></div>
+      <div style="flex:1">
+        <div class="ab-name">Canalização Mística — Artefatos</div>
+        <div class="ab-desc">Pode ativar artefatos mágicos que exigem vínculo intencional. Não é magia treinada — é instinto herdado pela metade vampírica. Exige intenção genuína, não apenas contato físico. Requer Concentração por 1 ação.</div>
+      </div>
+      <div class="ab-st st-r">Ativo</div>
+    </div>
+    <div class="ab-item">
+      <div class="ab-dot" style="background:var(--amber-lit);box-shadow:0 0 6px rgba(200,160,50,.4)"></div>
+      <div style="flex:1">
+        <div class="ab-name">Leitura Social — Briarwood</div>
+        <div class="ab-desc">Cresceu entre humanos por meses, depois com a mãe no Submundo, depois de volta entre humanos. Resultado: lê motivações com precisão pouco natural. Vantagem em Intuição para detectar intenção em contexto social. Desvantagem em enganar quem a conhece bem.</div>
+      </div>
+      <div class="ab-st st-p">Passivo</div>
+    </div>
+    <div class="ab-item">
+      <div class="ab-dot" style="background:var(--silver-lit);box-shadow:0 0 6px rgba(160,180,200,.4)"></div>
+      <div style="flex:1">
+        <div class="ab-name">Consciência Vampírica</div>
+        <div class="ab-desc">Sente a presença de vampiros a 30 metros — não com precisão de localização, mas como impressão de "algo igual e diferente a mim". Funciona mesmo com vampiros que ocultam sua natureza magicamente. Não se aplica a Necrolai especificamente — ligação maternal cria zona cega.</div>
+      </div>
+      <div class="ab-st st-p">Passivo</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="sec">✦ Salvaguardas & Perícias</div>
+    <div class="saves-grid">
+      <div class="save-item"><div class="dot on"></div><span class="save-name">Força</span><span class="save-val">+6</span></div>
+      <div class="save-item"><div class="dot on"></div><span class="save-name">Destreza</span><span class="save-val">+7</span></div>
+      <div class="save-item"><div class="dot"></div><span class="save-name">Constituição</span><span class="save-val">+3</span></div>
+      <div class="save-item"><div class="dot"></div><span class="save-name">Inteligência</span><span class="save-val">+2</span></div>
+      <div class="save-item"><div class="dot on"></div><span class="save-name">Sabedoria</span><span class="save-val">+5</span></div>
+      <div class="save-item"><div class="dot"></div><span class="save-name">Carisma</span><span class="save-val">+1</span></div>
+    </div>
+    <div style="font-size:10px;color:var(--ivory-dim);opacity:.5;font-style:italic;margin-bottom:14px">Bônus de Proficiência: +3</div>
+    <div class="sk-row"><div class="sk-dot exp"></div><span class="sk-name">Atletismo</span><span class="sk-val">+6</span></div>
+    <div class="sk-row"><div class="sk-dot exp"></div><span class="sk-name">Acrobacia</span><span class="sk-val">+7</span></div>
+    <div class="sk-row"><div class="sk-dot exp"></div><span class="sk-name">Intuição</span><span class="sk-val">+8</span></div>
+    <div class="sk-row"><div class="sk-dot prof"></div><span class="sk-name">Percepção</span><span class="sk-val">+5</span></div>
+    <div class="sk-row"><div class="sk-dot prof"></div><span class="sk-name">Furtividade</span><span class="sk-val">+7</span></div>
+    <div class="sk-row"><div class="sk-dot prof"></div><span class="sk-name">Enganação</span><span class="sk-val">+4</span></div>
+    <div class="sk-leg">◈◈ Especialista · ◈ Proficiente</div>
+    <div style="margin-top:14px;font-size:12px;color:var(--ivory-dim);line-height:1.7">
+      <div>🛡️ <strong style="color:var(--ivory)">Resistente:</strong> Dano necrótico, veneno</div>
+      <div>👁️ <strong style="color:var(--ivory)">Sentidos:</strong> Visão no Escuro 18 m · Perc. Passiva 15</div>
+    </div>
+  </div>
+</div>
+
+<!-- ATAQUES -->
+<div class="panel reveal" style="margin-bottom:24px">
+  <div class="sec">✦ Ações de Combate</div>
+  <div class="atk-row">
+    <div class="atk-head"><span class="atk-icon">👊</span><span class="atk-name">Multiatacar</span></div>
+    <div class="atk-desc" style="padding-left:24px">Dois ataques por ação. Pode combinar Soco e Rasteira livremente.</div>
+  </div>
+  <div class="atk-row">
+    <div class="atk-head"><span class="atk-icon">💥</span><span class="atk-name">Soco Dhampir</span><span class="atk-bonus">+7 atq</span></div>
+    <div class="tags"><span class="tag t-rose">1d8+4 contundente</span><span class="tag t-silver">Corpo a corpo · 5 pés</span></div>
+    <div class="atk-desc">Acerto: 1d8+4. Com impulso vampírico (ação bônus): +1d6 necrótico sem precisar de novo acerto no mesmo alvo.</div>
+  </div>
+  <div class="atk-row">
+    <div class="atk-head"><span class="atk-icon">🌀</span><span class="atk-name">Rasteira Amplificada</span><span class="atk-bonus">+7 atq</span></div>
+    <div class="tags"><span class="tag t-rose">1d6+4 contundente</span><span class="tag t-violet">Derruba alvo</span><span class="tag t-amber">CD 15 FOR</span></div>
+    <div class="atk-desc">Acerto: 1d6+4 + CD 15 FOR ou alvo Prostrado. Usar contra alvo já Prostrado: vantagem no ataque.</div>
+  </div>
+  <div class="atk-row">
+    <div class="atk-head"><span class="atk-icon">🩸</span><span class="atk-name">Dreno Controlado — Opcional</span><span class="atk-bonus">+7 atq</span></div>
+    <div class="tags"><span class="tag t-rose">1d4+4 perfurante</span><span class="tag t-violet">+1d8 necrótico</span><span class="tag t-amber">Escolha ativa</span></div>
+    <div class="atk-desc">Leelee raramente usa isso — e quando usa, é escolha deliberada, nunca compulsão. Exige alvo Agarrado. Se causar dano necrótico, recupera metade em HP. Pode recusar o dreno mesmo em acerto.</div>
+  </div>
+  <div class="atk-row" style="border-bottom:none">
+    <div class="atk-head"><span class="atk-icon">🔮</span><span class="atk-name">Canalizar Artefato</span><span class="atk-bonus">Ação</span></div>
+    <div class="tags"><span class="tag t-violet">Varia por artefato</span><span class="tag t-silver">Concentração</span></div>
+    <div class="atk-desc">Ativa um artefato mágico com vínculo intencional. Efeito depende do artefato. Requer intenção genuína — itens neutros ou hostis ao portador não respondem.</div>
+  </div>
+</div>
+
+<!-- SITUAÇÃO -->
+<div class="situation reveal">
+  <div class="sec" style="margin-bottom:8px">✦ Situação — Chegada em Valtheris</div>
+  <div class="sit-title">🌗 De Briarwood para o Mundo Ferido</div>
+  <div class="sit-body">Leelee atravessou o portal com a mãe e Clare porque não havia outra opção — e porque, entre todas as pessoas que poderiam fazer essa travessia, ela talvez seja a que melhor entende que "não havia outra opção" é exatamente quando as coisas mais importantes acontecem. Ela esteve presente no momento em que Necrolai agiu sem calcular vantagem. Sabe o que isso significa. E em Valtheris, onde a mãe está descobrindo pela primeira vez o que significa ser Rainha de verdade, Leelee é a única referência de quem viu esse processo começar.</div>
+</div>
+
+<!-- LORE -->
+<div class="sec reveal">✦ Lore & Identidade</div>
+<div class="lore-panel reveal">
+  <div class="lore-item">
+    <div class="lore-icon">🌗</div>
+    <div>
+      <div class="lore-key">Entre Dois Mundos — A Posição de Sempre</div>
+      <div class="lore-val">Filha de vampira, meio-humana, viveu entre humanos por escolha e entre o Submundo por circunstância. Nunca pertenceu completamente a nenhum lado — e com o tempo deixou de tentar. O que parecia marginalidade virou perspectiva: ela é a única na sala que entende tanto o lado humano quanto o vampírico de qualquer situação. Em Briarwood, isso a tornou útil de formas que ninguém esperava. Em Valtheris, pode ser mais valioso ainda.</div>
+    </div>
+  </div>
+  <div class="lore-item">
+    <div class="lore-icon">💜</div>
+    <div>
+      <div class="lore-key">A Relação com a Mãe — Complicada, Real</div>
+      <div class="lore-val">Necrolai a transformou em verme duas vezes — uma por Imperious, outra pela própria mãe para testar um morfador. Nunca recebeu o Cajado de Neve de volta depois de usá-lo para salvar Udonna. O pai dela virou verme e Necrolai contou isso com frieza. E mesmo assim Leelee atravessou o portal ao lado dela. A dinâmica entre as duas é complicada não porque seja disfuncional — é complicada porque é real. E real não é simples.</div>
+    </div>
+  </div>
+  <div class="lore-item">
+    <div class="lore-icon">✨</div>
+    <div>
+      <div class="lore-key">O Momento de Mystic Fate — O Que Ela Sabe</div>
+      <div class="lore-val">Ela esteve lá quando Necrolai implorou a Itassis que a poupasse. Viu a mãe sacrificar os próprios poderes para ressuscitar guerreiros que ela não devia nada. Nenhuma outra pessoa viva viu isso acontecer da mesma forma que ela. Leelee não fala sobre isso diretamente — mas carrega como referência interna tudo o que Necrolai é capaz de ser quando não está performando para ninguém.</div>
+    </div>
+  </div>
+  <div class="lore-item" style="border-bottom:none">
+    <div class="lore-icon">🌱</div>
+    <div>
+      <div class="lore-key">Clare — A Corda Já Estava Esticada</div>
+      <div class="lore-val">Leelee e Clare foram ao Submundo juntas em Light Source para salvar Udonna. Foi Leelee que pegou o Cajado de Neve da própria mãe e o usou para revivê-la. Clare sabe disso. As duas não são amigas no sentido declarado — mas já dividiram algo que exigiu coragem das duas ao mesmo tempo. Em Valtheris, essa corda vai ser testada de um jeito diferente.</div>
+    </div>
+  </div>
+</div>
+
+<!-- APARÊNCIA + PERSONALIDADE -->
+<div class="two-col reveal">
+  <div class="panel">
+    <div class="sec">✦ Aparência</div>
+    <div class="ap-item">
+      <div class="ap-icon">🌗</div>
+      <div>
+        <div class="ap-lbl">Presença</div>
+        <div class="ap-val">Completamente humana à primeira vista. Nada na aparência denuncia a metade vampírica — sem palidez excessiva, sem olhos que traem, sem frieza de pele. O que existe é uma fluência de movimento levemente acima do humano e um olhar que lê a sala mais rápido do que devia.</div>
+      </div>
+    </div>
+    <div class="ap-item">
+      <div class="ap-icon">💜</div>
+      <div>
+        <div class="ap-lbl">O Detalhe</div>
+        <div class="ap-val">Sem reflexo em superfícies. Ela sabe e evita situações onde isso apareceria — anos de prática em Briarwood tornaram isso automático. Em momentos de descuido, alguém mais atento pode notar a ausência antes dela perceber que foi notada.</div>
+      </div>
+    </div>
+    <div class="ap-item" style="border-bottom:none">
+      <div class="ap-icon">⚡</div>
+      <div>
+        <div class="ap-lbl">Em Combate</div>
+        <div class="ap-val">A humanidade desaparece. Os movimentos ficam rápidos demais para ser confortáveis de ver. Não há hesitação, não há economia de movimento desnecessária. É quando fica mais claro que a metade vampírica existe.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="sec">✦ Personalidade</div>
+    <div class="lore-item">
+      <div class="lore-icon">😏</div>
+      <div>
+        <div class="lore-key">Irônica por Sobrevivência</div>
+        <div class="lore-val">Anos de vida entre dois mundos sem pertencer completamente a nenhum desenvolveram um humor seco que funciona como distância segura. Não é cinismo — é proteção. Quando para de fazer piada é quando algo importa de verdade.</div>
+      </div>
+    </div>
+    <div class="lore-item">
+      <div class="lore-icon">🎯</div>
+      <div>
+        <div class="lore-key">Leal por Escolha, Não por Sangue</div>
+        <div class="lore-val">A lealdade dela não é automática e não é de sangue — ela escolheu ficar ao lado de Necrolai depois de tudo o que aconteceu. Isso significa que quando ela está do seu lado, é porque decidiu estar. E quando decide estar do seu lado, fica.</div>
+      </div>
+    </div>
+    <div class="lore-item" style="border-bottom:none">
+      <div class="lore-icon">🧭</div>
+      <div>
+        <div class="lore-key">Pragmática Primeiro</div>
+        <div class="lore-val">Tende a identificar a solução mais direta e trabalhar em direção a ela, sem a tendência de Necrolai de calcular posicionamento político antes de agir. Isso as complementa — e às vezes as coloca em tensão.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+</main>
+
+<div class="footer">
+  <div class="footer-quote">
+    "Minha mãe virou meu pai em verme e me contou na maior.<br>
+    Também foi a única pessoa que eu vi agir sem calcular nada.<br>
+    As duas coisas são verdade ao mesmo tempo. Eu convivo."
+  </div>
+  <div class="footer-attr">✦ Além do Véu da Carne · Leelee Pimvare · Dhampir · Briarwood ✦</div>
+</div>
+
+</div>
+<script>
+const revealEls = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.06 });
+revealEls.forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

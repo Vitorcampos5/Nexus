@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clare Langtree — Ficha NPC</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --moon-lit:    #4890c8;
+  --moon-glow:   #70b8e8;
+  --moon-dim:    #0e2030;
+  --silver-lit:  #d8ecf8;
+  --violet-lit:  #7850a8;
+  --violet-glow: #9870c8;
+  --gold-lit:    #e8c850;
+  --frost:       #e8f4f8;
+  --frost-dim:   #8aa4b8;
+  --ink:         #040810;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  background-image:
+    radial-gradient(ellipse at 20% 8%,  #060e18 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 92%, #040a14 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, #050c18 0%, transparent 70%);
+  font-family: 'EB Garamond', serif;
+  color: var(--frost);
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.sheet { max-width: 900px; margin: 0 auto; }
+
+/* ── HEADER ── */
+.header { text-align: center; margin-bottom: 36px; }
+.header-line {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--moon-lit), var(--silver-lit), var(--moon-lit), transparent);
+  margin: 12px 0; transform-origin: center;
+}
+.bloodline-tag {
+  font-family: 'Cinzel', serif; font-size: 10px;
+  letter-spacing: 4px; color: var(--moon-lit);
+  text-transform: uppercase; opacity: .85; margin-bottom: 8px;
+}
+.char-name {
+  font-family: 'Cinzel Decorative', serif; font-size: 46px;
+  color: var(--frost); letter-spacing: 5px; line-height: 1.1;
+}
+.char-subtitle {
+  font-family: 'Cinzel', serif; font-size: 13px;
+  letter-spacing: 3px; color: var(--frost-dim); margin-top: 8px; font-style: italic;
+}
+.badge {
+  display: inline-block; font-family: 'Cinzel', serif;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 2px; margin-left: 8px; vertical-align: middle;
+}
+.badge-moon   { background: rgba(10,25,45,.5);  color: var(--moon-glow); border: 1px solid rgba(60,120,180,.45); }
+.badge-silver { background: rgba(25,40,60,.5);  color: var(--silver-lit);border: 1px solid rgba(90,140,180,.4); }
+.badge-violet { background: rgba(40,15,65,.45); color: var(--violet-glow);border: 1px solid rgba(100,60,160,.4); }
+.badge-gold   { background: rgba(50,35,5,.45);  color: var(--gold-lit);  border: 1px solid rgba(140,110,20,.4); }
+
+/* ── SEC ── */
+.sec {
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 4px;
+  color: var(--moon-lit); text-transform: uppercase;
+  margin-bottom: 14px; padding-bottom: 6px; border-bottom: 1px solid rgba(60,120,180,.22);
+}
+.sec-vt    { color: var(--violet-lit); border-bottom-color: rgba(100,60,160,.22); }
+.sec-gold  { color: var(--gold-lit);   border-bottom-color: rgba(180,140,30,.22); }
+.sec-silver{ color: var(--silver-lit); border-bottom-color: rgba(140,180,210,.22); }
+
+/* ── VITALS ── */
+.vitals-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+.vital {
+  background: rgba(4,8,16,.75); border: 1px solid rgba(50,100,160,.2);
+  border-radius: 4px; padding: 14px; transition: border-color .3s;
+}
+.vital:hover { border-color: rgba(100,180,230,.4); }
+.vital-lbl { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--moon-lit); opacity: .8; margin-bottom: 8px; }
+.vital-nums { display: flex; align-items: baseline; gap: 4px; margin-bottom: 8px; }
+.vital-cur  { font-family: 'Cinzel Decorative', serif; font-size: 30px; line-height: 1; }
+.vital-cur.hp  { color: var(--moon-glow); }
+.vital-cur.san { color: var(--silver-lit); }
+.vital-cur.ca  { color: var(--violet-glow); }
+.vital-cur.cr  { color: var(--gold-lit); }
+.vital-max { font-family: 'Cinzel', serif; font-size: 13px; color: var(--frost-dim); }
+.bar { height: 5px; background: rgba(255,255,255,.07); border-radius: 2px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 2px; }
+.bar-fill.hp  { background: linear-gradient(to right, var(--moon-dim), var(--moon-glow)); width: 100%; }
+.bar-fill.san { background: linear-gradient(to right, #1a2838, var(--silver-lit)); width: 80%; }
+.vital-note { font-size: 10px; color: var(--frost-dim); opacity: .65; margin-top: 6px; font-style: italic; }
+
+/* ── NATURE BOX ── */
+.nature-box {
+  background: rgba(4,8,16,.6); border: 1px solid rgba(50,100,160,.2);
+  border-radius: 4px; padding: 14px 16px; margin-bottom: 24px;
+}
+.nature-rows { display: flex; flex-wrap: wrap; gap: 8px; }
+.nature-row {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(0,0,0,.35); border: 1px solid rgba(50,100,160,.12);
+  border-radius: 3px; padding: 7px 12px; flex: 1; min-width: 220px;
+  transition: border-color .25s, background .25s;
+}
+.nature-row:hover { border-color: rgba(100,180,230,.35); background: rgba(40,90,140,.05); }
+.nbadge {
+  font-family: 'Cinzel', serif; font-size: 10px; font-weight: 600;
+  padding: 2px 7px; border-radius: 2px; white-space: nowrap;
+}
+.nb-gate   { background: rgba(10,25,50,.6);  color: var(--moon-glow);  border: 1px solid rgba(50,120,180,.55); }
+.nb-moon   { background: rgba(25,40,70,.5);  color: var(--silver-lit); border: 1px solid rgba(80,130,180,.5); }
+.nb-magic  { background: rgba(35,10,55,.5);  color: var(--violet-glow);border: 1px solid rgba(90,50,140,.5); }
+.nb-warn   { background: rgba(60,45,5,.5);   color: var(--gold-lit);   border: 1px solid rgba(140,110,15,.5); }
+.nature-text { font-size: 12px; color: var(--frost-dim); font-style: italic; flex: 1; line-height: 1.55; }
+.dtb {
+  font-family: 'Cinzel', serif; font-size: 9px; color: var(--moon-lit);
+  border: 1px solid rgba(50,100,160,.45); background: rgba(10,25,50,.4);
+  border-radius: 2px; padding: 1px 5px; flex-shrink: 0; white-space: nowrap;
+}
+.dtb-open { display:none; }
+details[open] .dtb-closed { display:none; }
+details[open] .dtb-open   { display:inline; }
+
+/* ── CoC ── */
+.coc-panel {
+  background: rgba(4,6,14,.5); border: 1px solid rgba(70,40,110,.22);
+  border-radius: 4px; padding: 14px 16px; margin-bottom: 24px;
+}
+.coc-row { display: grid; grid-template-columns: repeat(7,1fr); gap: 8px; margin-bottom: 12px; }
+.coc-box { background: rgba(4,6,14,.55); border: 1px solid rgba(70,40,110,.18); border-radius: 3px; padding: 8px 4px; text-align: center; }
+.coc-lbl { font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 1px; color: var(--violet-lit); text-transform: uppercase; margin-bottom: 4px; opacity: .8; }
+.coc-val { font-family: 'Cinzel', serif; font-size: 16px; color: var(--silver-lit); line-height: 1; }
+.coc-fifth { font-size: 9px; color: var(--frost-dim); opacity: .5; margin-top: 2px; }
+.coc-derived { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+.coc-d { background: rgba(4,6,14,.5); border: 1px solid rgba(70,40,110,.15); border-radius: 3px; padding: 8px; text-align: center; }
+.coc-d-lbl { font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 2px; color: var(--violet-lit); text-transform: uppercase; margin-bottom: 4px; opacity: .75; }
+.coc-d-val { font-family: 'Cinzel', serif; font-size: 15px; color: var(--silver-lit); }
+.coc-d-note { font-size: 9px; color: var(--frost-dim); opacity: .5; margin-top: 2px; }
+
+/* ── STATS ── */
+.stats-row { display: grid; grid-template-columns: repeat(6,1fr); gap: 10px; margin-bottom: 24px; }
+.stat-box {
+  background: rgba(4,8,18,.7); border: 1px solid rgba(50,100,160,.18);
+  border-radius: 4px; padding: 12px 8px; text-align: center;
+  transition: border-color .25s, box-shadow .25s, transform .2s;
+}
+.stat-box:hover { border-color: rgba(100,180,230,.5); box-shadow: 0 0 14px rgba(60,130,200,.12); transform: translateY(-2px); }
+.stat-box.high { border-color: rgba(100,180,230,.35); }
+.stat-lbl { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px; color: var(--moon-lit); text-transform: uppercase; margin-bottom: 6px; opacity: .8; }
+.stat-val { font-family: 'Cinzel Decorative', serif; font-size: 24px; color: var(--frost); line-height: 1; }
+.stat-val.high { color: var(--moon-glow); }
+.stat-mod { font-family: 'Cinzel', serif; font-size: 11px; color: var(--frost-dim); margin-top: 3px; }
+.stat-mod.high { color: var(--moon-glow); }
+
+/* ── PANELS ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.panel {
+  background: rgba(4,8,18,.5); border: 1px solid rgba(50,100,160,.14);
+  border-radius: 4px; padding: 18px; transition: border-color .3s, box-shadow .3s;
+}
+.panel:hover { border-color: rgba(100,180,230,.28); box-shadow: 0 0 20px rgba(50,120,200,.06); }
+
+/* ── AB ITEMS ── */
+.ab-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.05); transition: background .2s; }
+.ab-item:last-child { border-bottom: none; }
+.ab-item:hover { background: rgba(50,100,160,.03); }
+.ab-item:hover .ab-dot { transform: scale(1.4) translateX(2px); box-shadow: 0 0 18px rgba(100,180,230,.9); }
+.ab-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--moon-lit); margin-top: 6px; flex-shrink: 0; box-shadow: 0 0 6px rgba(60,130,200,.5); animation: dotPulse 2.8s ease-in-out infinite; }
+.ab-name { font-family: 'Cinzel', serif; font-size: 12px; color: var(--moon-glow); margin-bottom: 2px; }
+.ab-desc { font-size: 12px; color: var(--frost-dim); line-height: 1.5; font-style: italic; opacity: .85; }
+.ab-st { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; padding: 2px 6px; border-radius: 2px; margin-left: auto; flex-shrink: 0; white-space: nowrap; }
+.st-r { background: rgba(10,25,50,.6); color: var(--moon-lit);  border: 1px solid rgba(50,110,170,.6); animation: readyBlink 3.5s ease-in-out infinite; }
+.st-p { background: rgba(35,10,55,.5); color: var(--violet-glow);border: 1px solid rgba(90,50,140,.4); }
+.st-w { background: rgba(50,35,5,.5);  color: var(--gold-lit);   border: 1px solid rgba(140,110,15,.4); }
+
+/* ── PORTRAIT STACK ── */
+.portrait-stack { position: relative; width: 240px; height: 300px; }
+.portrait-slot {
+  position: absolute; top: 0; left: 0; width: 240px; height: 300px;
+  border-radius: 4px; overflow: hidden; cursor: pointer;
+  transition: transform .55s cubic-bezier(.34,1.28,.64,1), box-shadow .4s ease, filter .4s;
+}
+.portrait-slot.front {
+  z-index: 2; border: 1px solid rgba(80,160,220,.4);
+  box-shadow: 0 0 50px rgba(40,120,200,.2), 0 0 90px rgba(0,0,0,.85);
+}
+.portrait-slot.back {
+  z-index: 1; border: 1px solid rgba(100,180,240,.35);
+  transform: translateX(14px) translateY(10px) rotate(2.5deg);
+  box-shadow: 0 4px 24px rgba(0,0,0,.7); filter: brightness(.68);
+}
+.portrait-slot.back:hover { filter: brightness(.88); transform: translateX(16px) translateY(8px) rotate(2.5deg); }
+.portrait-slot.front:hover { filter: brightness(1.05); }
+.p-label {
+  position: absolute; top: 8px; left: 8px;
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 2px; pointer-events: none; z-index: 10;
+}
+.p-feiticeira { background: rgba(5,15,30,.8);  color: var(--silver-lit); border: 1px solid rgba(60,120,180,.4); }
+.p-guerreira  { background: rgba(8,20,40,.8);  color: var(--moon-glow);  border: 1px solid rgba(100,180,240,.5); }
+.portrait-slot::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 70px;
+  background: linear-gradient(to top, rgba(4,8,16,1), transparent);
+  border-radius: 0 0 4px 4px; pointer-events: none;
+}
+.portrait-slot.back::before {
+  content: '↺ alternar forma';
+  position: absolute; bottom: 46px; left: 50%; transform: translateX(-50%);
+  font-family: 'Cinzel', serif; font-size: 7px; letter-spacing: 1.5px;
+  color: var(--moon-lit); opacity: 0; transition: opacity .3s;
+  white-space: nowrap; z-index: 9; pointer-events: none;
+}
+.portrait-slot.back:hover::before { opacity: .75; }
+
+/* ── ATTACK DECK ── */
+.attack-deck { position: relative; padding-top: 44px; margin-bottom: 24px; }
+.attack-deck .panel-a { position: relative; z-index: 2; cursor: default; }
+.attack-deck .panel-b {
+  position: absolute; top: 0; left: 10px; right: -10px;
+  z-index: 1; height: 44px; overflow: hidden;
+  cursor: pointer; opacity: .5; filter: brightness(.6);
+  transition: opacity .35s ease, filter .35s ease;
+}
+.attack-deck .panel-b:hover { opacity: .72; filter: brightness(.85); }
+.attack-deck.swapped .panel-b {
+  position: relative; z-index: 2; top: auto; left: 0; right: 0;
+  height: auto; overflow: visible; cursor: default; opacity: 1; filter: none;
+}
+.attack-deck.swapped .panel-a {
+  position: absolute; top: 0; left: 10px; right: -10px;
+  z-index: 1; height: 44px; overflow: hidden;
+  cursor: pointer; opacity: .5; filter: brightness(.6);
+}
+.attack-deck.swapped .panel-a:hover { opacity: .72; filter: brightness(.85); }
+.deck-tag {
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 2px; margin-left: 8px; vertical-align: middle;
+}
+.deck-tag.feiticeira { background: rgba(20,40,70,.4);  color: var(--silver-lit); border: 1px solid rgba(60,120,180,.3); }
+.deck-tag.guerreira  { background: rgba(8,25,55,.55);  color: var(--moon-glow);  border: 1px solid rgba(100,180,240,.45); }
+.deck-hint { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px; color: var(--moon-lit); opacity: .38; text-align: right; margin-top: 10px; }
+
+/* ── ATK ── */
+.atk-row { padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.05); transition: background .2s, padding-left .2s; }
+.atk-row:last-child { border-bottom: none; }
+.atk-row:hover { background: rgba(50,100,160,.04); padding-left: 4px; }
+.atk-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.atk-icon { font-size: 15px; }
+.atk-name { font-family: 'Cinzel', serif; font-size: 12px; color: var(--moon-glow); flex: 1; }
+.atk-bonus { font-family: 'Cinzel', serif; font-size: 12px; color: var(--frost); }
+.tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 3px; }
+.atk-desc { font-size: 11px; color: var(--frost-dim); font-style: italic; opacity: .8; }
+.tag { display: inline-block; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; padding: 2px 7px; border-radius: 2px; }
+.t-moon   { background: rgba(10,25,50,.4);  color: var(--moon-glow);   border: 1px solid rgba(50,110,180,.4); }
+.t-silver { background: rgba(20,35,55,.4);  color: var(--silver-lit);  border: 1px solid rgba(70,120,160,.4); }
+.t-violet { background: rgba(35,10,55,.4);  color: var(--violet-glow); border: 1px solid rgba(90,50,140,.4); }
+.t-gold   { background: rgba(50,35,5,.4);   color: var(--gold-lit);    border: 1px solid rgba(140,110,15,.4); }
+.t-giant  { background: rgba(8,20,45,.5);   color: #a0d8f8;            border: 1px solid rgba(100,180,240,.4); }
+
+/* ── SAVES ── */
+.saves-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px; }
+.save-item { display: flex; align-items: center; gap: 7px; padding: 5px 7px; background: rgba(4,8,18,.5); border: 1px solid rgba(50,100,160,.1); border-radius: 3px; transition: border-color .2s; }
+.save-item:hover { border-color: rgba(100,180,230,.3); }
+.dot { width: 7px; height: 7px; border-radius: 50%; border: 1px solid rgba(100,180,230,.35); flex-shrink: 0; }
+.dot.on { background: var(--moon-lit); border-color: var(--moon-lit); animation: dotPulse 3.2s ease-in-out infinite; }
+.save-name { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; color: var(--frost-dim); text-transform: uppercase; flex: 1; }
+.save-val  { font-family: 'Cinzel', serif; font-size: 12px; color: var(--frost); }
+.sk-row  { display: flex; align-items: center; gap: 7px; padding: 4px 5px; }
+.sk-dot  { width: 6px; height: 6px; border-radius: 50%; border: 1px solid rgba(100,180,230,.4); flex-shrink: 0; }
+.sk-dot.prof { background: var(--moon-lit);   border-color: var(--moon-lit); }
+.sk-dot.exp  { background: var(--silver-lit); border-color: var(--silver-lit); }
+.sk-name { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; color: var(--frost-dim); text-transform: uppercase; flex: 1; }
+.sk-val  { font-family: 'Cinzel', serif; font-size: 11px; color: var(--frost); }
+.sk-leg  { margin-top: 6px; font-size: 10px; color: var(--frost-dim); opacity: .5; font-style: italic; }
+
+/* ── LORE ── */
+.lore-panel { background: rgba(4,8,18,.5); border: 1px solid rgba(50,100,160,.12); border-radius: 4px; padding: 18px; margin-bottom: 24px; }
+.lore-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.05); transition: background .2s; border-radius: 3px; }
+.lore-item:last-child { border-bottom: none; }
+.lore-item:hover { background: rgba(50,100,160,.04); }
+.lore-icon { font-size: 17px; flex-shrink: 0; width: 24px; text-align: center; margin-top: 1px; }
+.lore-key { font-family: 'Cinzel', serif; font-size: 11px; color: var(--moon-lit); margin-bottom: 3px; letter-spacing: 1px; }
+.lore-val { font-size: 13px; color: var(--frost-dim); line-height: 1.55; }
+
+/* ── APPEAR ── */
+.ap-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
+.ap-item:last-child { border-bottom: none; }
+.ap-icon { font-size: 17px; flex-shrink: 0; width: 24px; text-align: center; margin-top: 1px; }
+.ap-lbl { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--moon-lit); opacity: .8; margin-bottom: 4px; }
+.ap-val { font-size: 13px; color: var(--frost-dim); line-height: 1.5; }
+
+/* ── SITUATION ── */
+.situation {
+  background: rgba(4,8,18,.25); border: 1px solid rgba(60,120,180,.3);
+  border-radius: 4px; padding: 16px 18px; margin-bottom: 24px;
+  animation: borderGlow 4.2s ease-in-out 2s infinite;
+}
+.sit-title { font-family: 'Cinzel Decorative', serif; font-size: 13px; color: var(--moon-glow); margin-bottom: 8px; }
+.sit-body { font-size: 13px; color: var(--frost-dim); font-style: italic; line-height: 1.65; }
+
+/* ── SPELL SLOTS ── */
+.spell-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 6px; margin-top: 12px; }
+.spell-box { background: rgba(4,8,18,.7); border: 1px solid rgba(50,100,160,.22); border-radius: 3px; padding: 8px 4px; text-align: center; }
+.spell-lvl { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 1px; color: var(--frost-dim); margin-bottom: 4px; display: block; }
+.spell-slots { font-family: 'Cinzel', serif; font-size: 14px; color: var(--moon-glow); }
+
+/* ── FOOTER ── */
+.footer { text-align: center; margin-top: 36px; padding-top: 18px; border-top: 1px solid rgba(50,100,160,.12); }
+.footer-quote { font-style: italic; font-size: 15px; color: var(--frost-dim); opacity: .5; line-height: 1.75; }
+.footer-attr  { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px; color: var(--moon-lit); opacity: .35; margin-top: 10px; }
+
+/* ── LEG GRID ── */
+.leg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 14px; }
+.leg-box  { background: rgba(4,10,24,.6); border: 1px solid rgba(50,100,160,.15); border-radius: 3px; padding: 8px; }
+.leg-name { font-family: 'Cinzel', serif; font-size: 9px; color: var(--moon-lit); margin-bottom: 3px; }
+.leg-desc { font-size: 10px; color: var(--frost-dim); font-style: italic; }
+
+/* ── ANIM ── */
+@keyframes fadeInDown { from{opacity:0;transform:translateY(-18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeInUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:translateY(0)} }
+@keyframes lineDraw   { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+@keyframes slideLeft  { from{opacity:0;transform:translateX(-18px)} to{opacity:1;transform:translateX(0)} }
+@keyframes nameReveal {
+  0%  {opacity:0;letter-spacing:24px;text-shadow:none}
+  60% {opacity:1;letter-spacing:7px}
+  100%{opacity:1;letter-spacing:5px;text-shadow:0 0 50px rgba(60,130,220,.28),0 2px 4px rgba(0,0,0,.9)}
+}
+@keyframes moonGlow {
+  0%,100%{text-shadow:0 0 38px rgba(60,130,220,.2),0 2px 4px rgba(0,0,0,.9)}
+  50%    {text-shadow:0 0 72px rgba(80,180,240,.5),0 0 24px rgba(140,200,240,.2),0 2px 4px rgba(0,0,0,.9)}
+}
+@keyframes dotPulse  { 0%,100%{box-shadow:0 0 5px rgba(60,130,200,.5)} 50%{box-shadow:0 0 13px rgba(100,180,240,.9)} }
+@keyframes readyBlink{ 0%,100%{opacity:1} 50%{opacity:.58} }
+@keyframes borderGlow{ 0%,100%{border-color:rgba(50,100,160,.3)} 50%{border-color:rgba(100,180,240,.65);box-shadow:0 0 18px rgba(50,120,200,.1)} }
+
+.bloodline-tag  { animation: fadeInDown .7s ease .1s both; }
+.header-line    { animation: lineDraw .9s cubic-bezier(.22,.68,0,1.2) .5s both; }
+.char-name      { animation: nameReveal 1.2s cubic-bezier(.22,.68,0,1.15) .4s both, moonGlow 5.5s ease-in-out 2s infinite; }
+.char-subtitle  { animation: fadeInDown .7s ease 1.1s both; }
+.vital-cur      { animation: numPop .6s cubic-bezier(.34,1.56,.64,1) 1.0s both; }
+.footer         { animation: fadeInDown 1.0s ease .5s both; }
+@keyframes numPop { 0%{opacity:0;transform:scale(.72)} 70%{transform:scale(1.07)} 100%{opacity:1;transform:scale(1)} }
+.stats-row .stat-box { animation: fadeInUp .5s ease both; }
+.stats-row .stat-box:nth-child(1){animation-delay:.04s}
+.stats-row .stat-box:nth-child(2){animation-delay:.11s}
+.stats-row .stat-box:nth-child(3){animation-delay:.18s}
+.stats-row .stat-box:nth-child(4){animation-delay:.25s}
+.stats-row .stat-box:nth-child(5){animation-delay:.32s}
+.stats-row .stat-box:nth-child(6){animation-delay:.39s}
+.nature-row{animation:slideLeft .45s ease both}
+.nature-row:nth-child(1){animation-delay:.04s}
+.nature-row:nth-child(2){animation-delay:.12s}
+.nature-row:nth-child(3){animation-delay:.20s}
+.nature-row:nth-child(4){animation-delay:.28s}
+.nature-row:nth-child(5){animation-delay:.36s}
+
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.char-name{animation:none}}
+@media(max-width:600px){.vitals-grid{grid-template-columns:1fr 1fr}.stats-row{grid-template-columns:repeat(3,1fr)}.two-col{grid-template-columns:1fr}.char-name{font-size:30px}.leg-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-line"></div>
+  <div class="bloodline-tag">✦ Briarwood · Rootcore · Guardiã do Portão ✦</div>
+  <h1 class="char-name">Clare Langtree</h1>
+  <div class="char-subtitle">
+    Feiticeira de Rootcore · Guardiã do Portão · Filha de Niella
+    <span class="badge badge-silver">Leal Bom</span>
+    <span class="badge badge-moon">CR 8 / CR 11</span>
+  </div>
+
+<main>
+  <div class="header-line"></div>
+</div>
+
+<!-- PORTRAIT -->
+<div style="display:flex;justify-content:center;margin-bottom:48px;">
+  <div class="portrait-stack" id="portraitStack">
+
+    <!-- Guerreira da Lua Brilhante — atrás -->
+    <div class="portrait-slot back" id="slotGuerreira" onclick="swapPortraits()">
+      <span class="p-label p-guerreira">Guerreira da Lua Brilhante</span>
+      <img src="Perfil - Clare Langtree Guardiã.png" alt="Clare — Guardiã da Lua"
+           style="width:100%;height:100%;object-fit:cover;object-position:top center;display:block;
+                  filter:saturate(0.90) contrast(1.05);">
+      <div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+                  z-index:8;pointer-events:none;display:flex;align-items:center;gap:6px;
+                  white-space:nowrap;">
+        <span style="font-size:18px;filter:drop-shadow(0 0 8px rgba(100,180,240,.9))">🌕</span>
+        <span style="font-family:'Cinzel Decorative',serif;font-size:7px;color:var(--moon-glow);
+                     letter-spacing:2px;opacity:.88">SHINING MOON WARRIOR</span>
+      </div>
+    </div>
+
+    <!-- Feiticeira de Rootcore — frente -->
+    <div class="portrait-slot front" id="slotFeiticeira" onclick="swapPortraits()">
+      <span class="p-label p-feiticeira">Feiticeira de Rootcore</span>
+      <img src="Perfil - Clare Langtree.png" alt="Clare — Feiticeira de Rootcore"
+           style="width:100%;height:100%;object-fit:cover;object-position:top center;display:block;
+                  filter:saturate(0.88) contrast(1.04);">
+      <div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+                  z-index:8;pointer-events:none;display:flex;align-items:center;gap:6px;
+                  white-space:nowrap;">
+        <span style="font-size:18px;filter:drop-shadow(0 0 8px rgba(180,220,250,.7))">🌙</span>
+        <span style="font-family:'Cinzel Decorative',serif;font-size:7px;color:var(--silver-lit);
+                     letter-spacing:2px;opacity:.88">ROOTCORE SORCERESS</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- VITAIS -->
+<div class="sec">✦ Pontos Vitais — Forma Feiticeira</div>
+<div class="vitals-grid">
+  <div class="vital">
+    <div class="vital-lbl">Pontos de Vida</div>
+    <div class="vital-nums"><div class="vital-cur hp">72</div><div class="vital-max">/ 72</div></div>
+    <div class="bar"><div class="bar-fill hp"></div></div>
+    <div class="vital-note">11d8+22 · Guerreira da Lua: 140 HP (Enorme)</div>
+  </div>
+  <div class="vital">
+    <div class="vital-lbl">Sanidade</div>
+    <div class="vital-nums"><div class="vital-cur san">72</div><div class="vital-max">/ 90</div></div>
+    <div class="bar"><div class="bar-fill san"></div></div>
+    <div class="vital-note">SAB 18 × 5 = 90 máx · Morte de Niella + 50 anos: −18</div>
+  </div>
+  <div class="vital">
+    <div class="vital-lbl">Classe de Armadura</div>
+    <div class="vital-nums"><div class="vital-cur ca">14</div><div class="vital-max">/ 17</div></div>
+    <div class="vital-note">Feiticeira: 14 mágica · Guerreira: 17 natural (Enorme)</div>
+  </div>
+  <div class="vital">
+    <div class="vital-lbl">Nível de Ameaça</div>
+    <div class="vital-nums"><div class="vital-cur cr" style="font-size:20px">CR 8</div></div>
+    <div class="vital-note">3.900 XP · Guerreira da Lua: CR 11 / 7.200 XP</div>
+  </div>
+</div>
+
+<!-- NATUREZA -->
+<div class="nature-box reveal">
+  <div class="sec" style="margin-bottom:12px">✦ Natureza — Feiticeira & Guardiã do Portão</div>
+  <div class="nature-rows">
+
+    <div class="nature-row">
+      <span class="nbadge nb-gate">Guardiã do Portão</span>
+      <span class="nature-text">Herdou de Niella — sua mãe — o papel de Guardiã do Portão do Submundo de Briarwood. Pode abrir ou fechar o Portão com um gesto. Sente flutuações no selo do Portão a qualquer distância — foi essa sensação que a alertou para o portal de Valtheris.</span>
+    </div>
+
+    <div class="nature-row">
+      <span class="nbadge nb-moon">Shining Moon Warrior</span>
+      <span class="nature-text">
+        <details>
+          <summary style="cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px">
+            <span class="dtb dtb-closed">▸ VER</span>
+            <span class="dtb dtb-open">▾ FECHAR</span>
+            Forma gigante herdada de Niella. Tamanho Enorme, poder físico massivo.
+          </summary>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(50,100,160,.25);font-size:12px;color:var(--frost-dim);line-height:1.6">
+            A tiara de Niella é o conduto. Na transformação, Clare cresce até tamanho Enorme mantendo acesso a magias de Concentração. Ataques físicos amplificados e poder de luz lunar. Dura até ela escolher reverter ou ser incapacitada. Uma vez por descanso longo.
+          </div>
+        </details>
+      </span>
+    </div>
+
+    <div class="nature-row">
+      <span class="nbadge nb-magic">Feiticeira de Rootcore</span>
+      <span class="nature-text">Título concedido pela Mystic Mother após a partida de Udonna. Cinquenta anos de prática tornaram sua magia lunar precisa e profunda. Especialização: vedação de portais, luz, vento, transmissão mística. Acesso a feitiços até nível 6.</span>
+    </div>
+
+    <div class="nature-row">
+      <span class="nbadge nb-warn">Tiara de Niella — Histórico</span>
+      <span class="nature-text">A tiara foi drenada por Koragg em um confronto antigo. Com 50 anos de renovação passiva, está novamente carregada — mas a experiência de senti-la se esvaziar deixou uma cicatriz: Clare mantém consciência constante do nível de carga da tiara, como alguém que já perdeu algo uma vez.</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- CoC REFERÊNCIA -->
+<div class="coc-panel reveal">
+  <div class="sec sec-vt" style="margin-bottom:12px">✦ Referência CoC 7ª Ed. — Forma Feiticeira</div>
+  <div class="coc-row">
+    <div class="coc-box"><div class="coc-lbl">FOR</div><div class="coc-val">45</div><div class="coc-fifth">1/5=9</div></div>
+    <div class="coc-box"><div class="coc-lbl">CON</div><div class="coc-val">55</div><div class="coc-fifth">1/5=11</div></div>
+    <div class="coc-box"><div class="coc-lbl">TAM</div><div class="coc-val">55</div><div class="coc-fifth">1/5=11</div></div>
+    <div class="coc-box"><div class="coc-lbl">DES</div><div class="coc-val">65</div><div class="coc-fifth">1/5=13</div></div>
+    <div class="coc-box"><div class="coc-lbl">INT</div><div class="coc-val">85</div><div class="coc-fifth">1/5=17</div></div>
+    <div class="coc-box"><div class="coc-lbl">POD</div><div class="coc-val">90</div><div class="coc-fifth">1/5=18</div></div>
+    <div class="coc-box" style="border-color:rgba(80,130,200,.28)">
+      <div class="coc-lbl" style="color:var(--silver-lit)">SAB</div>
+      <div class="coc-val" style="color:var(--silver-lit)">72</div>
+      <div class="coc-fifth">Máx: 90</div>
+    </div>
+  </div>
+  <div class="coc-derived">
+    <div class="coc-d"><div class="coc-d-lbl">HP CoC</div><div class="coc-d-val">11</div><div class="coc-d-note">(CON+TAM)/10</div></div>
+    <div class="coc-d"><div class="coc-d-lbl">Bônus Dano</div><div class="coc-d-val">0</div><div class="coc-d-note">FOR+TAM=100</div></div>
+    <div class="coc-d"><div class="coc-d-lbl">Magia</div><div class="coc-d-val">90%</div><div class="coc-d-note">POD×1</div></div>
+    <div class="coc-d"><div class="coc-d-lbl">SAN Enc.</div><div class="coc-d-val">1d4</div><div class="coc-d-note">Guerreira: 2d6</div></div>
+  </div>
+  <div style="margin-top:10px;font-size:10px;color:var(--frost-dim);opacity:.55;font-style:italic;border-left:2px solid rgba(70,40,110,.3);padding-left:8px">
+    Guerreira da Lua Brilhante: CD 16 SAB · Falha: 2d6 SAN · O horror é de escala — algo humano e familiar de repente Enorme, com luz emanando das articulações.
+  </div>
+</div>
+
+<!-- ATRIBUTOS -->
+<div class="sec reveal">✦ Atributos — Valtheris / D&D 5e — Forma Feiticeira</div>
+<div class="stats-row reveal">
+  <div class="stat-box"><div class="stat-lbl">Força</div><div class="stat-val">10</div><div class="stat-mod">+0</div></div>
+  <div class="stat-box"><div class="stat-lbl">Destreza</div><div class="stat-val">14</div><div class="stat-mod">+2</div></div>
+  <div class="stat-box"><div class="stat-lbl">Constituição</div><div class="stat-val">14</div><div class="stat-mod">+2</div></div>
+  <div class="stat-box high"><div class="stat-lbl">Inteligência</div><div class="stat-val high">18</div><div class="stat-mod high">+4</div></div>
+  <div class="stat-box high"><div class="stat-lbl">Sabedoria</div><div class="stat-val high">18</div><div class="stat-mod high">+4</div></div>
+  <div class="stat-box"><div class="stat-lbl">Carisma</div><div class="stat-val">16</div><div class="stat-mod">+3</div></div>
+</div>
+
+<!-- HABILIDADES + SAVES -->
+<div class="two-col reveal">
+  <div class="panel">
+    <div class="sec">✦ Habilidades Especiais</div>
+    <div class="ab-item">
+      <div class="ab-dot"></div>
+      <div style="flex:1">
+        <div class="ab-name">Selo & Abertura de Portal</div>
+        <div class="ab-desc">Pode abrir ou selar o Portão do Submundo de Briarwood com ação e concentração de 1 minuto. Em Valtheris, essa habilidade pode interagir com outros portais — efeito e CD ainda não testados.</div>
+      </div>
+      <div class="ab-st st-r">Ativo</div>
+    </div>
+    <div class="ab-item">
+      <div class="ab-dot" style="background:var(--gold-lit);box-shadow:0 0 6px rgba(200,170,40,.4)"></div>
+      <div style="flex:1">
+        <div class="ab-name">Shining Moon Warrior — Transformação</div>
+        <div class="ab-desc">Uma vez por descanso longo, ação bônus: transforma-se em tamanho Enorme. HP sobe para 140, FOR 22 (+6), CA 17, Vel 50 pés. Mantém INT/SAB/CAR e acesso a magias de Concentração. Reverte por ação bônus ou ao ser incapacitada.</div>
+      </div>
+      <div class="ab-st st-w">1/Descanso</div>
+    </div>
+    <div class="ab-item">
+      <div class="ab-dot" style="background:var(--violet-glow);box-shadow:0 0 6px rgba(150,110,200,.4)"></div>
+      <div style="flex:1">
+        <div class="ab-name">Sensibilidade ao Portão</div>
+        <div class="ab-desc">Como Guardiã do Portão do Submundo de Briarwood, Clare sente flutuações no selo desse Portão a qualquer distância — foi essa sensação que a alertou para a existência do portal de Valtheris. A habilidade está vinculada ao Portão específico de Briarwood, não a portais em geral.</div>
+      </div>
+      <div class="ab-st st-p">Passivo</div>
+    </div>
+    <div class="ab-item">
+      <div class="ab-dot" style="background:var(--silver-lit);box-shadow:0 0 6px rgba(180,210,230,.4)"></div>
+      <div style="flex:1">
+        <div class="ab-name">Magia de Concentração Dupla</div>
+        <div class="ab-desc">Pode manter duas magias de Concentração simultaneamente desde que uma seja de escola de Abjuração e a outra de escola diferente. Resultado de 50 anos de prática — não é regra padrão, é capacidade desenvolvida.</div>
+      </div>
+      <div class="ab-st st-p">Passivo</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="sec">✦ Salvaguardas & Magias</div>
+    <div class="saves-grid">
+      <div class="save-item"><div class="dot"></div><span class="save-name">Força</span><span class="save-val">+0</span></div>
+      <div class="save-item"><div class="dot"></div><span class="save-name">Destreza</span><span class="save-val">+2</span></div>
+      <div class="save-item"><div class="dot"></div><span class="save-name">Constituição</span><span class="save-val">+2</span></div>
+      <div class="save-item"><div class="dot on"></div><span class="save-name">Inteligência</span><span class="save-val">+7</span></div>
+      <div class="save-item"><div class="dot on"></div><span class="save-name">Sabedoria</span><span class="save-val">+7</span></div>
+      <div class="save-item"><div class="dot on"></div><span class="save-name">Carisma</span><span class="save-val">+6</span></div>
+    </div>
+    <div style="font-size:10px;color:var(--frost-dim);opacity:.5;font-style:italic;margin-bottom:12px">Bônus de Proficiência: +3 · CD Magia: 15 · Bônus Ataque Mágico: +7</div>
+    <div class="sk-row"><div class="sk-dot exp"></div><span class="sk-name">Arcanismo</span><span class="sk-val">+10</span></div>
+    <div class="sk-row"><div class="sk-dot exp"></div><span class="sk-name">Religião / Planos</span><span class="sk-val">+10</span></div>
+    <div class="sk-row"><div class="sk-dot prof"></div><span class="sk-name">Percepção</span><span class="sk-val">+7</span></div>
+    <div class="sk-row"><div class="sk-dot prof"></div><span class="sk-name">Intuição</span><span class="sk-val">+7</span></div>
+    <div class="sk-leg" style="margin-bottom:12px">◈◈ Especialista · ◈ Proficiente</div>
+    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--moon-lit);text-transform:uppercase;margin-bottom:8px;opacity:.8">Slots de Magia</div>
+    <div class="spell-grid">
+      <div class="spell-box"><span class="spell-lvl">Nív 1</span><span class="spell-slots">4</span></div>
+      <div class="spell-box"><span class="spell-lvl">Nív 2</span><span class="spell-slots">3</span></div>
+      <div class="spell-box"><span class="spell-lvl">Nív 3</span><span class="spell-slots">3</span></div>
+      <div class="spell-box"><span class="spell-lvl">Nív 4</span><span class="spell-slots">3</span></div>
+      <div class="spell-box"><span class="spell-lvl">Nív 5</span><span class="spell-slots">2</span></div>
+      <div class="spell-box"><span class="spell-lvl">Nív 6</span><span class="spell-slots">1</span></div>
+      <div class="spell-box" style="border-color:rgba(100,180,240,.35)"><span class="spell-lvl" style="color:var(--moon-glow)">Truques</span><span class="spell-slots" style="color:var(--moon-glow)">∞</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- DECK DE ATAQUES -->
+<div class="attack-deck reveal" id="attackDeck">
+
+  <!-- PAINEL A — Feiticeira (frente) -->
+  <div class="panel panel-a" id="panelFeiticeira">
+    <div class="sec">✦ Ações <span class="deck-tag feiticeira">Feiticeira de Rootcore · CR 8</span></div>
+
+    <div class="atk-row">
+      <div class="atk-head"><span class="atk-icon">🌙</span><span class="atk-name">Moonbeam</span><span class="atk-bonus">+7 atq</span></div>
+      <div class="tags"><span class="tag t-moon">2d10 radiante/turno</span><span class="tag t-silver">Cilindro 1,5m · 9m</span><span class="tag t-violet">Concentração · 1 min</span></div>
+      <div class="atk-desc">Coluna de luz lunar. Criaturas que entrem ou comecem o turno: CD 15 CON ou 2d10 radiante. Pode mover 18m por ação bônus. Vampiros salvam com desvantagem.</div>
+    </div>
+
+    <div class="atk-row">
+      <div class="atk-head"><span class="atk-icon">💨</span><span class="atk-name">Vento Cortante</span><span class="atk-bonus">+7 atq</span></div>
+      <div class="tags"><span class="tag t-silver">3d8 cortante</span><span class="tag t-moon">Linha 9m</span><span class="tag t-violet">CD 15 DEX metade</span></div>
+      <div class="atk-desc">Lâmina de vento em linha. Afasta criaturas 4,5m na falha. Referência a Briarwood: Udonna usava magia de neve; Clare herdou a escola mas desenvolveu vento como expressão própria.</div>
+    </div>
+
+    <div class="atk-row">
+      <div class="atk-head"><span class="atk-icon">🔒</span><span class="atk-name">Selo de Portal</span><span class="atk-bonus">Ação</span></div>
+      <div class="tags"><span class="tag t-violet">Abjuração 6º nível</span><span class="tag t-moon">Concentração · 10 min</span><span class="tag t-gold">Funciona em Valtheris?</span></div>
+      <div class="atk-desc">Sela ou abre qualquer portal ou passagem planar em alcance de 9m. No Portão de Briarwood: sem custo de slot. Em portais de Valtheris: CD 18 Arcanismo para determinar compatibilidade. Efeito ainda não testado neste plano.</div>
+    </div>
+
+    <div class="atk-row">
+      <div class="atk-head"><span class="atk-icon">✨</span><span class="atk-name">Luz da Aurora</span><span class="atk-bonus">+7 atq</span></div>
+      <div class="tags"><span class="tag t-moon">4d8 radiante</span><span class="tag t-silver">Esfera 6m</span><span class="tag t-violet">CD 15 CON metade</span></div>
+      <div class="atk-desc">Explosão de luz lunar concentrada. Afeta todos na área. Vampiros e mortos-vivos: dano dobrado e salvaguarda com desvantagem. Recarga 5–6.</div>
+    </div>
+
+    <div class="atk-row" style="border-bottom:none">
+      <div class="atk-head"><span class="atk-icon">🛡️</span><span class="atk-name">Contra-Magia</span><span class="atk-bonus">Reação</span></div>
+      <div class="tags"><span class="tag t-violet">Abjuração 3º nível</span><span class="tag t-silver">Reação</span></div>
+      <div class="atk-desc">Interrompe uma magia de 3º nível ou inferior automaticamente. Magias de nível superior: CD 13 + nível da magia. Distância: 18m.</div>
+    </div>
+
+    <div class="sec" style="margin-top:18px;margin-bottom:10px">✦ Ações Lendárias (2 / Rodada)</div>
+    <div class="leg-grid">
+      <div class="leg-box"><div class="leg-name">Cantrip (1)</div><div class="leg-desc">Dispara um truque mágico.</div></div>
+      <div class="leg-box"><div class="leg-name">Mover Moonbeam (1)</div><div class="leg-desc">Move o Moonbeam ativo 18m.</div></div>
+      <div class="leg-box"><div class="leg-name">Contra-Magia (2)</div><div class="leg-desc">Usa Contra-Magia fora do turno.</div></div>
+      <div class="leg-box"><div class="leg-name">Transformar (2)</div><div class="leg-desc">Ativa Shining Moon Warrior.</div></div>
+    </div>
+    <div class="deck-hint">▲ Guerreira da Lua Brilhante · Forma Enorme</div>
+  </div>
+
+  <!-- PAINEL B — Guerreira da Lua (atrás) -->
+  <div class="panel panel-b" id="panelGuerreira">
+    <div class="sec">✦ Ações <span class="deck-tag guerreira">Guerreira da Lua Brilhante · CR 11 · Tamanho Enorme</span></div>
+
+    <div class="atk-row">
+      <div class="atk-head"><span class="atk-icon">⚔️</span><span class="atk-name">Multiatacar — Golpes da Lua</span></div>
+      <div class="atk-desc" style="padding-left:24px">Dois ataques por ação em forma Enorme.</div>
+    </div>
+
+    <div class="atk-row">
+      <div class="atk-head"><span class="atk-icon">💢</span><span class="atk-name">Pancada Lunar</span><span class="atk-bonus">+9 atq</span></div>
+      <div class="tags"><span class="tag t-giant">3d8+6 contundente</span><span class="tag t-moon">+2d6 radiante</span><span class="tag t-silver">Alcance 3m · Enorme</span></div>
+      <div class="atk-desc">Golpe físico amplificado pela luz lunar. Acerto: 3d8+6 + 2d6 radiante. Criaturas Médias ou menores: CD 17 FOR ou Prostradas.</div>
+    </div>
+
+    <div class="atk-row">
+      <div class="atk-head"><span class="atk-icon">🌕</span><span class="atk-name">Explosão da Lua Cheia</span><span class="atk-bonus">—</span></div>
+      <div class="tags"><span class="tag t-moon">6d8 radiante</span><span class="tag t-giant">Explosão 9m ao redor</span><span class="tag t-gold">CD 17 CON metade · Recarga 5–6</span></div>
+      <div class="atk-desc">Libera toda a luz acumulada em explosão ao redor. Todos no raio de 9m: 6d8 radiante, CD 17 CON metade. Vampiros e mortos-vivos: falha automática + dano máximo. Após usar, forma volta ao normal.</div>
+    </div>
+
+    <div class="atk-row">
+      <div class="atk-head"><span class="atk-icon">🛡️</span><span class="atk-name">Barreira de Prata</span><span class="atk-bonus">Reação</span></div>
+      <div class="tags"><span class="tag t-silver">Reduz 2d10+5</span><span class="tag t-moon">Abjuração</span></div>
+      <div class="atk-desc">Em resposta a um ataque que a acertaria: luz lunar forma escudo que reduz 2d10+5 de dano. Funciona em qualquer tipo de dano.</div>
+    </div>
+
+    <div class="atk-row" style="border-bottom:none">
+      <div class="atk-head"><span class="atk-icon">🌀</span><span class="atk-name">Pisão Lunar</span><span class="atk-bonus">+9 atq</span></div>
+      <div class="tags"><span class="tag t-giant">2d10+6 contundente</span><span class="tag t-moon">Área 3×3m</span><span class="tag t-gold">CD 17 DEX ou Paralisado 1 turno</span></div>
+      <div class="atk-desc">Salta até 15m e pousa numa área. Todos na zona de pouso: 2d10+6, CD 17 DEX ou Paralisados até o próximo turno. Espaço de pouso deve suportar criatura Enorme.</div>
+    </div>
+
+    <div class="sec" style="margin-top:18px;margin-bottom:10px">✦ Ações Lendárias Guerreira (2 / Rodada)</div>
+    <div class="leg-grid">
+      <div class="leg-box" style="border-color:rgba(100,180,240,.2)"><div class="leg-name" style="color:var(--moon-glow)">Pancada (1)</div><div class="leg-desc">Uma Pancada Lunar com −2 bônus.</div></div>
+      <div class="leg-box" style="border-color:rgba(100,180,240,.2)"><div class="leg-name" style="color:var(--moon-glow)">Salto + Pisão (2)</div><div class="leg-desc">Move metade da vel. e usa Pisão Lunar.</div></div>
+      <div class="leg-box" style="border-color:rgba(100,180,240,.2)"><div class="leg-name" style="color:var(--moon-glow)">Barreira (1)</div><div class="leg-desc">Usa Barreira de Prata fora do turno.</div></div>
+      <div class="leg-box" style="border-color:rgba(100,180,240,.2)"><div class="leg-name" style="color:var(--moon-glow)">Reverter (1)</div><div class="leg-desc">Volta à forma Feiticeira como ação lendária.</div></div>
+    </div>
+    <div class="deck-hint">▲ Feiticeira de Rootcore · Forma Normal</div>
+  </div>
+
+</div>
+
+<!-- SITUAÇÃO -->
+<div class="situation reveal">
+  <div class="sec" style="margin-bottom:8px">✦ Situação — Chegada em Valtheris</div>
+  <div class="sit-title">🌙 A Filha da Guardiã no Mundo que Perdeu a Âncora</div>
+  <div class="sit-body">Clare sentiu a flutuação antes de entender o que era — o lugar onde Niella morreu falando de um jeito que nunca havia falado antes. Cinquenta anos guardando um portão cujo custo foi a mãe. E então o portão sinalizou. Ela atravessou porque não havia outra resposta honesta. Em Valtheris, Clare existe num papel que nenhum manual de Rootcore preparou: Guardiã de um Portão que ficou para trás, num mundo inteiramente desconhecido, com uma promessa de voltar viva e com uma resposta.</div>
+</div>
+
+<!-- LORE -->
+<div class="sec reveal">✦ Lore & Identidade</div>
+<div class="lore-panel reveal">
+  <div class="lore-item">
+    <div class="lore-icon">🌑</div>
+    <div>
+      <div class="lore-key">Filha de Niella — O Peso da Herança</div>
+      <div class="lore-val">Niella morreu selando o Portão do Submundo — consumiu toda a força vital para fechar aquilo que precisava ser fechado. Restou Clare, que era aprendiz e virou responsável antes de estar pronta. Cinquenta anos depois, ela claramente estava pronta — mas o custo de ter virado assim ainda é parte de quem ela é. O portão que a mãe fechou com a vida é o que ela guarda. Há um cuidado específico em como ela toca esse assunto.</div>
+    </div>
+  </div>
+  <div class="lore-item">
+    <div class="lore-icon">✨</div>
+    <div>
+      <div class="lore-key">A Feiticeira Que Chegou Depois da Trapalhona</div>
+      <div class="lore-val">Clare passou anos como a aprendiz que não conseguia fazer o feitiço de desaparecimento funcionar — o feitiço mais básico de Rootcore. Quando finalmente o executou, Udonna já havia partido e a Mystic Mother a nomeou Feiticeira em seu lugar. O arco completo de quem ela foi até quem ela se tornou é uma das coisas que ela carrega com humor quieto. Não é modéstia performática — é a consciência de que o caminho importou.</div>
+    </div>
+  </div>
+  <div class="lore-item" style="border-bottom:none">
+    <div class="lore-icon">💜</div>
+    <div>
+      <div class="lore-key">Necrolai & Leelee — A Dívida Não Declarada</div>
+      <div class="lore-val">Necrolai sacrificou poderes para ressuscitar guerreiros que ajudaram a salvar Briarwood. Leelee roubou o Cajado de Neve da própria mãe e o usou para reviver Udonna. Clare sabe das duas coisas. Não é dívida no sentido contratual — é o reconhecimento de que as duas agiram, num momento decisivo, de um jeito que Clare não pode ignorar. Isso não torna a convivência fácil. Torna honesta.</div>
+    </div>
+  </div>
+</div>
+
+<!-- APARÊNCIA + PERSONALIDADE -->
+<div class="two-col reveal">
+  <div class="panel">
+    <div class="sec">✦ Aparência — Duas Formas</div>
+    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--silver-lit);margin-bottom:10px;opacity:.75;text-transform:uppercase">Feiticeira de Rootcore</div>
+    <div class="ap-item">
+      <div class="ap-icon">🌙</div>
+      <div>
+        <div class="ap-lbl">Presença</div>
+        <div class="ap-val">Cinquenta anos tornaram o que era insegurança em compostura. Não é a compostura de quem nunca errou — é a de quem errou, entendeu e parou de pedir desculpa por ser quem é. A tiara de Niella na cabeça é a única coisa que sempre existiu nessa posição.</div>
+      </div>
+    </div>
+    <div class="ap-item">
+      <div class="ap-icon">💫</div>
+      <div>
+        <div class="ap-lbl">Os Olhos</div>
+        <div class="ap-val">Lêem o espaço como se estivessem vendo camadas que outras pessoas não percebem. Não é arrogância — é o hábito de quem guardou uma fronteira por décadas. Em Valtheris, esse olhar está ainda mais ativo.</div>
+      </div>
+    </div>
+    <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--moon-glow);margin:14px 0 10px;opacity:.75;text-transform:uppercase">Guerreira da Lua Brilhante</div>
+    <div class="ap-item" style="border-bottom:none">
+      <div class="ap-icon">🌕</div>
+      <div>
+        <div class="ap-lbl">A Escala</div>
+        <div class="ap-val">Tamanho Enorme. Luz emanando das articulações como se a lua estivesse dentro dela. O rosto ainda é Clare — mas na proporção errada para ser confortável de encarar de perto. A tiara de Niella brilha como se fosse nova.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="sec">✦ Personalidade</div>
+    <div class="lore-item">
+      <div class="lore-icon">🎯</div>
+      <div>
+        <div class="lore-key">Direta Quando Importa</div>
+        <div class="lore-val">Não é de rodeios quando há algo a resolver. A experiência com Necrolai (que calcula tudo) e Leelee (que vai direto ao ponto) acentuou uma tendência que já existia. Em Valtheris, onde tudo é novo e o tempo é incerto, essa diretividade vai ser testada.</div>
+      </div>
+    </div>
+    <div class="lore-item">
+      <div class="lore-icon">📚</div>
+      <div>
+        <div class="lore-key">Curiosidade de Feiticeira</div>
+        <div class="lore-val">Valtheris tem vampirismo primordial que não corresponde a nada em Briarwood. Tem uma cosmologia inteira que nenhum livro de Rootcore cobre. Tem criaturas cujas naturezas ela não tem categoria para classificar. Isso, objetivamente, é fascinante — e ela sabe que é fascinante no pior momento possível para ser fascinada por coisas novas.</div>
+      </div>
+    </div>
+    <div class="lore-item" style="border-bottom:none">
+      <div class="lore-icon">⚓</div>
+      <div>
+        <div class="lore-key">A Promessa</div>
+        <div class="lore-val">Prometeu a Phineas e Toby que voltariam vivas e com uma resposta. Clare leva promessas a sério — é parte de ser Guardiã. Não de forma rígida, mas no sentido de que uma promessa dita em voz alta é uma âncora, e âncoras importam em mundos que perderam as delas.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+</main>
+
+<div class="footer">
+  <div class="footer-quote">
+    "Minha mãe morreu fechando um portão.<br>
+    Passei cinquenta anos guardando o que ela fechou.<br>
+    E então o portão sinalizou de um jeito novo.<br>
+    O que eu ia fazer — ignorar?"
+  </div>
+  <div class="footer-attr">✦ Além do Véu da Carne · Clare Langtree · Feiticeira de Rootcore · Guardiã do Portão ✦</div>
+</div>
+
+</div>
+<script>
+function swapPortraits() {
+  const stack = document.getElementById('portraitStack');
+  const front = stack.querySelector('.portrait-slot.front');
+  const back  = stack.querySelector('.portrait-slot.back');
+  back.classList.replace('back','front');
+  front.classList.replace('front','back');
+}
+
+document.getElementById('panelGuerreira').addEventListener('click', function() {
+  const deck = document.getElementById('attackDeck');
+  if(!deck.classList.contains('swapped')) deck.classList.add('swapped');
+});
+document.getElementById('panelFeiticeira').addEventListener('click', function() {
+  const deck = document.getElementById('attackDeck');
+  if(deck.classList.contains('swapped')) deck.classList.remove('swapped');
+});
+
+const revealEls = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.06 });
+revealEls.forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

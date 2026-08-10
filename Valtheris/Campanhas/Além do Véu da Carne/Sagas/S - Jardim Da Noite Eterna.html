@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O Jardim da Noite Eterna</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blood: #8b0000;
+    --crimson: #c0392b;
+    --rose: #e8465a;
+    --obsidian: #0a0a0f;
+    --deep: #0d0d18;
+    --midnight: #12121f;
+    --lilith: #c9534f;
+    --lilith-glow: rgba(201, 83, 79, 0.3);
+    --leyn: #b0bcc8;
+    --leyn-glow: rgba(176, 188, 200, 0.25);
+    --kaira: #e8c84a;
+    --kaira-glow: rgba(232, 200, 74, 0.25);
+    --mara: #e8943a;
+    --mara-glow: rgba(232, 148, 58, 0.25);
+    --elise: #3ab8c9;
+    --elise-glow: rgba(58, 184, 201, 0.2);
+    --teren: #c8874a;
+    --teren-glow: rgba(200, 135, 74, 0.2);
+    --aldric: #a0556e;
+    --aldric-glow: rgba(160, 85, 110, 0.2);
+    --narration: rgba(255,255,255,0.45);
+    --petal-color: rgba(160, 30, 30, 0.7);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--obsidian);
+    color: #d4c9c0;
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ───── BACKGROUND LAYERS ───── */
+  .bg-gradient {
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(80,10,10,0.55) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 20% 100%, rgba(30,10,50,0.45) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 30% at 80% 80%, rgba(50,5,5,0.3) 0%, transparent 60%),
+      linear-gradient(180deg, #0a050f 0%, #0d0810 40%, #080510 100%);
+  }
+
+  .bg-texture {
+    position: fixed; inset: 0; z-index: 0; opacity: 0.06;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.02) 40px, rgba(255,255,255,0.02) 41px);
+  }
+
+  /* ───── MOONS ───── */
+  .moons {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 220px;
+    z-index: 2; pointer-events: none;
+  }
+
+  .moon {
+    position: absolute;
+    border-radius: 50%;
+    animation: moonPulse 8s ease-in-out infinite;
+  }
+
+  .moon-1 {
+    width: 90px; height: 90px; top: 30px; left: 15%;
+    background: radial-gradient(circle at 40% 40%, #ff6b6b, #8b0000);
+    box-shadow: 0 0 40px rgba(139,0,0,0.6), 0 0 80px rgba(139,0,0,0.3);
+    animation-delay: 0s;
+  }
+  .moon-2 {
+    width: 55px; height: 55px; top: 60px; left: 40%;
+    background: radial-gradient(circle at 40% 40%, #cc4444, #5a0000);
+    box-shadow: 0 0 25px rgba(100,0,0,0.5), 0 0 50px rgba(100,0,0,0.2);
+    animation-delay: -3s;
+  }
+  .moon-3 {
+    width: 70px; height: 70px; top: 20px; right: 20%;
+    background: radial-gradient(circle at 40% 40%, #e05050, #700000);
+    box-shadow: 0 0 35px rgba(120,0,0,0.5), 0 0 70px rgba(120,0,0,0.25);
+    animation-delay: -5s;
+  }
+  .moon-4 {
+    width: 35px; height: 35px; top: 80px; right: 8%;
+    background: radial-gradient(circle at 40% 40%, #ff8888, #990000);
+    box-shadow: 0 0 20px rgba(150,0,0,0.5);
+    animation-delay: -1.5s;
+  }
+
+  @keyframes moonPulse {
+    0%, 100% { opacity: 0.75; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+  }
+
+  /* ───── PETALS ───── */
+  .petals-container {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden;
+  }
+
+  .petal {
+    position: absolute;
+    width: 8px; height: 12px;
+    background: var(--petal-color);
+    border-radius: 50% 0 50% 0;
+    top: -20px;
+    animation: petalFall linear infinite;
+    box-shadow: 0 0 6px rgba(180, 30, 30, 0.4);
+  }
+
+  @keyframes petalFall {
+    0% { transform: translateY(-20px) rotate(0deg) translateX(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(110vh) rotate(720deg) translateX(80px); opacity: 0; }
+  }
+
+  /* ───── TREES (decorative side elements) ───── */
+  .tree-left, .tree-right {
+    position: fixed; top: 0; bottom: 0; width: 120px;
+    z-index: 1; pointer-events: none;
+    background: repeating-linear-gradient(
+      180deg,
+      transparent 0px,
+      transparent 60px,
+      rgba(10,5,15,0.4) 60px,
+      rgba(10,5,15,0.4) 62px
+    );
+  }
+  .tree-left { left: 0; }
+  .tree-right { right: 0; }
+
+  /* ───── CONTENT ───── */
+  .content-wrapper {
+    position: relative; z-index: 10;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 160px 40px 120px;
+  }
+
+  /* ───── TITLE ───── */
+  .title-block {
+    text-align: center;
+    margin-bottom: 80px;
+    position: relative;
+  }
+
+  .title-block::before {
+    content: '';
+    display: block;
+    width: 2px;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--blood));
+    margin: 0 auto 30px;
+  }
+
+  .title-main {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    color: #e8d5c0;
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 40px rgba(200,80,80,0.5), 0 0 80px rgba(200,80,80,0.2);
+    line-height: 1.3;
+    margin-bottom: 16px;
+  }
+
+  .title-sub {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    color: rgba(200, 180, 160, 0.5);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  .title-ornament {
+    display: flex; align-items: center; gap: 16px;
+    justify-content: center;
+    margin-top: 30px;
+  }
+
+  .ornament-line {
+    flex: 1; max-width: 120px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--blood));
+  }
+  .ornament-line.right {
+    background: linear-gradient(to left, transparent, var(--blood));
+  }
+
+  .ornament-diamond {
+    width: 8px; height: 8px;
+    background: var(--crimson);
+    transform: rotate(45deg);
+    box-shadow: 0 0 10px var(--crimson);
+  }
+
+  /* ───── SCENE HEADER ───── */
+  .scene-header {
+    text-align: center;
+    margin: 60px 0 50px;
+    position: relative;
+  }
+
+  .scene-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgba(200, 150, 130, 0.55);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  /* ───── NARRATION ───── */
+  .narration {
+    color: var(--narration);
+    font-style: italic;
+    font-size: 0.95em;
+    margin: 28px 0;
+    padding-left: 24px;
+    border-left: 1px solid rgba(255,255,255,0.1);
+    line-height: 1.9;
+  }
+
+  .narration p { margin-bottom: 8px; }
+  .narration p:last-child { margin-bottom: 0; }
+
+  /* ───── DIVIDER ───── */
+  .scene-divider {
+    display: flex; align-items: center; gap: 16px;
+    margin: 48px 0;
+  }
+
+  .div-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(to right, transparent, rgba(139,0,0,0.4), transparent);
+  }
+
+  .div-symbol {
+    font-size: 1rem; color: var(--blood); opacity: 0.6;
+  }
+
+  /* ───── DIALOGUE BLOCKS ───── */
+  .dialogue-block {
+    margin: 36px 0;
+    position: relative;
+    animation: fadeIn 0.6s ease both;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .speaker-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .speaker-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    opacity: 0.25;
+  }
+
+  .speech-text {
+    font-size: 1rem;
+    line-height: 2;
+    padding: 18px 24px;
+    border-radius: 2px;
+    position: relative;
+  }
+
+  .speech-text p {
+    margin-bottom: 10px;
+  }
+  .speech-text p:last-child { margin-bottom: 0; }
+
+  /* ───── LILITH ───── */
+  .lilith .speaker-label { color: var(--lilith); }
+  .lilith .speaker-label::after { background: var(--lilith); }
+
+  .lilith .speech-text {
+    background: rgba(139, 0, 0, 0.08);
+    border-left: 2px solid var(--lilith);
+    box-shadow: -4px 0 20px rgba(201, 83, 79, 0.1), inset 0 0 30px rgba(139,0,0,0.04);
+    color: #f0d8d5;
+    font-style: italic;
+  }
+
+  /* ───── LEYN ───── */
+  .leyn .speaker-label { color: var(--leyn); }
+  .leyn .speaker-label::after { background: var(--leyn); }
+
+  .leyn .speech-text {
+    background: rgba(168, 196, 212, 0.05);
+    border-left: 2px solid var(--leyn);
+    box-shadow: -4px 0 20px rgba(168, 196, 212, 0.08);
+    color: #ddeaf0;
+  }
+
+  /* ───── KAIRA ───── */
+  .kaira .speaker-label { color: var(--kaira); }
+  .kaira .speaker-label::after { background: var(--kaira); }
+
+  .kaira .speech-text {
+    background: rgba(212, 168, 67, 0.05);
+    border-left: 2px solid var(--kaira);
+    box-shadow: -4px 0 20px rgba(212, 168, 67, 0.1);
+    color: #f5e8c8;
+  }
+
+  /* ───── MARA ───── */
+  .mara .speaker-label { color: var(--mara); }
+  .mara .speaker-label::after { background: var(--mara); }
+
+  .mara .speech-text {
+    background: rgba(155, 109, 181, 0.05);
+    border-left: 2px solid var(--mara);
+    box-shadow: -4px 0 20px rgba(155, 109, 181, 0.08);
+    color: #e8d8f5;
+  }
+
+  /* ───── ELISE ───── */
+  .elise .speaker-label { color: var(--elise); }
+  .elise .speaker-label::after { background: var(--elise); }
+
+  .elise .speech-text {
+    background: rgba(74, 171, 138, 0.05);
+    border-left: 2px solid var(--elise);
+    box-shadow: -4px 0 20px rgba(74, 171, 138, 0.08);
+    color: #d0ede5;
+  }
+
+  /* ───── TEREN ───── */
+  .teren .speaker-label { color: var(--teren); }
+  .teren .speaker-label::after { background: var(--teren); }
+
+  .teren .speech-text {
+    background: rgba(200, 135, 74, 0.05);
+    border-left: 2px solid var(--teren);
+    box-shadow: -4px 0 20px rgba(200, 135, 74, 0.08);
+    color: #f5e2cc;
+  }
+
+  /* ───── ALDRIC ───── */
+  .aldric .speaker-label { color: var(--aldric); }
+  .aldric .speaker-label::after { background: var(--aldric); }
+
+  .aldric .speech-text {
+    background: rgba(143, 163, 168, 0.05);
+    border-left: 2px solid var(--aldric);
+    box-shadow: -4px 0 20px rgba(143, 163, 168, 0.08);
+    color: #dde5e8;
+  }
+
+  /* ───── ACTION BEAT ───── */
+  .action-beat {
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    color: rgba(200,180,160,0.35);
+    margin: 40px 0;
+    text-transform: uppercase;
+  }
+
+  /* ───── LOCATION SHIFT ───── */
+  .location-shift {
+    text-align: center;
+    margin: 70px 0;
+    padding: 30px 0;
+    position: relative;
+  }
+
+  .location-shift::before, .location-shift::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(139,0,0,0.5), transparent);
+    margin: 20px 0;
+  }
+
+  .location-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.9rem;
+    color: rgba(220, 180, 160, 0.5);
+    letter-spacing: 0.25em;
+  }
+
+  /* ───── CLOSING ───── */
+  .closing-block {
+    text-align: center;
+    margin-top: 100px;
+    padding-top: 50px;
+    border-top: 1px solid rgba(139,0,0,0.2);
+  }
+
+  .closing-quote {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.25em;
+    color: rgba(200,160,140,0.4);
+    text-transform: uppercase;
+  }
+
+  .closing-petal {
+    width: 12px; height: 18px;
+    background: var(--blood);
+    border-radius: 50% 0 50% 0;
+    margin: 24px auto;
+    opacity: 0.5;
+    box-shadow: 0 0 12px rgba(139,0,0,0.4);
+  }
+
+  /* ───── SCROLLBAR ───── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--obsidian); }
+  ::-webkit-scrollbar-thumb { background: var(--blood); border-radius: 3px; }
+
+  /* ───── LEGEND ───── */
+  .legend {
+    position: fixed;
+    top: 50%;
+    right: 24px;
+    transform: translateY(-50%);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: rgba(10,5,15,0.7);
+    border: 1px solid rgba(139,0,0,0.2);
+    padding: 14px 12px;
+    border-radius: 4px;
+    backdrop-filter: blur(8px);
+  }
+
+  .legend-item {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(200,180,160,0.55);
+    cursor: default;
+    white-space: nowrap;
+  }
+
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 900px) {
+    .legend { display: none; }
+    .content-wrapper { padding: 120px 24px 80px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background layers -->
+<div class="bg-gradient"></div>
+<div class="bg-texture"></div>
+
+<!-- Blood moons -->
+<div class="moons">
+  <div class="moon moon-1"></div>
+  <div class="moon moon-2"></div>
+  <div class="moon moon-3"></div>
+  <div class="moon moon-4"></div>
+</div>
+
+<!-- Falling petals -->
+<div class="petals-container" id="petals"></div>
+
+<!-- Side trees -->
+<div class="tree-left"></div>
+<div class="tree-right"></div>
+
+<!-- Character legend -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--lilith);box-shadow:0 0 6px var(--lilith)"></div>Lilith</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--leyn);box-shadow:0 0 6px var(--leyn)"></div>Leyn</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--kaira);box-shadow:0 0 6px var(--kaira)"></div>Kaira</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--mara);box-shadow:0 0 6px var(--mara)"></div>Mara</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--elise);box-shadow:0 0 6px var(--elise)"></div>Elise</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--teren);box-shadow:0 0 6px var(--teren)"></div>Teren</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--aldric);box-shadow:0 0 6px var(--aldric)"></div>Aldric</div>
+</div>
+
+<!-- Main content -->
+<div class="content-wrapper">
+
+  <!-- Title -->
+  <div class="title-block">
+    <h1 class="title-main">O Jardim da Noite Eterna</h1>
+    <p class="title-sub">Além do Véu da Carne · 50 anos após a Saga 21 · Nível 20</p>
+    <div class="title-ornament">
+      <div class="ornament-line"></div>
+      <div class="ornament-diamond"></div>
+      <div class="ornament-line right"></div>
+    </div>
+  </div>
+
+  <!-- Scene intro -->
+  <div class="narration">
+    <p>O ar muda antes mesmo de vocês entenderem o que está acontecendo.</p>
+    <p>Em um momento estavam nas catacumbas expandidas da Vila Sepet, discutindo o próximo passo contra resquícios da Gehenna. No seguinte, o chão de pedra antiga se dissolve em terra negra e fértil. As paredes desaparecem. O teto se abre em um céu noturno sem estrelas, mas repleto de luas vermelhas sangrando.</p>
+    <p>Vocês estão em um jardim impossível. Árvores antigas com cascas de obsidiana se erguem ao redor, suas folhas negras sussurrando nomes esquecidos. Flores de pétalas vermelhas gotejam sangue lento ao serem tocadas pelo vento. O cheiro é de terra virgem, rosas podres e algo mais antigo que o próprio pecado.</p>
+    <p>No centro do jardim, sentada em um trono formado por espinhos entrelaçados e ossos petrificados de criaturas que nunca existiram, está ela. Lilith. A Primeira Mulher. A Rebeldia Encarnada. A que ensinou Caim a transformar maldição em poder.</p>
+  </div>
+
+  <div class="scene-divider"><div class="div-line"></div><div class="div-symbol">✦</div><div class="div-line"></div></div>
+
+  <!-- Lilith opening -->
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Então… estes são os que escaparam da maldição do meu filho. Os que morreram por amor e ousaram voltar. Os que criaram uma família onde eu só vi traição, fome e abandono."</p>
+      <p>"Leyn Sepet… o que morreu três vezes e ainda carrega compaixão como uma armadura. Kaira… sangue que não veio de Caim, mas que queima como o dele. Mara, Elise, Teren… todos carregando pedaços de humanidade que eu já considerei uma fraqueza há milênios."</p>
+      <p>"Interessante. Vocês cheiram a esperança… e a erro."</p>
+      <p>"Sentem-se. A Noite Eterna aqui não obedece ao tempo de Caim. Temos tempo suficiente para conversarmos… ou para eu decidir se vale a pena deixá-los viver com essa ilusão que chamam de família."</p>
+    </div>
+  </div>
+
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Fale, Primordial que não é meu. O que um homem que já superou a morte três vezes quer perguntar àquela que deu ao mundo o primeiro 'não'?"</p>
+    </div>
+  </div>
+
+  <!-- Leyn 1 -->
+  <div class="dialogue-block leyn">
+    <div class="speaker-label">Leyn Sepet</div>
+    <div class="speech-text">
+      <p>"Primeiro, você sabe que Caim não é seu filho, certo? Isso é retórico. E sei do que te chamam pelo mundo."</p>
+      <p>"Então a minha pergunta é mais pessoal: o que pretende fazer com o mundo, depois que Caim falhar em destruí-lo?"</p>
+    </div>
+  </div>
+
+  <!-- Lilith response 1 -->
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Primordial que não é meu… Você faz duas perguntas em uma. A primeira — a retórica — é um teste. Você quer saber se eu corrijo o erro ou o abraço."</p>
+      <p>"Caim não é meu filho. Nunca foi. Ele era um fugitivo com sangue nas mãos e uma maldição que não sabia carregar. Eu o abriguei porque reconheci nele o que reconheço em mim — alguém que o mundo condenou antes de ouvi-lo. Ensinei-o. Não o parei quando foi embora com o que aprendeu."</p>
+      <p>"Esse é meu erro real. Não tê-lo gerado. Tê-lo libertado sem entender o que ele faria com a liberdade."</p>
+    </div>
+  </div>
+
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Mãe das Trevas. A Primeira Herege. O Erro que Deus não Admite. A Mulher que Disse Não."</p>
+      <p>"Todos os nomes que me deram foram escolhidos por quem eu assustei. Isso me diz muito sobre eles. Pouco sobre mim."</p>
+    </div>
+  </div>
+
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Você não perguntou 'se' ele falhar, Leyn Sepet. Você perguntou 'depois'. Com a mesma naturalidade com que eu perguntaria sobre o amanhecer."</p>
+      <p>"A maioria dos que chegam até mim ou implora pela minha ajuda contra ele ou implora pela minha ausência. Você é o primeiro em… tempo suficiente para que eu não me lembre… que simplesmente assume que o capítulo de Caim vai fechar, e quer saber sobre o próximo."</p>
+      <p>"E a resposta honesta, Guardião Eterno… …é que não sei."</p>
+      <p>"Passei tanto tempo sendo definida pela minha rebeldia contra o que me foi imposto — primeiro o homem, depois o Divino, depois os filhos de Caim que me usaram como bandeira sem me perguntar — que a pergunta que você acabou de fazer é uma que eu mesma evito."</p>
+      <p>"O que Lilith quer para o mundo quando não há mais nada contra o que se rebelar?"</p>
+    </div>
+  </div>
+
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Então eu devolvo, Primordial. Você morreu três vezes. Cada vez por amor a algo maior que você mesmo. Quando não havia mais nada a proteger — mesmo que por um instante — o que te trouxe de volta?"</p>
+      <p>"Me convença de que alguém que sobreviveu à inutilidade temporária tem algo a dizer sobre propósito permanente. Então talvez eu responda de verdade."</p>
+    </div>
+  </div>
+
+  <div class="scene-divider"><div class="div-line"></div><div class="div-symbol">✦</div><div class="div-line"></div></div>
+
+  <!-- Leyn 2 - fortress -->
+  <div class="dialogue-block leyn">
+    <div class="speaker-label">Leyn Sepet</div>
+    <div class="speech-text">
+      <p>"Quando eu acordei no fundo daquela fortaleza, e não tinha nada, nem ninguém, eu tentei me soltar das correntes de prata que me prendiam. Eu falhei. Falhei de todas as formas possíveis. Parecia que eu estava amaldiçoado a morrer sem nem antes conseguir viver."</p>
+      <p>"Mas então, em um segundo que fui atacado, eu revidei, saí das correntes, e depois caí de novo — mas fui salvo. Salvo por algo que chamavam de aberração. Fui salvo pela Mara, salvo pela Elise e também salvo pela Kaira."</p>
+      <p>"Eu encontrei um novo propósito, que não foi muito longe das minhas raízes."</p>
+    </div>
+  </div>
+
+  <!-- Lilith - correntes -->
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Correntes de prata. Feitas para matar o que você é. E você falhou em se soltar."</p>
+      <p>"Não falhou em sobreviver."</p>
+    </div>
+  </div>
+
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Sabe o que a maioria faz quando me conta sua origem? Me conta sobre poder. Sobre o momento em que perceberam que eram diferentes, superiores, destinados."</p>
+      <p>"Você me contou sobre o momento em que foi salvo por algo que o mundo chamava de aberração."</p>
+      <p>"Eu conheço muito bem o que é ser chamada de aberração."</p>
+    </div>
+  </div>
+
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Você disse que encontrou um propósito que não foi muito longe das suas raízes. Isso é mais raro do que parece, Leyn Sepet. A maioria de nós — os que existimos há muito tempo — nos distanciamos tanto das nossas raízes que mal lembramos por que começamos."</p>
+      <p>"Caim se distanciou. Os Antediluvianos se distanciaram. Até eu… …também me distanciei."</p>
+    </div>
+  </div>
+
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Você acordou sem nada, sem ninguém, acorrentado e destinado a morrer sem ter vivido. E o que te salvou não foi poder. Não foi destino. Não foi maldição."</p>
+      <p>"Foi uma família que o mundo havia descartado antes de você."</p>
+      <p>"Quando eu disse não àquilo que me foi imposto, pensei que estava escolhendo liberdade."</p>
+      <p>"Talvez eu tenha escolhido apenas solidão com outro nome."</p>
+    </div>
+  </div>
+
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Essa família sua — que cheira a esperança e a erro como eu disse quando chegaram — …agora cheira também a algo que eu não sentia desde antes de qualquer maldição existir."</p>
+      <p>"Resposta."</p>
+      <p>"Então terei que pensar sobre sua pergunta com mais honestidade do que estava disposta quando vocês chegaram. Isso, Guardião Eterno, não é algo que concedo com frequência."</p>
+      <p>"Obrigada pela insolência de ter perguntado."</p>
+    </div>
+  </div>
+
+  <div class="scene-divider"><div class="div-line"></div><div class="div-symbol">✦</div><div class="div-line"></div></div>
+
+  <!-- Narration - as garotas -->
+  <div class="narration">
+    <p>Leyn recua no silêncio com a naturalidade de quem aprendeu que às vezes o ato mais corajoso é criar espaço para os outros preencherem.</p>
+    <p>É Kaira quem fala primeiro.</p>
+  </div>
+
+  <!-- Kaira -->
+  <div class="dialogue-block kaira">
+    <div class="speaker-label">Kaira Sepet — A Primordial Dourada</div>
+    <div class="speech-text">
+      <p>"Eu também acordei sem nada."</p>
+      <p>"Cem anos selada. Quando abri os olhos, minha mãe estava morta, meu pai havia me trancado, o mundo que eu conhecia havia virado cinza e culto e medo. Eu não sabia se queria sair do chão."</p>
+      <p>"Mas o Leyn estava lá. Ele não me pediu para ser forte. Não me pediu para ser útil. Ele só… ficou. Do meu lado. Como se minha existência já fosse suficiente para justificar a dele estar presente."</p>
+      <p>"Você disse que escolheu liberdade e pode ter escolhido solidão com outro nome. Eu quase escolhi o contrário — fiquei tão presa dentro do que os outros precisavam que eu fosse que quase não descobri o que eu era."</p>
+      <p>"A diferença foi ter alguém que ficou quieto enquanto eu descobria."</p>
+    </div>
+  </div>
+
+  <!-- Mara -->
+  <div class="dialogue-block mara">
+    <div class="speaker-label">Mara Vell — A Mãe de Quatro Braços</div>
+    <div class="speech-text">
+      <p>"Eu era uma aberração antes de ser família. Literalmente. Braços errados, corpo errado, o que a Igreja fazia com o que não entendia."</p>
+      <p>"Quando o Leyn me olhou pela primeira vez, não me olhou como monstro nem como ferramenta. Me olhou como alguém que poderia escolher. Isso foi mais assustador do que qualquer coisa que a Igreja tinha me feito."</p>
+      <p>"Porque quando alguém te dá escolha de verdade, você não tem mais desculpa para o que decide ser."</p>
+    </div>
+  </div>
+
+  <!-- Elise -->
+  <div class="dialogue-block elise">
+    <div class="speaker-label">Elise — A Flecha que Queima o Escuro</div>
+    <div class="speech-text">
+      <p>"Eu fui humana. Depois fui aberração. Depois fui vampira. Em cada transição, alguém decidiu o que eu era antes de me perguntar."</p>
+      <p>"Menos uma vez."</p>
+      <p>"Ele me perguntou. No meio de tudo, com tempo contado e perigo real, ele parou e me perguntou o que eu queria. Não o que era conveniente. Não o que salvaria mais gente. O que eu queria."</p>
+      <p>"Você disse que deu ao mundo o primeiro 'não'. Mas alguém te perguntou antes?"</p>
+    </div>
+  </div>
+
+  <!-- Lilith - Não -->
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Não."</p>
+      <p>"Ninguém me perguntou."</p>
+    </div>
+  </div>
+
+  <div class="scene-divider"><div class="div-line"></div><div class="div-symbol">✦</div><div class="div-line"></div></div>
+
+  <!-- Teren -->
+  <div class="dialogue-block teren">
+    <div class="speaker-label">Teren — Mestre Arcano Vampírico</div>
+    <div class="speech-text">
+      <p>"Eu vim para essa família com medo nas costas."</p>
+      <p>"O Culto da Verdade Profunda usava o que eu sabia para me manter pequeno. Me deram poder suficiente para ser útil e nunca suficiente para ser livre. Eu conhecia aquilo. Reconhecia o padrão. E ficava de qualquer jeito porque pelo menos era familiar."</p>
+      <p>"Quando pedi transformação, não foi coragem. Foi desespero com outro nome. Eu queria poder porque tinha aprendido que poder era a única moeda que o mundo aceitava."</p>
+      <p>"O Leyn me transformou e depois me olhou como se o poder não fosse o ponto."</p>
+      <p>"Demorei anos para entender que isso não era ingenuidade dele. Era correção."</p>
+      <p>"Você deu ao mundo o primeiro 'não' e o mundo transformou isso em maldição, em monstro, em bandeira que outros carregavam sem te perguntar. Eu entendo isso de um lugar menor, mas entendo."</p>
+      <p>"A diferença é que eu tive gente que ficou ao redor enquanto eu aprendia que o 'não' não precisava ser dito com medo para ser real."</p>
+      <p>"Ainda estou aprendendo."</p>
+    </div>
+  </div>
+
+  <!-- Aldric -->
+  <div class="dialogue-block aldric">
+    <div class="speaker-label">Aldric Voss — O Ancião</div>
+    <div class="speech-text">
+      <p>"Eu não tenho história de transformação para contar."</p>
+      <p>"Nasci primordial. Sobrevivi porque sou competente e porque tive sorte na medida certa. Passei séculos acumulando conhecimento de runas e poder e distância — porque distância parecia o único contrato sustentável com o mundo."</p>
+      <p>"Você me conheceria, se cruzasse com versões anteriores de mim. O tipo que aprende tudo e sente pouco. O tipo que acompanha mas não pertence. Útil. Presente. Fundamentalmente à parte."</p>
+      <p>"Eu vim com esse grupo como especialista. Fiquei cinquenta anos como família."</p>
+      <p>"Não porque me pediram. Não porque precisavam de mim especificamente."</p>
+      <p>"Fiquei porque observei o que eles faziam com as pessoas que chegavam quebradas e percebi que era a primeira vez em séculos que eu estava ao redor de algo que não me deixava com vontade de me distanciar novamente."</p>
+      <p>"Você existe há mais tempo que qualquer um nesse jardim. E a pergunta que esses jovens trouxeram para você — o que pretende fazer com o mundo quando não houver mais nada contra o que se rebelar — …é a mesma que eu evitei por trezentos anos."</p>
+      <p>"A resposta que finalmente encontrei foi essa família aqui."</p>
+      <p>"Não sei se serve para você. Mas serviu para mim."</p>
+    </div>
+  </div>
+
+  <!-- Lilith - memória -->
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Eu criei o jardim da Noite Eterna para ter um lugar onde o tempo não me cobrava nada."</p>
+      <p>"Nenhum de vocês devia ter conseguido chegar até ele."</p>
+      <p>"E nenhum de vocês me trouxe poder, nem súplica, nem barganha."</p>
+      <p>"Trouxeram memória."</p>
+      <p>"Isso é novo."</p>
+      <p>"Para mim."</p>
+    </div>
+  </div>
+
+  <div class="scene-divider"><div class="div-line"></div><div class="div-symbol">✦</div><div class="div-line"></div></div>
+
+  <!-- Narration - Leyn senta no chão -->
+  <div class="narration">
+    <p>Leyn se senta no chão. Não no trono de pedras negras que ela ofereceu. No chão. Na terra. Como uma criança que decidiu que a conversa importa mais que a postura. Ele coloca as duas espadas ao lado.</p>
+  </div>
+
+  <!-- Leyn - precisa de tempo -->
+  <div class="dialogue-block leyn">
+    <div class="speaker-label">Leyn Sepet</div>
+    <div class="speech-text">
+      <p>"Então, precisa de tempo para pensar?"</p>
+    </div>
+  </div>
+
+  <div class="narration">
+    <p>Ela ri. Genuinamente. E depois desce do trono. Sem cerimônia. Senta também — no chão, na terra negra do próprio jardim dela.</p>
+  </div>
+
+  <!-- Lilith - tenho pensado -->
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Tenho pensado desde antes de Caim aprender a falar."</p>
+      <p>"Talvez o problema seja exatamente esse."</p>
+    </div>
+  </div>
+
+  <div class="scene-divider"><div class="div-line"></div><div class="div-symbol">✦</div><div class="div-line"></div></div>
+
+  <!-- Leyn - eclipse -->
+  <div class="dialogue-block leyn">
+    <div class="speaker-label">Leyn Sepet</div>
+    <div class="speech-text">
+      <p>"Sabe, os Primeiros também gostavam do eclipse. Ainda não sei o nome deles, mas você até que me lembra eles de certa forma."</p>
+    </div>
+  </div>
+
+  <!-- Lilith - Os Primeiros -->
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Os Primeiros."</p>
+      <p>"Você os conheceu."</p>
+      <p>"O eclipse. Havia quem dissesse que o primeiro eclipse foi um acidente do firmamento."</p>
+      <p>"Não foi."</p>
+      <p>"Como eram eles? Para você. Não o que faziam. Não o que eram no poder. Como eram… para você, quando você estava perto deles."</p>
+    </div>
+  </div>
+
+  <!-- Leyn - o primeiro -->
+  <div class="dialogue-block leyn">
+    <div class="speaker-label">Leyn Sepet</div>
+    <div class="speech-text">
+      <p>"O primeiro da linhagem parecia alguém sábio, capaz de reconhecer as pessoas com somente um olhar. Quando o vi, ele me fez somente uma pergunta. Uma pergunta que me ajudou a me encontrar."</p>
+      <p>"Quanto à outra, eu ainda não a vi."</p>
+    </div>
+  </div>
+
+  <!-- Lilith - anteriores -->
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Antes de qualquer maldição. Antes de Caim, antes do jardim que todos conhecem, antes do primeiro 'não' que me tornaram em símbolo — havia dois. Não eram deuses. Não eram o que os mortais chamam de anjos. Eram…"</p>
+      <p>"…anteriores."</p>
+      <p>"O que ele te perguntou?"</p>
+    </div>
+  </div>
+
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Quanto à outra… ela aparece quando está pronta. Não antes."</p>
+      <p>"Se você ainda não a viu, Leyn Sepet — Guardião Eterno, aquele que morreu três vezes — …significa que sua história ainda não chegou onde ela considera necessário ir."</p>
+    </div>
+  </div>
+
+  <div class="scene-divider"><div class="div-line"></div><div class="div-symbol">✦</div><div class="div-line"></div></div>
+
+  <!-- Leyn - se rir eu te ataco -->
+  <div class="dialogue-block leyn">
+    <div class="speaker-label">Leyn Sepet</div>
+    <div class="speech-text">
+      <p>"Sim. Eu lembro exatamente as palavras que falei. Já que você quer ouvir, eu vou repetir — mas se você rir, eu te ataco, viu."</p>
+    </div>
+  </div>
+
+  <div class="narration">
+    <p>Dito com o olhar de quem está conversando com um amigo próximo — mas com a mesma intensidade real por baixo.</p>
+  </div>
+
+  <!-- Leyn - grande discurso -->
+  <div class="dialogue-block leyn">
+    <div class="speaker-label">Leyn Sepet — Resposta ao Primeiro</div>
+    <div class="speech-text">
+      <p>"Como diabos eu deveria responder isso?"</p>
+      <p>"Sei que para vampiros, proteger alguém que não seja a si mesmo já é impensável. Conheço as histórias. Os massacres por poder. A frieza da linhagem quando decide que algo ou alguém é recurso, não vida."</p>
+      <p>"Mas eu protejo. E estou tentando entender por quê — não para dar uma resposta bonita. Para ser honesto."</p>
+      <p>"Não vou dizer que essa vontade surgiu após minha primeira morte. Porque não foi. Não surgiu depois da segunda também. Não foi o trauma, não foi a prisão, não foi o século de escuridão que me transformou nisso."</p>
+      <p>"Esse sentimento estava comigo antes de tudo. Antes do massacre. Antes da Vila queimar."</p>
+      <p>"Estava lá quando eu treinava no campo com meu pai e ficava de olho nos meus irmãos menores ao mesmo tempo, mesmo sem precisar. Estava lá quando minha mãe tecia e eu ficava acordado mais tempo que devia só para ter certeza que a noite estava quieta."</p>
+      <p>"Não era por medo. Não era dever — ninguém me pediu. Não era cálculo de sobrevivência."</p>
+      <p>"Era porque eu podia."</p>
+      <p>"Porque eu tinha poder suficiente para fazer isso. E essa combinação — poder e a possibilidade de usá-lo para que algo importante continuasse existindo — me dava uma satisfação que nenhuma vitória em combate jamais deu."</p>
+      <p>"Vampiros buscam poder para consumir. Para acumular. Para que nada e ninguém possa ameaçá-los."</p>
+      <p>"Eu busquei poder para que eu pudesse ficar entre os que amo e o que ameaça."</p>
+      <p>"Não porque sou nobre. Não porque sou melhor que outros vampiros."</p>
+      <p>"Porque essa é a única coisa que me faz sentir que minha existência tem peso real. Que não estou apenas ocupando espaço num mundo que já tem gente demais fazendo isso."</p>
+      <p>"Eu protejo porque seria feliz protegendo. Porque sempre fui."</p>
+      <p>"Isso é tudo. Não tem mais nada embaixo disso."</p>
+    </div>
+  </div>
+
+  <div class="narration">
+    <p>Lilith não se move enquanto você fala. Nem as asas. Nem os cabelos. Nem as flores ao redor sangram mais rápido ou mais devagar. O jardim inteiro parece ter prendido a respiração.</p>
+    <p>Quando você termina, ela fica em silêncio. E então acontece algo que nenhum de vocês esperava — o canto do lábio treme. Uma vez. Ela prende. O riso não sai, mas esteve muito perto de sair — e a forma como ela o contém é visível, o que por si só já é extraordinário para um ser que controlou cada microexpressão por mais tempo do que qualquer civilização durou.</p>
+    <p>Kaira está com a mão sobre a boca. Não de surpresa — ela conhece essa resposta, viveu dentro dela por cinquenta anos. Mara olha para o chão com aquela expressão que aparece quando algo verdadeiro demais chega rápido demais. Teren está de olhos fechados. Aldric completamente quieto, como alguém gravando. Elise é a única olhando diretamente para Lilith — com a precisão de quem mira e espera.</p>
+  </div>
+
+  <!-- Lilith - poder suficiente -->
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Poder suficiente para fazer isso."</p>
+      <p>"Não para consumir. Para ficar entre."</p>
+    </div>
+  </div>
+
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Eu tinha esse sentimento."</p>
+      <p>"Antes de tudo. Antes do nome que me deram, antes do jardim, antes do 'não' que virou símbolo. Eu tinha exatamente isso — a satisfação específica de usar o que eu era para que algo importante continuasse existindo."</p>
+      <p>"E então o mundo me ensinou sistematicamente que esse sentimento era fraqueza. Que proteger era servir. Que servir era perder. Que perder era o que acontecia com quem não consumia primeiro."</p>
+      <p>"Então eu parei."</p>
+      <p>"E fiz do 'não' uma armadura tão boa que esqueci o que estava protegendo lá dentro."</p>
+    </div>
+  </div>
+
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Criei isso aqui. Um lugar fora do tempo. Disse a mim mesma que era liberdade."</p>
+      <p>"É o mesmo século de escuridão que você mencionou. Com jardim."</p>
+    </div>
+  </div>
+
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Você disse que isso é tudo. Que não tem mais nada embaixo disso."</p>
+      <p>"Está errado."</p>
+      <p>"Embaixo disso tem a coisa mais rara que existe num ser com poder suficiente para não precisar de ninguém."</p>
+      <p>"Escolha."</p>
+      <p>"Você não protege porque precisa. Não porque foi feito para isso. Não porque alguém pediu ou porque o universo determinou."</p>
+      <p>"Você protege porque olhou para tudo que é — e escolheu isso."</p>
+    </div>
+  </div>
+
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"O Primeiro me perguntou o que eu amava."</p>
+      <p>"Eu ainda não soube responder."</p>
+      <p>"Mas você acabou de me mostrar como a pergunta deveria ter sido feita."</p>
+    </div>
+  </div>
+
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Leyn Sepet. Guardião Eterno. Aquele que morreu três vezes e voltou sempre pelo mesmo motivo."</p>
+      <p>"Você não é meu. Nunca foi de Caim. Não pertence a nenhuma maldição que conheço."</p>
+      <p>"Mas acho que sei agora o que o Primeiro viu quando olhou para você."</p>
+    </div>
+  </div>
+
+  <div class="narration">
+    <p>Ela se levanta devagar do chão. Não para afastar. Para ficar de pé diante de você com a mesma dignidade quieta com que você se sentou. Como se o gesto de sentar na terra merecesse ser respondido com presença, não com distância.</p>
+    <p>As quatro asas se abrem levemente — não como ameaça, não como demonstração de poder. Como alguém que respira fundo antes de dizer algo que não pode ser desfeito.</p>
+    <p>Ela estende a mão.</p>
+    <p>Não para puxar você do chão. Não como gesto de poder ou concessão. Como alguém que aprendeu, nessa noite, que algumas conversas merecem ser seladas de forma concreta. A palma está voltada para cima — aberta. Esperando.</p>
+  </div>
+
+  <div class="action-beat">— O aperto de mãos —</div>
+
+  <div class="narration">
+    <p>As mãos se encontram. Não há explosão de poder. Não há visão cósmica nem transferência de energia ancestral. Há só isso — dois seres que escolheram, cada um à sua forma, ficar entre os que importam e o que ameaça. Apertando a mão um do outro num jardim impossível onde o tempo não cobra nada.</p>
+    <p>Lilith aperta firme. Não como teste. Como reconhecimento.</p>
+  </div>
+
+  <!-- Lilith despedida -->
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith</div>
+    <div class="speech-text">
+      <p>"Cuidem um do outro."</p>
+    </div>
+  </div>
+
+  <div class="narration">
+    <p>O jardim começa a mudar. A terra amolece. As árvores ficam translúcidas. As pétalas sobem em vez de cair, dissolvendo-se num céu de luas que agora são quase douradas.</p>
+    <p>A última coisa que vocês ouvem, antes do jardim fechar completamente:</p>
+  </div>
+
+  <div class="dialogue-block lilith">
+    <div class="speaker-label">Lilith — voz distante</div>
+    <div class="speech-text">
+      <p>"Quando a outra aparecer para você, Leyn Sepet —"</p>
+      <p>"…diga a ela que eu ainda estou procurando a resposta."</p>
+    </div>
+  </div>
+
+  <!-- Location shift -->
+  <div class="location-shift">
+    <div class="location-name">As Catacumbas da Vila Sepet</div>
+  </div>
+
+  <div class="narration">
+    <p>O ar cheira a pedra e escuridão familiar. As tochas estão no mesmo lugar. O tempo de Valtheris não se moveu um segundo.</p>
+    <p>Nas mãos de Leyn há uma única pétala vermelha. Que não sangra.</p>
+  </div>
+
+  <!-- Leyn - asas -->
+  <div class="dialogue-block leyn">
+    <div class="speaker-label">Leyn Sepet</div>
+    <div class="speech-text">
+      <p>"Vocês viram as asas dela? não eram lindas?"</p>
+    </div>
+  </div>
+
+  <!-- Mara -->
+  <div class="dialogue-block mara">
+    <div class="speaker-label">Mara Vell</div>
+    <div class="speech-text">
+      <p>"Você acabou de ter uma conversa filosófica com a Primeira Mulher da criação — e saiu preocupado com as asas."</p>
+    </div>
+  </div>
+
+  <!-- Teren -->
+  <div class="dialogue-block teren">
+    <div class="speaker-label">Teren</div>
+    <div class="speech-text">
+      <p>"Eu estudei arcanismo vampírico por décadas para entender a natureza primordial da existência e você—"</p>
+      <p>"Sim. Eram lindas."</p>
+    </div>
+  </div>
+
+  <!-- Aldric -->
+  <div class="dialogue-block aldric">
+    <div class="speaker-label">Aldric Voss</div>
+    <div class="speech-text">
+      <p>"As de sombra especialmente."</p>
+    </div>
+  </div>
+
+  <!-- Kaira final -->
+  <div class="dialogue-block kaira">
+    <div class="speaker-label">Kaira Sepet</div>
+    <div class="speech-text">
+      <p>"Tio."</p>
+      <p>"Nunca mude."</p>
+    </div>
+  </div>
+
+  <!-- Narration - Lilith's laugh -->
+  <div class="narration">
+    <p>E em algum lugar muito distante, além de qualquer jardim ou reino ou tempo que obedeça a Caim —</p>
+    <p>Uma risada. Pequena. Real. Antiga como o primeiro eclipse.</p>
+    <p>Que some antes que alguém tenha certeza se ouviu de verdade.</p>
+  </div>
+
+  <!-- Closing -->
+  <div class="closing-block">
+    <div class="closing-petal"></div>
+    <p class="closing-quote">Fim da Cena · O Jardim da Noite Eterna · Além do Véu da Carne</p>
+  </div>
+
+</div>
+
+<script>
+  // Generate falling petals
+  const container = document.getElementById('petals');
+  for (let i = 0; i < 30; i++) {
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+    petal.style.left = Math.random() * 100 + '%';
+    petal.style.animationDuration = (12 + Math.random() * 18) + 's';
+    petal.style.animationDelay = (-Math.random() * 20) + 's';
+    petal.style.width = (6 + Math.random() * 6) + 'px';
+    petal.style.height = (9 + Math.random() * 8) + 'px';
+    petal.style.opacity = 0.3 + Math.random() * 0.5;
+    petal.style.transform = `rotate(${Math.random() * 360}deg)`;
+    container.appendChild(petal);
+  }
+
+  // Subtle fade-in for dialogue blocks on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.dialogue-block').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(12px)';
+    el.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>

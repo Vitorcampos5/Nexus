@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arsenal dos Ancestrais — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">XII</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Arsenal<br>dos Ancestrais</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet, Mara Vell, Elise e Kaira</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Dizem que uma vila pode entrar em luto, assim como uma pessoa — e que o luto mais longo é o que espera, sem saber, por um retorno que pode nunca vir. Esta é a lenda de um arsenal guardado por cem anos de silêncio, e de uma família que se armou não apenas com aço e prata, mas com a certeza de que, desta vez, não haveria retirada.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Travessia das Armadilhas</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>A Sentinela flutua sobre as placas de pressão. As auras vermelhas ainda brilham nas paredes. O corredor deveria ser uma armadilha mortal — mas o sangue tem memória.</p>
+
+    <p>"Família Sepet," disse a armadura, "podem atravessar. Armadilhas inativas para sangue legítimo."</p>
+
+    <p>Mara o apoiava de um lado. Kaira, do outro. Atravessaram as placas.</p>
+
+    <p>Nada aconteceu. As auras vermelhas simplesmente os ignoraram. Vinte metros à frente, passaram pelas runas de fogo nas paredes — a aura verde. Também não ativaram.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Arsenal de Emergência — Primeira Visão</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>A porta dupla se abriu sozinha. Símbolo Sepet gravado em ouro no centro. A Sentinela parou diante dela.</p>
+
+    <p>"Arsenal de Emergência," disse. "Contém: sangue preservado, armas ancestrais, armaduras, artefatos de proteção. Leyn Sepet deve se alimentar PRIMEIRO. Depois, equipamento pode ser selecionado."</p>
+
+    <p>A câmara era circular, quinze metros de diâmetro. À esquerda, doze frascos de cristal descansavam em estantes rúnicas — sangue humano tipo A+, veado, javali, e um frasco à parte, marcado "SEPET — Emergencial". À direita, o armamento: seis espadas longas de aura mágica leve, quatro arcos longos élficos, uma aljava com quarenta flechas de prata, três escudos de tamanhos variados, e uma lança de lâmina de prata pura. Ao fundo, as armaduras — três cotas de malha reforçadas, duas armaduras de placas leves, e uma armadura cerimonial Sepet, negra com runas douradas. No centro da câmara, sobre um pedestal, um livro de capa de couro: "TÉCNICAS SEPET — GRIMÓRIO FAMILIAR".</p>
+
+    <p>O tempo não esperava. Dez minutos até os cultistas chegarem. Cada segundo contava. Alimentar, equipar, posicionar.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Sangue que Alimenta — Recuperação</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Kaira o guiou até os frascos com urgência e carinho ao mesmo tempo.</p>
+
+    <p>"Tio, por favor, beba!" disse. "Você me deu tanto... agora você precisa recuperar!"</p>
+
+    <p>Pegou o frasco marcado "SEPET — Emergencial".</p>
+
+    <p>"Este... este cheira como... família..." disse.</p>
+
+    <p>"Sangue Sepet preservado?" perguntou Mara. "De quem? De quando?"</p>
+
+    <p>"Não se acostume com isso," disse Leyn, um meio sorriso escapando, tom de tio. "Não é sempre que vou ficar oferecendo meu sangue."</p>
+
+    <p>Kaira riu — o som ainda mais maduro do que ela mesma esperava, ainda se acostumando com a própria voz, um soprano rico estranhamente parecido ao de Selene.</p>
+
+    <p>"Prometo! Só em emergências! E... e obrigada. Por confiar em mim."</p>
+
+    <p>"Estou bem," disse ele. "Não se preocupe, Kaira."</p>
+
+    <p>O sangue era preservado por magia rúnica havia muito tempo — não fresco, mas a potência se mantinha absoluta. A cor voltou ao rosto dele enquanto bebia.</p>
+
+    <p>"Você está melhor!" disse Kaira, aliviada. "A cor voltou ao seu rosto!"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Inventário — Sangue de Kael e o Grimório</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Abriu a própria bolsa. Quinze moedas de ouro tilintaram no chão de pedra. Guardou o frasco de sangue Sepet, vidro grosso, o líquido restante brilhando levemente dourado. A etiqueta dizia: <em>Sangue de Kael Sepet — Ancião. Preservado há noventa e sete anos. Uso apenas em morte iminente.</em></p>
+
+    <p>"Noventa e sete anos?!" espantou-se Mara. "E ainda funcional?!"</p>
+
+    <p>"Magia de preservação Sepet é absoluta," disse a Sentinela. "Sangue não envelhece. Não corrompe. Permanece puro."</p>
+
+    <p>Pegou também o Grimório das Técnicas Sepet. O livro era pesado — facilmente cinco quilos. Capa de couro negro, runas douradas pulsando. Quando o tocou, sentiu calor. O livro o reconheceu. As runas brilharam mais intensas por um segundo.</p>
+
+    <p>Grimório Familiar Sepet — Técnicas de Combate, Magia de Sangue e Rituais Ancestrais, compilado ao longo de doze gerações.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Revelações da Sentinela — O Luto da Vila</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Olhou para a armadura flutuante com uma pergunta que ficava pendente desde que entrara na vila.</p>
+
+    <p>"Como assim a vila inteira é a Câmara desde o ritual de trezentos anos atrás?" perguntou. "Tenho cento e vinte e cinco anos. E cem anos atrás eu vivia na vila. Ela não era assim. A Câmara da Provação sempre foi um lugar à parte e misterioso." Uma pausa. "Algo nesses cem anos deve ter mudado."</p>
+
+    <p>"Informação correta," disse a Sentinela, acessando memórias arquivadas. "Mudança ocorreu há noventa e sete anos. Após o Massacre dos Sepet, a magia da Vila... entrou em luto."</p>
+
+    <p>"A Vila estava..." sussurrou Mara. "Esperando vocês voltarem?"</p>
+
+    <p>"A Câmara da Provação, localizada no coração mágico da Vila, detectou: ausência de vampiros vivos. Linhagem extinta. Propósito perdido. E então... a Câmara EXPANDIU. Espalhou sua essência por toda a Vila. Tentando... preservar. Proteger. Aguardar retorno." Uma pausa. "Correto. Vila Sepet é consciente em nível básico. Não pensa como pessoa. Mas SENTE. E sentiu: dor. Abandono. Desejo de proteger o que restou."</p>
+
+    <p>"O cheiro de incenso que senti..." disse Leyn. "A ausência de corpos nas ruas... você recolheu os corpos e os trouxe para as catacumbas?"</p>
+
+    <p>"Correto. Após massacre, recebi ordem final de Kael Sepet antes de sua morte: 'Preserve a dignidade dos caídos'. Cento e quarenta e sete corpos recuperados. Embalsamados. Sepultados nas catacumbas com honra. Incluindo: Selene Sepet."</p>
+
+    <p>Kaira congelou.</p>
+
+    <p>"Minha mãe..." A voz dela tremia. "Está aqui? Embaixo?"</p>
+
+    <p>"Sim. Tumba vinte e três, setor leste. Preservada perfeitamente."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Equipando Elise</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Com oito minutos restantes, Leyn agiu com precisão de comandante. Elise primeiro.</p>
+
+    <p>"Você não pode só depender do seu ácido no combate que está por vir," disse.</p>
+
+    <p>"Você... tem razão..." concordou ela. "Preciso... diversificar..."</p>
+
+    <p>"Pegue um dos arcos e a aljava de flechas," disse ele. "E você está acostumada com cotas de malha. Troque a que está usando por uma das três reforçadas."</p>
+
+    <p>Elise removeu a cota velha — amassada, elos soltos, manchada de ácido dela mesma — e vestiu a reforçada: elos menores, mais apertados, placas de aço nas áreas vitais.</p>
+
+    <p>"Pegue também três frascos de sangue," acrescentou Leyn.</p>
+
+    <p>Quando terminou, Elise carregava a cota reforçada, o arco longo élfico e a aljava de flechas de prata, além da própria mordida ácida como sempre — e os três frascos de sangue, guardados para emergência.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Equipando Mara</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Você deve trocar seu escudo," disse Leyn. "Ele está um pouco amassado, certo?"</p>
+
+    <p>"Sim..." Mara olhou para o escudo danificado. "Levou muitos danos contra o Arauto..."</p>
+
+    <p>"Pegue dois escudos e substitua este," disse ele. "Também acredito que a armadura de placa leve te servirá bem. Pegue duas espadas longas também, se conseguir utilizá-las."</p>
+
+    <p>Mara testou o peso, um sorriso tático se formando.</p>
+
+    <p>"Com meus múltiplos braços... posso usar escudo, adaga E espada longa simultaneamente se precisar!"</p>
+
+    <p>"Guarde três frascos de sangue com você também," disse Leyn.</p>
+
+    <p>Ela terminou equipada com a armadura de placas leve, o escudo grande de aço — mais um médio de reserva —, duas espadas longas, a adaga de prata, e os três frascos.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Equipando Kaira — A Armadura Cerimonial</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Sobrinha, acredito que deva vestir a armadura cerimonial da família," disse Leyn.</p>
+
+    <p>Kaira se aproximou da Armadura Cerimonial Sepet. Era linda. E intimidadora — placas negras como a noite, runas douradas brilhando nas bordas, o símbolo Sepet, a Lua Carmesim, gravado no peitoral. Quando ela a tocou, a armadura brilhou. As runas pulsaram. Então se ajustou automaticamente ao corpo dela — não ficou grande demais, não ficou pesada demais. Era como se tivesse nascido para ela.</p>
+
+    <p>"Eu... eu pareço... guerreira de verdade agora..." disse, entre admiração e orgulho.</p>
+
+    <p>"E o que prefere?" perguntou Leyn. "Espada longa ou a lança?"</p>
+
+    <p>Ela olhou para as duas. A espada longa era familiar, versátil — treinara com espada curta. A lança de prata pura tinha alcance, poder contra corrompidos, mas nunca treinara com ela.</p>
+
+    <p>"A lança," decidiu, com lógica tática. "Quero... quero manter distância dos inimigos. E a prata... vai machucar os cultistas, certo?"</p>
+
+    <p>Pegou a lança — dois metros de comprimento, cabo de ébano negro, lâmina de prata pura brilhando. Quando a empunhou, a lança vibrou levemente. Reconhecendo sangue Sepet.</p>
+
+    <p>"Pegue também três frascos de sangue," disse Leyn.</p>
+
+    <p>Ao final, Kaira vestia a Armadura Cerimonial Sepet, carregava a lança de prata, guardava a espada curta como lembrança — um backup mais emocional que tático —, usava um anel de proteção encontrado entre os artefatos, e os três frascos de sangue.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Decisão Tática — Defendemos as Catacumbas</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Família Sepet equipada," analisou a Sentinela. "Força de combate estimada: ALTA. Chance de vitória contra cultistas: sessenta a setenta por cento. Mas líder cultista ainda não detectado. Se padre traidor vier... probabilidade de vitória cai para trinta e cinco por cento."</p>
+
+    <p>"Defendemos aqui nas catacumbas?" perguntou Mara. "Ou voltamos para superfície e usamos a Vila?"</p>
+
+    <p>"Catacumbas... estreitas..." ponderou Elise. "Bom para nós... ruim para números... Mas... superfície... temos espaço... e Vila... pode ajudar...?"</p>
+
+    <p>"E... e minha mãe..." disse Kaira, em conflito. "Está aqui... eu quero... eu preciso ver ela... mas talvez... talvez depois da luta?"</p>
+
+    <p>"Vamos defender as catacumbas," decidiu Leyn, absoluto. "Temos vantagem do local estreito e também das armadilhas que ainda não acionamos."</p>
+
+    <p>"Corredor de três metros de largura," sorriu Mara, tática. "Eles não podem nos flanquear. Perfeito."</p>
+
+    <p>"E armadilhas..." disse Elise, "vão pegar... os primeiros... que entrarem..."</p>
+
+    <p>Leyn se ajoelhou na frente de Kaira, olhando nos olhos dourados dela — agora no mesmo nível que os seus.</p>
+
+    <p>"Kaira," disse, "logo iremos visitar a sepultura dela. Após vencermos. Está bem?"</p>
+
+    <p>Ela segurou as lágrimas.</p>
+
+    <p>"Está bem, tio. Primeiro lutamos. Depois... depois eu me despeço dela direito." Apertou a lança de prata. "E vou lutar BEM. Para fazê-la orgulhosa."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Formação de Combate — Ordens Claras</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Cada posição foi definida com precisão cirúrgica.</p>
+
+    <p>"Mara, você e eu ficaremos na frente para lidar com os primeiros cultistas que vierem," disse Leyn.</p>
+
+    <p>Mara assumiu posição — escudo grande levantado, espada longa na outra mão, usando os braços múltiplos: escudo em dois, espada em um, adaga de prata pronta no outro.</p>
+
+    <p>"Muro de aço, Leyn," disse. "Nada passa."</p>
+
+    <p>Ele se posicionou ao lado dela, espada vinculada em guarda alta, armadura élfica brilhando de leve. Formação: ele à esquerda, Mara à direita — bloqueio completo do corredor de três metros.</p>
+
+    <p>"Kaira, quando precisarmos recuar, você cobre nossa abertura," disse Leyn.</p>
+
+    <p>"Lança tem alcance de dez pés," respondeu ela, séria, testando a posição. "Posso atacar por cima de vocês se precisar. E se vocês recuarem, eu mantenho a linha até vocês se reagruparem."</p>
+
+    <p>Ela aprendera. Tática. Não apenas força.</p>
+
+    <p>"Elise, de reforço para Kaira," disse Leyn. "Não deixe que conjurem nada nela."</p>
+
+    <p>Elise assumiu posição lateral, arco élfico levantado, flecha de prata já encaixada.</p>
+
+    <p>"Qualquer cultista..." disse, "que tentar magia... leva flecha... ou ácido... ou ambos... Kaira... está protegida..."</p>
+
+    <p>"Sentinela," disse Leyn, virando-se para a armadura, "ative as armadilhas e mate quem tentar entrar nas Tumbas de Anciãos."</p>
+
+    <p>"Ordem recebida e aceita, Leyn Sepet," disse ela, com reverência.</p>
+
+    <p>A armadura flutuou rapidamente pelo corredor, parando nas placas de pressão que ele não conseguira decifrar antes.</p>
+
+    <p>"Reativando armadilhas para modo HOSTIL," anunciou. "Qualquer não-Sepet que pisar será—"</p>
+
+    <p><strong>CLICK. CLICK. CLICK.</strong></p>
+
+    <p>As runas vermelhas nas placas brilharam intensamente.</p>
+
+    <p>"...incinerado," completou ela.</p>
+
+    <p>Continuou até as runas de fogo nas paredes — a aura verde que tinham visto ao atravessar.</p>
+
+    <p>"Runas de fogo configuradas para EXPLOSÃO em contato não-autorizado," disse.</p>
+
+    <p>Foi então até a entrada das Tumbas de Anciãos — as câmaras laterais que não tinham entrado — e se posicionou entre as duas portas, espada fantasmagórica brilhando.</p>
+
+    <p>"Defenderei este ponto," disse. "Sentinela Espectral será ativada se necessário. Ninguém profanará os mortos."</p>
+
+    <p>A formação estava completa: Leyn e Mara na frente, Kaira no centro, Elise dando suporte, as armadilhas reativadas entre eles e a entrada, a Sentinela guardando as tumbas, e o Arsenal quarenta metros atrás como rota de fuga, se necessário.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Devorador Menor — Análise de Ameaça</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Analisando auras hostis detectadas..." murmurou a Sentinela.</p>
+
+    <p>Através da conexão mágica com ela, viram — não com os olhos, mas com o sangue. Catorze figuras cruzavam o Portão Norte da Vila. A Vila os mostrava como se fizessem parte dela, porque agora, de fato, faziam.</p>
+
+    <p>Oito guerreiros cultistas, em armaduras de couro negro, espadas curtas, símbolos profanos nos peitorais. Três conjuradores, mantos roxos, cajados com cristais pulsando, olhos brilhando com magia corrompida. Dois construtos de Carne-e-Pedra, dois metros e meio de altura, pele cinza rachada, olhos vazios, força brutal. E, à frente de todos, uma figura encapuzada de dois metros, manto negro fluindo — sob o capuz, literalmente vazio, um rosto como buraco negro, o ar ao redor distorcendo como calor sobre pedra. Um Devorador Menor. Servo direto dos Mestres Antigos.</p>
+
+    <p>"ALERTA MÁXIMO," disse a Sentinela. "Entidade identificada: DEVORADOR MENOR. Servo direto dos Mestres Antigos. Chance de vitória: quarenta por cento. CUIDADO EXTREMO NECESSÁRIO."</p>
+
+    <p>"Algo novo?" perguntou Mara. "Que diabos o Culto trouxe?"</p>
+
+    <p>Leyn sentiu através da magia da Vila. A presença "nova" tinha uma aura estranha. Não totalmente humana. Não morto-vivo. Não construto. Era... híbrida? Como o Arauto Ardente fora, mas diferente. Mais profunda. Como se tivesse sido forjada de algo anterior à própria corrupção que ele conhecia.</p>
+
+    <p>"Leyn," disse Mara, a pergunta final antes dos três minutos que restavam. "Última chance para palavras. Estratégia final? Magos primeiro? Guerreiros pesados? Ou deixamos as armadilhas pegarem os primeiros e focamos nos sobreviventes?"</p>
+
+    <p>"E se..." perguntou Elise, "padre traidor... vier... quem foca nele?"</p>
+
+    <p>"Se for meu pai biológico," disse Kaira, a voz fria, madura, determinada, "EU quero enfrentá-lo. Ele me selou. Ele matou minha mãe. Ele PAGARÁ."</p>
+
+    <p>As runas douradas da armadura cerimonial pulsaram com a emoção dela.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">30 Segundos — Eles Chegam</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Passos ecoaram. Múltiplos. Coordenados. Marchando. Luz de tochas se aproximava — tinham trazido as próprias. Não enxergavam no escuro como eles.</p>
+
+    <p>Vozes vinham da entrada, distantes, mas claras o bastante através do corredor de pedra.</p>
+
+    <p>"A Vila Sepet..." disse uma. "A escuridão eterna ainda ativa... significa que a magia ainda protege..."</p>
+
+    <p>"O selo foi quebrado AQUI," disse outra. "A criança está dentro. Encontrem-na. Viva."</p>
+
+    <p>"E se o vampiro primordial estiver com ela?"</p>
+
+    <p>"Matem-no," respondeu o que devia ser o líder. "A criança é prioridade. Ele é... descartável."</p>
+
+    <p>Kaira apertou a lança com raiva. Silêncio resoluto.</p>
+
+    <p>"Eles querem você viva, Kaira," disse Mara. "Vão tentar capturar, não matar. Isso é... vantagem e desvantagem."</p>
+
+    <p>"Vantagem..." concordou Elise. "Hesitarão... em machucar ela... Desvantagem... focarão TUDO... em separá-la... de nós..."</p>
+
+    <p>Então, uma voz diferente das outras — como vidro quebrando.</p>
+
+    <p>"Desçam," disse o Devorador Menor. "A criança está nas catacumbas. Sinto o sangue Sepet." Uma pausa que gelava mais que qualquer ameaça. "E há OUTROS com ela. Vampiros. Interessante. Capturem a criança. Destruam os outros. Eu quero... EXPERIMENTAR... com o primordial."</p>
+  </section>
+
+  <!-- ── XIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Discurso de Leyn — Sem Clemência</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn olhou para as três companheiras. Sua família. Sua razão de ter voltado da morte duas vezes.</p>
+
+    <p>"Quando eles chegarem, não teremos clemência," disse, a voz firme, absoluta. "Esses fanáticos já passaram do ponto da salvação. Não existe diálogo com eles."</p>
+
+    <p>"Sem piedade," disse Mara, os olhos vermelhos brilhando. "Entendido."</p>
+
+    <p>"Qualquer tentativa que venha deles, tenham a certeza de que é um blefe," continuou ele. "Eles podem tentar nos enganar de muitas formas."</p>
+
+    <p>"Não ouviremos..." disse Elise, "suas mentiras... só... suas mortes..."</p>
+
+    <p>"Permaneçam fortes," disse Leyn, "e foquem em sentir o vínculo que temos."</p>
+
+    <p>Tocou o próprio peito — onde o coração morto, mas presente, ressoava com os vínculos familiares.</p>
+
+    <p>"Eu sinto vocês..." Kaira fechou os olhos por um segundo. "Todos... tão claramente agora..."</p>
+
+    <p>De Leyn vinha determinação inabalável. De Mara, fúria protetora. De Elise, lealdade absoluta. Três forças distintas, uma família.</p>
+
+    <p>"Transformaremos quarenta por cento de chance de vitória," disse Leyn, "em um bilhão por cento de certeza."</p>
+
+    <p>"EU GOSTO DESSAS CHANCES!" gritou Mara, um som de guerra puro.</p>
+
+    <p>"Os que sobreviverem às armadilhas devem ser finalizados sem nem terem chances de atacar," disse Leyn, erguendo a espada vinculada. "É hora de agirmos. Não perderemos em nossa casa."</p>
+
+    <p>A lâmina brilhou de leve, respondendo à determinação dele.</p>
+
+    <p>Todos bateram as armas juntos — som metálico de união.</p>
+
+    <p>"PELA LIBERDADE!" gritou Mara.</p>
+
+    <p>"Pela VERDADE!" gritou Elise.</p>
+
+    <p>"PELO CLÃ SEPET!" gritou Kaira Sepet.</p>
+  </section>
+
+  <!-- ── XIV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Vila Desperta</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>As palavras de Kaira ecoaram pelas catacumbas.</p>
+
+    <p>E a Vila Sepet acordou por completo.</p>
+
+    <p class="echo">Sepet… retornou… defendam… a casa… protejam… a linhagem…</p>
+
+    <p>As tochas de fogo azul explodiram em chamas mais intensas. O chão tremeu levemente. Ouviram — não com ouvidos, mas com sangue.</p>
+
+    <p>A própria magia da Vila estava do lado deles.</p>
+
+    <p>Leyn, recuperado e alimentado, com o Grimório Sepet e o restante do sangue de Kael guardados. Elise com o arco élfico, as flechas de prata e a cota reforçada. Mara com a armadura de placas leve, o escudo grande e as duas espadas longas. Kaira com a Armadura Cerimonial Sepet, a lança de prata e o anel de proteção. A Sentinela ativa, as armadilhas reativadas em modo hostil, a Vila desperta como aliada.</p>
+
+    <p>Contra eles: oito guerreiros, três conjuradores, dois construtos, e um Devorador Menor. A chegada era iminente.</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    Cem anos de silêncio nas catacumbas.<br>
+    Cento e quarenta e sete mortos preservados com honra.<br>
+    E agora, pela primeira vez desde o massacre —<br>
+    sangue Sepet brilha nas armaduras.<br>
+    A lança vibra. A vila <em>acorda</em>.<br><br>
+    Não perderemos em nossa casa.
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+</div>
+
+</body>
+</html>

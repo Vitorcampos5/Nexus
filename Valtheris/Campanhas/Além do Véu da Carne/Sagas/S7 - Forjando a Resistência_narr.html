@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forjando a Resistência — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">VII</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Forjando a<br>Resistência</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet, Mara Vell, Elise e Kaira</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Dizem que se pode medir a força de um lar não pelas paredes que o protegem, mas pelas mãos dispostas a construir algo novo sobre as cinzas de uma perda. Esta é a lenda de uma tarde em que se forjaram roupas, confiança, e as primeiras estacas de prata de uma guerra que ainda não tinha nome.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Delegação de Tarefas</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>O sol se pôs. Era hora de trabalhar. Com a clareza de um comandante, Leyn distribuiu as responsabilidades.</p>
+
+    <p>"Mara, Elise — saiam para caçar," disse.</p>
+
+    <p>"Sangue fresco. Manter forças," respondeu Mara, já pragmática. "Quantos alvos?"</p>
+
+    <p>"Animais... ou..." perguntou Elise, "se encontrarmos... ameaças... humanas...?"</p>
+
+    <p>"Mara, Elise — apenas animais," esclareceu ele. "Se virem algum humano, voltem imediatamente para a aldeia."</p>
+
+    <p>"Entendido," assentiu Mara, firme. "Veados, javalis, coelhos. Nada de complicações humanas."</p>
+
+    <p>"Seremos... cuidadosas... e rápidas..." acrescentou Elise.</p>
+
+    <p>Elas desapareceram na floresta com velocidade vampírica.</p>
+
+    <p>"Aldric, auxilie Marcus e os outros cavaleiros com a defesa," disse Leyn.</p>
+
+    <p>"Entendido," respondeu Aldric, com uma reverência. "Runas, táticas, fortificações. Faremos desta aldeia algo defensável." Virou-se para Marcus. "Soldado, mostre-me o perímetro. Vamos trabalhar."</p>
+
+    <p>"Sim, senhor Aldric," disse Marcus, hesitante mas obediente. "Por aqui."</p>
+
+    <p>"Vou garantir que os outros soldados não entrem em pânico ao ver vampiro primordial ajudando," resmungou o veterano, seco e prático.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Garotinha e a Força de Kaira</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Kaira segurava a mão do tio enquanto caminhavam pelo centro da vila. Olhava ao redor com admiração e medo misturados. Talvez quarenta casas. Perto de cento e cinquenta habitantes antes do ataque. Agora, menos.</p>
+
+    <p>"Tio... tem tanta GENTE aqui..." disse, maravilhada e assustada. "eu... não via tantos humanos juntos desde... desde aquele dia..."</p>
+
+    <p>Alguns aldeões os reverenciavam — o vampiro que os salvara. Outros ficavam tensos ao ver Kaira: outra vampira? Uma criança? Crianças humanas apontavam, curiosas.</p>
+
+    <p>Uma menina humana — a mesma que Leyn salvara do padre — correu até eles.</p>
+
+    <p>"Senhor vampiro! Você voltou!" Parou ao ver Kaira. "Você... você tem filha?"</p>
+
+    <p>Leyn se ajoelhou na altura dos olhos dela. "Garotinha, como tem passado?"</p>
+
+    <p>"Melhor, senhor vampiro!" sorriu ela, ainda marcada mas viva. "Mamãe disse que você é herói. Que salvou todo mundo."</p>
+
+    <p>"Essa é Kaira, minha sobrinha," disse ele.</p>
+
+    <p>Kaira olhava para a menina humana com fascínio. Nunca interagira com humanos pacificamente. Só os vira sendo massacrados, ou massacrando.</p>
+
+    <p>"Oi, Kaira!" disse a garotinha, inocência total, sem sombra de medo. "Você também é vampira? Seus olhos são bonitos! São dourados!"</p>
+
+    <p>"Eu... obrigada..." disse Kaira, vermelha de vergonha. "você... não tem medo de mim?"</p>
+
+    <p>"Por quê? Você salvou a gente igual seu tio?"</p>
+
+    <p>Kaira não soube como responder. Olhou para o tio em busca de ajuda.</p>
+
+    <p>"Claro," disse ele. "Kaira é tão forte quanto eu."</p>
+
+    <p>"SÉRIO?!" Os olhos da garotinha se arregalaram. "Ela luta também?"</p>
+
+    <p>"Tio... eu... eu sou forte?" perguntou Kaira, cheia de dúvida e esperança ao mesmo tempo.</p>
+
+    <p>"Você TEM que ser!" disse a garotinha, com lógica infantil perfeita. "É família do herói! Isso significa que você é heroína também!"</p>
+
+    <p>Kaira sorriu — pequeno, mas genuíno. Pela primeira vez, alguém a via como mais que vítima. Uma garotinha humana, sem medo nenhum. Lógica infantil que valia mais que qualquer argumento.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Costureira — Roupas de Verdade</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Uma casa com tecidos pendurados na janela. Leyn bateu na porta.</p>
+
+    <p>Não encontrara outras lojas ou recursos ao longo do caminho — a aldeia era realmente pequena e pobre. Apenas a costureira.</p>
+
+    <p>Uma mulher idosa abriu a porta — cabelos grisalhos, mãos calejadas de décadas costurando.</p>
+
+    <p>"Senhor vampiro. A criança precisa de roupas?" disse, a voz gentil mas cansada. "Posso fazer algo simples. Mas... não tenho muito tecido. E não posso cobrar — vocês nos salvaram."</p>
+
+    <p>Leyn tirou cinco moedas de ouro da bolsa.</p>
+
+    <p>"Admiro sua cortesia, humana," disse. "Mas para vampiros, ouro não é uma moeda — ela servirá mais a você."</p>
+
+    <p>"Cinco... cinco ouros?!" A costureira ficou boquiaberta, lágrimas nos olhos. "Senhor, isso é... isso é o que ganho em um ANO! Eu... eu posso fazer roupas BOAS para a menina com isso! Não apenas remendos!"</p>
+
+    <p>"Eu... eu posso ter roupas de verdade?" perguntou Kaira, olhando os próprios trapos.</p>
+
+    <p>"Claro que pode, Kaira," disse Leyn. "Trouxe você aqui para isso." Uma pausa. "E também para conhecer os humanos. Bem, eles já te ajudaram uma vez."</p>
+
+    <p>"Eles... foram punidos..." disse Kaira, culpa na voz, "por me ajudar..."</p>
+
+    <p>"Criança, não foi sua culpa," interveio a costureira, gentil. "Foi culpa de homens maus. E agora, seu tio nos protege." Estendeu a mão. "Venha, deixe eu tirar suas medidas. Vou fazer vestido bonito. E calças para treinar também, se quiser."</p>
+
+    <p>Leyn perguntou à costureira sobre algum ferreiro na aldeia.</p>
+
+    <p>"Hmm..." considerou ela. "o velho Garrett morreu no inverno — ele era ferreiro de verdade. Mas... seu aprendiz, Tobias, ainda está aqui. Garoto de dezenove anos. Não terminou o treinamento, mas sabe o básico. Tímido, mas trabalhador."</p>
+
+    <p>Kaira olhou para o tio — pedindo permissão silenciosa. Ele assentiu. Ela entrou timidamente com a costureira.</p>
+
+    <p>"Tobias," disse Leyn. "Vou procurar por ele. Obrigado, senhora."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Tobias — O Aprendiz que Não Terminou</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Casa pequena no fim da rua. Uma forja improvisada no quintal — pedras empilhadas, fole velho, bigorna rachada. Leyn bateu na porta. Ninguém respondeu. Mas ouviu sons metálicos. Contornou a casa.</p>
+
+    <p>Tobias estava lá. Rapaz magro, dezenove anos, cabelo castanho desgrenhado. Batia martelo numa lâmina torta — tentando consertá-la, claramente lutando. Frustrado, suado, sozinho.</p>
+
+    <p>Ele viu Leyn — e congelou.</p>
+
+    <p>"Eu... eu não fiz nada!" disse, medo absoluto na voz. "Por favor, não me mate!"</p>
+
+    <p>Deixou o martelo cair, recuando. Claramente não estivera presente quando Leyn salvara os aldeões — para ele, vampiros ainda eram monstros.</p>
+
+    <p>"Ei, garoto," disse Leyn, aproximando-se devagar. "Não estou aqui para te fazer mal. Na verdade, preciso de seus serviços."</p>
+
+    <p>Abaixou-se, pegou o martelo do chão. Deliberadamente lento, mostrando cada movimento. Estendeu para o rapaz.</p>
+
+    <p>"Um ferreiro não pode perder sua ferramenta."</p>
+
+    <p>"Você... você não é como os vampiros das histórias..." disse Tobias, pegando com mãos trêmulas.</p>
+
+    <p>"Sei que pode parecer invasivo," continuou Leyn, "mas estou ficando na forja do seu antigo mestre."</p>
+
+    <p>"Você... você está na casa do Mestre Garrett?" Tobias travou.</p>
+
+    <p>"E queria que você viesse comigo até lá para fabricar equipamentos."</p>
+
+    <p>"Eu... eu não sou bom o suficiente," disse Tobias, vergonha na voz. "Mestre Garrett era... era artista. Eu sou apenas... apenas aprendiz que nem terminou."</p>
+
+    <p>"Tudo bem se escolher não ir," disse Leyn, com compreensão genuína. "Eu sei como é perder alguém e não querer nem passar perto do local onde velhas lembranças podem brotar."</p>
+
+    <p>As palavras atingiram fundo. Tobias fechou os olhos. Respirou fundo.</p>
+
+    <p>"Mestre Garrett... morreu na fornalha dele," disse, lágrimas caindo. "Coração parou enquanto forjava. Eu... eu o encontrei. E desde então... não consegui voltar." Uma pausa. "Mas também não consigo trabalhar direito aqui. Tudo que faço sai... torto. Fraco. Porque eu não aprendi tudo ainda."</p>
+
+    <p>Considerou por um longo momento.</p>
+
+    <p>"Se... se eu for..." disse, decisão se formando, "você fica comigo? Pelo menos... pelo menos na primeira vez que entrar lá de novo? Não quero... estar sozinho... com as lembranças..."</p>
+
+    <p>"Sim, vou te acompanhar," disse Leyn, firme e reconfortante. "Você não se importa de ter mais companhias lá, né?"</p>
+
+    <p>"Mais... companhias?" Tobias limpou as lágrimas. "Você tem... outros com você? São... são outros vampiros?" Uma pausa. "Porque se são... e você confia neles... então... eu também confio." Um sorriso envergonhado. "Só... só me avise se alguém for aparecer. Para eu não... não surtar de novo."</p>
+
+    <p>Respirou fundo, decisão tomada.</p>
+
+    <p>"Está bem. Eu vou. Pela aldeia. Pelo Mestre Garrett. E porque... porque você parece honesto." Uma pausa. "E vampiro honesto é... bem, é mais do que maioria dos humanos que conheci."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Kaira com Roupa Nova — O Reencontro</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>No caminho de volta, Tobias falava — nervoso, preenchendo o silêncio.</p>
+
+    <p>"Mestre Garrett sempre dizia que bom ferreiro não faz apenas armas," disse, saudade na voz. "Faz ferramentas que constroem coisas. Arados, pregos, dobradiças... Ele odiava quando a Igreja pedia espadas. Dizia que 'ferro deveria criar, não destruir'."</p>
+
+    <p>Passaram pela casa da costureira.</p>
+
+    <p>"TIO LEYN! OLHA! EU TENHO ROUPA DE VERDADE!" Kaira saiu em disparada.</p>
+
+    <p>Vestido simples de lã marrom, limpo e ajustado. Calças de tecido grosso por baixo — práticas para treino. As botas que ele lhe dera. Cabelo ainda desgrenhado, mas a costureira tentara pentear um pouco. Ela estava radiante.</p>
+
+    <p>"E a senhora disse que vai fazer mais duas mudas para quando estas sujarem!" disse, girando para mostrar.</p>
+
+    <p>"Uma... uma criança vampira?" Tobias parou, surpreso. "E ela é... feliz?"</p>
+
+    <p>Conceito alienígena para ele. Kaira viu Tobias e se escondeu atrás do tio — ainda tímida com estranhos.</p>
+
+    <p>"Tio... quem é ele?" perguntou, espiando da sombra dele.</p>
+
+    <p>"Tobias. Ferreiro. Vai nos ajudar."</p>
+
+    <p>"Oi... Tobias..." disse ela. "eu sou Kaira..."</p>
+
+    <p>"Oi... Kaira..." disse ele, desajeitadamente. "eu... uh... gosto do seu vestido?"</p>
+
+    <p>Ele claramente não sabia como falar com crianças.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Forja do Mestre Garrett</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>A aldeia se transformava. Mara e Elise acabaram de voltar da caça, limpando sangue de veado das bocas. Marcus coordenava soldados montando barricadas de madeira. Aldric desenhava runas em pedras, posicionando-as estrategicamente. O veterano testava armadilhas simples com cordas e sinos.</p>
+
+    <p>"Tio... todo mundo está... trabalhando junto..." disse Kaira, maravilha genuína na voz, "humanos e vampiros... Isso... isso é possível... de verdade?"</p>
+
+    <p>"Tudo é possível, Kaira," disse Leyn. "Desde que você queira muito e faça acontecer."</p>
+
+    <p>"Então... então eu posso... fazer família também?" perguntou ela, esperança pura. "Como você fez? Mesmo sendo... fraca... e assustada... às vezes?"</p>
+
+    <p>Ele assentiu. Ela sorriu — dessa vez, um sorriso que alcançava os olhos.</p>
+
+    <p>Através do vínculo, Leyn avisou as duas, ainda lá dentro: <em>Vou trazer um humano — Tobias, o ferreiro. Ele está com medo de vampiros. Sejam gentis, sem sustos.</em></p>
+
+    <p><em>Entendido,</em> respondeu Mara. <em>Comportamento exemplar, prometo.</em></p>
+
+    <p><em>Vou tentar... não parecer... assustadora...</em> acrescentou Elise.</p>
+
+    <p>Tobias parou na frente da casa do ferreiro. Mãos tremendo.</p>
+
+    <p>"Eu... eu não entro aqui há... quatro meses..." Respirou fundo.</p>
+
+    <p>Leyn se virou para ele — tom completamente casual, quase brincalhão:</p>
+
+    <p>"Não repara na bagunça."</p>
+
+    <p>E entrou primeiro.</p>
+
+    <p>"Você... você está brincando?" Tobias riu de surpresa. "Com... com fantasmas? Com trauma?" Respirou fundo. "Tudo bem. Se VOCÊ não tem medo de bagunça... eu também não."</p>
+
+    <p>Entrou atrás dele. Parou no meio da sala principal. Olhou ao redor — tudo como Garrett deixara. Ferramentas, bancadas, poeira. Mas então viu: Mara e Elise subindo do subsolo, limpas após a caça. Kaira curiosamente tocando uma bigorna velha. Leyn, tranquilo, como se aquele fosse seu lar temporário normal.</p>
+
+    <p>"Vocês... vocês estão MORANDO aqui?" perguntou. "Transformaram isto em... lar?"</p>
+
+    <p>"Oi!" disse Mara, casual. "Você deve ser o ferreiro. Leyn falou de você."</p>
+
+    <p>"Olá... bem-vindo... de volta..." disse Elise.</p>
+
+    <p>"Vocês são... uma família de vampiros..." Tobias parecia em confusão total, mas não negativa, "morando na casa do meu mestre morto... e estão sendo... NORMAIS?"</p>
+
+    <p>Kaira se aproximou, segurando uma ferramenta pequena.</p>
+
+    <p>"Tobias... o que é isto?" perguntou, completamente inocente. "Parece garfo estranho."</p>
+
+    <p>Ela segurava tenazes.</p>
+
+    <p>"Isso são tenazes!" disse ele, entrando em modo professor automático. "Você usa para segurar metal quente sem queimar a mão. Veja, você aperta aqui, e..."</p>
+
+    <p>Parou. Percebeu. Estava ensinando. Na casa do mestre. Como o mestre fazia com ele. As memórias não eram apenas dor. Eram também propósito.</p>
+
+    <p>"Você... você fez de propósito," disse, gratidão em vez de acusação. "A bagunça. A criança. Tudo... para eu não focar só na tristeza." Uma pausa. "Obrigado. Eu... eu acho que consigo trabalhar aqui agora."</p>
+
+    <p><em>Mas eu não fiz nada de propósito,</em> pensou Leyn, achando graça da situação. <em>Esse cara... ele cria cenários inteiros na cabeça.</em> Não corrigiu o rapaz em voz alta. Algumas verdades reconfortantes não precisam ser desfeitas.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Correntes que Piscam — Urgência</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Tobias desceu para a forja. Parou na frente da fornalha — onde Garrett morrera. Mas Kaira o seguiu, curiosa; Mara organizava ferramentas; Elise examinava lingotes. Vida ao redor da morte. Tobias acendeu a fornalha. Mãos trêmulas no início, depois mais firmes.</p>
+
+    <p>"Leyn." Aldric apareceu na entrada do subsolo. "Perímetro está tomando forma. Marcus é bom comandante. Mas tenho pergunta tática." Uma pausa. "Quanto tempo temos? Dias? Semana? As correntes da criança — você disse que estão enfraquecendo. Preciso saber cronograma."</p>
+
+    <p>Kaira ouviu e se tensionou. As correntes. O rastreamento. Ele vindo.</p>
+
+    <p>"Acredito que temos poucos dias," disse Leyn. "Cerca de quatro ou menos."</p>
+
+    <p>"Quatro dias," repetiu Aldric. "Isso é... apertado. Muito apertado. As correntes estão TÃO fracas assim?"</p>
+
+    <p>"Eu... eu sinto elas..." disse Kaira, voz baixa, tocando o pescoço, "cada dia mais fracas... às vezes... elas piscam... e por segundos... eu me sinto... completa... forte... mas então voltam..." Uma pausa. "Hoje de manhã... elas sumiram por quase um minuto... eu fiquei... assustada..."</p>
+
+    <p>"Então pode ser ainda MENOS que quatro dias," disse Aldric, sério. "Talvez dois. Talvez amanhã." Uma pausa. "Leyn, precisamos acelerar tudo. Runas, armadilhas, treinamento. E..." Hesitou. "...talvez considerar evacuação. Levar a criança para longe ANTES das correntes caírem completamente."</p>
+
+    <p>"Mas se movermos agora, ficamos vulneráveis na estrada," discordou Mara. "Sem fortificações. Sem preparação. E ele pode nos pegar no caminho."</p>
+
+    <p>"E os aldeões..." acrescentou Elise, "abandonamos eles...? Depois de salvar...?"</p>
+
+    <p>Leyn fechou os olhos por um momento, focando nas correntes espectrais de Kaira através da conexão familiar entre eles.</p>
+
+    <p>Quarenta por cento da estrutura mágica já colapsara. Pulsavam irregularmente — sinal de falha iminente. Dois a três dias no máximo. Possivelmente menos, se houvesse estresse emocional intenso em Kaira. Não eram quatro dias. Eram menos.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Pó de Prata e as Escolhas da Forja</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Com a urgência no ar, Leyn lidou com os recursos disponíveis.</p>
+
+    <p>"Tobias, preciso que crie luvas com a parte de dentro sendo feita por couro e a parte de fora revestida por prata," disse. "Para cada um de nós três."</p>
+
+    <p>"Luvas... revestidas de prata... para vampiros?" processou Tobias. "Ah! Para vocês SEGURAREM coisas de prata sem se queimar! Como armas prateadas, ou runas, ou... Inteligente. Muito inteligente." Uma pausa, calculando. "Só que... nós não temos muita prata aqui. As correntes que você deu para Marcus têm alguma, mas não é suficiente para três pares de luvas completamente revestidas."</p>
+
+    <p>"Temos uma quantia de pó de prata no subsolo ainda," disse Leyn. "Não é o suficiente, Tobias?"</p>
+
+    <p>"PÓ DE PRATA?!" Tobias se iluminou. "Eu não vi!"</p>
+
+    <p>Vasculhou rapidamente, encontrando os potes. Abriu, examinou.</p>
+
+    <p>"Isto... isto dá para trabalhar!" calculou, rápido. "Não é ideal — pó precisa ser fundido e purificado, mas com técnica certa..." Uma pausa. "Mas vai levar tempo. Fundir pó de prata é delicado. Temperatura errada e ela oxida, fica inútil. Dois dias para qualquer uma das opções, trabalhando praticamente sem parar."</p>
+
+    <p>"Aldric, você precisa de algum equipamento?" perguntou Leyn.</p>
+
+    <p>"Aprecio a consideração," disse Aldric, abrindo a capa para mostrar. "Mas estou... adequadamente equipado." Espada longa élfica — prata e aço, gravada com runas antigas. Adaga ritual no cinto. Armadura de couro élfico por baixo, flexível e resistente. Trezentos anos haviam lhe dado tempo para acumular recursos. "Porém, se Tobias puder forjar estacas de prata — pontas afiadas, trinta a quarenta centímetros — isso seria útil. Não contra cultistas humanos, mas contra mortos-vivos corrompidos ou vampiros renegados que podem vir."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Rastros de Fogo</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Senhor Leyn!" Marcus desceu a escada correndo. "Temos uma situação urgente! A patrulha acaba de voltar. Encontraram RASTROS. Na floresta, a dois quilômetros ao norte."</p>
+
+    <p>"Não são rastros de animal," disse o veterano. "São... pegadas queimadas no chão. Como se algo com fogo nos pés andasse. E... árvores derretidas. Pedras rachadas por calor. O que quer que seja... não é natural."</p>
+
+    <p>"Rastros de fogo? Pedras rachadas por calor?" Aldric ficou tenso imediatamente. "Leyn... isso não é o padre. Isso é algo PIOR. Demônio vinculado? Elemental corrompido? Ou..." Uma pausa grave. "...um dos campeões do Culto da Verdade Profunda."</p>
+
+    <p>"Ele... ele já está aqui?" Kaira sentiu o pânico crescer. "Mas as correntes ainda..."</p>
+
+    <p>"Pessoal, se acalmem," disse Leyn, cortando o pânico. "Não é o ataque da Igreja. As correntes ainda não sumiram — não tem como o Padre ter descoberto esse lugar."</p>
+
+    <p>"Verdade," assentiu Aldric, pensativo. "Se fosse rastreamento pelas correntes, viria diretamente para cá. Estes rastros são... outra coisa."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Ficamos. Lutamos. Vencemos.</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Vamos ficar aqui e lutar," disse Leyn, a voz cortando o pânico que começava a se formar. "Vamos vencer. É só estarmos preparados e atentos."</p>
+
+    <p>"Sim!" Mara bateu o escudo com a adaga. "Escolhemos nosso campo de batalha. Temos aliados. Temos tempo para preparar. E temos VOCÊ liderando. Isso vale mais que qualquer fortificação."</p>
+
+    <p>"Ficamos... juntos..." disse Elise, "lutamos... juntos... vencemos... juntos..."</p>
+
+    <p>"Corajoso," disse Aldric, cruzando os braços. "Talvez imprudente. Mas... entendo. Fugir para sempre não é vida." Olhou para Kaira. "E a criança merece ver que pode ser defendida. Que não precisa fugir sempre. Muito bem. Então maximizamos estes dois ou três dias. Sem desperdício."</p>
+
+    <p>"Tio..." disse Kaira, admiração e medo misturados, "você realmente acha... que podemos vencer?"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Mudança de Planos — Estacas</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Sem hesitar, Leyn redistribuiu as ordens.</p>
+
+    <p>"Tobias, mudança de planos," disse. "Esqueça as luvas. Faça o máximo de estacas de prata que conseguir."</p>
+
+    <p>"Estacas! Sim!" disse Tobias, animado. "Mais simples, mais rápidas! Posso fazer... vinte a vinte e cinco estacas em algumas horas se trabalhar sem parar!"</p>
+
+    <p>"Eu... eu posso ajudar também?" perguntou Kaira. "Mesmo sendo pequena?"</p>
+
+    <p>"Pode organizar as estacas prontas, pequena," disse Tobias, no primeiro sorriso genuíno desde que entrara ali. "E trazer água para resfriar o metal. Trabalho importante."</p>
+
+    <p>Tobias pegou os moldes. Mara assumiu o fole, produzindo rajadas rítmicas de ar. A fornalha rugiu — laranja vivo, quase branco no centro. Elise enfiou as mãos no metal incandescente sem hesitar, moldando com dedos que não queimavam. Kaira organizou as estacas prontas em fileiras cuidadosas, trouxe baldes d'água para o resfriamento.</p>
+
+    <p><strong>CLANG CLANG CLANG.</strong> A forja do Mestre Garrett vivia novamente.</p>
+
+    <p>"Aldric, assim que terminar as estacas, caso seja necessário, nos ajude a combater a criatura," disse Leyn.</p>
+
+    <p>"Entendido," disse Aldric. "Mas Leyn — se for realmente campeão do Culto... não subestime. Eles não são humanos comuns."</p>
+
+    <p>"Eu e os soldados vamos cuidar desse ser, seja lá o que ele for," disse Leyn a Marcus.</p>
+
+    <p>"Sim, senhor!" Marcus bateu continência. "Quantos homens leva?"</p>
+
+    <p>"Temos oito ao todo," disse o veterano. "Sugestão: deixe três ou quatro aqui protegendo a aldeia, leve quatro ou cinco com você para investigação."</p>
+
+    <p>"Norte. Dois quilômetros," disse Marcus, apontando no mapa mental. "Há uma clareira com pedras grandes — bom ponto de emboscada ou defesa. Árvores densas ao redor, mas visão clara do centro."</p>
+
+    <p>Leyn saiu do subsolo, foi para a praça central. Sua voz autoritária ecoou:</p>
+
+    <p>"ALDEÕES! Preparem baldes de água para combater possíveis incêndios! As crianças devem ser levadas a um lugar seguro!"</p>
+
+    <p>"A igreja! Tem porão de pedra!" gritou a mãe da garotinha. "Crianças ficam lá!"</p>
+
+    <p>Os aldeões se moveram imediatamente. Confiavam. Ele os salvara.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Aviso de Aldric — Magia que Entra por Palavras</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Antes de sair, Aldric se aproximou. Voz baixa, só para Leyn ouvir.</p>
+
+    <p>"Se ele falar — ESPECIALMENTE se ele souber seu nome — não ouça," disse. "Tape ouvidos se necessário. Magia profana entra por palavras tanto quanto por toque."</p>
+
+    <p>"Aldric, agradeço os conselhos," disse Leyn.</p>
+
+    <p>Aldric colocou a mão no ombro dele — guerreiro para guerreiro.</p>
+
+    <p>"Volte vivo, Leyn Sepet. Sua família precisa de você. E eu... preciso entender como você faz isso." Um sorriso pequeno. "Como transforma monstros em família."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Estaca de Kaira e a Promessa</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Antes que ele saísse — passos rápidos subindo do subsolo.</p>
+
+    <p>"TIO! ESPERA!" Kaira correu até alcançá-lo, segurando algo — uma das estacas já prontas. Tobias trabalhara rápido. Ainda quente do forjamento.</p>
+
+    <p>"Leva esta!" disse. "Para... para se proteger! Promete que volta?"</p>
+
+    <p>Olhos dourados arregalados. Preocupados.</p>
+
+    <p>Ele se ajoelhou, ficando na altura dos olhos dela. Pegou a estaca de prata.</p>
+
+    <p>"Kaira, não se preocupe," disse. "O tio promete que vai voltar."</p>
+
+    <p>Ela o abraçou forte. Pequenos braços ao redor do pescoço dele.</p>
+
+    <p>"Você SEMPRE volta... certo?" disse, a voz tremendo, mas confiante.</p>
+
+    <p>"Vamos dar nosso melhor," disse ele.</p>
+
+    <p>"Então..." disse ela, determinação infantil adorável, "então eu também vou dar meu melhor aqui! Vou ajudar a fazer MUITAS estacas!"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XIV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Formação de Marcha — Norte</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Marcus reuniu os soldados. Quatro iriam com Leyn. Quatro ficariam protegendo a aldeia.</p>
+
+    <p>O grupo de investigação: Leyn Sepet, elmo fechado, espada longa, e a estaca de prata de Kaira. Marcus, espada e escudo. O veterano, lança e armadura média, experiente. Darius, arqueiro, arco longo, trinta flechas, precisão até cem metros. Helena, machado de guerra, armadura de couro com placas.</p>
+
+    <p>"Vou tomar a frente junto com Marcus," disse Leyn, organizando a formação. "Atrás da gente, protegido pelo escudo, deve estar o Veterano. E ao lado dele, Helena. E logo um pouco mais atrás, Darius."</p>
+
+    <p>"Eu imagino que os ataques desse ser vão ser em larga escala," acrescentou. "Então não ficar tão próximos um do outro é válido."</p>
+
+    <p>"Tática sólida," aprovou o veterano. "Ataques de fogo, explosão, pegam grupos compactos. Espaçamento salva vidas."</p>
+
+    <p>"Vamos tentar o máximo atacá-lo sem que ele note nossas posições," disse Leyn.</p>
+
+    <p>"Posso atirar de cem metros com precisão," disse Darius. "Se conseguirmos nos aproximar sem ser vistos..."</p>
+
+    <p>"Mas se ele tem fogo..." ponderou Marcus, "fumaça, cheiro de queimado... vamos SENTIR ele antes de ver."</p>
+
+    <p>Saíram da aldeia. Aldeões observavam — alguns rezavam, outros apenas acenavam.</p>
+
+    <p>"Voltem seguros!" gritou a mãe da garotinha, da janela. "E tragam vitória!"</p>
+
+    <p>Cinco figuras marcharam para o norte, espaçadas, atentas. Atrás delas, a aldeia soava a martelo, forjando estacas contra o tempo que lhe restava. À frente, a floresta guardava, em silêncio, o que quer que fosse aquilo que deixava rastros de fogo no chão.</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    Naquela tarde, um aprendiz voltou à forja do mestre que perdera. Uma menina vestiu, pela primeira vez em cem anos, roupas feitas só para ela. E um vampiro partiu rumo ao norte com uma estaca ainda morna na mão — forjada por dedos pequenos demais para empunhar uma espada, mas não pequenos demais para prometer. A aldeia inteira soava a martelo. A floresta, mais adiante, guardava silêncio.
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Lenda Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+</div>
+
+</body>
+</html>

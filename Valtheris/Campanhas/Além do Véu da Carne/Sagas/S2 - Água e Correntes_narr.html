@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Água e Correntes — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">II</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Água e<br>Correntes</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Dizem que todo predador imortal carrega, em algum lugar do sangue, a lembrança da sua primeira derrota — e que os medos mais antigos não se partem como correntes: eles apenas esperam, pacientes como um rio, a hora de voltar a fluir.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Gume da Mentira</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Os Construtos viraram a esquina no instante exato em que a cena se completava.</p>
+
+    <p>Leyn se virou devagar — sangue ainda escorrendo dos lábios, ícor negro misturado ao vermelho corrompido do cultista morto — encenando a submissão nos braços da Multibraços. Foi a fração de segundo mais longa de sua existência.</p>
+
+    <p>As cabeças de pedra e carne dos Construtos rangeram, processando o quadro: um cultista morto no chão, um vampiro "capturado", uma aberração próxima, uma cela destruída.</p>
+
+    <p>"CULTISTA… MORTO. PRISIONEIRO… ACORDADO. PROTOCOLO… INCERTO," rangeu um deles.</p>
+
+    <p>"CONTENÇÃO… OU EXECUÇÃO?" rangeu o outro, erguendo um machado do tamanho de um homem, sem hesitação alguma no gesto mecânico — só cálculo frio.</p>
+
+    <p>A Multibraços o apertou com firmeza, virando-se para os Construtos como quem já decidira representar um papel ensaiado havia muito.</p>
+
+    <p>"Nobres… exigem… vampiro… respirando…" disse ela, a voz sempre quebrada, mas carregada agora de uma autoridade emprestada que quase soava genuína. "…cultista… informou…"</p>
+
+    <p>Os Construtos processaram. Engrenagens enferrujadas tentando sincronizar.</p>
+
+    <p>"NOBRES… ORDENS… PROTOCOLO ALPHA-SETE… VAMPIRO PRIMORDIAL… PARA COLHEITA," rangeu finalmente um deles, curvando-se sobre o cultista morto. "CULTISTA… MORTE NÃO-AUTORIZADA… ABERRAÇÃO SERÁ… QUESTIONADA."</p>
+
+    <p>"LEVAR PRISIONEIRO… NÍVEL SUPERIOR… IMEDIATAMENTE… TU VIRÁS… TAMBÉM… PARA EXPLICAÇÃO."</p>
+
+    <p>Um deles gesticulou para o corredor. A Sem-Rosto ficou para trás, tentando se tornar invisível contra a pedra.</p>
+
+    <p>Enquanto o "empurravam" pelo corredor, a Multibraços sussurrou — baixo demais para qualquer ouvido além do dele.</p>
+
+    <p>"Nível superior… é onde… nobres fazem… experimentos… muitos prisioneiros… guardas humanos… e pior… mas há… saída… para a superfície…"</p>
+
+    <p>A mentira funcionara. Só em parte. Os Construtos ainda tinham perguntas sobre o cultista morto, e o tempo daquela ilusão, ele sabia, era emprestado.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Salão dos Abominados</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Subiram escadas de pedra úmida. Tochas iluminavam runas nas paredes — não as de contenção que ele conhecia bem demais, mas algo mais elaborado, mais recente, manchado pelo uso frequente de magias que não deveriam existir.</p>
+
+    <p>Outras celas passaram. Algumas vazias. Outras com coisas dentro, gemendo, suplicando, rindo de um jeito que nenhuma sanidade sobrevive.</p>
+
+    <p>Cinco minutos de subida depois, chegaram a uma porta de ferro maciça. Um Construto bateu três vezes. A porta rangeu, abrindo-se para um inferno.</p>
+
+    <p>Um salão imenso, iluminado por cristais profanos — luz que não aquecia, não confortava, só revelava. Mesas de experimentação com corpos em vários estágios de transformação. Nobres em túnicas luxuosas observando, anotando, rindo.</p>
+
+    <p>E ao centro: uma jaula suspensa por correntes, e dentro dela algo imenso e dormente, coberto de runas de contenção brilhantes — algo que não deveria caber naquele espaço e, de alguma forma, cabia.</p>
+
+    <p>Uma das nobres se virou para ele. Cabelos prateados. Olhos vazios — não cegos, não distantes. Vazios, como janelas para um cômodo que nunca teve ninguém dentro.</p>
+
+    <p>"Ah," disse ela, sorrindo. "O Primordial finalmente desperto. Perfeito timing."</p>
+
+    <p>Fez uma pausa, como se saboreasse a palavra seguinte.</p>
+
+    <p>"Precisamos de sangue fresco para despertar nosso… projeto especial."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Lady Seraphine</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele cuspiu as palavras como veneno, os olhos vermelhos queimando de desprezo genuíno.</p>
+
+    <p>"Projeto especial? Vocês chamam essas atrocidades de projetos? Sua ambição já te consumiu, humana tola?"</p>
+
+    <p>O salão silenciou inteiro. Os nobres pararam, olhando para ele — alguns em choque, prisioneiros não falam assim, outros em pura diversão. Um murmúrio se espalhou pela sala.</p>
+
+    <p>Seraphine riu. Alto. Um som cristalino, completamente vazio de sanidade.</p>
+
+    <p>"CONSUMIU?" disse ela. "Oh, querido vampiro primitivo… a ambição não me consumiu. Eu ABRACEI o consumo. Eu DANCEI com as Coisas Antigas. Eu VI além do véu da realidade e percebi a verdade."</p>
+
+    <p>Caminhou em direção a ele, passos ecoando no mármore manchado de sangue, até parar a centímetros de distância. Os olhos vazios o encararam, e ele viu: não havia nada atrás deles. Nenhuma alma. Nenhuma humanidade restante.</p>
+
+    <p>"Humanidade é prisão," continuou ela. "Moralidade é corrente. E estes 'projetos'… são EVOLUÇÃO. Transcendência da carne fraca. Você, com seu código de honra antiquado, não pode compreender."</p>
+
+    <p>"Lady Seraphine está empolgada hoje," sussurrou um nobre ao vizinho.<br>"O Primordial a provocou," observou outro. "Interessante."<br>"Será que ele serve para o Despertar?"</p>
+
+    <p>A Multibraços ainda o segurava, mas ele sentiu seus braços tremendo. Medo real — medo daquela mulher, não dele.</p>
+
+    <p>Seraphine estendeu a mão, quase tocando seu rosto, e apontou para a jaula central.</p>
+
+    <p>"Sangue primordial. Não-corrompido. Perfeito para nosso ritual. Será uma honra, vampiro — você ajudará a DESPERTAR um deus."</p>
+
+    <p>Dentro da jaula, a <strong>COISA</strong> se mexeu. Levemente. Tentáculos do tamanho de árvores. Olhos que se abriam e fechavam em cascata. Algo que não deveria caber naquele espaço.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Armadilha</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele não percebeu a armadilha até ser tarde demais.</p>
+
+    <p>Agiu. Velocidade vampírica explodiu — sua mão voou para o pescoço dela, dedos apertando carne humana, puxando-a próxima. Sussurrou em seu ouvido:</p>
+
+    <p>"Vou te mostrar o que realmente está além do véu da realidade—"</p>
+
+    <p>E ela riu. Não de medo. De êxtase.</p>
+
+    <p>"SIM!" gritou. "MOSTRE-ME!"</p>
+
+    <p>A pele sob os dedos dele começou a mudar. Não era carne — nunca fora completamente carne. Algo se movia sob a superfície. Escamas? Quitina? Algo alienígena empurrando de dentro para fora.</p>
+
+    <p>Tocar aquela pele estava transferindo corrupção de um nível que ele não reconhecia — não de entidades menores, mas de <em>Algo Antigo de Verdade</em>, infiltrando-se por onde os dedos tocavam. Um formigamento que virou queimação e não parava. Sussurros mais altos, mais claros, em idiomas que machucavam a mente. Visões piscando: cidades submersas, estrelas morrendo, olhos abrindo no vazio.</p>
+
+    <p>E pior: runas no chão se acenderam. Ele estivera em um círculo ritual o tempo todo.</p>
+
+    <p>"ARMADILHA!" gritou a Multibraços. "ELA PLANEJOU—"</p>
+
+    <p>Correntes mágicas explodiram do chão, envolvendo pernas, braços, pescoço — não físicas, astrais, feitas de energia que queimava como fogo frio.</p>
+
+    <p>E, com Seraphine ainda ao alcance, ele viu, por um instante, o que ela realmente era: um hospedeiro. Uma casca. Algo de fora usando carne humana como fantasia. A forma humana era só a camada mais externa; abaixo dela pulsavam geometrias impossíveis. O sorriso dela não pertencia a nenhuma boca que já fora humana.</p>
+
+    <p>"Oh, querido vampiro…" disse ela. "Você acha que sou fraca porque sou humana? Eu PAREI de ser humana há ANOS."</p>
+
+    <p>Os outros nobres aplaudiram.</p>
+
+    <p>"Excelente, Lady Seraphine!" ecoaram em coro. "O Primordial mordeu a isca! Prenda-o na câmara de sangramento!"</p>
+
+    <p>As correntes astrais o imobilizaram por completo. A Multibraços tentou ajudá-lo — um Construto a agarrou antes que conseguisse.</p>
+
+    <p>"ABERRAÇÃO… PERMANECE… PARA OBSERVAÇÃO," rangeu a máquina.</p>
+
+    <p>Seraphine se afastou, ajeitando o cabelo como quem termina uma tarefa satisfatória.</p>
+
+    <p>"Levem-no para a câmara," disse. "Começaremos a extração em uma hora. Nosso 'deus' está faminto."</p>
+
+    <p>Olhou para a jaula central. A COISA se mexia mais vigorosamente agora, como se sentisse o sangue dele no ar.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Câmara de Extração</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Guardas humanos — soldados corrompidos em armadura negra — o arrastaram para uma sala lateral. Pequena. Claustrofóbica. Coberta de runas feitas não para conter almas, mas para drenar sangue com eficiência.</p>
+
+    <p>Uma mesa de pedra no centro. Canaletas por onde o sangue escorreria até recipientes numerados, enterrados sob o chão.</p>
+
+    <p>Prenderam-no ali. As correntes astrais se fundiram a grilhões físicos de prata alquímica.</p>
+
+    <p>Um dos guardas riu.</p>
+
+    <p>"Vampiro orgulhoso, hein? Todos são até virarmos a torneira."</p>
+
+    <p>Saíram. A porta de ferro se fechou com peso de sentença.</p>
+
+    <p>Sozinho — ou quase —, ele estudou a câmara com olhos de predador catalogando o próprio abate: a mesa manchada por extrações anteriores, instrumentos cirúrgicos numa bandeja, frascos vazios numerados para coletar sangue primordial, tochas fracas o suficiente para trabalho de precisão, canaletas para escoar o que sobrasse. E, do lado de fora, dois guardas — cuja conversa a audição vampírica alcançava sem esforço.</p>
+
+    <p>"Acha que esse vampiro vai gritar quando começarem a extrair?"<br>"Todos gritam. Até os mortos-vivos."<br>"Vampiro primordial… dizem que o sangue dele pode despertar o Devorador."<br>"Lady Seraphine está obcecada. Será que funciona mesmo?"<br>"Não me importo. Só quero minha parte do ouro quando isso acabar."</p>
+
+    <p class="echo">veja as profundezas … sua linhagem primordial pertence aos Antigos … deixe-nos completar o que Seraphine começou</p>
+
+    <p>Faltavam cerca de cinquenta e cinco minutos até voltarem para começar a extração. E ele sabia, com a clareza fria de quem mede o próprio colapso: abaixo de certo ponto, os efeitos da corrupção deixariam de ser algo que ele controlava. O tempo trabalhava contra ele em todas as frentes.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Riso no Abismo</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Sua risada ecoou pela câmara. Não era o riso de um homem desesperado. Era o riso de um predador que acabara de perceber que suas presas não sabiam que eram presas.</p>
+
+    <p>"HAHAHAHAHA!" ele berrou. "QUANTO OURO VÃO GANHAR?! DE QUE ADIANTA TER OURO SE NÃO TERÃO ONDE GASTAR, SEUS VERMES!"</p>
+
+    <p>Silêncio súbito do lado de fora. Depois a porta se abriu com violência. Os dois guardas entraram — armadura negra, espadas na cintura, ainda embainhadas. Um deles, cicatriz cruzando o rosto, se aproximou da mesa.</p>
+
+    <p>"O vampiro tem língua afiada," disse. "Achei que estaria chorando, implorando."<br>"Ele está blefando," respondeu o outro, nervoso. "Tá preso, ferido, acabado."<br>"Acabado?" Cicatriz hesitou. "Não parece acabado. Parece… confiante."</p>
+
+    <p>Ele deixou o silêncio fazer o trabalho por um instante — havia algo em seus olhos vermelhos, na sua risada, que plantava dúvida em homens acostumados a obedecer sem pensar. Mercenários. Leais ao ouro, não à causa.</p>
+
+    <p>"O que você quis dizer com 'não terão onde gastar'?" perguntou o guarda nervoso, cedendo.<br>"Ignore ele," cortou Cicatriz. "Está tentando nos assustar. Os nobres vão nos pagar. Sempre pagam." Mas a própria voz não tinha certeza.</p>
+
+    <p>"Vocês também viram aquilo que aquela aberração prateada chama de deus, certo?" perguntou Leyn, deixando a pergunta pesar no ar. Havia medo nos olhos do guarda — um medo que ele ainda não sabia nomear. "Depois de mim… quem vocês acham que serão o alimento dele?"</p>
+
+    <p>"Eu… eu não…" o guarda nervoso recuou.<br>"A Lady Seraphine disse que o ritual vai trazer uma nova era," tentou Cicatriz, já abalado. "Que seremos recompensados—"<br>"RECOMPENSADOS?" Leyn quase riu de novo. "Vocês viram os olhos dela? Ela ainda é humana? Ou é apenas uma CASCA hospedando algo de fora?"<br>"Eu… eu achei estranho," confessou o nervoso. "Ela não pisca mais. E quando fala, às vezes parece que tem… vozes múltiplas…"<br>"CALA A BOCA!" explodiu Cicatriz.</p>
+
+    <p>"Aquela COISA na jaula," continuou Leyn, o golpe final. "Vocês acham que ela diferencia entre 'sacrifício primordial' e 'carne humana comum'? Vocês acham que ela vai parar depois de me devorar?"</p>
+
+    <p>Riu de novo — sombrio, profético — e deixou o silêncio terminar o trabalho.</p>
+
+    <p>"Meu sangue vai DESPERTÁ-LA," disse, baixo. "E quando ela acordar com fome de eras… vocês estarão bem aqui. Pertinho. Convenientes."</p>
+
+    <p>Os dois guardas trocaram um olhar. Comunicação silenciosa.</p>
+
+    <p>"…o que você está propondo, vampiro?" perguntou Cicatriz, a voz quebrada. "Você está preso. Não pode nos ajudar. Não pode se ajudar."</p>
+
+    <p>Mas ele não saiu. Não bateu. Não chamou reforços.</p>
+
+    <p>Estava ouvindo.</p>
+
+    <p>"Metade dos cultistas desapareceu nas últimas semanas," acrescentou o nervoso, quase contra a própria vontade. "A Lady disse que 'transcenderam'. Mas eu… eu encontrei roupas deles manchadas de sangue no porão…"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Aliança dos Desesperados</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele apresentou as três opções com a autoridade de quem já decidira o destino deles — eles só estavam escolhendo qual.</p>
+
+    <p>"Vou dar três opções a vocês," disse. "Ou vocês se aliam comigo e me ajudam a escapar daqui… ou me torturam agora e me dão de alimento para aquela criatura, e pagam para ver o que acontece em seguida… ou se tornam meus servos. Novos vampiros."</p>
+
+    <p>"Vampiros…" considerou Cicatriz. "Você pode realmente fazer isso? Nos transformar?"<br>"Não!" recusou o nervoso. "Não quero virar monstro! Eu só quero—"<br>"VOCÊ SÓ QUER SOBREVIVER," cortou Cicatriz. "E como humano comum nessa fortaleza infestada de culto, suas chances são ZERO." Virou-se para Leyn. "Aliança, isso eu posso aceitar. Você nos ajuda a sair vivos, nós te ajudamos a escapar. Sem mordidas. Sem 'servos'."</p>
+
+    <p>"Eu… eu sei uma rota," ofereceu o nervoso. "Pelos esgotos. Passa direto sob a câmara do ritual. Chega ao rio do lado de fora da fortaleza."<br>"Mas tem problemas," avisou Cicatriz. "Os esgotos têm… coisas. Experimentos falhados jogados lá. E o rio é água corrente. Você consegue atravessar água corrente, vampiro primordial?"</p>
+
+    <p>"Nossos interesses se alinharam," propôs Leyn. "Vocês devem trazer a aberração sem-rosto até os esgotos. Ela me engolirá e sairemos por lá. Ela já fez isso uma vez — foi doloroso, mas eu suporto."</p>
+
+    <p>"A Sem-Rosto?" Cicatriz recuou. "Aquela coisa está trancada três níveis abaixo, sob vigilância de dois Construtos. Vampiro, você está pedindo demais. Somos guardas comuns. Se formos pegos tentando liberar uma aberração, seremos executados na hora."<br>"Não, não, não," concordou o nervoso. "Isso é suicídio. A Lady tem olhos em todo lugar."</p>
+
+    <p>Ele tentou insistir — falhou. Cicatriz cruzou os braços.</p>
+
+    <p>"Olha, vampiro. Eu aceito que você é perigoso. Aceito que o ritual é má ideia. Mas preciso de algo melhor. Aqui está o que EU proponho: nós te soltamos AGORA. Você vem conosco pelos esgotos SOZINHO. Chegando no rio, você se vira com a água corrente — não é problema nosso." Fez uma pausa, olhos duros. "Mas SE nos trair, SE tentar nos transformar à força, eu grito e trago toda a fortaleza em cima de você. Entendido?"</p>
+
+    <p>"E-e se você REALMENTE quer a Sem-Rosto…" arriscou o nervoso, "talvez ela esteja nos esgotos também? Eles jogam aberrações falhadas lá…"</p>
+
+    <p>Faltavam cerca de quarenta e cinco minutos até o ritual. O plano com a Sem-Rosto falhara — seguiriam pelos esgotos sem ela. Se ela estivesse lá embaixo, o acaso decidiria.</p>
+
+    <p>"Certo," ele cortou a negociação. "Estamos ficando sem tempo. Me deem uma espada e vamos logo para o esgoto."</p>
+
+    <p>"Finalmente fala como guerreiro," disse Cicatriz — o primeiro sorriso genuíno dele. Virou-se para o nervoso. "Vai. Pega uma espada do armário. Curta — mais fácil de esconder até sairmos."</p>
+
+    <p>"Mas… soltar ele… se alguém descobrir…"<br>"JÁ DESCOBRIRAM QUE ESTAMOS CONVERSANDO DEMAIS COM ELE," explodiu Cicatriz. "Ou agimos AGORA ou morremos esperando."</p>
+
+    <p>O nervoso saiu correndo. Voltou em dois minutos com uma espada curta, um manto escuro e rasgado, e uma tocha que ele não precisaria.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Estocada de Uma Polegada</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Cicatriz se aproximou, estudando as correntes astrais e os grilhões de prata. Puxou uma adaga e começou a raspar símbolos específicos no mármore sob a mesa.</p>
+
+    <p>"As correntes astrais…" explicou, sem parar o trabalho. "Preciso quebrar a runa de ancoragem. Isso vai fazer barulho. E vai acender alarmes mágicos. Quando eu terminar, temos talvez dois minutos antes dos Construtos chegarem." Ergueu os olhos. "Você consegue lutar assim que soltar? Ou precisa de tempo para recuperar?"</p>
+
+    <p>"Eu consigo me regenerar assim que você tirar essas runas de mim," respondeu Leyn. "Então sim — eu posso lutar até melhor que vocês dois juntos."</p>
+
+    <p>Não era arrogância. Era fato.</p>
+
+    <p>"Confiança de vampiro primordial," murmurou Cicatriz, com medo saudável. "Espero que seja justificada."</p>
+
+    <p>Posicionou a adaga no último símbolo. O nervoso já estava na porta, espiando o corredor.</p>
+
+    <p>"Tudo limpo… por enquanto."</p>
+
+    <p>Cicatriz respirou fundo.</p>
+
+    <p>"Três… dois… um…"</p>
+
+    <p><strong>CRACK.</strong></p>
+
+    <p>As correntes astrais gritaram — um som que não era físico, mas mental. Contraíram-se violentamente por um instante antes de explodir em fragmentos de luz azul. Dor pura, absoluta, como se cada célula de seu corpo morto fosse arrancada e remontada ao mesmo tempo.</p>
+
+    <p>A dor da libertação quebrou algo dentro dele. O rugido que saiu de sua garganta não era humano — não era nem vampírico civilizado. Era <strong>bestial. Primordial. Ancião.</strong> Um som que ecoara através de milênios, de quando sua linhagem caçava sob luas esquecidas. Puro instinto predatório sem forma, sem nome, sem freio.</p>
+
+    <p>Os grilhões de prata caíram com estrondo metálico. Ele estava livre.</p>
+
+    <p>Cicatriz já o puxava da mesa, jogando o manto sobre seus ombros, enfiando a espada curta em sua mão. O estrago estava feito — o rugido fora ouvido por toda a fortaleza.</p>
+
+    <p>"CONTROLA, VAMPIRO!" gritou Cicatriz. "OU VAMOS MORRER TODOS! AGORA! ESGOTOS! CORREDOR À ESQUERDA, TERCEIRA PORTA!"</p>
+
+    <p>Alarmes mágicos explodiram pelo corredor. Vozes. Passos múltiplos. O ranger metálico de Construtos se mobilizando.</p>
+
+    <p><strong>BOOM. BOOM. BOOM.</strong></p>
+
+    <p>E pior — a voz de Lady Seraphine ecoou magicamente por toda a fortaleza, amplificada por runas:</p>
+
+    <p>"LEYN SEPET FUGIU. TRAGAM-NO VIVO. MATEM QUALQUER UM QUE O AJUDE."</p>
+
+    <p>Chegaram à porta dos esgotos — símbolo gravado, uma boca aberta vertendo água. Cicatriz empurrou. Trancada.</p>
+
+    <p>"MERDA! Precisa de chave!"</p>
+
+    <p>Do corredor atrás deles: <strong>BOOM. BOOM. BOOM.</strong> Dois Construtos virando a esquina. Cultistas logo atrás — pelo menos seis.</p>
+
+    <p>Um guerreiro de verdade não perde tempo com fechaduras.</p>
+
+    <p>Ele empunhou a espada curta, assumiu postura de combate, e canalizou uma década de treinamento.</p>
+
+    <p>"VAI, VAMPIRO!" gritou Cicatriz. "MOSTRE POR QUE SUA LINHAGEM SOBREVIVEU MILÊNIOS!"</p>
+
+    <p>Aproximou-se da porta. A espada desceu, lenta, controlada, até a ponta tocar levemente a madeira reforçada. Silêncio interior. Fechou os olhos. Sentiu. O ressoar do ferro. As fibras da madeira apodrecida por décadas de umidade. A tensão na fechadura. A fraqueza estrutural onde metal encontrava madeira. A voz daquilo que tem uma fraqueza.</p>
+
+    <p>E então — <strong>relâmpago.</strong></p>
+
+    <p>O braço explodiu em movimento impossível de seguir. Sem preparação. Sem recuo. Como se a espada sempre estivesse do outro lado da porta.</p>
+
+    <p><strong>CRACK.</strong></p>
+
+    <p>A lâmina perfurou através da fechadura, madeira, ferro — tudo — como se fossem papel. A porta não explodiu. Simplesmente cedeu. A fechadura se desintegrou. As dobradiças rangeram. A porta se abriu revelando escuridão e o cheiro de esgoto.</p>
+
+    <p>"…que diabos… foi ISSO?" Cicatriz ficou boquiaberto.<br>"Ele não é apenas um vampiro…" sussurrou o nervoso. "Ele é um MESTRE…"</p>
+
+    <p>Uma técnica ancestral: máxima potência em distância mínima, sem telegrafar o movimento. Não era magia. Era uma década de treinamento tornando-se instinto absoluto — e cem anos de correntes não haviam apagado isso.</p>
+
+    <p>Os Construtos chegaram a dez pés de distância. Os guardas já desciam para os esgotos. Ele era o último.</p>
+
+    <p>"Eles até podem nos seguir, mas somos mais rápidos," disse, descendo atrás deles. "Vamos, meus serv… digo… guardas."</p>
+
+    <p>Cicatriz o olhou de lado enquanto descia apressado pelas escadas de pedra úmida. Ouvira o deslize. Mas não comentou. Ainda não.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Descida aos Esgotos</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>O fedor o atingiu imediatamente — não o incomodava, vampiros não respiram por necessidade, mas era denso e informativo. Podridão. Dejetos. Algo químico que não deveria estar em esgotos naturais. E sangue velho. Muitos corpos.</p>
+
+    <p>A escada terminava em um túnel de pedra. Água escura corria pelo centro, em um canal de dois metros de largura. As laterais tinham passarelas estreitas de pedra escorregadia.</p>
+
+    <p>Água corrente queima como ácido contra pele vampírica — não apenas desconforto, mas dano real. Aquele canal era uma barreira tão eficaz quanto correntes de prata. A velocidade e a força permaneciam intactas; qualquer contato com o fluxo central podia incapacitar.</p>
+
+    <p>Atrás deles, no topo da escadaria: <strong>BOOM. BOOM.</strong> Os Construtos entravam, descendo lentos, inexoráveis, as cabeças de pedra-carne roçando o teto baixo.</p>
+
+    <p>"FUGA. INACEITÁVEL. RETORNO. OBRIGATÓRIO," rangeu um deles.</p>
+
+    <p>Mas ele estava certo sobre uma coisa — eram lentos. Tinham vantagem de velocidade.</p>
+
+    <p>Então, do túnel à frente: chapinhar. Algo se movendo na água. Várias coisas. A visão no escuro perfurava a penumbra melhor que qualquer tocha. Figuras humanoides emergindo do canal — pele cinza-esverdeada, olhos brancos e vazios, bocas cheias de dentes pontiagudos, mais do que qualquer boca humana deveria ter.</p>
+
+    <p>Os Carniçais os perceberam. Agacharam-se, preparando para saltar.</p>
+
+    <p>"Carnnnne… fressssca… não apodrecidaaa…" rosnou um. "DELE É NOSSA!"</p>
+
+    <p>Humanos transformados, descartados ali pelos nobres quando os experimentos falhavam. Alimentavam-se de ratos, uns dos outros, do que caía das mesas acima. Cinco deles bloqueavam o único caminho ao rio, duzentos metros à frente. Os Construtos chegariam em poucos instantes.</p>
+
+    <p>"MERDA!" Cicatriz recuou. "Experimentos falhados! Eles vão nos atacar!"<br>"O rio é daqui a duzentos metros!" disse o nervoso. "Se conseguirmos passar…"</p>
+
+    <p>"Vocês, vão pelo caminho da água corrente!" ordenou Leyn. "Eu vou pelo túnel estreito!"<br>"Você vai enfrentar os cinco sozinho?!"</p>
+
+    <p>Cicatriz olhou para seus olhos vermelhos brilhando na escuridão. Para a espada em sua mão. Para o predador que ele realmente era.</p>
+
+    <p>"…tá bom," disse, por fim. "Nos encontramos na saída do rio. NÃO MORRA, vampiro."</p>
+
+    <p>Agarrou o nervoso e os dois correram pela passarela lateral, chapinhando na borda do canal.</p>
+
+    <p>Os cinco Carniçais se viraram completamente para ele. Os guardas não interessavam mais — ele era a presa maior. Rosnaram baixo, saliva escorrendo de bocas cheias de dentes tortos, unhas longas e sujas arranhando a pedra.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Queda</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele plantou os pés no túnel estreito. Espada à frente, corpo levemente inclinado — postura defensiva clássica. Deixaria eles virem. Uma década de treinamento. Paciência de predador.</p>
+
+    <p>Os dois da frente saltaram simultaneamente, garras estendidas, bocas abertas. Um acertou seu ombro — quatro feridas rasgadas, ardendo. O outro errou, desviado por puro instinto.</p>
+
+    <p>Os outros três circularam, tentando flanqueá-lo, mas o túnel estreito limitava seus movimentos. Rosnaram, frustrados.</p>
+
+    <p>Ele viu a abertura: o Carniçal que o acertara estava desbalanceado, exposto. Sua espada começou o arco perfeito para o pescoço—</p>
+
+    <p>E um dos flanqueadores chutou a água corrente do canal. <strong>Splash.</strong> Gotas atingiram seus olhos. Não era muito — apenas respingos —, mas para um vampiro, água corrente queima como ácido. A visão borrou. Dor aguda. Ele fechou os olhos, instintivo, por uma fração de segundo.</p>
+
+    <p>A espada passou centímetros do alvo.</p>
+
+    <p>"Hehehehe…" rosnou um Carniçal. "Água machucaaaa… ele tem frrrraquezaaa…"</p>
+
+    <p>Eles descobriram. Os cinco começaram a coordenar — dois chutavam água como distração, três atacavam pelos ângulos.</p>
+
+    <p>Os respingos continuaram, incessantes. Cada gota, fogo líquido. E então algo mais profundo se abriu nele — memórias que não eram só suas, mas de antes: ancestrais afogados, linhagens extintas em rios sagrados, um medo primordial codificado no sangue havia milênios, mais velho que qualquer palavra que pudesse nomeá-lo.</p>
+
+    <p>O pânico o consumiu. Recuou, instintivo, tropeçou —</p>
+
+    <p>E os três Carniçais caíram sobre ele como matilha faminta. Garras rasgaram. Dentes morderam. Costelas se quebraram. Carne sendo arrancada pedaço a pedaço.</p>
+
+    <p><em>Escuridão.</em></p>
+
+    <p>Corpo desmoronando no chão de pedra úmida. A espada escorregando da mão. Ícor negro se espalhando por baixo dele.</p>
+
+    <p>Os Carniçais recuaram por um momento, observando. Um deles lambeu as próprias garras.</p>
+
+    <p>"Ele… cairrr… fácillll…" disse, satisfeito. "Água… quebrou eleee…"</p>
+
+    <p><strong>BOOM.</strong></p>
+
+    <p>Os Construtos chegaram ao final da escadaria. Viram-no caído. Viram os Carniçais. Calcularam.</p>
+
+    <p>"PRISIONEIRO. INCONSCIENTE. CARNIÇAIS. ELIMINAÇÃO. NECESSÁRIA."</p>
+
+    <p>Um Construto ergueu o machado imenso e o arremessou. A lâmina girou pelo ar, decapitando dois Carniçais de uma só vez. Cabeças rolaram. Corpos desabaram. Os três restantes fugiram pela água, em pânico.</p>
+
+    <p>O Construto se aproximou. Mãos de pedra-carne o ergueram como se ele não pesasse nada.</p>
+
+    <p>"PRISIONEIRO. RECUPERADO. RETORNO. PARA. RITUAL."</p>
+
+    <p>Do túnel lateral, distante, vozes que ele mal registrava:</p>
+
+    <p>"MERDA! ELES PEGARAM O VAMPIRO!" gritou Cicatriz.<br>"NÃO PODEMOS VOLTAR! OS CONSTRUTOS NOS MATAM!" respondeu o nervoso.<br>"ENTÃO FUGIMOS E O DEIXAMOS MORRER?!" Cicatriz quase gritou de volta — e havia culpa genuína naquela pergunta.<br>"…sim," disse o nervoso, a voz distante. "Desculpa, vampiro. Você lutou bem."</p>
+
+    <p>Passos se afastando.</p>
+
+    <p>E ele — inconsciente, capturado, sendo carregado de volta para as entranhas da fortaleza — não ouviu mais nada.</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    Não foi lâmina, nem magia, nem a fome de um deus emprestado que o derrubou. Foi água — mais velha que qualquer corrente forjada, mais paciente que qualquer culto. A lenda não esconde o que há de humilhante nisso: até o predador mais antigo pode tropeçar na fraqueza mais antiga, e cair como caiu o primeiro de sua linhagem, há muito, à beira de um rio que nunca aprendeu a perdoar.
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Lenda Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+</div>
+
+</body>
+</html>

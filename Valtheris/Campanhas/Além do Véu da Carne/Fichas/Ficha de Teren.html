@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teren — Ficha de Personagem</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --violet-light: #c9a8ff;
+    --violet-dim:   #4a2280;
+    --crimson-light:#c0392b;
+    --blood:        #5a0a0a;
+    --parchment:    #e8dfc8;
+    --parchment-dark:#c0b49a;
+    --shadow:       #060510;
+    --silver:       #a8b8c8;
+    --mist:         #6b8a9a;
+    --teal-light:   #4ecca3;
+    --gold:         #c9a84c;
+    --gold-light:   #e8c97a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--shadow);
+    background-image:
+      radial-gradient(ellipse at 25% 10%, #100520 0%, transparent 55%),
+      radial-gradient(ellipse at 75% 85%, #050015 0%, transparent 55%),
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(130,60,200,0.015) 2px, rgba(130,60,200,0.015) 4px);
+    font-family: 'EB Garamond', serif;
+    color: var(--parchment);
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .sheet { max-width: 900px; margin: 0 auto; position: relative; }
+
+  .header { text-align: center; margin-bottom: 40px; position: relative; }
+  .header::before, .header::after {
+    content: '';
+    display: block;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--violet-light), transparent);
+    margin: 12px 0;
+  }
+
+  .bloodline-tag {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: var(--violet-light);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.85;
+  }
+
+  .char-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 48px;
+    color: var(--violet-light);
+    text-shadow: 0 0 40px rgba(180,130,255,0.35), 0 2px 4px rgba(0,0,0,0.9);
+    letter-spacing: 4px;
+    line-height: 1.1;
+  }
+
+  .char-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--parchment-dark);
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  .alignment-badge {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    background: rgba(60,20,80,0.5);
+    border: 1px solid rgba(150,80,220,0.4);
+    color: #b890e0;
+    border-radius: 2px;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--violet-light);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(150,80,220,0.35);
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .stat-box {
+    background: rgba(10,5,20,0.75);
+    border: 1px solid rgba(150,80,220,0.22);
+    border-radius: 4px;
+    padding: 12px 8px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .stat-box:hover { border-color: rgba(180,130,255,0.5); }
+
+  .stat-label {
+    font-family: 'Cinzel', serif;
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: var(--violet-light);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    opacity: 0.8;
+  }
+
+  .stat-value {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 28px;
+    color: var(--parchment);
+    line-height: 1;
+  }
+
+  .stat-mod {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    color: var(--parchment-dark);
+    margin-top: 3px;
+  }
+
+  /* VITALS GRID — 4 colunas no desktop, 2×2 no mobile */
+  .vitals-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .vital-card {
+    background: rgba(10,5,20,0.75);
+    border: 1px solid rgba(150,80,220,0.2);
+    border-radius: 4px;
+    padding: 16px;
+  }
+
+  .vital-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--violet-light);
+    opacity: 0.8;
+    margin-bottom: 8px;
+  }
+
+  .vital-numbers {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .vital-current { font-family: 'Cinzel Decorative', serif; font-size: 32px; line-height: 1; }
+  .vital-current.hp  { color: var(--crimson-light); }
+  .vital-current.san { color: var(--mist); }
+  .vital-current.ac  { color: var(--violet-light); }
+
+  .vital-max { font-family: 'Cinzel', serif; font-size: 14px; color: var(--parchment-dark); }
+
+  .bar-track { height: 5px; background: rgba(255,255,255,0.07); border-radius: 2px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+  .bar-fill.hp  { background: linear-gradient(to right, var(--blood), var(--crimson-light)); }
+  .bar-fill.san { background: linear-gradient(to right, #1a1030, var(--mist)); }
+  .bar-fill.cor { background: linear-gradient(to right, var(--violet-dim), var(--violet-light)); }
+
+  .vital-note { font-size: 10px; color: var(--parchment-dark); opacity: 0.7; margin-top: 6px; font-style: italic; }
+
+  .nature-box {
+    background: rgba(20,5,40,0.5);
+    border: 1px solid rgba(120,50,180,0.28);
+    border-radius: 4px;
+    padding: 14px;
+    margin-bottom: 28px;
+  }
+
+  .nature-box-title {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--violet-light);
+    margin-bottom: 12px;
+  }
+
+  .nature-rows { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .nature-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(120,50,180,0.18);
+    border-radius: 3px;
+    padding: 7px 12px;
+    flex: 1;
+    min-width: 220px;
+  }
+
+  .nature-badge {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .badge-unique    { background: rgba(100,40,160,0.35); color: var(--violet-light); border: 1px solid rgba(140,80,210,0.5); }
+  .badge-passive   { background: rgba(30,60,30,0.5);    color: #6abf6a;             border: 1px solid rgba(30,80,30,0.5); }
+  .badge-warning   { background: rgba(90,40,0,0.5);     color: #f0a030;             border: 1px solid rgba(140,80,10,0.5); }
+  .badge-weakness  { background: rgba(60,20,10,0.5);    color: var(--gold);         border: 1px solid rgba(100,50,10,0.5); }
+  .badge-bond      { background: rgba(20,40,60,0.5);    color: #7ab0d0;             border: 1px solid rgba(20,60,100,0.5); }
+
+  .nature-text { font-size: 12px; color: var(--parchment-dark); font-style: italic; flex: 1; }
+  .nature-text details summary::-webkit-details-marker { display: none; }
+  .nature-text details summary { list-style: none; }
+  .details-toggle-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    color: #7ab0d0;
+    border: 1px solid rgba(20,60,100,.5);
+    background: rgba(20,40,60,.4);
+    border-radius: 2px;
+    padding: 1px 5px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .dtb-open  { display: none; }
+  details[open] .dtb-closed { display: none; }
+  details[open] .dtb-open   { display: inline; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+
+  .panel {
+    background: rgba(10,5,20,0.65);
+    border: 1px solid rgba(120,50,180,0.18);
+    border-radius: 4px;
+    padding: 18px;
+  }
+
+  .ability-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .ability-item:last-child { border-bottom: none; }
+
+  .ability-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--violet-light);
+    margin-top: 6px;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(180,130,255,0.5);
+  }
+
+  .ability-name { font-family: 'Cinzel', serif; font-size: 12px; color: var(--violet-light); margin-bottom: 2px; }
+
+  .ability-desc { font-size: 12px; color: var(--parchment-dark); line-height: 1.5; font-style: italic; opacity: 0.85; }
+
+  .ability-status {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 1px 6px;
+    border-radius: 2px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .status-ready  { background: rgba(30,80,30,0.5);   color: #6abf6a;            border: 1px solid rgba(30,80,30,0.6); }
+  .status-active { background: rgba(20,60,80,0.5);   color: #7ab0d0;            border: 1px solid rgba(20,60,80,0.6); }
+  .status-used   { background: rgba(60,20,20,0.5);   color: #8a4040;            border: 1px solid rgba(60,20,20,0.6); }
+  .status-violet { background: rgba(80,30,130,0.4);  color: var(--violet-light);border: 1px solid rgba(120,60,180,0.5); }
+  .status-warn   { background: rgba(100,60,0,0.4);   color: #f0a030;            border: 1px solid rgba(140,80,10,0.5); }
+
+  .attack-table { width: 100%; border-collapse: collapse; }
+  .attack-table thead tr { background: rgba(15,5,30,0.85); border-bottom: 1px solid rgba(140,80,210,0.3); }
+  .attack-table th {
+    font-family: 'Cinzel', serif;
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--violet-light);
+    padding: 7px 8px;
+    text-align: left;
+    font-weight: 500;
+  }
+  .attack-table td {
+    font-size: 12px;
+    color: var(--parchment-dark);
+    padding: 8px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-style: italic;
+  }
+  .atk-name  { color: var(--parchment); font-style: normal; font-family: 'Cinzel', serif; font-size: 11px; }
+  .atk-bonus { color: var(--teal-light); font-family: 'Cinzel', serif; font-size: 12px; font-style: normal; }
+  .atk-dmg   { color: #c0a0f0; font-family: 'Cinzel', serif; font-size: 11px; font-style: normal; }
+
+  /* ── Spell list items (estilo Leyn) ── */
+  .spell-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+  }
+  .spell-item:last-child { border-bottom: none; }
+  .spell-level-badge {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    padding: 2px 6px;
+    background: rgba(40,20,60,0.6);
+    border: 1px solid rgba(100,60,160,0.4);
+    color: var(--violet-light);
+    border-radius: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .spell-item-name {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: var(--parchment);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .spell-item-desc {
+    font-size: 11px;
+    color: var(--parchment-dark);
+    opacity: 0.7;
+    font-style: italic;
+  }
+  .spell-info-btn {
+    background: rgba(40,20,60,0.7);
+    border: 1px solid rgba(100,60,160,0.5);
+    color: var(--violet-light);
+    border-radius: 50%;
+    width: 16px; height: 16px;
+    font-size: 9px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0;
+    padding: 0;
+    transition: background 0.2s, border-color 0.2s;
+    vertical-align: middle;
+  }
+  .spell-info-btn:hover {
+    background: rgba(80,40,130,0.8);
+    border-color: rgba(180,130,255,0.7);
+  }
+
+  .spell-slot-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .spell-slot-row:last-child { border-bottom: none; }
+  .spell-level {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--violet-light);
+    opacity: 0.8;
+    width: 60px;
+    flex-shrink: 0;
+  }
+  .spell-dots { display: flex; gap: 5px; }
+  .spell-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 1px solid rgba(180,130,255,0.5);
+  }
+  .spell-dot.filled { background: var(--violet-light); box-shadow: 0 0 5px rgba(180,130,255,0.5); }
+  .spell-dot.used   { background: rgba(40,20,60,0.5); border-color: rgba(100,60,150,0.3); }
+  .spell-name {
+    font-size: 11px;
+    color: var(--parchment-dark);
+    font-style: italic;
+    flex: 1;
+  }
+
+  .equip-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 13px;
+  }
+  .equip-item:last-child { border-bottom: none; }
+  .equip-icon { font-size: 16px; width: 24px; text-align: center; }
+  .equip-name { color: var(--parchment); flex: 1; }
+  .equip-name em { font-style: italic; font-size: 11px; color: var(--parchment-dark); opacity: 0.75; display: block; margin-top: 1px; }
+  .equip-count { font-family: 'Cinzel', serif; font-size: 11px; color: var(--violet-light); opacity: 0.8; }
+
+  .tag {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 2px 7px;
+    border-radius: 2px;
+    margin: 2px 2px 0 0;
+  }
+  .tag-violet { background: rgba(70,20,120,0.4);  color: var(--violet-light); border: 1px solid rgba(120,60,180,0.4); }
+  .tag-red    { background: rgba(90,10,10,0.4);   color: #e07070;             border: 1px solid rgba(139,26,26,0.4); }
+  .tag-blue   { background: rgba(10,40,70,0.4);   color: #7ab0d0;             border: 1px solid rgba(30,80,120,0.4); }
+  .tag-gold   { background: rgba(90,70,10,0.4);   color: var(--gold-light);   border: 1px solid rgba(201,168,76,0.3); }
+  .tag-teal   { background: rgba(10,60,50,0.4);   color: var(--teal-light);   border: 1px solid rgba(20,100,80,0.4); }
+  .tag-silver { background: rgba(30,50,60,0.4);   color: var(--silver);       border: 1px solid rgba(100,140,160,0.3); }
+  .tag-amber  { background: rgba(150,80,10,0.25); color: #f0c060;             border: 1px solid rgba(200,130,20,0.4); }
+
+  
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+
+  .lore-panel { background: rgba(10,5,20,0.65); border: 1px solid rgba(120,50,180,0.15); border-radius: 4px; padding: 18px; margin-bottom: 20px; }
+
+  .lore-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .lore-item:last-child { border-bottom: none; }
+  .lore-icon { font-size: 18px; flex-shrink: 0; width: 24px; text-align: center; margin-top: 1px; }
+  .lore-key { font-family: 'Cinzel', serif; font-size: 11px; color: var(--violet-light); margin-bottom: 3px; letter-spacing: 1px; }
+  .lore-val { font-size: 13px; color: var(--parchment-dark); line-height: 1.5; }
+  .lore-val strong { color: var(--parchment); font-weight: 500; }
+
+  
+  
+  
+  
+  
+
+  .countdown {
+    background: rgba(15,5,30,0.5);
+    border: 1px solid rgba(150,80,220,0.38);
+    border-radius: 4px;
+    padding: 14px 18px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .countdown-icon { font-size: 28px; }
+  .countdown-label { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--violet-light); margin-bottom: 4px; opacity: 0.9; }
+  .countdown-value { font-family: 'Cinzel Decorative', serif; font-size: 16px; color: var(--violet-light); text-shadow: 0 0 16px rgba(180,130,255,0.4); }
+  .countdown-desc { font-size: 13px; color: var(--parchment-dark); font-style: italic; }
+
+  .saves-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+  .save-item { display: flex; align-items: center; gap: 7px; padding: 5px 7px; background: rgba(5,2,12,0.55); border: 1px solid rgba(120,50,180,0.12); border-radius: 3px; }
+  .save-dot { width: 7px; height: 7px; border-radius: 50%; border: 1px solid rgba(180,130,255,0.4); flex-shrink: 0; }
+  .save-dot.prof { background: var(--violet-light); border-color: var(--violet-light); }
+  .save-name { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; color: var(--parchment-dark); text-transform: uppercase; flex: 1; }
+  .save-val { font-family: 'Cinzel', serif; font-size: 12px; color: var(--parchment); }
+
+  .skill-row { display: flex; align-items: center; gap: 7px; padding: 4px 5px; }
+  .skill-dot { width: 6px; height: 6px; border-radius: 50%; border: 1px solid rgba(180,130,255,0.4); flex-shrink: 0; }
+  .skill-dot.prof { background: var(--violet-light); border-color: var(--violet-light); }
+  .skill-dot.exp  { background: var(--teal-light); border-color: var(--teal-light); }
+  .skill-name { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; color: var(--parchment-dark); text-transform: uppercase; flex: 1; }
+  .skill-val  { font-family: 'Cinzel', serif; font-size: 11px; color: var(--parchment); }
+
+  .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(120,50,180,0.18); }
+  .footer-quote { font-style: italic; font-size: 15px; color: var(--parchment-dark); opacity: 0.55; line-height: 1.7; }
+  .footer-attr { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px; color: var(--violet-light); opacity: 0.45; margin-top: 8px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bar-fill.hp  { width: 100%; animation: none; }
+    .bar-fill.san { width: 84%;  animation: none; }
+    .bar-fill.cor { width: var(--bar-target, 0%); animation: none; }
+  }
+
+  @media (max-width: 600px) {
+    .stats-row { grid-template-columns: repeat(3, 1fr); }
+    .vitals-grid { grid-template-columns: 1fr 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    
+    .char-name { font-size: 32px; }
+  }
+
+  /* ══════════════════════════════════════
+     ANIMAÇÕES — FICHA DE TEREN
+     ══════════════════════════════════════ */
+
+  /* ── Keyframes ── */
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-22px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ── Nome: letras se expandem como magia contida liberando ── */
+  @keyframes nameReveal {
+    0%   { opacity: 0; letter-spacing: 30px; text-shadow: none; }
+    60%  { opacity: 1; letter-spacing: 6px; }
+    100% { opacity: 1; letter-spacing: 4px;
+           text-shadow: 0 0 40px rgba(180,130,255,0.35), 0 2px 4px rgba(0,0,0,0.9); }
+  }
+
+  /* ── Glow violeta pulsante ── */
+  @keyframes violetGlow {
+    0%, 100% { text-shadow: 0 0 40px rgba(180,130,255,.3), 0 2px 4px rgba(0,0,0,.9); }
+    50%       { text-shadow: 0 0 90px rgba(180,130,255,.75), 0 0 30px rgba(140,80,220,.4), 0 2px 4px rgba(0,0,0,.9); }
+  }
+
+  /* ── Olhos vermelhos: brilho vermelho no hover ── */
+  @keyframes redEyeGlow {
+    0%, 100% { box-shadow: none; }
+    50%       { box-shadow: 0 0 22px rgba(204,34,68,.45), inset 0 0 8px rgba(140,20,40,.15); }
+  }
+
+  /* ── Fome instável: tremor/pulso laranja ── */
+  @keyframes hungerPulse {
+    0%, 100% { border-color: rgba(150,80,220,.28); box-shadow: none; }
+    30%       { border-color: rgba(240,160,48,.6); box-shadow: 0 0 12px rgba(240,100,20,.25); }
+    60%       { border-color: rgba(150,80,220,.28); }
+    80%       { border-color: rgba(200,80,40,.4); box-shadow: 0 0 8px rgba(200,80,40,.2); }
+  }
+  @keyframes hungerShake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-1.5px); }
+    40%       { transform: translateX(1.5px); }
+    60%       { transform: translateX(-1px); }
+    80%       { transform: translateX(1px); }
+  }
+
+  /* ── Spell dots acendem em sequência ── */
+  @keyframes dotLight {
+    0%   { opacity: 0; transform: scale(0.5); box-shadow: none; }
+    60%  { opacity: 1; transform: scale(1.2); box-shadow: 0 0 12px rgba(180,130,255,.9); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  /* ── Barras crescem ── */
+  @keyframes barGrow {
+    from { width: 0; }
+    to   { width: var(--bar-target); }
+  }
+
+  /* ── Reveal scroll ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-18px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .reveal-left.visible { opacity: 1; transform: translateX(0); }
+
+  /* ── Header ── */
+  .bloodline-tag { animation: fadeInDown 0.7s ease 0.1s both; }
+  .char-name {
+    animation: nameReveal 1.4s cubic-bezier(.22,.68,0,1.1) 0.4s both,
+               violetGlow 5.5s ease-in-out 1.9s infinite;
+  }
+  .char-subtitle { animation: fadeInDown 0.7s ease 1.2s both; }
+
+  /* ── Barras vitais ── */
+  .bar-fill          { animation: barGrow 1.1s cubic-bezier(.4,0,.2,1) 1.3s both; }
+  .bar-fill.hp       { --bar-target: 100%; }
+  .bar-fill.san      { --bar-target: 84%; }
+  .bar-fill.cor      { --bar-target: 0%; }
+
+  /* ── Vitals pop ── */
+  @keyframes numPop {
+    0%   { opacity: 0; transform: scale(.65); }
+    70%  { transform: scale(1.08); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  .vital-current { animation: numPop 0.65s cubic-bezier(.34,1.56,.64,1) 1.0s both; }
+
+  /* ── Ability dots respiram violeta ── */
+  @keyframes dotBreathe {
+    0%, 100% { box-shadow: 0 0 6px rgba(180,130,255,.5); transform: scale(1); }
+    50%       { box-shadow: 0 0 14px rgba(180,130,255,1), 0 0 4px rgba(180,130,255,.4); transform: scale(1.3); }
+  }
+  .ability-dot { animation: dotBreathe 3s ease-in-out infinite; }
+
+  /* ── Spell dots filled pulsam ── */
+  .spell-dot.filled { animation: dotBreathe 2.5s ease-in-out infinite; }
+
+  /* ── Stat boxes ── */
+  .stat-box {
+    animation: fadeInUp 0.5s ease both;
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+  }
+  .stat-box:nth-child(1) { animation-delay: 0.05s; }
+  .stat-box:nth-child(2) { animation-delay: 0.12s; }
+  .stat-box:nth-child(3) { animation-delay: 0.19s; }
+  .stat-box:nth-child(4) { animation-delay: 0.26s; }
+  .stat-box:nth-child(5) { animation-delay: 0.33s; }
+  .stat-box:nth-child(6) { animation-delay: 0.40s; }
+  .stat-box:hover {
+    border-color: rgba(180,130,255,.55);
+    box-shadow: 0 0 16px rgba(180,130,255,.12);
+    transform: translateY(-2px);
+  }
+
+  /* ── Nature rows stagger ── */
+  .nature-row {
+    animation: slideInLeft 0.45s ease both;
+    transition: border-color 0.25s, background 0.25s;
+  }
+  .nature-row:nth-child(1) { animation-delay: 0.05s; }
+  .nature-row:nth-child(2) { animation-delay: 0.14s; }
+  .nature-row:nth-child(3) { animation-delay: 0.23s; }
+  .nature-row:nth-child(4) { animation-delay: 0.32s; }
+  .nature-row:nth-child(5) { animation-delay: 0.41s; }
+  .nature-row:nth-child(6) { animation-delay: 0.50s; }
+  .nature-row:hover {
+    border-color: rgba(180,130,255,.35);
+    background: rgba(180,130,255,.04);
+  }
+
+  /* ── Panels ── */
+  .panel { transition: border-color 0.3s, box-shadow 0.3s; }
+  .panel:hover {
+    border-color: rgba(150,80,220,.32);
+    box-shadow: 0 0 22px rgba(150,80,220,.07);
+  }
+
+  /* ── Ability items ── */
+  .ability-item { transition: background 0.2s; }
+  .ability-item:hover { background: rgba(180,130,255,.04); }
+  .ability-item:hover .ability-dot {
+    transform: scale(1.5) translateX(2px);
+    box-shadow: 0 0 22px rgba(180,130,255,.9);
+  }
+
+  /* ── Fome Instável: alerta tremula/pulsa laranja/vermelho ── */
+  .hunger-alert {
+    animation: hungerPulse 3.5s ease-in-out infinite;
+    transition: background 0.3s;
+  }
+  .hunger-alert:hover {
+    animation: hungerShake 0.5s ease-in-out infinite;
+    background: rgba(90,30,10,.25);
+  }
+
+  /* ── Lore item olhos vermelhos: hover vermelho ── */
+  .lore-item.red-eyes:hover {
+    animation: redEyeGlow 1.5s ease-in-out infinite;
+    background: rgba(100,20,30,.08);
+    border-radius: 4px;
+  }
+
+  /* ── Maven lore: hover peso cinza ── */
+  .lore-item.maven-item:hover {
+    background: rgba(30,20,50,.2);
+    border-radius: 4px;
+  }
+  .lore-item.maven-item:hover .lore-key {
+    opacity: 0.6;
+    transition: opacity 0.4s;
+  }
+
+  /* ── Attack table row hover ── */
+  .attack-table tr:hover td { background: rgba(120,60,180,.08); }
+
+  /* ── Lore items ── */
+  .lore-item { transition: background 0.2s; border-radius: 3px; }
+  .lore-item:hover { background: rgba(180,130,255,.04); }
+
+  /* ── Equip items ── */
+  .equip-item { transition: background 0.2s, padding-left 0.2s; }
+  .equip-item:hover { background: rgba(180,130,255,.03); padding-left: 4px; }
+
+  /* ── Save items ── */
+  .save-item { transition: border-color 0.2s, background 0.2s; }
+  .save-item:hover {
+    border-color: rgba(180,130,255,.3);
+    background: rgba(180,130,255,.04);
+  }
+
+  /* ── Status ready pulse ── */
+  @keyframes readyPulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: .6; }
+  }
+  .status-ready { animation: readyPulse 3.5s ease-in-out infinite; }
+
+  /* ── Countdown border violeta ── */
+  @keyframes borderViolet {
+    0%, 100% { border-color: rgba(150,80,220,.38); }
+    50%       { border-color: rgba(180,130,255,.7); box-shadow: 0 0 20px rgba(180,130,255,.1); }
+  }
+  .countdown { animation: borderViolet 4s ease-in-out 2s infinite; }
+
+  /* ── Badge pulse ── */
+  @keyframes badgePulse {
+    0%, 100% { opacity: .9; }
+    50%       { opacity: 1; box-shadow: 0 0 10px rgba(184,144,224,.35); }
+  }
+  .alignment-badge { animation: badgePulse 4s ease-in-out 2s infinite; }
+
+  /* ── Portrait hover ── */
+  .portrait-wrap img { transition: box-shadow 0.4s, filter 0.4s; }
+  .portrait-wrap:hover img {
+    box-shadow: 0 0 60px rgba(140,60,200,.55), 0 0 120px rgba(0,0,0,.9);
+    filter: saturate(1.1) contrast(1.08);
+  }
+
+  /* ── Footer ── */
+  .footer { animation: fadeIn 1.2s ease 0.8s both; }
+
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="bloodline-tag">✦ Linhagem Compassiva · 3ª Prole de Leyn Sepet · Ex-Conjurador do Culto ✦</div>
+    <h1 class="char-name">Teren</h1>
+    <div class="char-subtitle">
+      Vampiro 2ª Linhagem · Mago · Subclasse: Tradição de Abjuração · Nível 4
+      <span class="alignment-badge">Neutro</span>
+    </div>
+
+<main>
+  </div>
+
+  <!-- PORTRAIT -->
+  <div style="display:flex;justify-content:center;margin-bottom:32px;">
+    <div class="portrait-wrap" style="position:relative;width:240px;">
+      <img src="Perfil - Teren.png"
+		   alt="Teren"
+           style="width:240px;height:300px;object-fit:cover;object-position:top center;border-radius:4px;border:1px solid rgba(150,80,220,.4);box-shadow:0 0 50px rgba(100,40,160,.25), 0 0 90px rgba(0,0,0,.9);display:block;filter:saturate(0.88) contrast(1.06);">
+      <div style="position:absolute;bottom:0;left:0;right:0;height:70px;background:linear-gradient(to top,rgba(6,5,16,1),transparent);border-radius:0 0 4px 4px;"></div>
+    </div>
+  </div>
+
+  <!-- VITALS -->
+  <div class="section-title">✦ Pontos Vitais</div>
+  <div class="vitals-grid">
+    <div class="vital-card">
+      <div class="vital-label">Pontos de Vida</div>
+      <div class="vital-numbers">
+        <div class="vital-current hp">17</div>
+        <div class="vital-max">/ 17</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill hp"></div></div>
+      <div class="vital-note">d6 × 4 níveis · CON +0 · frágil, compensado pela magia · Transformado Saga 19</div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-label">Sanidade</div>
+      <div class="vital-numbers">
+        <div class="vital-current san">38</div>
+        <div class="vital-max">/ 45</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill san"></div></div>
+      <div class="vital-note">WIS 12 × 5 = 60 − Mythos 15% = <strong>45</strong> · −22 · 6 anos no Culto · morte de Maven · pacto de sangue quebrando</div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-label">CA / Presença</div>
+      <div class="vital-numbers">
+        <div class="vital-current ac">11</div>
+        <div class="vital-max" style="font-size:12px">AC</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill cor"></div></div>
+      <div class="vital-note">Sem armadura · DEX +1 base · Velocidade 30 pés · Iniciativa +1</div>
+    </div>
+
+    <div class="vital-card">
+      <div class="vital-label">Fome · Controle</div>
+      <div class="vital-numbers" style="margin-bottom:6px">
+        <div style="font-family:'Cinzel',serif;font-size:20px;color:#f0a030;line-height:1">Instável</div>
+      </div>
+      <div class="bar-track" style="margin-bottom:6px"><div class="bar-fill cor" style="--bar-target:25%"></div></div>
+      <div class="vital-note">Transformado · Saga 19 · controle ~2h · exceção automática: sangue Família Sepet · <span style="color:#7ab0d0">Sentinela: avaliando</span></div>
+    </div>
+  </div>
+
+  <!-- NATUREZA VAMPÍRICA -->
+  <div class="nature-box">
+    <div class="nature-box-title">✦ Natureza Vampírica — Linhagem Compassiva · Prole de Leyn Sepet · Transformação: Pacto Quebrado (Saga 19)</div>
+    <div class="nature-rows">
+      <div class="nature-row">
+        <span class="nature-badge badge-unique">2ª Geração</span>
+        <span class="nature-text">Sangue corrompido + sangue primordial misturados — o pacto de sangue do Culto foi dissolvido pela transformação; traços de magia profana ainda acessíveis na memória</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-unique">Único</span>
+        <span class="nature-text">Linhagem Compassiva — humanidade integralmente preservada; nunca perde controle por fome enquanto Sanidade &gt; 0. <em>(Fome Instável atual: estado temporário de recém-transformado — ainda em estabilização.)</em></span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-warning">Instável</span>
+        <span class="nature-text">Fome ainda não controlada — desvantagem em saves WIS diante de sangue fresco por 1 minuto; exceção: sangue da família Sepet (Leyn, Kaira, Mara, Elise)</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-bond">Vínculo Telepático</span>
+        <span class="nature-text">
+          <details>
+            <summary style="cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px">
+              <span class="details-toggle-btn dtb-closed">▸ VER</span>
+              <span class="details-toggle-btn dtb-open">▾ FECHAR</span>
+              Comunicação telepática vampírica — três níveis distintos.
+            </summary>
+            <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(20,60,100,.3);display:flex;flex-direction:column;gap:6px;max-height:140px;overflow-y:auto;padding-right:6px">
+              <div><strong>Prole-Criador (Leyn ↔ Teren, Mara, Elise):</strong> vínculo de sangue, alcance indeterminado (confirmado a ~2km) — sem linha de visão necessária, comunicação direta e precisa como um único organismo com mentes separadas. Leyn pode reforçar saves de WIS de Teren como ação bônus a qualquer distância 1×/dia.</div>
+              <div><strong>Kaira:</strong> vínculo de sangue familiar — não é prole, mas se alimentou diretamente de Leyn na Saga 11; o Codex reconhece esse canal como distinto e mais intenso que o de criador com proles. Com Teren, esse canal não opera nos mesmos termos — o vínculo de Kaira foi forjado pelo sangue de Leyn especificamente. Teren pode perceber a presença de Kaira como membro da Família Sepet, mas sem comunicação direta estabelecida ainda.</div>
+              <div><strong>Qualquer outro ser:</strong> requer proximidade (~25 pés / 8m) e contato visual; funciona como sugestão ou hipnose — impressões e intenções, não instruções claras; o receptor pode resistir.</div>
+            </div>
+          </details>
+        </span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-passive">Passivo</span>
+        <span class="nature-text">Visão no Escuro 60 pés · Velocidade base 30 pés · Força levemente aumentada (+1 STR temporário em situações de estresse) · Imunidade a Veneno e Doença · Dano Necrótico: metade</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-weakness">Fraqueza Grave</span>
+        <span class="nature-text">Prata: 2d6 dano por turno em contato, sem regeneração · Luz solar: 1d10/turno e desv. em todos os ataques · Água corrente: respingos −2 em ataques; imersão 1d6/rodada · Símbolos Sagrados: Desvantagem</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-passive">Passivo.</span>
+        <span class="nature-text">Regeneração Vampírica — Ausente. A Linhagem Compassiva retém alma e memórias intactas, sem corrupção — mas essa integridade tem custo fisiológico: a conexão com o sangue primordial em sua face animalesca é enfraquecida. Vampiros padrão, desprovidos de alma, operam por ambição e instinto puro — essa frieza os aproxima da natureza bruta do sangue vampírico, conferindo regeneração acelerada e até reconstituição de membros amputados. A Linhagem Compassiva não possui esse acesso.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATRIBUTOS -->
+  <div class="section-title">✦ Atributos</div>
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-label">Força</div>
+      <div class="stat-value">9</div>
+      <div class="stat-mod">-1</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Destreza</div>
+      <div class="stat-value">13</div>
+      <div class="stat-mod">+1</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Constituição</div>
+      <div class="stat-value">11</div>
+      <div class="stat-mod">+0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Inteligência</div>
+      <div class="stat-value">16</div>
+      <div class="stat-mod">+3</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Sabedoria</div>
+      <div class="stat-value">12</div>
+      <div class="stat-mod">+1</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Carisma</div>
+      <div class="stat-value">14</div>
+      <div class="stat-mod">+2</div>
+    </div>
+  </div>
+
+  <!-- HABILIDADES + ATAQUES -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="hunger-alert" style="margin-bottom:12px;padding:8px 12px;background:rgba(60,20,100,0.15);border:1px solid rgba(150,80,220,0.28);border-radius:4px;">
+        <div style="font-size:11px;color:var(--violet-light);font-family:'Cinzel', serif;letter-spacing:1px;margin-bottom:4px;">⚠ ALERTA — Fome Instável · Saga 19</div>
+        <div style="font-size:11px;color:var(--parchment-dark);font-style:italic;">Transformado há horas · ainda aprendendo o corpo vampírico · controle de fome não estabelecido · Sentinela observando comportamento ✧ Em avaliação</div>
+      </div>
+
+      <div class="section-title">✦ Habilidades Especiais</div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:#c0a0f0"></div>
+        <div style="flex:1">
+          <div class="ability-name">Memória do Pacto</div>
+          <div class="ability-desc">6 anos de conhecimento profano ainda acessível — conhece rituais do Culto da Verdade Profunda, símbolos de ancoragem, estrutura dos Pontos de Convergência, localização de Luca (câmara leste, nível 3 da Fortaleza). Vantagem em testes de Arcana sobre magia profana, selamento e rituais do Culto.</div>
+        </div>
+        <div class="ability-status status-violet">Passivo</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--teal-light)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Conjurador Adaptado</div>
+          <div class="ability-desc">Magia arcana funcionando após a transformação — raro para vampiros de 2ª geração. O conhecimento profundo de rituais criou canais mágicos que sobreviveram à morte e ao renascimento. Spellcasting DC 13 · Bônus de ataque mágico +5.</div>
+        </div>
+        <div class="ability-status status-active">Passivo</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--mist)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Elo de Prole — Leyn Sepet</div>
+          <div class="ability-desc">Sente quando Leyn está em perigo imediato a até ~200m. Leyn pode, como ação bônus, reforçar saves de Sabedoria de Teren com vantagem 1×/dia — útil para controle de fome. Vínculo ainda fraco, mas presente.</div>
+        </div>
+        <div class="ability-status status-active">Passivo</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:#f0a030"></div>
+        <div style="flex:1">
+          <div class="ability-name">Fome Instável</div>
+          <div class="ability-desc">Ao perceber odor de sangue fresco de desconhecido: save WIS CD 12 ou desvantagem em ataques contra o alvo por 1 minuto (instinto predatório não treinado). Sangue de família Sepet é exceção automática — nenhum impulso.</div>
+        </div>
+        <div class="ability-status status-warn">Perigo</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--crimson-light)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Escudo (Reação) — Magia Nível 1</div>
+          <div class="ability-desc">Como Reação quando é atingido: +5 CA até o início do próximo turno. Pode cancelar acerto. Custo: 1 slot de nível 1.</div>
+        </div>
+        <div class="ability-status status-ready">Reação</div>
+      </div>
+
+    </div>
+
+    <div class="panel">
+      <div class="section-title">✦ Habilidades de Classe — Mago / Tradição de Abjuração</div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--violet-light)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Recuperação Arcana</div>
+          <div class="ability-desc">1× por dia longo, durante descanso curto: recupera espaços de magia totalizando até <strong style="color:var(--parchment)">nível 2</strong> (metade do nível de Mago). Não recupera espaços de nível 6 ou acima.</div>
+        </div>
+        <div class="ability-status status-ready">Pronto</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:#a0c0f0"></div>
+        <div style="flex:1">
+          <div class="ability-name">Armadura Arcana — Ward</div>
+          <div class="ability-desc">(2 × nível) + mod. INT = <strong style="color:var(--parchment)">11 HP</strong>. Ao ser atingido, o dano reduz o Ward antes do HP. Recarrega ao preparar magias (descanso longo). Ao conjurar Escudo ou qualquer magia de Abjuração, o Ward recupera 2× o nível do slot gasto.</div>
+        </div>
+        <div class="ability-status status-ready">11 HP</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--violet-light)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Adepto de Abjuração</div>
+          <div class="ability-desc">Aprende e copia magias de Abjuração pela metade do custo em tempo e ouro. Proficiência dobrada em Arcana quando a perícia envolve magia de Abjuração.</div>
+        </div>
+        <div class="ability-status status-violet">Passivo</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--gold)"></div>
+        <div style="flex:1">
+          <div class="ability-name" style="color:var(--gold-light)">Talento Nível 4 — Conjurador de Guerra</div>
+          <div class="ability-desc">Vantagem em testes de Constituição para manter concentração. Ataques de oportunidade podem ser substituídos por magias. Componentes somáticos com mãos ocupadas por arma ou escudo.</div>
+        </div>
+        <div class="ability-status status-violet">Passivo</div>
+      </div>
+
+      <!-- MAGIAS -->
+      <div style="margin-top:18px">
+        <div class="section-title">✦ Magias Conhecidas</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+          <div style="flex:1;min-width:200px">
+
+            <!-- Truques -->
+            <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:var(--violet-light);opacity:0.65;text-transform:uppercase;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid rgba(150,80,220,0.2)">Truques · ilimitados</div>
+
+            <div class="spell-item">
+              <span class="spell-level-badge">Truque</span>
+              <div style="flex:1">
+                <div class="spell-item-name">Raio Gélido <button class="spell-info-btn" onclick="openSpellDetail('raio-gelido')" title="Ver detalhes">i</button></div>
+                <div class="spell-item-desc">Ataque à distância · 1d8 frio · reduz velocidade</div>
+              </div>
+            </div>
+
+            <div class="spell-item">
+              <span class="spell-level-badge">Truque</span>
+              <div style="flex:1">
+                <div class="spell-item-name">Toque Arrepiante <button class="spell-info-btn" onclick="openSpellDetail('toque-arrepiante')" title="Ver detalhes">i</button></div>
+                <div class="spell-item-desc">Ataque à distância · 1d8 necrótico · bloqueia cura</div>
+              </div>
+            </div>
+
+            <div class="spell-item">
+              <span class="spell-level-badge">Truque</span>
+              <div style="flex:1">
+                <div class="spell-item-name">Luz <button class="spell-info-btn" onclick="openSpellDetail('luz')" title="Ver detalhes">i</button></div>
+                <div class="spell-item-desc">Utilidade · ilumina objeto por 1 hora</div>
+              </div>
+            </div>
+
+            <div class="spell-item">
+              <span class="spell-level-badge">Truque</span>
+              <div style="flex:1">
+                <div class="spell-item-name">Taumaturgia Profana <button class="spell-info-btn" onclick="openSpellDetail('taumaturgia')" title="Ver detalhes">i</button></div>
+                <div class="spell-item-desc">Utilidade · efeitos mágicos menores</div>
+              </div>
+            </div>
+
+            <!-- Nível 1 -->
+            <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:var(--violet-light);opacity:0.65;text-transform:uppercase;margin:10px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(150,80,220,0.2)">Nível 1</div>
+
+            <div class="spell-item">
+              <span class="spell-level-badge">Nível 1</span>
+              <div style="flex:1">
+                <div class="spell-item-name">Mísseis Mágicos <button class="spell-info-btn" onclick="openSpellDetail('misseis')" title="Ver detalhes">i</button></div>
+                <div class="spell-item-desc">3×(1d4+1) força · automático · não erra</div>
+              </div>
+            </div>
+
+            <div class="spell-item">
+              <span class="spell-level-badge">Nível 1</span>
+              <div style="flex:1">
+                <div class="spell-item-name">Escudo <span style="font-size:9px;color:var(--parchment-dark);font-style:italic">— Reação</span> <button class="spell-info-btn" onclick="openSpellDetail('escudo')" title="Ver detalhes">i</button></div>
+                <div class="spell-item-desc">Reação · +5 CA até próximo turno</div>
+              </div>
+            </div>
+
+            <div class="spell-item">
+              <span class="spell-level-badge">Nível 1</span>
+              <div style="flex:1">
+                <div class="spell-item-name">Absorver Elementos <span style="font-size:9px;color:var(--parchment-dark);font-style:italic">— Reação</span> <button class="spell-info-btn" onclick="openSpellDetail('absorver')" title="Ver detalhes">i</button></div>
+                <div class="spell-item-desc">Reação · resiste dano elemental · devolve no próximo ataque</div>
+              </div>
+            </div>
+
+            <div class="spell-item">
+              <span class="spell-level-badge">Nível 1</span>
+              <div style="flex:1">
+                <div class="spell-item-name">Detectar Magia <span style="font-size:9px;color:var(--parchment-dark);font-style:italic">— Ritual</span> <button class="spell-info-btn" onclick="openSpellDetail('detectar')" title="Ver detalhes">i</button></div>
+                <div class="spell-item-desc">Concentração · percebe auras mágicas em 30 pés</div>
+              </div>
+            </div>
+
+            <div class="spell-item">
+              <span class="spell-level-badge">Nível 1</span>
+              <div style="flex:1">
+                <div class="spell-item-name">Compreender Idiomas <span style="font-size:9px;color:var(--parchment-dark);font-style:italic">— Ritual</span> <button class="spell-info-btn" onclick="openSpellDetail('idiomas')" title="Ver detalhes">i</button></div>
+                <div class="spell-item-desc">Entende qualquer língua falada ou escrita por 1 hora</div>
+              </div>
+            </div>
+
+            <!-- Nível 2 -->
+            <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:var(--violet-light);opacity:0.65;text-transform:uppercase;margin:10px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(150,80,220,0.2)">Nível 2</div>
+
+            <div class="spell-item">
+              <span class="spell-level-badge">Nível 2</span>
+              <div style="flex:1">
+                <div class="spell-item-name">Raio Enfraquecedor <button class="spell-info-btn" onclick="openSpellDetail('raio-enfraquecedor')" title="Ver detalhes">i</button></div>
+                <div class="spell-item-desc">Ataque à distância · 4d8 necrótico · desvantagem em FOR</div>
+              </div>
+            </div>
+
+            <div class="spell-item">
+              <span class="spell-level-badge">Nível 2</span>
+              <div style="flex:1">
+                <div class="spell-item-name">Teia <button class="spell-info-btn" onclick="openSpellDetail('teia')" title="Ver detalhes">i</button></div>
+                <div class="spell-item-desc">Concentração · área 20 pés · prende criaturas</div>
+              </div>
+            </div>
+
+            <div class="spell-item">
+              <span class="spell-level-badge">Nível 2</span>
+              <div style="flex:1">
+                <div class="spell-item-name">Passo Nebuloso <button class="spell-info-btn" onclick="openSpellDetail('passo')" title="Ver detalhes">i</button></div>
+                <div class="spell-item-desc">Ação bônus · teleporte até 30 pés</div>
+              </div>
+            </div>
+
+          </div>
+          <div>
+            <div class="section-title" style="margin-bottom:8px">✦ Espaços de Magia</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <div style="background:rgba(40,20,60,0.5);border:1px solid rgba(100,60,160,0.4);border-radius:3px;padding:8px 14px;text-align:center;">
+                <div style="font-family:'Cinzel',serif;font-size:8px;color:var(--violet-light);letter-spacing:2px;margin-bottom:4px">NÍVEL 1</div>
+                <div style="font-family:'Cinzel Decorative',serif;font-size:20px;color:var(--parchment)">4</div>
+                <div style="font-size:10px;color:var(--parchment-dark);opacity:0.7">/ 4 espaços</div>
+              </div>
+              <div style="background:rgba(40,20,60,0.5);border:1px solid rgba(100,60,160,0.4);border-radius:3px;padding:8px 14px;text-align:center;">
+                <div style="font-family:'Cinzel',serif;font-size:8px;color:var(--violet-light);letter-spacing:2px;margin-bottom:4px">NÍVEL 2</div>
+                <div style="font-family:'Cinzel Decorative',serif;font-size:20px;color:var(--parchment)">3</div>
+                <div style="font-size:10px;color:var(--parchment-dark);opacity:0.7">/ 3 espaços</div>
+              </div>
+            </div>
+            <div style="margin-top:8px">
+              <span class="tag tag-violet">Atributo: Inteligência +3</span><br>
+              <span class="tag tag-teal" style="margin-top:4px">CD Magia: 13</span>
+              <span class="tag tag-silver">Ataque Mágico: +5</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ATAQUES + SALVAGUARDAS -->
+  <div class="panel" style="margin-bottom:28px">
+      <div class="section-title">✦ Ataques</div>
+
+      <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span>✨</span>
+          <span class="ability-name">Raio Gélido</span>
+          <span style="margin-left:auto;font-family:'Cinzel',serif;font-size:11px;color:var(--teal-light)">+5 atq</span>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <span class="tag tag-violet">1d8 frio</span>
+          <span class="tag tag-silver">Distância · 60 pés</span>
+          <span class="tag tag-teal">Truque — ilimitado</span>
+        </div>
+        <div class="ability-desc">Truque arcano principal. Ataque à distância contra um alvo.</div>
+      </div>
+
+      <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span>💀</span>
+          <span class="ability-name">Toque Arrepiante</span>
+          <span style="margin-left:auto;font-family:'Cinzel',serif;font-size:11px;color:var(--teal-light)">+5 atq</span>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <span class="tag tag-violet">1d8 necrótico</span>
+          <span class="tag tag-silver">Distância · 120 pés</span>
+          <span class="tag tag-teal">Truque — ilimitado</span>
+        </div>
+        <div class="ability-desc">O alvo não pode recuperar PV até o início do próximo turno de Teren. Contra Mortos-Vivos: desvantagem nos ataques contra Teren até o fim do próximo turno.</div>
+      </div>
+
+      <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span>💫</span>
+          <span class="ability-name">Mísseis Mágicos</span>
+          <span style="margin-left:auto;font-family:'Cinzel',serif;font-size:11px;color:var(--teal-light)">automático</span>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <span class="tag tag-violet">3×(1d4+1) força</span>
+          <span class="tag tag-silver">120 pés</span>
+          <span class="tag tag-amber">Slot nível 1</span>
+        </div>
+        <div class="ability-desc">Nunca erra. Três dardos de energia mágica que acertam automaticamente alvos visíveis. Pode distribuir entre alvos diferentes.</div>
+      </div>
+
+      <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span>⚡</span>
+          <span class="ability-name">Raio Enfraquecedor</span>
+          <span style="margin-left:auto;font-family:'Cinzel',serif;font-size:11px;color:var(--teal-light)">+5 atq</span>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <span class="tag tag-violet">4d8 necrótico</span>
+          <span class="tag tag-red">save CON · desvantagem em ataques de FOR</span>
+          <span class="tag tag-silver">60 pés</span>
+          <span class="tag tag-amber">Slot nível 2</span>
+        </div>
+        <div class="ability-desc">Raio de energia necrótica que enfraquece o alvo. Alvo que falha no save de CON sofre desvantagem em ataques baseados em Força até o próximo turno de Teren.</div>
+      </div>
+
+      <div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span>🩸</span>
+          <span class="ability-name">Mordida Vampírica</span>
+          <span style="margin-left:auto;font-family:'Cinzel',serif;font-size:11px;color:var(--teal-light)">+1 atq (FOR −1 · Prof +2)</span>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <span class="tag tag-red">1d6 perfurante</span>
+          <span class="tag tag-teal">drena 1d4 HP</span>
+          <span class="tag tag-silver">Corpo a corpo · 5 pés</span>
+        </div>
+        <div class="ability-desc">Recupera HP igual ao drenado. 2ª geração: dreno menos potente que primordiais. Instintivo — ainda não totalmente controlado.</div>
+      </div>
+
+      <div style="padding:8px 0">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span>🪄</span>
+          <span class="ability-name">Cajado (emergência)</span>
+          <span style="margin-left:auto;font-family:'Cinzel',serif;font-size:11px;color:var(--teal-light)">+1 atq</span>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <span class="tag tag-silver">1d6-1 contundente</span>
+          <span class="tag tag-silver">5 pés</span>
+        </div>
+        <div class="ability-desc">Último recurso. Teren não foi treinado para corpo-a-corpo — este ataque reflete isso.</div>
+      </div>
+
+      <div style="margin-top:10px;font-size:11px;color:var(--parchment-dark);font-style:italic;padding:7px 10px;border-left:2px solid rgba(150,80,220,0.35);">
+        ✦ DC de Magia: 13 · Bônus de Ataque Mágico: +5<br>
+        ✦ Mordida: drena HP — 2ª geração recupera 1d4 HP drenado<br>
+        ✦ Teia (nível 2): área 20 pés, imobiliza, DEX save CD 13
+      </div>
+
+      <div style="margin-top:18px">
+        <div class="section-title">✦ Salvaguardas</div>
+        <div class="saves-grid">
+          <div class="save-item"><div class="save-dot"></div><span class="save-name">Força</span><span class="save-val">-1</span></div>
+          <div class="save-item"><div class="save-dot"></div><span class="save-name">Destreza</span><span class="save-val">+1</span></div>
+          <div class="save-item"><div class="save-dot"></div><span class="save-name">Constituição</span><span class="save-val">+0</span></div>
+          <div class="save-item"><div class="save-dot prof"></div><span class="save-name">Inteligência</span><span class="save-val">+5</span></div>
+          <div class="save-item"><div class="save-dot prof"></div><span class="save-name">Sabedoria</span><span class="save-val">+3</span></div>
+          <div class="save-item"><div class="save-dot"></div><span class="save-name">Carisma</span><span class="save-val">+2</span></div>
+        </div>
+        <div style="margin-top:6px;font-size:10px;color:var(--parchment-dark);opacity:0.55;font-style:italic">● Proficiente · ○ Sem prof. · Bônus: +2</div>
+      </div>
+    </div>
+
+  <!-- EQUIPAMENTO + PERÍCIAS -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="section-title">✦ Equipamento Atual</div>
+
+      <div class="equip-item">
+        <div class="equip-icon">🪄</div>
+        <div class="equip-name">Cajado de Conjurador do Culto<em>1d6-1 contundente · foco arcano integrado · usado por 6 anos · ainda funciona apesar do dono não ser mais do Culto</em></div>
+        <div class="equip-count"><span class="tag tag-violet">Equipado</span></div>
+      </div>
+
+      <div class="equip-item">
+        <div class="equip-icon">🧥</div>
+        <div class="equip-name">Manto de Conjurador<em>Roxo escuro, símbolo do Culto removido — rasgo visível onde o símbolo estava · vestígio de magia profana que ele ainda não sabe como remover</em></div>
+        <div class="equip-count"><span class="tag tag-violet">Equipado</span></div>
+      </div>
+
+      <div class="equip-item">
+        <div class="equip-icon">📖</div>
+        <div class="equip-name">Grimório Pessoal (parcial)<em>Ficou na Fortaleza do Culto — perdido. Tem fragmentos de ritual copiados em papéis avulsos que estavam nos bolsos do manto.</em></div>
+        <div class="equip-count"><span class="tag tag-red">Perdido</span></div>
+      </div>
+
+      <div style="margin-top:10px;padding:8px 10px;background:rgba(60,20,100,0.15);border:1px solid rgba(120,50,180,0.22);border-radius:3px;font-size:11px;color:var(--parchment-dark);font-style:italic;">
+        AC 11 = DEX +1 base · Sem armadura · BP: +2 · Iniciativa +1<br>
+        Altamente vulnerável em corpo-a-corpo
+      </div>
+      <div style="margin-top:8px;padding:8px 10px;background:rgba(10,40,30,0.3);border:1px solid rgba(78,204,163,0.22);border-radius:3px;font-size:11px;color:var(--parchment-dark);font-style:italic;">
+        ⚠ Fome controlada por ~2 horas · Olhos vermelhos ainda intensos
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">✦ Perícias D&D</div>
+      <div class="skill-row"><div class="skill-dot exp"></div><span class="skill-name">Arcana</span><span class="skill-val">+7</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Investigação</span><span class="skill-val">+5</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">História</span><span class="skill-val">+5</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Religião</span><span class="skill-val">+5</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Enganação</span><span class="skill-val">+4</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Persuasão</span><span class="skill-val">+4</span></div>
+      <div class="skill-row"><div class="skill-dot"></div><span class="skill-name">Demais perícias</span><span class="skill-val">-1/+0/+1/+2</span></div>
+      <div style="margin-top:6px;font-size:10px;color:var(--parchment-dark);opacity:0.55;font-style:italic;">◈◈ Especialista · ◈ Proficiente · ◯ Sem proficiência</div>
+
+      <div class="section-title" style="margin-top:18px;margin-bottom:8px">✦ Perícias CoC</div>
+      <div class="skill-row"><div class="skill-dot exp"></div><span class="skill-name">Arcana / Ocultismo</span><span class="skill-val">80%</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Enganação</span><span class="skill-val">55%</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Persuasão</span><span class="skill-val">50%</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Investigação / Pesquisa</span><span class="skill-val">50%</span></div>
+      <div class="skill-row"><div class="skill-dot"></div><span class="skill-name">Primeiros Socorros</span><span class="skill-val">30%</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Esquiva</span><span class="skill-val">DEX÷2 = 6%</span></div>
+      <div class="skill-row" style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(90,155,186,.18);">
+        <div class="skill-dot" style="background:var(--sanity,#3a6b8a); opacity:.7;"></div>
+        <span class="skill-name" style="color:var(--sanity-light,#5a9bba); font-style:italic;">Mythos de Cthulhu</span>
+        <span class="skill-val" style="color:var(--sanity-light,#5a9bba);">15%</span>
+      </div>
+      <div style="font-size:.72rem; color:var(--text-dim,#7a7090); font-style:italic; margin-top:3px; padding-left:20px; line-height:1.4;">
+        6 anos conjurando magia profana dos Mestres · Pacto de sangue com entidade ligada ao Mythos · Viu a Mestra sem máscara — pele ondulando · Morte de Maven em ritual · Cada ponto reduz SAN máx em 1 permanentemente
+      </div>
+      <div style="margin-top:6px;font-size:10px;color:var(--parchment-dark);opacity:0.55;font-style:italic;">Rola 1d100 ≤ valor = sucesso · ≤ ½ = difícil · ≤ 1/5 = extremo</div>
+    </div>
+  </div>
+
+      <!-- SITUAÇÃO ATUAL -->
+      <div class="section-title">✦ Situação Atual — Fim da Saga 21</div>
+      <div class="countdown" style="flex-direction:column;align-items:flex-start;gap:10px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="countdown-icon">🌑</div>
+          <div>
+            <div class="countdown-label">Localização</div>
+            <div class="countdown-value">Catacumbas da Vila Sepet · Grupo reunido · Noite</div>
+          </div>
+        </div>
+        <div class="countdown-desc">Transformado há algumas horas. Ainda aprendendo a controlar os sentidos, a força, a presença. Sentiu — palmas no chão de catacumba como âncora — o momento exato em que a presença presa no núcleo foi embora. Ainda está processando o que significa sentir isso sem treinamento nenhum. Rory destruiu o cristal da Mestra (ordem de Leyn). <strong>Victória foi forjada:</strong> o núcleo âmbar integrado à lâmina vinculada, inscrição "Levanta" escolhida pela própria presença liberada. <strong style="color:#f07070">⚠ A Mestra ainda sabe onde estão.</strong> O cristal foi destruído mas a ameaça não — ela disse que viria buscar Kaira de qualquer jeito. Ponto Beta = Câmara do Primeiro Grito (62 km sudeste). Ponto Gama = sob o poço da aldeia. Ritual de Convergência: ~12 dias.</div>
+      </div>
+
+      <!-- LORE & IDENTIDADE -->
+      <div class="section-title">✦ Lore &amp; Identidade</div>
+      <div class="lore-panel">
+
+        <div class="lore-item">
+          <div class="lore-icon">🌑</div>
+          <div>
+            <div class="lore-key">Quem Ele Era — Antes da Escuridão Eterna</div>
+            <div class="lore-val">Jovem com talento para magia que ninguém no mundo normal estava disposto a pagar para desenvolver. Não era mau — era isolado, depois endoutrinado, depois preso por contrato antes de entender o que havia assinado. Passou seis anos fazendo coisas que jamais faria se houvesse tido outra porta. <strong>O problema é que ele sabe disso, e não sabe se isso o absolve ou o condena.</strong></div>
+          </div>
+        </div>
+
+        <div class="lore-item maven-item">
+          <div class="lore-icon">🩸</div>
+          <div>
+            <div class="lore-key">Maven</div>
+            <div class="lore-val">Melhor amigo. Recrutados juntos. Teren mentiu sobre a morte dele por dois meses para proteger Rory — disse que Maven tinha sido promovido. A verdade é que estava limpando a câmara ritual quando o corpo de Maven ainda estava lá. Não chorou então. Não sabe se ainda consegue. <em>Isso é o peso que carrega quando fica quieto por tempo demais.</em>
+            </div>
+          </div>
+        </div>
+
+        <div class="lore-item">
+          <div class="lore-icon">👁️</div>
+          <div>
+            <div class="lore-key">A Mestra — O Que Ele Viu e Contou</div>
+            <div class="lore-val">Viu de costas, por alguns segundos, após o ritual que matou Maven. Sem máscara. Pele branca como osso limpo, ondulando como se houvesse algo por baixo tentando sair. Sem transição entre pescoço e ombros. Saiu antes de ser visto. Carregou isso sozinho por dois meses — até a Saga 20, quando Rory disse em voz baixa: <em>"Diz o que você me contou naquela noite."</em> Contou ao grupo inteiro. Conclusão em voz alta: <em>"Acho que a pele não é dela. E acho que não é a primeira que usa."</em> Aldric confirmou — Devorador de Faces, filha dos Mestres Antigos, nascida, não invocada. Minutos depois, a Mestra falou pelo cristal que Rory esqueceu de destruir. Ela sabia o nome dele. Sabia onde estavam. E queria Kaira.
+              <div style="margin-top:5px"><span class="tag tag-red">Devorador de Faces</span> <span class="tag tag-red">Pele não é dela</span> <span class="tag tag-amber">Contou na Saga 20</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lore-item">
+          <div class="lore-icon">⚔️</div>
+          <div>
+            <div class="lore-key">Como Vai Lutar — Instinto e Inteligência</div>
+            <div class="lore-val">Nunca foi treinado para combate corpo-a-corpo — era conjurador, ficava atrás. Isso não muda. O que muda é que agora tem corpo vampírico e uma coleção de magias que já usou contra vampiros. Vai aprender rapidamente que esse conhecimento funciona diferente quando você é o predador, não o caçador.</div>
+          </div>
+        </div>
+
+        <div class="lore-item">
+          <div class="lore-icon">🏰</div>
+          <div>
+            <div class="lore-key">A Fortaleza — O Que Ele Sabe</div>
+            <div class="lore-val">Conhece a planta do nível 1, parte do nível 2, e o que Rory contou sobre o nível 3. Câmara leste, nível 3: onde ficam os "materiais rituais" — eufemismo que o Culto usa para prisioneiros reservados para sacrifício. Acesso por escada espiral no corredor norte do nível 2. Dois guardas fixos, rotação a cada 4 horas. Sabe que a informação pode estar desatualizada — a Fortaleza muda protocolos quando detecta infiltração.
+              <div style="margin-top:5px"><span class="tag tag-red">Luca — câmara leste, nível 3</span> <span class="tag tag-violet">Planta parcial</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- APARÊNCIA & PERSONALIDADE -->
+      <div class="two-col" style="margin-bottom:28px">
+        <div class="panel">
+          <div class="section-title">✦ Aparência</div>
+
+          <div class="lore-item red-eyes" style="padding:8px 0">
+            <div class="lore-icon">👁️</div>
+            <div>
+              <div class="lore-key">Olhos Vermelhos</div>
+              <div class="lore-val">Vermelhos e intensos — ainda não aprendeu a diminuir o brilho. Vampiros experientes conseguem controlar a intensidade; ele não. Quando foca em algo, ficam ainda mais brilhantes. Irrita ele não saber como desligar.</div>
+            </div>
+          </div>
+
+          <div class="lore-item" style="padding:8px 0">
+            <div class="lore-icon">🧥</div>
+            <div>
+              <div class="lore-key">O Manto com o Rasgo</div>
+              <div class="lore-val">Roxo escuro, tecido bom mas gasto. Onde estava o símbolo do Culto há um rasgo irregular — ele arrancou o símbolo com as mãos, não com faca. O tecido ao redor está levemente chamuscado (magia residual do símbolo reagindo à remoção forçada). Ainda usa porque não tem mais nada.</div>
+            </div>
+          </div>
+
+          <div class="lore-item" style="padding:8px 0">
+            <div class="lore-icon">✋</div>
+            <div>
+              <div class="lore-key">As Mãos</div>
+              <div class="lore-val">Mais pálidas agora, unhas levemente mais longas e afiadas do que lembra que eram. Fica olhando para elas quando acha que ninguém está vendo. Ainda tem o reflexo de fazer movimentos de ritual com os dedos quando pensa — hábito de seis anos que o corpo vampírico herdou do humano.</div>
+            </div>
+          </div>
+
+          <div class="lore-item" style="padding:8px 0;border-bottom:none">
+            <div class="lore-icon">🌑</div>
+            <div>
+              <div class="lore-key">Porte</div>
+              <div class="lore-val">Altura média, magro de conjurador. Postura de quem passou anos aprendendo a ser invisível em salas cheias de predadores. Não se destaca. Não quer se destacar. Está descobrindo que isso foi hábito de sobrevivência — e que já não é mais o mais fraco no ambiente.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="section-title">✦ Personalidade</div>
+
+          <div class="lore-item" style="padding:8px 0">
+            <div class="lore-icon">🕯️</div>
+            <div>
+              <div class="lore-key">Como Processa Silêncio</div>
+              <div class="lore-val">Mal. No Culto, silêncio era punição ou antecâmara de problema. Com a família Sepet, silêncio parece ser normal — eles ficam quietos juntos sem que ninguém precise preencher. Teren ainda não aprendeu isso. Quando fica quieto por tempo demais, Maven aparece.</div>
+            </div>
+          </div>
+
+          <div class="lore-item" style="padding:8px 0">
+            <div class="lore-icon">⚖️</div>
+            <div>
+              <div class="lore-key">Culpa vs. Funcionar</div>
+              <div class="lore-val">Tem culpa real de coisas reais que fez. Ainda não sabe o que fazer com isso. Por enquanto, a resposta é: funcionar. Existir. Salvar Luca. A culpa pode ter hora marcada depois. Isso é o jeito que ele se mantém de pé — não saúde mental, mas lógica de sobrevivência adaptada para a nova vida.</div>
+            </div>
+          </div>
+
+          <div class="lore-item" style="padding:8px 0">
+            <div class="lore-icon">😨</div>
+            <div>
+              <div class="lore-key">Medos</div>
+              <div class="lore-val">
+                Perder controle e machucar inocentes — especialmente alguém da família Sepet que baixou a guarda por ele.
+                Falhar com Luca como falhou com Maven — chegar na câmara leste do nível 3 e encontrar uma câmara de ritual já usada.
+                Ser descartado por Leyn quando não for mais útil — ainda não aprendeu que não é isso que está acontecendo.
+              </div>
+            </div>
+          </div>
+
+          <div class="lore-item" style="padding:8px 0;border-bottom:none">
+            <div class="lore-icon">🌑</div>
+            <div>
+              <div class="lore-key">O Que Ainda Está Vindo</div>
+              <div class="lore-val">Aprender a ser vampiro. Aprender que família não precisa de contrato de sangue para ser real. Salvar Luca ou morrer tentando — mas desta vez por escolha, não por obrigação. E, eventualmente, descobrir se o homem que ele pode se tornar merece o nome que a família Sepet está usando para ele.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  </main>
+
+<div class="footer">
+    <div class="footer-quote">"Então por que esse vampiro está me dando ESCOLHA?<br>Que tipo de monstro dá esperança pra quem não tem saída?"</div>
+    <div class="footer-attr">— Teren, Noite Eterna da Vila Sepet · Saga 19 · Além do Véu da Carne · Ficha v23</div>
+  </div>
+
+</div>
+
+<!-- ══ MODAL DE DETALHES DE MAGIA ══ -->
+<div id="spell-overlay" onclick="closeSpellDetail()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9998;backdrop-filter:blur(2px)"></div>
+<div id="spell-panel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;width:min(500px,92vw);max-height:85vh;overflow-y:auto;background:linear-gradient(160deg,#0a0418 0%,#0e0620 100%);border:1px solid rgba(120,60,180,0.55);border-radius:6px;box-shadow:0 0 60px rgba(0,0,0,0.9),0 0 30px rgba(100,40,160,0.2),inset 0 1px 0 rgba(180,130,255,0.07)">
+  <div id="spell-panel-header" style="background:rgba(40,15,70,0.85);padding:14px 18px 12px;border-bottom:1px solid rgba(120,60,180,0.35);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1">
+    <div>
+      <div id="spell-panel-school" style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:4px;color:var(--violet-light);text-transform:uppercase;margin-bottom:4px;opacity:0.8"></div>
+      <div id="spell-panel-title" style="font-family:'Cinzel Decorative',serif;font-size:18px;color:#d4c0f8;text-shadow:0 0 20px rgba(180,130,255,0.35)"></div>
+    </div>
+    <button onclick="closeSpellDetail()" style="background:rgba(60,20,80,0.5);border:1px solid rgba(120,60,180,0.4);color:var(--violet-light);border-radius:3px;width:26px;height:26px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">✕</button>
+  </div>
+  <div id="spell-panel-body" style="padding:16px 18px"></div>
+</div>
+
+<script>
+/* ══ Dados das Magias de Teren ══ */
+const SPELL_DATA = {
+
+  'raio-gelido': {
+    titulo: '✨ Raio Gélido',
+    escola: 'Truque · Evocação · Ilimitado',
+    cor: '#7adcf8',
+    tags: [['Ataque Mágico +5','tag-teal'],['1d8 frio','tag-blue'],['60 pés','tag-silver'],['Truque — ilimitado','tag-teal']],
+    corpo: `
+      <div style="margin-bottom:10px;font-size:12px;color:var(--parchment-dark);line-height:1.6;font-style:italic">Você projeta um raio de frio congelante em direção a uma criatura dentro do alcance. Faça um ataque de magia à distância contra o alvo. Se acertar, causa <strong style="color:#7adcf8">1d8 de dano de frio</strong> e a velocidade do alvo <strong style="color:var(--parchment)">é reduzida em 10 pés</strong> até o início do seu próximo turno.</div>
+      <div style="background:rgba(10,50,80,0.3);border:1px solid rgba(50,150,200,0.25);border-radius:3px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#7adcf8;margin-bottom:6px">MECÂNICA</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--parchment-dark)">
+          <div>🎯 <strong style="color:var(--parchment)">Ataque:</strong> +5 vs CA</div>
+          <div>🌡️ <strong style="color:var(--parchment)">Dano:</strong> 1d8 frio</div>
+          <div>📏 <strong style="color:var(--parchment)">Alcance:</strong> 60 pés</div>
+          <div>🐢 <strong style="color:var(--parchment)">Debuff:</strong> −10 pés velocidade</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--parchment-dark);font-style:italic;opacity:0.75;border-left:2px solid rgba(120,60,180,0.4);padding-left:8px">Truque principal de ataque à distância de Teren. Excelente para kitar inimigos — o debuff de velocidade ajuda a manter distância, o que é essencial para um conjurador.</div>`
+  },
+
+  'toque-arrepiante': {
+    titulo: '💀 Toque Arrepiante',
+    escola: 'Truque · Necromancia · Ilimitado',
+    cor: '#a0e8a0',
+    tags: [['Ataque Mágico +5','tag-teal'],['1d8 necrótico','tag-red'],['120 pés','tag-silver'],['Truque — ilimitado','tag-teal']],
+    corpo: `
+      <div style="margin-bottom:10px;font-size:12px;color:var(--parchment-dark);line-height:1.6;font-style:italic">Você cria uma mão fantasmagórica e esquelética que agarra uma criatura. Faça um ataque de magia à distância. Se acertar, causa <strong style="color:#e08080">1d8 de dano necrótico</strong> e o alvo <strong style="color:var(--parchment)">não pode recuperar Pontos de Vida</strong> até o início do seu próximo turno.</div>
+      <div style="background:rgba(60,10,10,0.3);border:1px solid rgba(139,26,26,0.3);border-radius:3px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#e08080;margin-bottom:6px">MECÂNICA</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--parchment-dark)">
+          <div>🎯 <strong style="color:var(--parchment)">Ataque:</strong> +5 vs CA</div>
+          <div>💀 <strong style="color:var(--parchment)">Dano:</strong> 1d8 necrótico</div>
+          <div>📏 <strong style="color:var(--parchment)">Alcance:</strong> 120 pés</div>
+          <div>🚫 <strong style="color:var(--parchment)">Bloqueia:</strong> cura até prox. turno</div>
+        </div>
+      </div>
+      <div style="background:rgba(40,10,10,0.3);border:1px solid rgba(100,20,20,0.3);border-radius:3px;padding:7px 10px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#e08080;margin-bottom:4px">BÔNUS CONTRA MORTOS-VIVOS</div>
+        <div style="font-size:11px;color:var(--parchment-dark);font-style:italic">Mortovivos atingidos ficam com <strong style="color:var(--parchment)">desvantagem em todos os ataques contra Teren</strong> até o fim do próximo turno de Teren.</div>
+      </div>
+      <div style="font-size:11px;color:var(--parchment-dark);font-style:italic;opacity:0.75;border-left:2px solid rgba(120,60,180,0.4);padding-left:8px">Crucial contra inimigos com cura — padres, vampiros, criaturas regenerativas. O bônus extra contra mortos-vivos é irônico, dado que Teren agora é um.</div>`
+  },
+
+  'luz': {
+    titulo: '💡 Luz',
+    escola: 'Truque · Evocação · Utilidade',
+    cor: '#f8e87a',
+    tags: [['Sem ataque','tag-silver'],['1 hora','tag-gold'],['Concentração: NÃO','tag-teal']],
+    corpo: `
+      <div style="margin-bottom:10px;font-size:12px;color:var(--parchment-dark);line-height:1.6;font-style:italic">Você toca um objeto de até 10 pés de tamanho. O objeto emite <strong style="color:#f8e87a">luz brilhante em um raio de 20 pés</strong> e <strong style="color:var(--parchment)">luz fraca em mais 20 pés</strong> até o fim da duração. A cor da luz é à sua escolha. Cobrir completamente o objeto bloqueia a luz.</div>
+      <div style="background:rgba(60,50,5,0.3);border:1px solid rgba(180,160,20,0.25);border-radius:3px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#f8e87a;margin-bottom:6px">MECÂNICA</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--parchment-dark)">
+          <div>⏱️ <strong style="color:var(--parchment)">Duração:</strong> 1 hora</div>
+          <div>👐 <strong style="color:var(--parchment)">Toque:</strong> objeto de até 10 pés</div>
+          <div>☀️ <strong style="color:var(--parchment)">Luz brilhante:</strong> 20 pés</div>
+          <div>🌙 <strong style="color:var(--parchment)">Luz fraca:</strong> mais 20 pés</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--parchment-dark);font-style:italic;opacity:0.75;border-left:2px solid rgba(120,60,180,0.4);padding-left:8px">Pode afetar uma criatura hostil (save de DEX para se esquivar). Se uma criatura falhar, o objeto brilhará nela — o que pode ser perturbador para Teren, cuja visão no escuro vampírica torna a luz uma preferência, não necessidade.</div>`
+  },
+
+  'taumaturgia': {
+    titulo: '🌀 Taumaturgia Profana',
+    escola: 'Truque · Transmutação · Utilidade',
+    cor: '#c9a8ff',
+    tags: [['Sem ataque','tag-silver'],['1 minuto','tag-violet'],['Efeitos menores','tag-violet']],
+    corpo: `
+      <div style="margin-bottom:10px;font-size:12px;color:var(--parchment-dark);line-height:1.6;font-style:italic">Você manifesta um pequeno prodígio de poder arcano. Ao lançar esta magia, escolha um dos seguintes efeitos — cada um dura até 1 minuto, exceto quando indicado.</div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px">
+        <div style="background:rgba(40,20,60,0.3);border-left:2px solid rgba(140,80,210,0.5);padding:6px 10px;border-radius:0 3px 3px 0"><div style="font-size:11px;color:var(--parchment-dark);font-style:italic">🔊 Sua voz se torna <strong style="color:var(--parchment)">três vezes mais alta</strong> pelo período</div></div>
+        <div style="background:rgba(40,20,60,0.3);border-left:2px solid rgba(140,80,210,0.5);padding:6px 10px;border-radius:0 3px 3px 0"><div style="font-size:11px;color:var(--parchment-dark);font-style:italic">🔥 Você faz <strong style="color:var(--parchment)">chamas oscilarem, ficarem mais brilhantes ou se apagarem</strong></div></div>
+        <div style="background:rgba(40,20,60,0.3);border-left:2px solid rgba(140,80,210,0.5);padding:6px 10px;border-radius:0 3px 3px 0"><div style="font-size:11px;color:var(--parchment-dark);font-style:italic">🌍 Você cria <strong style="color:var(--parchment)">tremores inofensivos no chão</strong></div></div>
+        <div style="background:rgba(40,20,60,0.3);border-left:2px solid rgba(140,80,210,0.5);padding:6px 10px;border-radius:0 3px 3px 0"><div style="font-size:11px;color:var(--parchment-dark);font-style:italic">⚡ Você cria um <strong style="color:var(--parchment)">som instantâneo</strong> como trovão, corvo, sussurro</div></div>
+        <div style="background:rgba(40,20,60,0.3);border-left:2px solid rgba(140,80,210,0.5);padding:6px 10px;border-radius:0 3px 3px 0"><div style="font-size:11px;color:var(--parchment-dark);font-style:italic">👁️ Você faz seus <strong style="color:var(--parchment)">olhos brilharem vermelho</strong> intensamente — ainda mais que o normal</div></div>
+        <div style="background:rgba(40,20,60,0.3);border-left:2px solid rgba(140,80,210,0.5);padding:6px 10px;border-radius:0 3px 3px 0"><div style="font-size:11px;color:var(--parchment-dark);font-style:italic">🚪 Você <strong style="color:var(--parchment)">abre ou trava porta, janela ou cofre</strong> por 1 minuto (instantâneo)</div></div>
+      </div>
+      <div style="font-size:11px;color:var(--parchment-dark);font-style:italic;opacity:0.75;border-left:2px solid rgba(120,60,180,0.4);padding-left:8px">Você pode ter até três efeitos simultâneos. Lançar novamente cancela os efeitos anteriores. Teren usa isso principalmente para intimidação — os olhos vermelhos já assustam, mas com Taumaturgia você adiciona voz ecoante e chão tremendo.</div>`
+  },
+
+  'misseis': {
+    titulo: '💫 Mísseis Mágicos',
+    escola: 'Nível 1 · Evocação · Automático',
+    cor: '#c9a8ff',
+    tags: [['Automático — nunca erra','tag-teal'],['3×(1d4+1) força','tag-violet'],['120 pés','tag-silver'],['Slot nível 1','tag-amber']],
+    corpo: `
+      <div style="margin-bottom:10px;font-size:12px;color:var(--parchment-dark);line-height:1.6;font-style:italic">Você cria três dardos de força mágica brilhante. Cada dardo atinge uma criatura de sua escolha que você possa ver dentro do alcance. Cada dardo causa <strong style="color:var(--violet-light)">1d4+1 de dano de força</strong>. Os dardos acertam <strong style="color:var(--parchment)">simultaneamente e todos de uma vez</strong>.</div>
+      <div style="background:rgba(40,20,80,0.3);border:1px solid rgba(120,60,180,0.25);border-radius:3px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:var(--violet-light);margin-bottom:6px">MECÂNICA</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--parchment-dark)">
+          <div>✅ <strong style="color:#6abf6a">Nunca erra</strong> (automático)</div>
+          <div>💥 <strong style="color:var(--parchment)">Dano:</strong> 3×(1d4+1) força</div>
+          <div>📏 <strong style="color:var(--parchment)">Alcance:</strong> 120 pés</div>
+          <div>🎯 <strong style="color:var(--parchment)">Alvos:</strong> distribui livremente</div>
+        </div>
+      </div>
+      <div style="background:rgba(40,20,80,0.25);border:1px solid rgba(120,60,180,0.2);border-radius:3px;padding:7px 10px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:var(--violet-light);margin-bottom:4px">ESCALANDO COM SLOTS</div>
+        <div style="font-size:11px;color:var(--parchment-dark);font-style:italic">+1 dardo por nível de slot acima de 1º. Slot nível 2 = 4 dardos (4×(1d4+1) força, 8–20 dano), Slot 3 = 5 dardos, etc.</div>
+      </div>
+      <div style="font-size:11px;color:var(--parchment-dark);font-style:italic;opacity:0.75;border-left:2px solid rgba(120,60,180,0.4);padding-left:8px">O melhor "finish" do jogo. Inimigo com 3 HP e escudo mágico? Mísseis Mágicos ignora Escudo se a criatura não declarou Escudo antes. E não erra. Funciona até em névoa, escuridão ou criaturas invisíveis visíveis.</div>`
+  },
+
+  'escudo': {
+    titulo: '🛡️ Escudo',
+    escola: 'Nível 1 · Abjuração · Reação',
+    cor: '#7adcf8',
+    tags: [['Reação','tag-teal'],['Slot nível 1','tag-amber'],['+5 CA','tag-violet'],['Até próximo turno','tag-silver']],
+    corpo: `
+      <div style="margin-bottom:10px;font-size:12px;color:var(--parchment-dark);line-height:1.6;font-style:italic">Uma barreira invisível de força mágica aparece para desviar ataques. Quando você é atingido por um ataque ou é alvo de Mísseis Mágicos, use sua Reação para ganhar <strong style="color:#7adcf8">+5 à CA</strong>, incluindo contra o ataque desencadeador — potencialmente o convertendo em erro.</div>
+      <div style="background:rgba(10,50,80,0.3);border:1px solid rgba(50,150,200,0.25);border-radius:3px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#7adcf8;margin-bottom:6px">MECÂNICA</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--parchment-dark)">
+          <div>⚡ <strong style="color:var(--parchment)">Ação:</strong> Reação</div>
+          <div>🛡️ <strong style="color:var(--parchment)">Bônus:</strong> +5 CA</div>
+          <div>⏱️ <strong style="color:var(--parchment)">Duração:</strong> até início prox. turno</div>
+          <div>🚀 <strong style="color:var(--parchment)">Cancela:</strong> Mísseis Mágicos</div>
+        </div>
+      </div>
+      <div style="background:rgba(30,80,30,0.2);border:1px solid rgba(30,100,30,0.3);border-radius:3px;padding:7px 10px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#6abf6a;margin-bottom:4px">SINERGIA — WARD DE ABJURAÇÃO</div>
+        <div style="font-size:11px;color:var(--parchment-dark);font-style:italic">Ao conjurar Escudo, o Ward Arcano de Teren <strong style="color:var(--parchment)">recupera 2 × nível do slot (2 HP de Ward)</strong>. Usar Escudo é defender e curar o Ward ao mesmo tempo.</div>
+      </div>
+      <div style="font-size:11px;color:var(--parchment-dark);font-style:italic;opacity:0.75;border-left:2px solid rgba(120,60,180,0.4);padding-left:8px">Com AC 13 base + Escudo = AC 18. Suficiente para fazer a maioria dos ataques errar. Mas custa slot — usar com sabedoria.</div>`
+  },
+
+  'absorver': {
+    titulo: '🌿 Absorver Elementos',
+    escola: 'Nível 1 · Abjuração · Reação',
+    cor: '#6abf6a',
+    tags: [['Reação','tag-teal'],['Slot nível 1','tag-amber'],['Resiste elemento','tag-teal'],['Devolve no ataque','tag-gold']],
+    corpo: `
+      <div style="margin-bottom:10px;font-size:12px;color:var(--parchment-dark);line-height:1.6;font-style:italic">Quando você recebe dano de <strong style="color:var(--parchment)">ácido, frio, fogo, raio ou trovão</strong>, usa sua Reação para capturar parte da energia. Você <strong style="color:#6abf6a">ganha resistência ao tipo de dano desencadeador</strong> até o início do seu próximo turno. Seu primeiro ataque corpo-a-corpo nesse turno causa <strong style="color:var(--gold-light)">+1d6 de dano extra</strong> do mesmo tipo.</div>
+      <div style="background:rgba(20,50,20,0.3);border:1px solid rgba(40,100,40,0.25);border-radius:3px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#6abf6a;margin-bottom:6px">MECÂNICA</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--parchment-dark)">
+          <div>⚡ <strong style="color:var(--parchment)">Ação:</strong> Reação (ao receber dano)</div>
+          <div>🛡️ <strong style="color:var(--parchment)">Efeito:</strong> Resistência ao tipo</div>
+          <div>⏱️ <strong style="color:var(--parchment)">Duração:</strong> até início prox. turno</div>
+          <div>💥 <strong style="color:var(--parchment)">Retaliação:</strong> +1d6 no próx. ataque</div>
+        </div>
+      </div>
+      <div style="background:rgba(40,20,80,0.25);border:1px solid rgba(120,60,180,0.2);border-radius:3px;padding:7px 10px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:var(--violet-light);margin-bottom:4px">ESCALANDO COM SLOTS</div>
+        <div style="font-size:11px;color:var(--parchment-dark);font-style:italic">+1d6 por nível de slot acima de 1º. Slot nível 2 = +2d6 no próximo ataque.</div>
+      </div>
+      <div style="font-size:11px;color:var(--parchment-dark);font-style:italic;opacity:0.75;border-left:2px solid rgba(120,60,180,0.4);padding-left:8px">Fundamental quando o grupo enfrenta conjuradores ou criaturas elementais. A resistência corta o dano pela metade — contra um raio de 4d6, pode salvar 10+ HP de uma vez.</div>`
+  },
+
+  'detectar': {
+    titulo: '🔮 Detectar Magia',
+    escola: 'Nível 1 · Adivinhação · Ritual',
+    cor: '#c9a8ff',
+    tags: [['Concentração · 10 min','tag-violet'],['Ritual — sem slot','tag-teal'],['Raio 30 pés','tag-silver']],
+    corpo: `
+      <div style="margin-bottom:10px;font-size:12px;color:var(--parchment-dark);line-height:1.6;font-style:italic">Pelo período de duração, você percebe a presença de magia num <strong style="color:var(--violet-light)">raio de 30 pés</strong>. Se perceber magia dessa forma, pode usar sua ação para ver uma <strong style="color:var(--parchment)">aura fraca ao redor</strong> de qualquer criatura ou objeto visível que carregue magia, além de aprender sua escola.</div>
+      <div style="background:rgba(40,20,80,0.3);border:1px solid rgba(120,60,180,0.25);border-radius:3px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:var(--violet-light);margin-bottom:6px">MECÂNICA</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--parchment-dark)">
+          <div>🧠 <strong style="color:var(--parchment)">Concentração:</strong> até 10 min</div>
+          <div>📏 <strong style="color:var(--parchment)">Raio:</strong> 30 pés</div>
+          <div>📚 <strong style="color:var(--parchment)">Revela:</strong> escola de magia</div>
+          <div>⛪ <strong style="color:var(--parchment)">Bloqueado:</strong> por pedra sólida 1 pé</div>
+        </div>
+      </div>
+      <div style="background:rgba(20,60,20,0.2);border:1px solid rgba(30,100,30,0.3);border-radius:3px;padding:7px 10px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#6abf6a;margin-bottom:4px">RITUAL — SEM GASTAR SLOT</div>
+        <div style="font-size:11px;color:var(--parchment-dark);font-style:italic">Lançar como ritual leva <strong style="color:var(--parchment)">10 minutos extras</strong> mas <strong style="color:#6abf6a">não consome slot de magia</strong>. Ideal fora de combate para reconhecimento.</div>
+      </div>
+      <div style="font-size:11px;color:var(--parchment-dark);font-style:italic;opacity:0.75;border-left:2px solid rgba(120,60,180,0.4);padding-left:8px">Teren passou anos detectando magia para o Culto. Esse truque é instintivo para ele — a única magia que usava antes de saber se estava em perigo.</div>`
+  },
+
+  'idiomas': {
+    titulo: '📜 Compreender Idiomas',
+    escola: 'Nível 1 · Adivinhação · Ritual',
+    cor: '#c9a884',
+    tags: [['1 hora','tag-gold'],['Ritual — sem slot','tag-teal'],['Qualquer língua','tag-silver']],
+    corpo: `
+      <div style="margin-bottom:10px;font-size:12px;color:var(--parchment-dark);line-height:1.6;font-style:italic">Por 1 hora, você compreende o significado literal de qualquer língua <strong style="color:var(--parchment)">falada</strong> que você ouça, e entende qualquer língua <strong style="color:var(--parchment)">escrita</strong> que você veja. A magia não permite que você fale as línguas nem escreva nelas.</div>
+      <div style="background:rgba(50,40,10,0.3);border:1px solid rgba(150,120,20,0.25);border-radius:3px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:var(--gold-light);margin-bottom:6px">MECÂNICA</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--parchment-dark)">
+          <div>⏱️ <strong style="color:var(--parchment)">Duração:</strong> 1 hora</div>
+          <div>👂 <strong style="color:var(--parchment)">Fala:</strong> entende tudo</div>
+          <div>📖 <strong style="color:var(--parchment)">Escrita:</strong> entende (toque)</div>
+          <div>🚫 <strong style="color:var(--parchment)">Limite:</strong> não pode falar</div>
+        </div>
+      </div>
+      <div style="background:rgba(20,60,20,0.2);border:1px solid rgba(30,100,30,0.3);border-radius:3px;padding:7px 10px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#6abf6a;margin-bottom:4px">RITUAL — SEM GASTAR SLOT</div>
+        <div style="font-size:11px;color:var(--parchment-dark);font-style:italic">Lançar como ritual leva <strong style="color:var(--parchment)">10 minutos extras</strong> mas <strong style="color:#6abf6a">não consome slot de magia</strong>. Para documentos cifrados, inscrições antigas ou interrogatórios.</div>
+      </div>
+      <div style="font-size:11px;color:var(--parchment-dark);font-style:italic;opacity:0.75;border-left:2px solid rgba(120,60,180,0.4);padding-left:8px">O Culto operava em múltiplos dialetos e cifras para evitar vazamentos. Teren aprendeu essa magia cedo — era um dos poucos membros de baixo escalão que conseguia ler os relatórios da liderança.</div>`
+  },
+
+  'raio-enfraquecedor': {
+    titulo: '⚡ Raio Enfraquecedor',
+    escola: 'Nível 2 · Necromancia · Ataque',
+    cor: '#e080e0',
+    tags: [['Ataque Mágico +5','tag-teal'],['4d8 necrótico','tag-red'],['60 pés','tag-silver'],['Slot nível 2','tag-amber'],['Save CON','tag-red']],
+    corpo: `
+      <div style="margin-bottom:10px;font-size:12px;color:var(--parchment-dark);line-height:1.6;font-style:italic">Um raio negro de energia necrótica salta de seu dedo em direção a uma criatura dentro do alcance. Faça um ataque de magia à distância. Se acertar, causa <strong style="color:#e08080">4d8 de dano necrótico</strong> e o alvo deve fazer um <strong style="color:var(--parchment)">teste de resistência de Constituição</strong> (CD 13). Se falhar, ficará com <strong style="color:#f0a030">desvantagem em jogadas de ataque baseadas em Força</strong> até o início do próximo turno de Teren.</div>
+      <div style="background:rgba(50,10,50,0.3);border:1px solid rgba(150,30,150,0.25);border-radius:3px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#e080e0;margin-bottom:6px">MECÂNICA</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--parchment-dark)">
+          <div>🎯 <strong style="color:var(--parchment)">Ataque:</strong> +5 vs CA</div>
+          <div>💀 <strong style="color:var(--parchment)">Dano:</strong> 4d8 necrótico</div>
+          <div>📏 <strong style="color:var(--parchment)">Alcance:</strong> 60 pés</div>
+          <div>⚠️ <strong style="color:var(--parchment)">Save:</strong> CON CD 13</div>
+        </div>
+      </div>
+      <div style="background:rgba(60,30,10,0.3);border:1px solid rgba(140,80,20,0.3);border-radius:3px;padding:7px 10px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#f0a030;margin-bottom:4px">EFEITO EM CASO DE FALHA NO SAVE</div>
+        <div style="font-size:11px;color:var(--parchment-dark);font-style:italic">Desvantagem em todas as jogadas de ataque que usem <strong style="color:var(--parchment)">Força</strong> até o início do próximo turno de Teren. Ideal contra guerreiros e criaturas físicas.</div>
+      </div>
+      <div style="font-size:11px;color:var(--parchment-dark);font-style:italic;opacity:0.75;border-left:2px solid rgba(120,60,180,0.4);padding-left:8px">Magia de dano pesado + controle. Combinado com Teia (prender) e Raio Gélido (reduzir velocidade), cria uma zona de controle completa onde Leyn pode flanquear livremente.</div>`
+  },
+
+  'teia': {
+    titulo: '🕸️ Teia',
+    escola: 'Nível 2 · Conjuração · Controle',
+    cor: '#c0b8a8',
+    tags: [['Concentração · 1h','tag-silver'],['Área 20 pés','tag-violet'],['DEX Save CD 13','tag-amber'],['Slot nível 2','tag-amber']],
+    corpo: `
+      <div style="margin-bottom:10px;font-size:12px;color:var(--parchment-dark);line-height:1.6;font-style:italic">Você conjura uma grande massa de teia pegajosa em um ponto dentro do alcance. A teia preenche um cubo de <strong style="color:var(--parchment)">20 pés de lado</strong>. Precisa de duas superfícies para se ancorar (chão + parede, chão + teto). É <strong style="color:var(--parchment)">terreno difícil</strong> e obscurece levemente a visão.</div>
+      <div style="background:rgba(30,25,15,0.4);border:1px solid rgba(100,90,60,0.3);border-radius:3px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#d0c8a0;margin-bottom:6px">MECÂNICA</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--parchment-dark)">
+          <div>📏 <strong style="color:var(--parchment)">Alcance:</strong> 60 pés</div>
+          <div>📐 <strong style="color:var(--parchment)">Área:</strong> cubo 20 pés</div>
+          <div>🧠 <strong style="color:var(--parchment)">Concentração:</strong> até 1 hora</div>
+          <div>⚠️ <strong style="color:var(--parchment)">Save:</strong> DEX CD 13</div>
+        </div>
+      </div>
+      <div style="background:rgba(40,20,10,0.3);border:1px solid rgba(120,80,20,0.3);border-radius:3px;padding:7px 10px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#f0c060;margin-bottom:4px">PRISIONEIROS E ESCAPE</div>
+        <div style="font-size:11px;color:var(--parchment-dark);font-style:italic;line-height:1.6">Criaturas que entram ou começam o turno na teia fazem <strong style="color:var(--parchment)">DEX save CD 13</strong> ou ficam <strong style="color:#f0c060">Presas</strong> (velocidade 0). Criaturas presas podem usar ação para tentar se libertar: <strong style="color:var(--parchment)">Atletismo ou Acrobacia CD 13</strong>. <br>🔥 A teia é inflamável: queima por 1 rodada causando <strong style="color:#f07030">2d4 de dano de fogo</strong> a qualquer um dentro.</div>
+      </div>
+      <div style="font-size:11px;color:var(--parchment-dark);font-style:italic;opacity:0.75;border-left:2px solid rgba(120,60,180,0.4);padding-left:8px">Magia de controle mais poderosa do arsenal de Teren. Prende grupos inteiros — e os membros da família podem atacar criaturas presas com vantagem (por estarem imóveis). Combinação perfeita com Raio Gélido + Raio Enfraquecedor.</div>`
+  },
+
+  'passo': {
+    titulo: '🌫️ Passo Nebuloso',
+    escola: 'Nível 2 · Conjuração · Mobilidade',
+    cor: '#a0c8e0',
+    tags: [['Ação Bônus','tag-teal'],['Teleporte 30 pés','tag-violet'],['Slot nível 2','tag-amber'],['Sem ataque de oport.','tag-silver']],
+    corpo: `
+      <div style="margin-bottom:10px;font-size:12px;color:var(--parchment-dark);line-height:1.6;font-style:italic">Brevemente envolto em névoa prateada, você se teleporta para um espaço desocupado que possa <strong style="color:var(--parchment)">ver dentro de 30 pés</strong>. Funciona como Ação Bônus — o teleporte é <strong style="color:#a0c8e0">instantâneo</strong> e não provoca ataques de oportunidade ao sair.</div>
+      <div style="background:rgba(10,40,60,0.3);border:1px solid rgba(40,120,160,0.25);border-radius:3px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:#a0c8e0;margin-bottom:6px">MECÂNICA</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--parchment-dark)">
+          <div>⚡ <strong style="color:var(--parchment)">Ação:</strong> Bônus</div>
+          <div>🌀 <strong style="color:var(--parchment)">Distância:</strong> até 30 pés</div>
+          <div>👁️ <strong style="color:var(--parchment)">Requisito:</strong> ver o destino</div>
+          <div>🏃 <strong style="color:var(--parchment)">Atq. Oport.:</strong> nenhum ao sair</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px">
+        <div style="background:rgba(10,60,40,0.25);border-left:2px solid #4ecca3;padding:6px 10px;border-radius:0 3px 3px 0">
+          <div style="font-size:11px;color:var(--parchment-dark);font-style:italic">✅ <strong style="color:var(--parchment)">Escapar de Teia, imobilização ou cercamento</strong> — teleporte ignora o que está entre você e o destino</div>
+        </div>
+        <div style="background:rgba(10,60,40,0.25);border-left:2px solid #4ecca3;padding:6px 10px;border-radius:0 3px 3px 0">
+          <div style="font-size:11px;color:var(--parchment-dark);font-style:italic">✅ <strong style="color:var(--parchment)">Reposicionar para usar Teia ou Raio Enfraquecedor</strong> com ângulo melhor</div>
+        </div>
+        <div style="background:rgba(10,60,40,0.25);border-left:2px solid #4ecca3;padding:6px 10px;border-radius:0 3px 3px 0">
+          <div style="font-size:11px;color:var(--parchment-dark);font-style:italic">✅ <strong style="color:var(--parchment)">Alcançar área de Toque (Toque Arrepiante ou Mordida)</strong> e ainda agir</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--parchment-dark);font-style:italic;opacity:0.75;border-left:2px solid rgba(120,60,180,0.4);padding-left:8px">A melhor magia de mobilidade para conjuradores. Como Ação Bônus, ainda libera a ação completa para Raio Gélido ou Mísseis. Para Teren — que tem instinto vampírico mas treinamento de retaguarda — esta magia é a diferença entre sobreviver ao corpo-a-corpo e não.</div>`
+  }
+};
+
+/* ── Abre o painel de detalhe ── */
+const spellPanel   = document.getElementById('spell-panel');
+const spellOverlay = document.getElementById('spell-overlay');
+
+function openSpellDetail(id) {
+  const data = SPELL_DATA[id];
+  if (!data) return;
+  const panel   = spellPanel;
+  const overlay = spellOverlay;
+  document.getElementById('spell-panel-school').textContent = data.escola;
+  document.getElementById('spell-panel-title').textContent  = data.titulo;
+
+  let tagsHtml = data.tags.map(([t, cls]) =>
+    `<span class="tag ${cls}">${t}</span>`
+  ).join('');
+
+  document.getElementById('spell-panel-body').innerHTML =
+    `<div style="margin-bottom:12px;display:flex;gap:4px;flex-wrap:wrap">${tagsHtml}</div>` + data.corpo;
+
+  panel.style.display   = 'block';
+  overlay.style.display = 'block';
+  panel.style.opacity   = '0';
+  panel.style.transform = 'translate(-50%,-50%) scale(0.95)';
+  panel.style.transition = 'opacity 0.18s ease, transform 0.18s ease';
+  requestAnimationFrame(() => {
+    panel.style.opacity   = '1';
+    panel.style.transform = 'translate(-50%,-50%) scale(1)';
+  });
+}
+
+function closeSpellDetail() {
+  spellPanel.style.display   = 'none';
+  spellOverlay.style.display = 'none';
+}
+
+/* ══════════════════════════════════════
+   JS DE ANIMAÇÃO — FICHA DE TEREN
+   ══════════════════════════════════════ */
+
+/* ── 1. IntersectionObserver ── */
+(function () {
+  const targets = [
+    { sel: '.nature-box',   cls: 'reveal'      },
+    { sel: '.stats-row',    cls: 'reveal'      },
+    { sel: '.two-col',      cls: 'reveal'      },
+    { sel: '.panel',        cls: 'reveal'      },
+    { sel: '.lore-panel',   cls: 'reveal'      },
+    { sel: '.countdown',    cls: 'reveal'      },
+    { sel: '.lore-item',    cls: 'reveal'      },
+    { sel: '.ability-item', cls: 'reveal'      },
+    { sel: '.equip-item',   cls: 'reveal'      },
+    { sel: '.nature-row',   cls: 'reveal-left' },
+  ];
+
+  targets.forEach(({ sel, cls }) => {
+    document.querySelectorAll(sel).forEach((el, i) => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.85) return;
+      el.classList.add(cls);
+      el.style.transitionDelay = (i * 0.05) + 's';
+    });
+  });
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal, .reveal-left').forEach(el => io.observe(el));
+})();
+
+/* ── 2. Contador nos atributos ── */
+(function () {
+  function animateCounter(el) {
+    const text = el.textContent.trim();
+    const target = parseInt(text, 10);
+    if (isNaN(target)) return;
+    const steps = 56, step = 16;
+    let current = 0, inc = target / steps;
+    const timer = setInterval(() => {
+      current += inc;
+      if (current >= target) { el.textContent = (target < 0 ? '-' : '') + Math.abs(target); clearInterval(timer); return; }
+      el.textContent = Math.floor(current);
+    }, step);
+  }
+
+  const io2 = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { animateCounter(e.target); io2.unobserve(e.target); }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.stat-value').forEach(el => io2.observe(el));
+})();
+
+/* ── 3. Spell dots acendem em sequência ao aparecer ── */
+(function () {
+  const rows = document.querySelectorAll('.spell-slot-row');
+  const io3 = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const dots = e.target.querySelectorAll('.spell-dot.filled');
+        dots.forEach((dot, i) => {
+          dot.style.animation = 'none';
+          setTimeout(() => {
+            dot.style.animation = 'dotLight 0.5s cubic-bezier(.34,1.56,.64,1) both, dotBreathe 2.5s ease-in-out ' + (0.5 + i * 0.08) + 's infinite';
+          }, i * 120 + 100);
+        });
+        io3.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  rows.forEach(el => io3.observe(el));
+})();
+
+/* ── 4. Stagger em listas ── */
+(function () {
+  ['ability-item', 'equip-item', 'save-item', 'skill-row'].forEach(cls => {
+    document.querySelectorAll('.' + cls).forEach((el, i) => {
+      el.style.transitionDelay = (i * 0.04) + 's';
+    });
+  });
+})();
+</script>
+</body>
+</html>

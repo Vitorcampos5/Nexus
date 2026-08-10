@@ -1,0 +1,2937 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saga VII — Forjando a Resistência | Além do Véu da Carne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #060408;
+    --bg-deep:        #0d0910;
+    --bg-chamber:     #120d16;
+    --bg-card:        #1a1220;
+    --bg-card-alt:    #160e1c;
+
+    --ink:            #e2c9a8;
+    --ink-dim:        #9e8a72;
+    --ink-faint:      #5a4e42;
+
+    --blood:          #8b1a1a;
+    --blood-bright:   #c0392b;
+    --blood-glow:     #ff4040;
+
+    --silver:         #b8c4d0;
+    --silver-dim:     #697580;
+    --rune-blue:      #4a9ebe;
+    --rune-glow:      #7ec8e3;
+
+    --gold:           #c9963c;
+    --gold-bright:    #e8b84b;
+
+    --sanity-color:   #9b59b6;
+    --sanity-dim:     #6c3483;
+
+    --cosmic-glow:    #52c9a8;
+    --cosmic-text:    #a8e6d6;
+
+    /* Forge palette — new for S7 */
+    --forge-fire:     #d4621a;
+    --forge-ember:    #e8883a;
+    --forge-iron:     #7a8090;
+    --forge-iron-dim: #4a5060;
+    --forge-silver:   #c8d8e8;
+    --forge-hot:      #f0a050;
+
+    /* Personagens */
+    --mara-color:     #e8943a;
+    --elise-color:    #3ab8c9;
+    --kaira-color:    #e8c84a;
+    --aldric-color:   #a0556e;
+    --marcus-color:   #8fa8b8;
+    --tobias-color:   #a87848;
+    --tobias-dim:     #6a4828;
+    --girl-color:     #d8a8c0;
+    --costureira-color: #98b888;
+    --veteran-color:  #888898;
+    --darius-color:   #78a878;
+    --helena-color:   #c87858;
+
+    /* Urgency */
+    --urgent-color:   #c04020;
+    --urgent-glow:    #e06040;
+    --warning-color:  #b8803a;
+
+    --success:        #2e7d52;
+    --success-bright: #4caf80;
+    --fail:           #7d2e2e;
+    --fail-bright:    #c0392b;
+
+    --border-subtle:  rgba(255,255,255,0.04);
+    --border-dim:     rgba(255,255,255,0.08);
+    --border-gold:    rgba(201,150,60,0.3);
+    --border-blood:   rgba(139,26,26,0.4);
+    --border-rune:    rgba(74,158,190,0.35);
+    --border-forge:   rgba(212,98,26,0.35);
+    --border-urgent:  rgba(192,64,32,0.5);
+    --border-family:  rgba(196,132,58,0.35);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2rem 8rem;
+  }
+
+  /* ══════════════════════════════════════════
+     COVER
+  ══════════════════════════════════════════ */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 40%, rgba(212,98,26,0.10) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 30% 70%, rgba(139,26,26,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 20% at 70% 80%, rgba(201,150,60,0.05) 0%, transparent 60%);
+  }
+
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--silver-dim);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(5rem, 18vw, 11rem);
+    font-weight: 900;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(212,98,26,0.5);
+    background: linear-gradient(180deg, rgba(212,98,26,0.30) 0%, transparent 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    margin-bottom: -0.1em;
+    opacity: 0;
+    animation: fadeUp 1s 0.5s forwards;
+    user-select: none;
+  }
+
+  .cover-divider {
+    width: 100%;
+    max-width: 500px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--forge-fire) 30%, var(--forge-fire) 70%, transparent);
+    margin: 1.5rem auto;
+    position: relative;
+    opacity: 0;
+    animation: fadeIn 1s 0.9s forwards;
+  }
+
+  .cover-divider::before,
+  .cover-divider::after {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--forge-fire);
+    font-size: 0.6rem;
+  }
+  .cover-divider::before { left: calc(30% - 8px); }
+  .cover-divider::after  { right: calc(30% - 8px); }
+
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 4vw, 2.4rem);
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    line-height: 1.3;
+    margin: 1rem 0 0.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.7s forwards;
+    text-shadow: 0 0 40px rgba(212,98,26,0.35);
+  }
+
+  .cover-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.3em;
+    color: var(--silver-dim);
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 1s forwards;
+  }
+
+  .cover-scroll-hint {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeIn 1.5s 2s forwards;
+  }
+
+  .cover-scroll-hint span {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(180deg, var(--ink-faint), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ══════════════════════════════════════════
+     CHAPTERS
+  ══════════════════════════════════════════ */
+  .chapter { margin-top: 6rem; padding-top: 2rem; }
+
+  .chapter-header {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: var(--blood);
+    line-height: 1;
+    min-width: 2ch;
+    text-align: right;
+    text-shadow: 0 0 20px rgba(192,57,43,0.3);
+    flex-shrink: 0;
+  }
+
+  .chapter-title-block { flex: 1; }
+
+  .chapter-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    line-height: 1.2;
+  }
+
+  .chapter-rule {
+    height: 1px;
+    background: linear-gradient(90deg, var(--blood) 0%, rgba(139,26,26,0.15) 100%);
+    margin-top: 0.5rem;
+  }
+
+  /* ══════════════════════════════════════════
+     PROSE
+  ══════════════════════════════════════════ */
+  .prose {
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.9;
+    margin-bottom: 1.8rem;
+  }
+
+  .prose p { margin-bottom: 1.2em; }
+  .prose p:last-child { margin-bottom: 0; }
+  .prose strong { font-weight: 600; color: #f0d9bc; }
+  .prose em { font-style: italic; color: var(--ink-dim); }
+
+  .prose.with-dropcap p:first-child::first-letter {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 4.5em;
+    font-weight: 900;
+    float: left;
+    line-height: 0.75;
+    margin: 0.1em 0.1em -0.05em 0;
+    color: var(--blood);
+    text-shadow: 0 0 20px rgba(139,26,26,0.5);
+  }
+
+  /* ══════════════════════════════════════════
+     TASK BLOCK — delegation orders
+  ══════════════════════════════════════════ */
+  .task-block {
+    margin: 2rem 0;
+    background: var(--bg-card-alt);
+    border: 1px solid rgba(201,150,60,0.22);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .task-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .task-header {
+    padding: 0.85rem 1.5rem;
+    background: rgba(201,150,60,0.08);
+    border-bottom: 1px solid rgba(201,150,60,0.15);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .task-icon { font-size: 0.95rem; color: var(--gold-bright); }
+
+  .task-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .task-body { padding: 0; }
+
+  .task-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .task-row:last-child { border-bottom: none; }
+
+  .task-assignee {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    min-width: 7rem;
+    padding-top: 0.15rem;
+    flex-shrink: 0;
+  }
+
+  .task-desc {
+    font-family: 'EB Garamond', serif;
+    font-size: 0.97rem;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* ══════════════════════════════════════════
+     FORGE BLOCK — smithing work
+  ══════════════════════════════════════════ */
+  .forge-block {
+    margin: 2.5rem 0;
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border-forge);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .forge-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--forge-fire), var(--forge-ember), var(--forge-fire), transparent);
+    box-shadow: 0 0 12px rgba(212,98,26,0.4);
+    animation: forgePulse 3s ease-in-out infinite;
+  }
+
+  .forge-header {
+    padding: 0.9rem 1.5rem;
+    background: rgba(212,98,26,0.09);
+    border-bottom: 1px solid var(--border-forge);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .forge-icon { font-size: 1rem; color: var(--forge-ember); }
+
+  .forge-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--forge-ember);
+  }
+
+  .forge-body { padding: 1.2rem 1.5rem; }
+
+  /* ══════════════════════════════════════════
+     OPTIONS BLOCK — tactical choices
+  ══════════════════════════════════════════ */
+  .options-block {
+    margin: 2rem 0;
+    padding: 1.4rem 1.8rem;
+    background: linear-gradient(135deg, rgba(74,158,190,0.06) 0%, rgba(10,6,13,0.65) 100%);
+    border: 1px solid var(--border-rune);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .options-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--rune-blue), transparent);
+    box-shadow: 0 0 8px var(--rune-glow);
+  }
+
+  .options-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--rune-blue);
+    margin-bottom: 0.9rem;
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    list-style: none;
+  }
+
+  .options-list li {
+    padding: 0.85rem 1.1rem;
+    background: rgba(74,158,190,0.05);
+    border: 1px solid rgba(74,158,190,0.15);
+    border-radius: 4px;
+    font-family: 'EB Garamond', serif;
+    font-size: 0.97rem;
+    color: var(--ink);
+    line-height: 1.7;
+    position: relative;
+    padding-left: 3.2rem;
+  }
+
+  .options-list li::before {
+    content: attr(data-opt);
+    position: absolute;
+    left: 0.9rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--rune-glow);
+    top: 0.9rem;
+  }
+
+  .options-list li.chosen {
+    background: rgba(74,158,190,0.12);
+    border-color: rgba(126,200,227,0.4);
+  }
+
+  .options-list li.chosen::after {
+    content: '✓ ESCOLHIDA';
+    position: absolute;
+    right: 0.9rem;
+    top: 0.9rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: var(--rune-glow);
+  }
+
+  /* ══════════════════════════════════════════
+     FORMATION BLOCK — tactical array
+  ══════════════════════════════════════════ */
+  .formation-block {
+    margin: 2rem 0;
+    padding: 1.6rem 1.8rem;
+    background: linear-gradient(135deg, rgba(139,26,26,0.07) 0%, rgba(10,6,13,0.75) 100%);
+    border: 1px solid var(--border-blood);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .formation-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--blood-bright), transparent);
+  }
+
+  .formation-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--blood-bright);
+    margin-bottom: 1rem;
+  }
+
+  .formation-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 1rem 0;
+  }
+
+  .formation-row {
+    display: flex;
+    gap: 1.2rem;
+    justify-content: center;
+  }
+
+  .formation-unit {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-align: center;
+    padding: 0.4em 0.9em;
+    border-radius: 3px;
+    border: 1px solid;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .formation-unit.player {
+    color: var(--silver);
+    border-color: rgba(184,196,208,0.5);
+    background: rgba(184,196,208,0.08);
+  }
+
+  .formation-unit.ally {
+    color: var(--marcus-color);
+    border-color: rgba(143,168,184,0.4);
+    background: rgba(143,168,184,0.06);
+  }
+
+  .formation-unit.archer {
+    color: var(--darius-color);
+    border-color: rgba(120,168,120,0.4);
+    background: rgba(120,168,120,0.06);
+  }
+
+  .formation-spacing {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    text-align: center;
+    margin-top: 0.6rem;
+  }
+
+  /* ══════════════════════════════════════════
+     URGENT BLOCK — emergency alerts
+  ══════════════════════════════════════════ */
+  .urgent-block {
+    margin: 2.5rem 0;
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border-urgent);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .urgent-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--urgent-color), var(--urgent-glow), var(--urgent-color), transparent);
+    box-shadow: 0 0 14px rgba(192,64,32,0.5);
+    animation: urgentPulse 1.5s ease-in-out infinite;
+  }
+
+  .urgent-header {
+    padding: 0.9rem 1.5rem;
+    background: rgba(192,64,32,0.12);
+    border-bottom: 1px solid var(--border-urgent);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .urgent-icon { font-size: 1rem; color: var(--urgent-glow); }
+
+  .urgent-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--urgent-glow);
+  }
+
+  .urgent-body { padding: 1.2rem 1.5rem; }
+
+  /* ══════════════════════════════════════════
+     WARNING BLOCK — tactical warnings
+  ══════════════════════════════════════════ */
+  .warning-block {
+    margin: 2rem 0;
+    padding: 1.4rem 1.8rem;
+    background: linear-gradient(135deg, rgba(184,128,58,0.07) 0%, rgba(10,6,13,0.7) 100%);
+    border: 1px solid rgba(184,128,58,0.3);
+    border-radius: 6px;
+    position: relative;
+    border-left: 3px solid var(--warning-color);
+  }
+
+  .warning-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--warning-color);
+    margin-bottom: 0.8rem;
+  }
+
+  .warning-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: var(--ink);
+    font-size: 0.97rem;
+    line-height: 1.75;
+  }
+
+  .warning-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-top: 0.6rem;
+  }
+
+  .warning-list li {
+    padding-left: 1.3rem;
+    position: relative;
+    font-family: 'EB Garamond', serif;
+    font-size: 0.97rem;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  .warning-list li::before {
+    content: '⚠';
+    position: absolute;
+    left: 0;
+    font-size: 0.6rem;
+    color: var(--warning-color);
+    top: 0.55em;
+  }
+
+  /* ══════════════════════════════════════════
+     FAMILY MOMENT
+  ══════════════════════════════════════════ */
+  .family-block {
+    margin: 2.5rem 0;
+    padding: 1.8rem 2rem;
+    background: linear-gradient(135deg, rgba(196,132,58,0.07) 0%, rgba(8,5,2,0.75) 100%);
+    border: 1px solid rgba(196,132,58,0.28);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .family-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--forge-ember), var(--gold-bright), var(--forge-ember), transparent);
+    box-shadow: 0 0 12px rgba(212,98,26,0.25);
+  }
+
+  .family-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    margin-bottom: 0.9rem;
+    opacity: 0.85;
+  }
+
+  .family-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--ink);
+    line-height: 1.85;
+  }
+
+  .family-text em { color: var(--gold-bright); font-style: normal; }
+
+  /* ══════════════════════════════════════════
+     ROLL BLOCKS
+  ══════════════════════════════════════════ */
+  .roll-block {
+    margin: 2rem 0;
+    border-left: 3px solid var(--rune-blue);
+    background: linear-gradient(135deg, rgba(74,158,190,0.05) 0%, rgba(10,6,13,0.6) 100%);
+    border-radius: 0 6px 6px 0;
+    padding: 1.2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .roll-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 3px;
+    background: var(--rune-blue);
+    box-shadow: 0 0 12px var(--rune-glow);
+  }
+
+  .roll-block.success {
+    border-left-color: var(--success-bright);
+    background: linear-gradient(135deg, rgba(46,125,82,0.07) 0%, rgba(10,6,13,0.6) 100%);
+  }
+  .roll-block.success::before { background: var(--success-bright); box-shadow: 0 0 12px var(--success-bright); }
+
+  .roll-block.fail {
+    border-left-color: var(--fail-bright);
+    background: linear-gradient(135deg, rgba(125,46,46,0.09) 0%, rgba(10,6,13,0.6) 100%);
+  }
+  .roll-block.fail::before { background: var(--fail-bright); box-shadow: 0 0 12px rgba(192,57,43,0.5); }
+
+  .roll-block.crit-success {
+    border-left-color: var(--rune-glow);
+    background: linear-gradient(135deg, rgba(26,92,122,0.12) 0%, rgba(10,6,13,0.6) 100%);
+  }
+  .roll-block.crit-success::before { background: var(--rune-glow); box-shadow: 0 0 18px var(--rune-glow); }
+
+  .roll-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.6rem;
+  }
+
+  .roll-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--silver);
+  }
+
+  .roll-formula {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: var(--ink-dim);
+  }
+
+  .roll-result-line {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .roll-dice {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .roll-block.success    .roll-dice      { color: var(--success-bright); }
+  .roll-block.fail       .roll-dice      { color: var(--fail-bright); }
+  .roll-block.crit-success .roll-dice    { color: var(--rune-glow); text-shadow: 0 0 12px var(--rune-glow); }
+
+  .roll-verdict {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 0.25em 0.8em;
+    border-radius: 2px;
+  }
+
+  .roll-block.success    .roll-verdict { background: rgba(46,125,82,0.2); color: var(--success-bright); border: 1px solid rgba(76,175,128,0.3); }
+  .roll-block.fail       .roll-verdict { background: rgba(125,46,46,0.2); color: var(--fail-bright);    border: 1px solid rgba(192,57,43,0.3); }
+  .roll-block.crit-success .roll-verdict { background: rgba(26,92,122,0.2); color: var(--rune-glow);   border: 1px solid rgba(126,200,227,0.4); }
+
+  .roll-note {
+    margin-top: 0.5rem;
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: var(--ink-dim);
+  }
+
+  /* ══════════════════════════════════════════
+     LORE CALLOUT
+  ══════════════════════════════════════════ */
+  .lore-callout {
+    margin: 2rem 0;
+    padding: 1.4rem 1.8rem;
+    background: linear-gradient(135deg, rgba(201,150,60,0.05) 0%, transparent 80%);
+    border: 1px solid var(--border-gold);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .lore-callout::before {
+    content: '✦';
+    position: absolute;
+    top: -0.5em;
+    left: 1.5rem;
+    background: var(--bg-void);
+    padding: 0 0.4em;
+    color: var(--gold);
+    font-size: 0.7rem;
+  }
+
+  .lore-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+  }
+
+  .lore-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: var(--ink-dim);
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+
+  /* ══════════════════════════════════════════
+     VISION BLOCK
+  ══════════════════════════════════════════ */
+  .vision-block {
+    margin: 2rem 0;
+    padding: 1.5rem 1.8rem;
+    background: rgba(18,10,22,0.7);
+    border-left: 2px solid var(--sanity-dim);
+    border-top: 1px solid rgba(155,89,182,0.15);
+    border-bottom: 1px solid rgba(155,89,182,0.15);
+    position: relative;
+  }
+
+  .vision-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--sanity-dim);
+    margin-bottom: 0.8rem;
+  }
+
+  .vision-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .vision-list li {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: rgba(215,189,226,0.75);
+    font-size: 0.98rem;
+    padding-left: 1.2rem;
+    position: relative;
+    line-height: 1.7;
+  }
+
+  .vision-list li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    font-size: 0.45rem;
+    color: var(--sanity-dim);
+    top: 0.55em;
+  }
+
+  /* ══════════════════════════════════════════
+     REVELATION BLOCK
+  ══════════════════════════════════════════ */
+  .revelation-block {
+    margin: 2rem 0;
+    padding: 1.5rem 1.8rem;
+    background: linear-gradient(160deg, rgba(74,158,190,0.08) 0%, rgba(10,6,13,0.6) 100%);
+    border: 1px solid var(--border-rune);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .revelation-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--rune-blue), transparent);
+    box-shadow: 0 0 8px var(--rune-glow);
+  }
+
+  .revelation-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--rune-blue);
+    margin-bottom: 0.8rem;
+  }
+
+  .revelation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    list-style: none;
+    counter-reset: revelation;
+  }
+
+  .revelation-list li {
+    counter-increment: revelation;
+    padding-left: 2.2rem;
+    position: relative;
+    font-size: 0.98rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  .revelation-list li::before {
+    content: counter(revelation);
+    position: absolute;
+    left: 0;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--rune-blue);
+    background: rgba(74,158,190,0.15);
+    border: 1px solid rgba(74,158,190,0.2);
+    border-radius: 2px;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0.2em;
+  }
+
+  /* ══════════════════════════════════════════
+     DIALOGUE BLOCKS
+  ══════════════════════════════════════════ */
+  .dialogue {
+    margin: 1.5rem 0;
+    padding: 1.2rem 1.5rem;
+    background: rgba(255,255,255,0.02);
+    border-left: 2px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+  }
+
+  .dialogue.leyn       { border-left-color: var(--silver);          background: rgba(184,196,208,0.04); }
+  .dialogue.mara       { border-left-color: var(--mara-color);      background: rgba(232,148,58,0.05); }
+  .dialogue.elise      { border-left-color: var(--elise-color);     background: rgba(58,184,201,0.05); }
+  .dialogue.kaira      { border-left-color: var(--kaira-color);     background: rgba(232,200,74,0.05); }
+  .dialogue.aldric     { border-left-color: var(--aldric-color);    background: rgba(160,85,110,0.07); }
+  .dialogue.marcus     { border-left-color: var(--marcus-color);    background: rgba(143,168,184,0.04); }
+  .dialogue.tobias     { border-left-color: var(--tobias-color);    background: rgba(168,120,72,0.06); }
+  .dialogue.girl       { border-left-color: var(--girl-color);      background: rgba(216,168,192,0.05); }
+  .dialogue.costureira { border-left-color: var(--costureira-color);background: rgba(152,184,136,0.05); }
+  .dialogue.veteran    { border-left-color: var(--veteran-color);   background: rgba(136,136,152,0.04); }
+  .dialogue.darius     { border-left-color: var(--darius-color);    background: rgba(120,168,120,0.04); }
+  .dialogue.helena     { border-left-color: var(--helena-color);    background: rgba(200,120,88,0.05); }
+
+  .dialogue-speaker {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .dialogue.leyn       .dialogue-speaker { color: var(--silver); }
+  .dialogue.mara       .dialogue-speaker { color: var(--mara-color); }
+  .dialogue.elise      .dialogue-speaker { color: var(--elise-color); }
+  .dialogue.kaira      .dialogue-speaker { color: var(--kaira-color); }
+  .dialogue.aldric     .dialogue-speaker { color: var(--aldric-color); }
+  .dialogue.marcus     .dialogue-speaker { color: var(--marcus-color); }
+  .dialogue.tobias     .dialogue-speaker { color: var(--tobias-color); }
+  .dialogue.girl       .dialogue-speaker { color: var(--girl-color); }
+  .dialogue.costureira .dialogue-speaker { color: var(--costureira-color); }
+  .dialogue.veteran    .dialogue-speaker { color: var(--veteran-color); }
+  .dialogue.darius     .dialogue-speaker { color: var(--darius-color); }
+  .dialogue.helena     .dialogue-speaker { color: var(--helena-color); }
+
+  /* ── NARRADOR / GM ── */
+  .dialogue.gm {
+    border-left-color: var(--gold);
+    background: linear-gradient(135deg, rgba(201,150,60,0.04) 0%, rgba(10,6,13,0.3) 100%);
+    padding: 1.3rem 1.6rem;
+  }
+
+  .dialogue.gm .dialogue-speaker {
+    color: var(--gold);
+    letter-spacing: 0.4em;
+  }
+
+  .dialogue.gm .dialogue-text {
+    font-style: normal;
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.9;
+  }
+
+  .dialogue.gm .dialogue-text p { margin-bottom: 1.1em; }
+  .dialogue.gm .dialogue-text p:last-child { margin-bottom: 0; }
+  .dialogue.gm .dialogue-text strong { font-weight: 600; color: #f0d9bc; }
+  .dialogue.gm .dialogue-text em { font-style: italic; color: var(--ink-dim); }
+
+  /* drop cap dentro de bloco GM */
+  .dialogue.gm.with-dropcap .dialogue-text p:first-child::first-letter {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 4.5em;
+    font-weight: 900;
+    float: left;
+    line-height: 0.75;
+    margin: 0.1em 0.1em -0.05em 0;
+    color: var(--blood);
+    text-shadow: 0 0 20px rgba(139,26,26,0.5);
+  }
+
+  .dialogue-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* ══════════════════════════════════════════
+     SCENE DIVIDER
+  ══════════════════════════════════════════ */
+  .scene-divider { display: flex; align-items: center; gap: 1rem; margin: 3rem 0 2.5rem; }
+
+  .scene-divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--ink-faint)); }
+  .scene-divider-line:last-child { background: linear-gradient(90deg, var(--ink-faint), transparent); }
+
+  .scene-divider-glyph {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  /* ══════════════════════════════════════════
+     FINALE
+  ══════════════════════════════════════════ */
+  .finale-block {
+    margin: 3rem 0 0;
+    text-align: center;
+    padding: 3rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .finale-block::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(212,98,26,0.06), transparent);
+  }
+
+  .finale-quote {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--ink-dim);
+    line-height: 1.8;
+    position: relative;
+    max-width: 580px;
+    margin: 0 auto 2rem;
+  }
+
+  .finale-quote em { color: var(--ink); font-style: normal; }
+
+  .finale-divider {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--forge-fire), transparent);
+    margin: 0 auto 2rem;
+  }
+
+  .finale-coda {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ══════════════════════════════════════════
+     FLOATING STATS
+  ══════════════════════════════════════════ */
+  .floating-stats {
+    position: fixed;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+  }
+
+  .floating-stats.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .stat-pip {
+    width: 40px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 4px;
+    padding: 0.5rem 0.4rem;
+    text-align: center;
+  }
+
+  .stat-pip-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.45rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .stat-pip-value {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.9rem;
+    font-weight: 900;
+    display: block;
+  }
+
+  .stat-pip-sub {
+    font-family: 'Cinzel', serif;
+    font-size: 0.5rem;
+    color: var(--ink-faint);
+    display: block;
+    letter-spacing: 0.1em;
+    margin-top: 0.1rem;
+  }
+
+  .stat-pip.hp  .stat-pip-value { color: var(--blood-bright); }
+  .stat-pip.san .stat-pip-value { color: var(--sanity-color); }
+
+  @media (max-width: 1100px) { .floating-stats { display: none; } }
+
+  /* ══════════════════════════════════════════
+     ANIMATIONS
+  ══════════════════════════════════════════ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50%       { opacity: 0.8; transform: scaleY(1.1); }
+  }
+  @keyframes forgePulse {
+    0%, 100% { opacity: 0.7; box-shadow: 0 0 8px rgba(212,98,26,0.3); }
+    50%       { opacity: 1;   box-shadow: 0 0 18px rgba(212,98,26,0.6); }
+  }
+  @keyframes urgentPulse {
+    0%, 100% { opacity: 0.8; box-shadow: 0 0 10px rgba(192,64,32,0.4); }
+    50%       { opacity: 1;   box-shadow: 0 0 22px rgba(192,64,32,0.7); }
+  }
+  @keyframes runeFlicker {
+    0%, 95%, 100% { opacity: 1; }
+    96%, 98%      { opacity: 0.4; }
+    97%, 99%      { opacity: 0.9; }
+  }
+
+  .rune-flicker { animation: runeFlicker 8s ease-in-out infinite; }
+
+  /* ══════════════════════════════════════════
+     RESPONSIVE
+  ══════════════════════════════════════════ */
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .cover { min-height: 85vh; padding: 4rem 1.2rem; }
+    .chapter-header { gap: 0.8rem; }
+    .chapter-number { font-size: 2rem; }
+    .roll-block { padding: 1rem 1.1rem; }
+    .formation-unit { font-size: 0.55rem; padding: 0.35em 0.6em; }
+    .prose.with-dropcap p:first-child::first-letter { font-size: 3.5em; }
+  }
+
+  @keyframes hourglass-turn {
+    0%   { transform: rotate(0deg); }
+    40%  { transform: rotate(0deg); }
+    50%  { transform: rotate(180deg); }
+    90%  { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .scene-divider-hourglass { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
+  .hourglass-svg { animation: hourglass-turn 5s ease-in-out infinite; transform-origin: 12px 14px; display: block; flex-shrink: 0; }
+  .scene-divider-time { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.35em; color: var(--ink-faint); text-transform: uppercase; white-space: nowrap; }
+  .scene-divider-time.highlight { color: var(--gold); opacity: 0.65; }
+  /* ══════════════════════════════════════════
+     STAT TRACKERS
+  ══════════════════════════════════════════ */
+  .tracker-row { display: flex; gap: 1rem; flex-wrap: wrap; margin: 2rem 0; }
+
+  .tracker {
+    flex: 1;
+    min-width: 180px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tracker.hp-tracker      { border-color: var(--border-blood); }
+  .tracker.sanity-tracker  { border-color: rgba(155,89,182,0.25); }
+  .tracker.gold-tracker    { border-color: var(--border-gold); }
+
+  .tracker-label { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.4rem; }
+  .tracker-values { display: flex; align-items: baseline; gap: 0.3rem; }
+
+  .tracker-current { font-family: 'Cinzel Decorative', serif; font-size: 2rem; font-weight: 900; line-height: 1; }
+
+  .hp-tracker     .tracker-current { color: var(--blood-bright); text-shadow: 0 0 12px rgba(192,57,43,0.3); }
+  .sanity-tracker .tracker-current { color: var(--sanity-color); text-shadow: 0 0 12px rgba(155,89,182,0.3); }
+  .gold-tracker   .tracker-current { color: var(--gold-bright);  text-shadow: 0 0 10px rgba(200,146,42,0.3); }
+
+  .tracker-slash { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--ink-faint); }
+  .tracker-max   { font-family: 'Cinzel', serif; font-size: 1rem;   color: var(--ink-dim); }
+
+  .tracker-bar { margin-top: 0.7rem; height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+  .tracker-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+
+  .hp-tracker     .tracker-fill { background: linear-gradient(90deg, var(--blood), var(--blood-bright)); }
+  .sanity-tracker .tracker-fill { background: linear-gradient(90deg, var(--sanity-dim), var(--sanity-color)); }
+  .gold-tracker   .tracker-fill { background: linear-gradient(90deg, var(--gold-dim), var(--gold-bright)); }
+
+  .tracker-delta { font-family: 'EB Garamond', serif; font-style: italic; font-size: 0.85rem; color: var(--ink-faint); margin-top: 0.3rem; }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     FLOATING STAT TRACKER
+═══════════════════════════════════════ -->
+<div class="floating-stats" title="Estatísticas finais da Saga VII">
+  <div class="stat-pip" style="border-color:rgba(201,150,60,0.25);padding:0.3rem 0.4rem;">
+    <span class="stat-pip-label" style="color:var(--gold);letter-spacing:0.15em;">FIM DA SAGA</span>
+  </div>
+  <div class="stat-pip hp">
+    <span class="stat-pip-label">PV</span>
+    <span class="stat-pip-value">7</span>
+    <span class="stat-pip-sub">/ 29</span>
+  </div>
+  <div class="stat-pip san">
+    <span class="stat-pip-label">SAN</span>
+    <span class="stat-pip-value">47</span>
+    <span class="stat-pip-sub">/ 50</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     COVER
+═══════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">VII</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Forjando a<br>Resistência</h1>
+  <p class="cover-subtitle">Saga Sete &nbsp;·&nbsp; Leyn Sepet &nbsp;·&nbsp; ~19h00–20h35</p>
+
+  <div class="cover-scroll-hint">
+    <span>Role para baixo</span>
+    <div class="scroll-line"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════ -->
+<div class="page-wrapper">
+
+  <!-- ── CAPÍTULO I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Delegação de Tarefas</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>O sol se pôs. É hora de trabalhar. Com clareza de comandante, você distribui as responsabilidades.</p></div>
+    </div>
+
+    <div class="task-block">
+      <div class="task-header">
+        <span class="task-icon">⚔</span>
+        <span class="task-title">Ordens para a Noite</span>
+      </div>
+      <div class="task-body">
+        <div class="task-row">
+          <div class="task-assignee" style="color: var(--mara-color);">Mara &amp; Elise</div>
+          <div class="task-desc">Sair para caçar. Apenas animais — veados, javalis, coelhos. Se encontrarem qualquer humano, retornam imediatamente para a aldeia.</div>
+        </div>
+        <div class="task-row">
+          <div class="task-assignee" style="color: var(--aldric-color);">Aldric</div>
+          <div class="task-desc">Auxiliar Marcus e os cavaleiros com a defesa. Runas, táticas, fortificações.</div>
+        </div>
+        <div class="task-row">
+          <div class="task-assignee" style="color: var(--silver);">Leyn &amp; Kaira</div>
+          <div class="task-desc">Centro da vila. Roupas para Kaira. Encontrar ferreiro. Conhecer os aldeões.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Mara, Elise — saiam para caçar."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Pragmática, Imediata</div>
+      <div class="dialogue-text">"Sangue fresco. Manter forças. Quantos alvos?"</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — Pergunta Ética Genuína</div>
+      <div class="dialogue-text">"Animais... ou... se encontrarmos... ameaças... humanas...?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Esclarecendo</div>
+      <div class="dialogue-text">"Mara, Elise — apenas animais. Se virem algum humano, voltem imediatamente para a aldeia."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Assente Firmemente</div>
+      <div class="dialogue-text">"Entendido. Veados, javalis, coelhos. Nada de complicações humanas."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Seremos... cuidadosas... e rápidas..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Elas desaparecem na floresta com velocidade vampírica.</p></div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Aldric, auxilie Marcus e os outros cavaleiros com a defesa."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Reverência</div>
+      <div class="dialogue-text">"Entendido. Runas, táticas, fortificações. Faremos desta aldeia algo defensável."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Para Marcus</div>
+      <div class="dialogue-text">"Soldado, mostre-me o perímetro. Vamos trabalhar."</div>
+    </div>
+
+    <div class="dialogue marcus">
+      <div class="dialogue-speaker">Marcus — Hesitante mas Obediente</div>
+      <div class="dialogue-text">"Sim, senhor Aldric. Por aqui."</div>
+    </div>
+
+    <div class="dialogue veteran">
+      <div class="dialogue-speaker">Veterano — Tom Seco, Prático</div>
+      <div class="dialogue-text">"Vou garantir que os outros soldados não entrem em pânico ao ver vampiro primordial ajudando."</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~19h10</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Garotinha e a Força de Kaira</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Kaira segura sua mão enquanto caminham pelo centro da vila. Ela olha ao redor com admiração e medo misturados. Talvez 40 casas. ~150 habitantes antes do ataque. Agora, menos.</p></div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Maravilhada e Assustada</div>
+      <div class="dialogue-text">"Tio... tem tanta GENTE aqui... eu... não via tantos humanos juntos desde... desde aquele dia..."</div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Aldeões ao Ver Vocês Passarem</div>
+      <div class="lore-text">Alguns reverenciam você — o vampiro que os salvou. Outros ficam tensos ao ver Kaira — outra vampira? uma criança? Crianças humanas apontam, curiosas.</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Uma menina humana — a mesma que você salvou do padre — corre até vocês.</p></div>
+    </div>
+
+    <div class="dialogue girl">
+      <div class="dialogue-speaker">Garotinha</div>
+      <div class="dialogue-text">"Senhor vampiro! Você voltou!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Ela para ao ver Kaira.</p></div>
+    </div>
+
+    <div class="dialogue girl">
+      <div class="dialogue-speaker">Garotinha</div>
+      <div class="dialogue-text">"Você... você tem filha?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Ajoelhando-se na Altura dos Seus Olhos</div>
+      <div class="dialogue-text">"Garotinha, como tem passado?"</div>
+    </div>
+
+    <div class="dialogue girl">
+      <div class="dialogue-speaker">Garotinha — Sorrindo, Ainda Marcada mas Viva</div>
+      <div class="dialogue-text">"Melhor, senhor vampiro! Mamãe disse que você é herói. Que salvou todo mundo."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Essa é Kaira, minha sobrinha."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Kaira olha para a menina humana com fascínio. Ela nunca interagiu com humanos pacificamente. Só viu sendo massacrados ou massacrando.</p></div>
+    </div>
+
+    <div class="dialogue girl">
+      <div class="dialogue-speaker">Garotinha — Inocência Total, Sem Medo</div>
+      <div class="dialogue-text">"Oi, Kaira! Você também é vampira? Seus olhos são bonitos! São dourados!"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Vermelha de Vergonha</div>
+      <div class="dialogue-text">"Eu... obrigada... você... não tem medo de mim?"</div>
+    </div>
+
+    <div class="dialogue girl">
+      <div class="dialogue-speaker">Garotinha</div>
+      <div class="dialogue-text">"Por quê? Você salvou a gente igual seu tio?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Kaira não sabe como responder. Olha para você em busca de ajuda.</p></div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Claro. Kaira é tão forte quanto eu."</div>
+    </div>
+
+    <div class="dialogue girl">
+      <div class="dialogue-speaker">Garotinha — Olhos Arregalados</div>
+      <div class="dialogue-text">"SÉRIO?! Ela luta também?"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Cheia de Dúvida e Esperança</div>
+      <div class="dialogue-text">"Tio... eu... eu sou forte?"</div>
+    </div>
+
+    <div class="dialogue girl">
+      <div class="dialogue-speaker">Garotinha — Lógica Infantil Perfeita</div>
+      <div class="dialogue-text">"Você TEM que ser! É família do herói! Isso significa que você é heroína também!"</div>
+    </div>
+
+    <div class="family-block">
+      <div class="family-title">O Primeiro Sorriso Genuíno do Dia</div>
+      <div class="family-text">
+        Kaira sorriu — pequeno, mas <em>genuíno</em>.<br>
+        Pela primeira vez, alguém a viu como mais que vítima.<br>
+        Uma garotinha humana sem medo nenhum.<br>
+        Lógica infantil que valeu mais que qualquer argumento.
+      </div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~19h15</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Costureira — Roupas de Verdade</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Uma casa com tecidos pendurados na janela. Você bate na porta.</p></div>
+    </div>
+
+    <div class="roll-block fail">
+      <div class="roll-header">
+        <span class="roll-name">Investigação (Inteligência)</span>
+        <span class="roll-formula">1d20 − 1 &nbsp;·&nbsp; CD 10</span>
+      </div>
+      <div class="roll-result-line">
+        <span class="roll-dice">4 − 1 = 3</span>
+        <span class="roll-verdict">Falha</span>
+      </div>
+      <div class="roll-note">Não encontra outras lojas ou recursos. A aldeia é realmente pequena e pobre — apenas a costureira.</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Uma mulher idosa abre — cabelos grisalhos, mãos calejadas de décadas costurando.</p></div>
+    </div>
+
+    <div class="dialogue costureira">
+      <div class="dialogue-speaker">Costureira — Voz Gentil, Cansada</div>
+      <div class="dialogue-text">"Senhor vampiro. A criança precisa de roupas? Posso fazer algo simples. Mas... não tenho muito tecido. E não posso cobrar — vocês nos salvaram."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Você tira 5 moedas de ouro da bolsa.</p></div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Admiro sua cortesia, humana. Mas para vampiros, ouro não é uma moeda — ela servirá mais a você."</div>
+    </div>
+
+    <div class="dialogue costureira">
+      <div class="dialogue-speaker">Costureira — Boquiaberta, Lágrimas nos Olhos</div>
+      <div class="dialogue-text">"Cinco... cinco ouros?! Senhor, isso é... isso é o que ganho em um ANO! Eu... eu posso fazer roupas BOAS para a menina com isso! Não apenas remendos!"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Olhando os Próprios Trapos</div>
+      <div class="dialogue-text">"Eu... eu posso ter roupas de verdade?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Claro que pode, Kaira. Trouxe você aqui para isso."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"E também para conhecer os humanos. Bem, eles já te ajudaram uma vez."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Culpa na Voz</div>
+      <div class="dialogue-text">"Eles... foram punidos... por me ajudar..."</div>
+    </div>
+
+    <div class="dialogue costureira">
+      <div class="dialogue-speaker">Costureira — Intervindo com Gentileza</div>
+      <div class="dialogue-text">"Criança, não foi sua culpa. Foi culpa de homens maus. E agora, seu tio nos protege. Venha, deixe eu tirar suas medidas. Vou fazer vestido bonito. E calças para treinar também, se quiser."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Você pergunta à costureira sobre ferreiro na aldeia.</p></div>
+    </div>
+
+    <div class="dialogue costureira">
+      <div class="dialogue-speaker">Costureira</div>
+      <div class="dialogue-text">"Hmm... o velho Garrett morreu no inverno — ele era ferreiro de verdade. Mas... seu aprendiz, Tobias, ainda está aqui. Garoto de 19 anos. Não terminou treinamento, mas sabe o básico. Tímido, mas trabalhador."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Kaira olha para você — pedindo permissão silenciosa. Você assente. Ela entra timidamente com a costureira.</p></div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Tobias. Vou procurar por ele. Obrigado, senhora."</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~19h20</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Tobias — O Aprendiz que Não Terminou</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Casa pequena no fim da rua. Forja improvisada no quintal — pedras empilhadas, fole velho, bigorna rachada. Você bate na porta. Ninguém responde. Mas você ouve sons metálicos. Contorna a casa.</p>
+        <p>Tobias está lá. Rapaz magro, 19 anos, cabelo castanho desgrenhado. Batendo martelo em uma lâmina torta — tentando consertá-la, claramente <strong>LUTANDO</strong>. Frustrado, suado, sozinho.</p>
+        <p>Ele te vê — e <strong>CONGELA</strong>.</p>
+      </div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Medo Absoluto</div>
+      <div class="dialogue-text">"Eu... eu não fiz nada! Por favor, não me mate!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Ele deixa cair o martelo, recuando. Claramente não estava presente quando você salvou os aldeões — para ele, vampiros ainda são monstros.</p></div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Aproximando-se Devagar</div>
+      <div class="dialogue-text">"Ei, garoto. Não estou aqui para te fazer mal. Na verdade, preciso de seus serviços."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Você se abaixa, pega o martelo do chão. Deliberadamente lento, mostrando cada movimento. Estende para ele.</p></div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Um ferreiro não pode perder sua ferramenta."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Pegando com Mãos Trêmulas</div>
+      <div class="dialogue-text">"Você... você não é como os vampiros das histórias..."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Sei que pode parecer invasivo, mas estou ficando na forja do seu antigo mestre."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Travando</div>
+      <div class="dialogue-text">"Você... você está na casa do Mestre Garrett?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"E queria que você viesse comigo até lá para fabricar equipamentos."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Vergonha</div>
+      <div class="dialogue-text">"Eu... eu não sou bom o suficiente. Mestre Garrett era... era artista. Eu sou apenas... apenas aprendiz que nem terminou."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Com Compreensão</div>
+      <div class="dialogue-text">"Tudo bem se escolher não ir. Eu sei como é perder alguém e não querer nem passar perto do local onde velhas lembranças podem brotar."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Suas palavras atingem fundo. Tobias fecha os olhos. Respira fundo.</p></div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Lágrimas Caindo</div>
+      <div class="dialogue-text">"Mestre Garrett... morreu na fornalha dele. Coração parou enquanto forjava. Eu... eu o encontrei. E desde então... não consegui voltar."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias</div>
+      <div class="dialogue-text">"Mas também não consigo trabalhar direito aqui. Tudo que faço sai... torto. Fraco. Porque eu não aprendi tudo ainda."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Decisão se Formando</div>
+      <div class="dialogue-text">"Se... se eu for... você fica comigo? Pelo menos... pelo menos na primeira vez que entrar lá de novo? Não quero... estar sozinho... com as lembranças..."</div>
+    </div>
+
+    <div class="roll-block success">
+      <div class="roll-header">
+        <span class="roll-name">Persuasão (Carisma) — Vantagem</span>
+        <span class="roll-formula">maior de 2d20 − 1 &nbsp;·&nbsp; CD 12</span>
+      </div>
+      <div class="roll-result-line">
+        <span class="roll-dice">14 − 1 = 13</span>
+        <span class="roll-verdict">Sucesso</span>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Firme, Reconfortante</div>
+      <div class="dialogue-text">"Sim, vou te acompanhar. Você não se importa de ter mais companhias lá, né?"</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Limpando as Lágrimas</div>
+      <div class="dialogue-text">"Mais... companhias? Você tem... outros com você? São... são outros vampiros?"</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias</div>
+      <div class="dialogue-text">"Porque se são... e você confia neles... então... eu também confio."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Sorriso Envergonhado</div>
+      <div class="dialogue-text">"Só... só me avise se alguém for aparecer. Para eu não... não surtar de novo."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Decisão Tomada</div>
+      <div class="dialogue-text">"Está bem. Eu vou. Pela aldeia. Pelo Mestre Garrett. E porque... porque você parece honesto."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias</div>
+      <div class="dialogue-text">"E vampiro honesto é... bem, é mais do que maioria dos humanos que conheci."</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~19h25</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Kaira com Roupa Nova — O Reencontro</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>No caminho de volta, Tobias fala — nervoso, preenchendo o silêncio.</p></div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Saudade na Voz</div>
+      <div class="dialogue-text">"Mestre Garrett sempre dizia que bom ferreiro não faz apenas armas. Faz ferramentas que constroem coisas. Arados, pregos, dobradiças... Ele odiava quando a Igreja pedia espadas. Dizia que 'ferro deveria criar, não destruir'."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Vocês passam pela casa da costureira.</p></div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Saindo em Disparada</div>
+      <div class="dialogue-text">"TIO LEYN! OLHA! EU TENHO ROUPA DE VERDADE!"</div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Kaira — Roupa Nova</div>
+      <div class="lore-text">Vestido simples de lã marrom, limpo e ajustado. Calças de tecido grosso por baixo — práticas para treino. As botas que você deu. Cabelo ainda desgrenhado, mas a costureira tentou pentear um pouco. Ela está <em>radiante</em>. A costureira prometeu mais duas mudas.</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Girando para Mostrar</div>
+      <div class="dialogue-text">"E a senhora disse que vai fazer mais duas mudas para quando estas sujarem!"</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Parando, Surpreso</div>
+      <div class="dialogue-text">"Uma... uma criança vampira? E ela é... feliz?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Conceito alienígena para ele. Kaira vê Tobias e se esconde atrás de você — ainda tímida com estranhos.</p></div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Espiando da sua Sombra</div>
+      <div class="dialogue-text">"Tio... quem é ele?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Tobias. Ferreiro. Vai nos ajudar."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Oi... Tobias... eu sou Kaira..."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Desajeitadamente</div>
+      <div class="dialogue-text">"Oi... Kaira... eu... uh... gosto do seu vestido?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Ele claramente não sabe como falar com crianças.</p></div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~19h30</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Forja do Mestre Garrett</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>A aldeia está se transformando. Mara e Elise acabaram de voltar da caça, limpando sangue de veado das bocas. Marcus coordena soldados montando barricadas de madeira. Aldric desenha runas em pedras, posicionando-as estrategicamente. O Veterano testa armadilhas simples com cordas e sinos.</p>
+      </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Maravilha Genuína</div>
+      <div class="dialogue-text">"Tio... todo mundo está... trabalhando junto... humanos e vampiros..."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Isso... isso é possível... de verdade?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Tudo é possível, Kaira. Desde que você queira muito e faça acontecer."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Esperança Pura</div>
+      <div class="dialogue-text">"Então... então eu posso... fazer família também? Como você fez? Mesmo sendo... fraca... e assustada... às vezes?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Você assente. Ela sorri — dessa vez, sorriso que alcança os olhos.</p></div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Tobias para na frente da casa do ferreiro. Mãos tremendo. <em>"Eu... eu não entro aqui há... quatro meses..."</em> Ele respira fundo.</p>
+        <p>Você se vira para ele — tom completamente casual, quase brincalhão:</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Tom Brincalhão</div>
+      <div class="dialogue-text">"Não repara na bagunça."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>E você <strong>ENTRA PRIMEIRO</strong>.</p></div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Rindo de Surpresa</div>
+      <div class="dialogue-text">"Você... você está brincando? Com... com fantasmas? Com trauma?"</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Respirando Fundo</div>
+      <div class="dialogue-text">"Tudo bem. Se VOCÊ não tem medo de bagunça... eu também não."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Ele entra atrás de você. Para no meio da sala principal. Olha ao redor — tudo como Garrett deixou. Ferramentas, bancadas, poeira. Mas então vê:</p></div>
+    </div>
+
+    <div class="vision-block">
+      <div class="vision-label">O que Tobias Vê na Casa do Mestre</div>
+      <ul class="vision-list">
+        <li>Mara e Elise subindo do subsolo, limpas após a caça.</li>
+        <li>Kaira curiosamente tocando uma bigorna velha.</li>
+        <li>Você, tranquilo, como se este fosse seu lar temporário normal.</li>
+      </ul>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias</div>
+      <div class="dialogue-text">"Vocês... vocês estão MORANDO aqui? Transformaram isto em... lar?"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Casual</div>
+      <div class="dialogue-text">"Oi! Você deve ser o ferreiro. Leyn falou de você."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Olá... bem-vindo... de volta..."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Confusão Total, Mas Não Negativa</div>
+      <div class="dialogue-text">"Vocês são... uma família de vampiros... morando na casa do meu mestre morto... e estão sendo... NORMAIS?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Kaira se aproxima, segurando uma ferramenta pequena.</p></div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Completamente Inocente</div>
+      <div class="dialogue-text">"Tobias... o que é isto? Parece garfo estranho."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Ela está segurando <strong>tenazes</strong>.</p></div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Entrando em Modo Professor Automático</div>
+      <div class="dialogue-text">"Isso são tenazes! Você usa para segurar metal quente sem queimar a mão. Veja, você aperta aqui, e..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Ele para. Percebe. Está ensinando. Na casa do mestre. <em>Como o mestre fazia com ele</em>.</p>
+        <p>As memórias não são apenas dor. São também propósito.</p>
+      </div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Gratidão, Não Acusação</div>
+      <div class="dialogue-text">"Você... você fez de propósito. A bagunça. A criança. Tudo... para eu não focar só na tristeza."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias</div>
+      <div class="dialogue-text">"Obrigado. Eu... eu acho que consigo trabalhar aqui agora."</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~19h35</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Correntes que Piscam — Urgência</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Tobias desce para a forja. Para na frente da fornalha — onde Garrett morreu. Mas Kaira segue curiosa, Mara organiza ferramentas, Elise examina lingotes. Vida ao redor da morte. Tobias acende a fornalha. Mãos trêmulas no início, depois mais firmes.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Aparecendo na Entrada do Subsolo</div>
+      <div class="dialogue-text">"Leyn. Perímetro está tomando forma. Marcus é bom comandante. Mas tenho pergunta tática."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Quanto tempo temos? Dias? Semana? As correntes da criança — você disse que estão enfraquecendo. Preciso saber cronograma."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Kaira ouve e se tensa. As correntes. O rastreamento. <em>Ele</em> vindo.</p></div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Acredito que temos poucos dias. Cerca de 4 ou menos."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Quatro dias. Isso é... apertado. Muito apertado. As correntes estão TÃO fracas assim?"</div>
+    </div>
+
+    <div class="roll-block success">
+      <div class="roll-header">
+        <span class="roll-name">Intuição (Sabedoria)</span>
+        <span class="roll-formula">1d20 + 1 &nbsp;·&nbsp; CD 12</span>
+      </div>
+      <div class="roll-result-line">
+        <span class="roll-dice">11 + 1 = 12</span>
+        <span class="roll-verdict">Sucesso Exato</span>
+      </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Voz Baixa, Tocando o Pescoço</div>
+      <div class="dialogue-text">"Eu... eu sinto elas... cada dia mais fracas... às vezes... elas piscam... e por segundos... eu me sinto... completa... forte... mas então voltam..."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Hoje de manhã... elas sumiram por quase um minuto... eu fiquei... assustada..."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Sério</div>
+      <div class="dialogue-text">"Então pode ser ainda MENOS que quatro dias. Talvez dois. Talvez amanhã."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Leyn, precisamos acelerar tudo. Runas, armadilhas, treinamento. E..."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Hesitando</div>
+      <div class="dialogue-text">"...talvez considerar evacuação. Levar a criança para longe ANTES das correntes caírem completamente."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Contra</div>
+      <div class="dialogue-text">"Mas se movermos agora, ficamos vulneráveis na estrada. Sem fortificações. Sem preparação. E ele pode nos pegar no caminho."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"E os aldeões... abandonamos eles...? Depois de salvar...?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Você fecha os olhos por um momento, focando nas correntes espectrais de Kaira através da sua conexão familiar.</p></div>
+    </div>
+
+    <div class="vision-block">
+      <div class="vision-label">Avaliação Precisa das Correntes de Kaira</div>
+      <ul class="vision-list">
+        <li>40% da estrutura mágica já colapsou.</li>
+        <li>Pulsam irregularmente — sinal de falha iminente.</li>
+        <li>2–3 dias no máximo. Possivelmente menos se houver estresse emocional intenso em Kaira.</li>
+        <li>Não são 4 dias. São <strong>MENOS</strong>.</li>
+      </ul>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~19h45</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Pó de Prata e as Escolhas da Forja</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Com a urgência no ar, você lida com os recursos disponíveis.</p></div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Tobias, preciso que crie luvas com a parte de dentro sendo feita por couro e a parte de fora revestida por prata. Para cada um de nós três."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Entendendo</div>
+      <div class="dialogue-text">"Luvas... revestidas de prata... para vampiros? Ah! Para vocês SEGURAREM coisas de prata sem se queimar! Como armas prateadas, ou runas, ou... Inteligente. Muito inteligente."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Calculando</div>
+      <div class="dialogue-text">"Só que... nós não temos muita prata aqui. As correntes que você deu para Marcus têm alguma, mas não é suficiente para três pares de luvas completamente revestidas."</div>
+    </div>
+
+    <div class="options-block">
+      <div class="options-label">Opções de Tobias — Prata Limitada</div>
+      <ul class="options-list">
+        <li data-opt="A">Três pares de luvas com prata parcial — apenas nas palmas e dedos (funcional, usa menos prata)</li>
+        <li data-opt="B">Um par de luvas com prata completa + dois pares sem prata (prioriza um combatente)</li>
+        <li data-opt="C">Três pares básicos agora, e quando conseguirmos mais prata, adiciona o revestimento em etapas</li>
+      </ul>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Temos uma quantia de pó de prata no subsolo ainda. Não é o suficiente, Tobias?"</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Iluminando</div>
+      <div class="dialogue-text">"PÓ DE PRATA?! Eu não vi!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Ele vasculha rapidamente, encontrando os potes. Abre, examina.</p></div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Calculando Rapidamente</div>
+      <div class="dialogue-text">"Isto... isto dá para trabalhar! Não é ideal — pó precisa ser fundido e purificado, mas com técnica certa..."</div>
+    </div>
+
+    <div class="options-block">
+      <div class="options-label">Opções Revisadas — Com o Pó de Prata</div>
+      <ul class="options-list">
+        <li data-opt="A">Três pares de luvas com palmas e dedos de prata (80% de proteção)</li>
+        <li data-opt="B">Dois pares completos + estacas de prata para Aldric</li>
+        <li data-opt="C">Um par completo + estacas + reforço de prata nas armaduras existentes</li>
+      </ul>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias</div>
+      <div class="dialogue-text">"Mas vai levar tempo. Fundir pó de prata é delicado. Temperatura errada e ela oxida, fica inútil. Dois dias para qualquer dessas opções. Trabalhando praticamente sem parar."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Aldric, você precisa de algum equipamento?"</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Abrindo a Capa</div>
+      <div class="dialogue-text">"Aprecio a consideração. Mas estou... adequadamente equipado."</div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Equipamento de Aldric Voss</div>
+      <div class="lore-text">Espada longa élfica — prata e aço, gravada com runas antigas. Adaga ritual no cinto. Armadura de couro élfico sob a capa (CA 15, flexível e resistente). Trezentos anos deram-lhe tempo para acumular recursos.</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Porém, se Tobias puder forjar estacas de prata — pontas afiadas, 30-40 centímetros — isso seria útil. Não contra cultistas humanos, mas contra mortos-vivos corrompidos ou vampiros renegados que podem vir."</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~20h00</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Ficamos. Lutamos. Vencemos.</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Voz que Corta o Pânico</div>
+      <div class="dialogue-text">"Vamos ficar aqui e lutar. Vamos vencer. É só estarmos preparados e atentos."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Batendo Escudo com Adaga</div>
+      <div class="dialogue-text">"Sim! Escolhemos nosso campo de batalha. Temos aliados. Temos tempo para preparar. E temos VOCÊ liderando. Isso vale mais que qualquer fortificação."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Ficamos... juntos... lutamos... juntos... vencemos... juntos..."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Cruzando os Braços</div>
+      <div class="dialogue-text">"Corajoso. Talvez imprudente. Mas... entendo. Fugir para sempre não é vida."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Olhando para Kaira</div>
+      <div class="dialogue-text">"E a criança merece ver que pode ser defendida. Que não precisa fugir sempre. Muito bem. Então maximizamos estes 2-3 dias. Sem desperdício."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Admiração e Medo Misturados</div>
+      <div class="dialogue-text">"Tio... você realmente acha... que podemos vencer?"</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~20h10</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Rastros de Fogo</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="urgent-block">
+      <div class="urgent-header">
+        <span class="urgent-icon">🔥</span>
+        <span class="urgent-title">Relatório Urgente — Patrulha do Norte</span>
+      </div>
+      <div class="urgent-body">
+        <div class="dialogue marcus" style="margin: 0 0 0.8rem; border-radius: 4px;">
+          <div class="dialogue-speaker">Marcus — Descendo a Escada</div>
+          <div class="dialogue-text">"Senhor Leyn! Temos uma situação urgente! A patrulha acaba de voltar. Encontraram RASTROS. Na floresta, a 2 quilômetros ao norte."</div>
+        </div>
+        <div class="dialogue veteran" style="margin: 0; border-radius: 4px;">
+          <div class="dialogue-speaker">Veterano</div>
+          <div class="dialogue-text">"Não são rastros de animal. São... pegadas queimadas no chão. Como se algo com fogo nos pés andasse. E... árvores derretidas. Pedras rachadas por calor. O que quer que seja... não é natural."</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Tenso Imediatamente</div>
+      <div class="dialogue-text">"Rastros de fogo? Pedras rachadas por calor? Leyn... isso não é o padre. Isso é algo PIOR. Demônio vinculado? Elemental corrompido? Ou..."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"...um dos campeões do Culto da Verdade Profunda."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Pânico Crescente</div>
+      <div class="dialogue-text">"Ele... ele já está aqui? Mas as correntes ainda..."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Cortando o Pânico</div>
+      <div class="dialogue-text">"Pessoal, se acalmem. Não é o ataque da Igreja. As correntes ainda não sumiram — não tem como o Padre ter descoberto esse lugar."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Assente Pensativo</div>
+      <div class="dialogue-text">"Verdade. Se fosse rastreamento pelas correntes, viria diretamente para cá. Estes rastros são... outra coisa."</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~20h20</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO XI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Mudança de Planos — Estacas</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Sem hesitar, você redistribui as ordens.</p></div>
+    </div>
+
+    <div class="task-block">
+      <div class="task-header">
+        <span class="task-icon">⚡</span>
+        <span class="task-title">Ordens Revisadas — Ameaça ao Norte</span>
+      </div>
+      <div class="task-body">
+        <div class="task-row">
+          <div class="task-assignee" style="color: var(--tobias-color);">Tobias</div>
+          <div class="task-desc">Esqueça as luvas. Máximo de estacas de prata possível — 20 a 25 estacas em algumas horas.</div>
+        </div>
+        <div class="task-row">
+          <div class="task-assignee" style="color: var(--mara-color);">Mara</div>
+          <div class="task-desc">Operar o fole, manter a fornalha quente.</div>
+        </div>
+        <div class="task-row">
+          <div class="task-assignee" style="color: var(--elise-color);">Elise</div>
+          <div class="task-desc">Moldar o metal com as próprias mãos (não queima muito). Máxima eficiência.</div>
+        </div>
+        <div class="task-row">
+          <div class="task-assignee" style="color: var(--kaira-color);">Kaira</div>
+          <div class="task-desc">Organizar estacas prontas e trazer água para resfriar o metal.</div>
+        </div>
+        <div class="task-row">
+          <div class="task-assignee" style="color: var(--aldric-color);">Aldric</div>
+          <div class="task-desc">Auxiliar na forja — e se necessário, combater a criatura.</div>
+        </div>
+        <div class="task-row">
+          <div class="task-assignee" style="color: var(--silver);">Leyn</div>
+          <div class="task-desc">Liderar os soldados para investigar os rastros ao norte.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Tobias, mudança de planos. Esqueça as luvas. Faça o máximo de estacas de prata que conseguir."</div>
+    </div>
+
+    <div class="forge-block">
+      <div class="forge-header">
+        <span class="forge-icon">🔨</span>
+        <span class="forge-title">Forja em Modo de Urgência</span>
+      </div>
+      <div class="forge-body">
+        <div class="prose" style="margin:0;">
+          <p>Tobias pega os moldes. Mara assume o fole, produzindo rajadas rítmicas de ar. A fornalha ruge — laranja vivo, quase branco no centro. Elise enfia as mãos no metal incandescente sem hesitar, moldando com dedos que não queimam. Kaira organiza as estacas prontas em fileiras cuidadosas, traz baldes d'água para o resfriamento.</p>
+          <p style="margin-bottom:0;"><em>CLANG CLANG CLANG.</em> A forja do Mestre Garrett vive novamente.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Pegando Moldes</div>
+      <div class="dialogue-text">"Estacas! Sim! Mais simples, mais rápidas! Posso fazer... 20-25 estacas em algumas horas se trabalhar sem parar!"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Eu... eu posso ajudar também? Mesmo sendo pequena?"</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Primeiro Sorriso Genuíno desde que Entrou</div>
+      <div class="dialogue-text">"Pode organizar as estacas prontas, pequena. E trazer água para resfriar o metal. Trabalho importante."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Aldric, assim que terminar as estacas, caso seja necessário, nos ajude a combater a criatura."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Advertência Séria</div>
+      <div class="dialogue-text">"Entendido. Mas Leyn — se for realmente campeão do Culto... não subestime. Eles não são humanos comuns."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Para Marcus</div>
+      <div class="dialogue-text">"Eu e os soldados vamos cuidar desse ser, seja lá o que ele for."</div>
+    </div>
+
+    <div class="dialogue marcus">
+      <div class="dialogue-speaker">Marcus — Batendo Continência</div>
+      <div class="dialogue-text">"Sim, senhor! Quantos homens leva?"</div>
+    </div>
+
+    <div class="dialogue veteran">
+      <div class="dialogue-speaker">Veterano</div>
+      <div class="dialogue-text">"Temos 8 ao todo. Sugestão: deixe 3-4 aqui protegendo a aldeia, leve 4-5 com você para investigação."</div>
+    </div>
+
+    <div class="dialogue marcus">
+      <div class="dialogue-speaker">Marcus — Apontando no Mapa Mental</div>
+      <div class="dialogue-text">"Norte. 2 quilômetros. Há uma clareira com pedras grandes — bom ponto de emboscada ou defesa. Árvores densas ao redor, mas visão clara do centro."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Você sai do subsolo, vai para a praça central. Sua voz autoritária ecoa:</p></div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Para a Praça</div>
+      <div class="dialogue-text">"ALDEÕES! Preparem baldes de água para combater possíveis incêndios! As crianças devem ser levadas a um lugar seguro!"</div>
+    </div>
+
+    <div class="dialogue costureira">
+      <div class="dialogue-speaker">Mãe da Garotinha</div>
+      <div class="dialogue-text">"A igreja! Tem porão de pedra! Crianças ficam lá!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Aldeões se movem imediatamente. Eles confiam. Você os salvou.</p></div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~20h25</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Aviso de Aldric — Magia que Entra por Palavras</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Antes de sair, Aldric se aproxima. Voz baixa, só para você ouvir.</p></div>
+    </div>
+
+    <div class="warning-block">
+      <div class="warning-label">Aviso Tático — Campeão do Culto</div>
+      <ul class="warning-list">
+        <li>Não é apenas força física — campeões do Culto têm magia profana. Fogo, corrupção mental, ilusões, veneno espiritual.</li>
+        <li>Não deixe ele te tocar diretamente se possível.</li>
+        <li>Se ele falar — <strong>especialmente se souber seu nome</strong> — não ouça. Tape ouvidos se necessário.</li>
+        <li>Magia profana entra por palavras tanto quanto por toque.</li>
+      </ul>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Voz Baixa, Intensa</div>
+      <div class="dialogue-text">"Se ele falar — ESPECIALMENTE se ele souber seu nome — não ouça. Tape ouvidos se necessário. Magia profana entra por palavras tanto quanto por toque."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Aldric, agradeço os conselhos."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Mão no Ombro, Guerreiro para Guerreiro</div>
+      <div class="dialogue-text">"Volte vivo, Leyn Sepet. Sua família precisa de você. E eu... preciso entender como você faz isso."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Sorriso Pequeno</div>
+      <div class="dialogue-text">"Como transforma monstros em família."</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~20h30</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO XIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Estaca de Kaira e a Promessa</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Antes que você saia — passos rápidos subindo do subsolo.</p></div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Correndo</div>
+      <div class="dialogue-text">"TIO! ESPERA!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Ela te alcança, segurando algo — <strong>UMA DAS ESTACAS JÁ PRONTAS</strong>. Tobias trabalhou rápido. Ainda quente do forjamento.</p></div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Leva esta! Para... para se proteger! Promete que volta?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Olhos dourados arregalados. Preocupados.</p>
+        <p>Você se ajoelha, ficando na altura dos olhos dela. Pega a estaca de prata.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Kaira, não se preocupe. O tio promete que vai voltar."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Ela te abraça forte. Pequenos braços ao redor do seu pescoço.</p></div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Voz Tremendo, mas Confiante</div>
+      <div class="dialogue-text">"Você SEMPRE volta... certo?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Vamos dar nosso melhor."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Determinação Infantil Adorável</div>
+      <div class="dialogue-text">"Então... então eu também vou dar meu melhor aqui! Vou ajudar a fazer MUITAS estacas!"</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~20h35</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO XIV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Formação de Marcha — Norte</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Marcus reúne os soldados. Quatro vão com você. Quatro ficam protegendo a aldeia.</p></div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Grupo de Investigação</div>
+      <div class="lore-text"><strong>Leyn Sepet</strong> — elmo fechado, espada longa, estaca de prata de Kaira. <strong>Marcus</strong> — espada e escudo. <strong>Veterano</strong> — lança e armadura média, experiente. <strong>Darius</strong> — arqueiro, arco longo, 30 flechas, precisão até 100 metros. <strong>Helena</strong> — machado de guerra, armadura de couro com placas.</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Organizando a Formação</div>
+      <div class="dialogue-text">"Vou tomar a frente junto com Marcus. Atrás da gente, protegido pelo escudo, deve estar o Veterano. E ao lado dele, Helena. E logo um pouco mais atrás, Darius."</div>
+    </div>
+
+    <div class="formation-block">
+      <div class="formation-label">Formação de Marcha</div>
+      <div class="formation-grid">
+        <div class="formation-row">
+          <div class="formation-unit player">Leyn</div>
+          <div class="formation-unit ally">Marcus</div>
+        </div>
+        <div class="formation-row">
+          <div class="formation-unit ally">Veterano</div>
+          <div class="formation-unit ally">Helena</div>
+        </div>
+        <div class="formation-row">
+          <div class="formation-unit archer">Darius</div>
+        </div>
+      </div>
+      <div class="formation-spacing">Espaçamento: 5–8 pés entre cada posição</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Eu imagino que os ataques desse ser vão ser em larga escala. Então não ficar tão próximos um do outro é válido."</div>
+    </div>
+
+    <div class="dialogue veteran">
+      <div class="dialogue-speaker">Veterano — Aprovando</div>
+      <div class="dialogue-text">"Tática sólida. Ataques de fogo/explosão pegam grupos compactos. Espaçamento salva vidas."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Vamos tentar o máximo atacá-lo sem que ele note nossas posições."</div>
+    </div>
+
+    <div class="dialogue darius">
+      <div class="dialogue-speaker">Darius</div>
+      <div class="dialogue-text">"Posso atirar de 100 metros com precisão. Se conseguirmos nos aproximar sem ser vistos..."</div>
+    </div>
+
+    <div class="dialogue marcus">
+      <div class="dialogue-speaker">Marcus</div>
+      <div class="dialogue-text">"Mas se ele tem fogo... fumaça, cheiro de queimado... vamos SENTIR ele antes de ver."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Vocês saem da aldeia. Aldeões observam — alguns rezam, outros apenas acenam.</p></div>
+    </div>
+
+    <div class="dialogue costureira">
+      <div class="dialogue-speaker">Costureira — Gritando da Janela</div>
+      <div class="dialogue-text">"Voltem seguros! E tragam vitória!"</div>
+    </div>
+
+    <div class="revelation-block">
+      <div class="revelation-label">Estado ao Final da Saga VII</div>
+      <ul class="revelation-list">
+        <li>Tobias integrado à família. Forja do Mestre Garrett vive novamente — estacas sendo produzidas em ritmo urgente.</li>
+        <li>Kaira tem roupas de verdade. Sorriu para uma garotinha humana sem medo. Descobriu que pode ser forte.</li>
+        <li>Correntes de Kaira: 40% colapsadas. 2–3 dias, talvez menos. O cronograma se estreitou.</li>
+        <li>Rastros de fogo ao norte — pegadas queimadas, árvores derretidas, pedras rachadas. Não é o padre. Algo diferente.</li>
+        <li>Grupo de cinco marcha para o norte. Estaca de Kaira na mão de Leyn. A promessa foi feita.</li>
+      </ul>
+    </div>
+    <div class="tracker-row">
+      <div class="tracker hp-tracker">
+        <div class="tracker-label">PV — Final da Saga</div>
+        <div class="tracker-values">
+          <span class="tracker-current">7</span>
+          <span class="tracker-slash">/</span>
+          <span class="tracker-max">29</span>
+        </div>
+        <div class="tracker-bar"><div class="tracker-fill" style="width: 24%"></div></div>
+        <div class="tracker-delta">Saga VI → VII &nbsp;·&nbsp; +2 Ato Maior: Tobias</div>
+      </div>
+      <div class="tracker sanity-tracker">
+        <div class="tracker-label">SAN — Final da Saga</div>
+        <div class="tracker-values">
+          <span class="tracker-current">47</span>
+          <span class="tracker-slash">/</span>
+          <span class="tracker-max">50</span>
+        </div>
+        <div class="tracker-bar"><div class="tracker-fill" style="width: 94%"></div></div>
+        <div class="tracker-delta">Mythos 10% (S3) &nbsp;·&nbsp; teto 60→50 &nbsp;·&nbsp; sem perdas</div>
+      </div>
+    </div>
+
+ </div>
+  </section>
+
+  <!-- ── FINALE ── -->
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <span class="scene-divider-glyph rune-flicker">✦</span>
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time highlight">fim da saga vii &nbsp;·&nbsp; ~20h35</span>
+      <span class="scene-divider-glyph rune-flicker">✦</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <div class="finale-block">
+    <p class="finale-quote">
+      Num dia, um aprendiz reencontrou a forja do mestre.<br>
+      Uma menina vestiu roupas de verdade pela primeira vez em um século.<br>
+      E um vampiro saiu para o norte com uma estaca quente na mão —<br>
+      forjada por uma criança que disse <em>"promete que volta?"</em>.<br><br>
+      A aldeia rugiu com o som do martelo.<br>
+      A floresta esperava em silêncio.
+    </p>
+    <div class="finale-divider"></div>
+    <div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+  </div>
+
+</div><!-- /page-wrapper -->
+<div id="saga-end-sentinel" style="height:1px;width:100%;position:relative;margin-top:-1px;"></div>
+
+<script>
+  (function () {
+    var tracker = document.querySelector('.floating-stats');
+    if (!tracker) return;
+
+    function checkScroll() {
+      var scrolled = window.scrollY || window.pageYOffset;
+      var winH     = window.innerHeight;
+      var docH     = document.documentElement.scrollHeight;
+      if (docH - scrolled - winH < 120) {
+        tracker.classList.add('visible');
+      }
+    }
+
+    window.addEventListener('scroll', checkScroll, { passive: true });
+    setTimeout(checkScroll, 400);
+  })();
+</script>
+</body>
+</html>

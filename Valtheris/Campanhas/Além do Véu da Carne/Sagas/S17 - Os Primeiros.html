@@ -1,0 +1,2953 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saga XVII — Os Primeiros | Além do Véu da Carne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #060408;
+    --bg-deep:        #0d0910;
+    --bg-chamber:     #120d16;
+    --bg-card:        #1a1220;
+    --bg-card-alt:    #160e1c;
+
+    --ink:            #e2c9a8;
+    --ink-dim:        #9e8a72;
+    --ink-faint:      #5a4e42;
+
+    --blood:          #8b1a1a;
+    --blood-bright:   #c0392b;
+    --blood-glow:     #ff4040;
+
+    --gold:           #c9963c;
+    --gold-bright:    #e8b84b;
+    --gold-dim:       #7a5818;
+
+    --silver:         #b8c4d0;
+    --silver-dim:     #697580;
+
+    --rune-blue:      #4a9ebe;
+    --rune-glow:      #7ec8e3;
+
+    --link-color:     #4a9aaa;
+    --link-bg:        rgba(74,154,170,0.07);
+
+    --success:        #2e7d52;
+    --success-bright: #4caf80;
+    --fail:           #7d2e2e;
+    --fail-bright:    #c0392b;
+
+    --anc:            #c8a040;
+    --anc-bright:     #f0cc70;
+    --anc-dim:        #806828;
+
+    --first:          #d0b080;
+    --first-bright:   #f0d8a0;
+    --first-dim:      #806040;
+
+    --dignity:        #9070b0;
+    --dignity-bright: #c098e0;
+    --dignity-glow:   #e0c0ff;
+
+    --prov:           #e8e8f8;
+    --prov-warm:      #f8f0d8;
+
+    --letter:         #2a4a6a;
+    --letter-bright:  #4a7aaa;
+
+    --voss:           #2a4a6a;
+    --voss-bright:    #4a7aaa;
+
+    --sanity-color:   #9b59b6;
+    --sanity-dim:     #6c3483;
+    --sanity-glow:    #d7bde2;
+
+    --border-subtle:  rgba(255,255,255,0.04);
+    --border-dim:     rgba(255,255,255,0.08);
+    --border-gold:    rgba(201,150,60,0.3);
+    --border-blood:   rgba(139,26,26,0.4);
+    --border-anc:     rgba(200,160,64,0.38);
+    --border-first:   rgba(208,176,128,0.38);
+    --border-dignity: rgba(144,112,176,0.38);
+    --border-voss:    rgba(42,74,106,0.40);
+    --border-rune:    rgba(74,158,190,0.35);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.55;
+  }
+
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 2rem 8rem;
+  }
+
+  /* ══ COVER ══ */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 65% 50% at 50% 35%, rgba(192,152,112,0.09) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 30% at 50% 100%, rgba(144,112,176,0.07) 0%, transparent 60%);
+  }
+
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 200px;
+    background: linear-gradient(0deg, var(--bg-void) 0%, transparent 100%);
+  }
+
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--silver-dim);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(5rem, 17vw, 10rem);
+    font-weight: 900;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(208,176,128,0.45);
+    background: linear-gradient(180deg, rgba(208,176,128,0.28) 0%, rgba(144,112,176,0.12) 60%, transparent 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    margin-bottom: -0.05em;
+    opacity: 0;
+    animation: fadeUp 1s 0.5s forwards;
+    user-select: none;
+  }
+
+  .cover-divider {
+    width: 100%;
+    max-width: 540px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--first-bright) 30%, var(--dignity-bright) 70%, transparent);
+    margin: 1.5rem auto;
+    position: relative;
+    opacity: 0;
+    animation: fadeIn 1s 0.9s forwards;
+  }
+
+  .cover-divider::before, .cover-divider::after {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--first-bright);
+    font-size: 0.58rem;
+  }
+  .cover-divider::before { left: calc(30% - 8px); }
+  .cover-divider::after  { right: calc(30% - 8px); }
+
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 4vw, 2.6rem);
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.06em;
+    line-height: 1.25;
+    margin: 0.8rem 0 0.4rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.7s forwards;
+    text-shadow: 0 0 40px rgba(208,176,128,0.35);
+  }
+
+  .cover-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 0.88rem;
+    letter-spacing: 0.3em;
+    color: var(--silver-dim);
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+    opacity: 0;
+    animation: fadeUp 1s 1s forwards;
+  }
+
+  .cover-tag {
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    opacity: 0;
+    animation: fadeIn 1.2s 1.3s forwards;
+  }
+
+  .cover-tag-line { width: 48px; height: 1px; background: var(--first-dim); }
+
+  .cover-tag-text {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--first-dim);
+  }
+
+  .cover-scroll-hint {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeIn 1.5s 2s forwards;
+    z-index: 1;
+  }
+
+  .cover-scroll-hint span {
+    font-family: 'Cinzel', serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.3em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(180deg, var(--ink-faint), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ══ CHAPTERS ══ */
+  .chapter { margin-top: 5.5rem; padding-top: 1.5rem; }
+
+  .chapter-header {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--blood);
+    line-height: 1;
+    min-width: 2.2ch;
+    text-align: right;
+    text-shadow: 0 0 20px rgba(139,26,26,0.4);
+    flex-shrink: 0;
+  }
+
+  .chapter-title-block { flex: 1; }
+
+  .chapter-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.9rem, 2.3vw, 1.28rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    line-height: 1.2;
+  }
+
+  .chapter-rule {
+    height: 1px;
+    background: linear-gradient(90deg, var(--blood) 0%, rgba(139,26,26,0.12) 100%);
+    margin-top: 0.5rem;
+  }
+
+  /* ══ PROSE ══ */
+  .prose {
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.9;
+    margin-bottom: 1.8rem;
+  }
+
+  .prose p { margin-bottom: 1.2em; }
+  .prose p:last-child { margin-bottom: 0; }
+  .prose strong { font-weight: 600; color: #f0ddb8; }
+  .prose em { font-style: italic; color: var(--ink-dim); }
+
+  .prose.with-dropcap p:first-child::first-letter {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 4.2em;
+    font-weight: 900;
+    float: left;
+    line-height: 0.75;
+    margin: 0.1em 0.1em -0.05em 0;
+    color: var(--blood);
+    text-shadow: 0 0 20px rgba(139,26,26,0.5);
+  }
+
+  /* ══ DIALOGUE ══ */
+  .dialogue {
+    margin: 1.5rem 0;
+    padding: 1rem 1.4rem;
+    background: rgba(255,255,255,0.02);
+    border-left: 2px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+  }
+
+  .dialogue.leyn    { border-left-color: var(--silver);        background: rgba(176,188,200,0.04); }
+  .dialogue.mara    { border-left-color: #e8943a;             background: rgba(232,148,58,0.05); }
+  .dialogue.elise   { border-left-color: #3ab8c9;             background: rgba(58,184,201,0.05); }
+  .dialogue.kaira   { border-left-color: #e8c84a;             background: rgba(232,200,74,0.05); }
+  .dialogue.aldric  { border-left-color: #a0556e;             background: rgba(160,85,110,0.07); }
+  .dialogue.sent    { border-left-color: var(--anc-bright);    background: rgba(200,160,64,0.06); }
+  .dialogue.tobias  { border-left-color: var(--gold-dim);      background: rgba(122,88,24,0.05); }
+  .dialogue.first   { border-left-color: var(--first-bright);  background: rgba(208,176,128,0.07); }
+  .dialogue.inner   { border-left-color: var(--dignity-bright); background: rgba(144,112,176,0.06); border-style: dashed; }
+  .dialogue.marcus  { border-left-color: var(--success-bright); background: rgba(42,112,72,0.05); }
+
+  /* ══ GM NARRATION — fala do mestre de jogo ══ */
+  .dialogue.gm {
+    border-left-color: var(--first);
+    background: linear-gradient(135deg, rgba(208,176,128,0.04) 0%, rgba(10,6,13,0.3) 100%);
+    padding: 1.3rem 1.6rem;
+  }
+
+  .dialogue.gm .dialogue-speaker {
+    color: var(--first-bright);
+    letter-spacing: 0.4em;
+  }
+
+  .dialogue.gm .dialogue-text {
+    font-style: normal;
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.9;
+  }
+
+  .dialogue.gm .dialogue-text p { margin-bottom: 1.1em; }
+  .dialogue.gm .dialogue-text p:last-child { margin-bottom: 0; }
+  .dialogue.gm .dialogue-text strong { font-weight: 600; color: #f0ddb8; }
+  .dialogue.gm .dialogue-text em { font-style: italic; color: var(--ink-dim); }
+
+  .dialogue.gm.with-dropcap .dialogue-text p:first-child::first-letter {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 4.2em; font-weight: 900;
+    float: left; line-height: 0.75;
+    margin: 0.1em 0.1em -0.05em 0;
+    color: var(--blood);
+    text-shadow: 0 0 20px rgba(139,26,26,0.5);
+  }
+
+  /* ══ PROVAÇÃO KNOWLEDGE BLOCK ══ */
+  .prov-knowledge {
+    margin: 1.8rem 0;
+    padding: 1.3rem 1.7rem;
+    background: linear-gradient(135deg, rgba(144,112,176,0.07) 0%, rgba(5,6,10,0.7) 100%);
+    border: 1px solid var(--border-dignity);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .prov-knowledge::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--dignity-bright), transparent);
+    box-shadow: 0 0 8px rgba(192,152,224,0.3);
+  }
+
+  .prov-knowledge-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.36em;
+    text-transform: uppercase;
+    color: var(--dignity-bright);
+    margin-bottom: 0.75rem;
+  }
+
+  .prov-knowledge-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .prov-knowledge-list li {
+    font-family: 'EB Garamond', serif;
+    font-size: 0.97rem;
+    color: var(--ink);
+    padding-left: 1.3rem;
+    position: relative;
+    line-height: 1.65;
+  }
+
+  .prov-knowledge-list li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--dignity-bright);
+    font-size: 0.45rem;
+    top: 0.55em;
+  }
+
+  .dialogue-speaker {
+    font-family: 'Cinzel', serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+
+  .dialogue.leyn    .dialogue-speaker { color: var(--silver); }
+  .dialogue.mara    .dialogue-speaker { color: #e8943a; }
+  .dialogue.elise   .dialogue-speaker { color: #3ab8c9; }
+  .dialogue.kaira   .dialogue-speaker { color: #e8c84a; }
+  .dialogue.aldric  .dialogue-speaker { color: #a0556e; }
+  .dialogue.sent    .dialogue-speaker { color: var(--anc-bright); }
+  .dialogue.tobias  .dialogue-speaker { color: var(--gold-dim); }
+  .dialogue.first   .dialogue-speaker { color: var(--first-bright); }
+  .dialogue.inner   .dialogue-speaker { color: var(--dignity-bright); }
+  .dialogue.marcus  .dialogue-speaker { color: var(--success-bright); }
+
+  .dialogue-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* ══ LORE CALLOUT ══ */
+  .lore-callout {
+    margin: 2rem 0;
+    padding: 1.3rem 1.7rem;
+    background: linear-gradient(135deg, rgba(208,176,128,0.05) 0%, transparent 80%);
+    border: 1px solid var(--border-first);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .lore-callout::before {
+    content: '✦';
+    position: absolute;
+    top: -0.5em;
+    left: 1.4rem;
+    background: var(--bg-void);
+    padding: 0 0.4em;
+    color: var(--first-bright);
+    font-size: 0.65rem;
+  }
+
+  .lore-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.64rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--first-bright);
+    margin-bottom: 0.5rem;
+  }
+
+  .lore-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: var(--ink-dim);
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+
+  /* ══ SCENE BLOCK ══ */
+  .scene-block {
+    margin: 2rem 0;
+    padding: 1.4rem 1.7rem;
+    background: linear-gradient(135deg, rgba(208,176,128,0.05) 0%, rgba(5,6,10,0.7) 100%);
+    border: 1px solid var(--border-first);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .scene-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--first-bright), transparent);
+  }
+
+  .scene-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.36em;
+    text-transform: uppercase;
+    color: var(--first-bright);
+    margin-bottom: 0.75rem;
+  }
+
+  .scene-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .scene-list li {
+    font-family: 'EB Garamond', serif;
+    font-size: 0.98rem;
+    color: var(--ink);
+    padding-left: 1.3rem;
+    position: relative;
+    line-height: 1.65;
+  }
+
+  .scene-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--first-bright);
+    font-size: 0.68rem;
+    top: 0.35em;
+  }
+
+  /* ══ TELEPATHIC LINK ══ */
+  .link-block {
+    margin: 1.8rem 0;
+    padding: 1.2rem 1.5rem;
+    background: var(--link-bg);
+    border: 1px solid var(--border-rune);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .link-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--link-color), transparent);
+    box-shadow: 0 0 8px var(--rune-glow);
+  }
+
+  .link-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .link-icon { font-size: 0.72rem; color: var(--link-color); opacity: 0.8; }
+
+  .link-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--link-color);
+  }
+
+  .link-line {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: rgba(180,220,230,0.85);
+    padding-left: 0.7rem;
+    border-left: 1px solid rgba(74,154,170,0.2);
+    margin-bottom: 0.45rem;
+  }
+
+  .link-line:last-child { margin-bottom: 0; }
+
+  .link-speaker {
+    font-style: normal;
+    color: var(--link-color);
+    font-weight: 600;
+    font-size: 0.86rem;
+    margin-right: 0.35rem;
+  }
+
+  /* ══ PROVAÇÃO BLOCK — white silence room ══ */
+  .prov-block {
+    margin: 2.5rem 0;
+    padding: 2.4rem 2.6rem;
+    background: linear-gradient(160deg, rgba(232,232,248,0.04) 0%, rgba(144,112,176,0.05) 50%, rgba(5,6,10,0.9) 100%);
+    border: 1px solid var(--border-dignity);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .prov-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--dignity-bright), var(--first-bright), var(--dignity-bright), transparent);
+    box-shadow: 0 0 14px rgba(192,152,224,0.4);
+    animation: dignityPulse 5s ease-in-out infinite;
+  }
+
+  .prov-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--dignity-bright);
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .prov-body {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.06rem;
+    line-height: 1.95;
+    color: var(--ink);
+  }
+
+  .prov-body em { color: var(--dignity-glow); font-style: italic; }
+  .prov-body strong { color: var(--first-bright); }
+
+  /* ══ ANSWER BLOCK — Leyn's answer to the Provação ══ */
+  .answer-block {
+    margin: 2rem 0;
+    padding: 2rem 2.2rem;
+    background: linear-gradient(160deg, rgba(176,188,200,0.06) 0%, rgba(232,232,248,0.04) 50%, rgba(5,6,10,0.85) 100%);
+    border: 1px solid rgba(176,188,200,0.25);
+    border-left: 3px solid var(--silver);
+    border-radius: 0 8px 8px 0;
+    position: relative;
+  }
+
+  .answer-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.63rem;
+    letter-spacing: 0.38em;
+    text-transform: uppercase;
+    color: var(--silver);
+    margin-bottom: 0.9rem;
+  }
+
+  .answer-body {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.06rem;
+    line-height: 1.95;
+    color: var(--ink);
+  }
+
+  .answer-body p { margin-bottom: 1.1em; }
+  .answer-body p:last-child { margin-bottom: 0; }
+  .answer-body em { color: var(--ink-dim); font-style: italic; }
+  .answer-body strong { color: #f0ddb8; }
+
+  /* ══ FIRST ANCESTOR BLOCK ══ */
+  .first-block {
+    margin: 2.5rem 0;
+    padding: 2.4rem 2.6rem;
+    background: linear-gradient(160deg, rgba(208,176,128,0.10) 0%, rgba(144,112,176,0.06) 50%, rgba(5,6,10,0.88) 100%);
+    border: 1px solid var(--border-first);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .first-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--first-bright), var(--dignity-bright), var(--first-bright), transparent);
+    box-shadow: 0 0 18px rgba(208,176,128,0.5);
+    animation: firstPulse 6s ease-in-out infinite;
+  }
+
+  .first-glyph {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 3rem;
+    color: rgba(208,176,128,0.2);
+    display: block;
+    margin-bottom: 0.6rem;
+    animation: goldPulse 5s ease-in-out infinite;
+  }
+
+  .first-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--first-bright);
+    margin-bottom: 1.2rem;
+  }
+
+  .first-body {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.08rem;
+    line-height: 1.95;
+    color: rgba(240,216,160,0.9);
+    font-style: italic;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .first-body strong { color: var(--first-bright); font-style: normal; }
+  .first-body em { font-style: normal; color: var(--ink-dim); }
+
+  /* ══ ABILITY BLOCK (benefícios da Provação) ══ */
+  .ability-block {
+    margin: 2.5rem 0;
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border-first);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ability-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--first-bright), var(--dignity-bright), transparent);
+    box-shadow: 0 0 10px rgba(208,176,128,0.4);
+  }
+
+  .ability-header {
+    padding: 0.8rem 1.5rem;
+    background: rgba(208,176,128,0.08);
+    border-bottom: 1px solid var(--border-first);
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--first-bright);
+  }
+
+  .ability-list { padding: 0.4rem 0; }
+
+  .ability-entry {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0 1rem;
+    align-items: start;
+  }
+
+  .ability-entry:last-child { border-bottom: none; }
+
+  .ability-icon {
+    font-size: 1.1rem;
+    margin-top: 0.15rem;
+    color: var(--first-bright);
+  }
+
+  .ability-content {}
+
+  .ability-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--first-bright);
+    margin-bottom: 0.25rem;
+  }
+
+  .ability-tag {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.18em 0.6em;
+    border-radius: 2px;
+    margin-left: 0.5rem;
+    background: rgba(144,112,176,0.15);
+    color: var(--dignity-bright);
+    border: 1px solid rgba(144,112,176,0.25);
+    vertical-align: middle;
+  }
+
+  .ability-desc {
+    font-family: 'EB Garamond', serif;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--ink-dim);
+  }
+
+  .ability-quote {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: rgba(208,176,128,0.65);
+    margin-top: 0.35rem;
+    padding-left: 0.6rem;
+    border-left: 1px solid rgba(208,176,128,0.2);
+  }
+
+  /* ══ HISTORY BLOCK (Sentinela narrando história) ══ */
+  .history-block {
+    margin: 2.5rem 0;
+    padding: 2rem 2.2rem;
+    background: linear-gradient(160deg, rgba(200,160,64,0.08) 0%, rgba(5,6,10,0.85) 100%);
+    border: 1px solid var(--border-anc);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .history-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--anc-bright), transparent);
+    box-shadow: 0 0 10px rgba(200,160,64,0.3);
+  }
+
+  .history-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--anc-bright);
+    margin-bottom: 1rem;
+  }
+
+  .history-body {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.04rem;
+    line-height: 1.9;
+    color: var(--ink);
+  }
+
+  .history-body p { margin-bottom: 1em; }
+  .history-body p:last-child { margin-bottom: 0; }
+  .history-body strong { color: var(--anc-bright); }
+  .history-body em { color: var(--ink-dim); }
+
+  /* ══ LETTER BLOCK (Marcus) ══ */
+  .letter-block {
+    margin: 2.5rem 0;
+    padding: 2rem 2.4rem;
+    background: linear-gradient(160deg, rgba(42,74,106,0.12) 0%, rgba(8,9,14,0.85) 100%);
+    border: 1px solid var(--border-voss);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .letter-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--letter-bright), transparent);
+    box-shadow: 0 0 10px rgba(74,122,170,0.3);
+  }
+
+  .letter-seal {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .letter-seal-glyph {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.8rem;
+    color: rgba(74,122,170,0.3);
+    line-height: 1;
+  }
+
+  .letter-seal-text {
+    font-family: 'Cinzel', serif;
+    font-size: 0.63rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--letter-bright);
+  }
+
+  .letter-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1.02rem;
+    line-height: 1.9;
+    color: rgba(200,220,240,0.85);
+  }
+
+  .letter-text p { margin-bottom: 1em; }
+  .letter-text p:last-child { margin-bottom: 0; }
+
+  .letter-text .urgent { color: rgba(230,180,140,0.9); }
+  .letter-text .warning { color: rgba(220,160,140,0.9); }
+
+  .letter-sig {
+    margin-top: 1.2rem;
+    text-align: right;
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: var(--letter-bright);
+  }
+
+  /* ══ GRIMOIRE BLOCK ══ */
+  .grimoire-block {
+    margin: 2.5rem 0;
+    background: var(--bg-card-alt);
+    border: 1px solid rgba(122,26,26,0.35);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .grimoire-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--blood-bright), var(--gold-dim), transparent);
+  }
+
+  .grimoire-header {
+    padding: 0.8rem 1.5rem;
+    background: rgba(122,26,26,0.10);
+    border-bottom: 1px solid rgba(122,26,26,0.2);
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+  }
+
+  .grimoire-body { padding: 1.2rem 1.5rem; }
+
+  .grimoire-section {
+    display: flex;
+    gap: 0.8rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border-subtle);
+    align-items: baseline;
+    font-size: 0.92rem;
+  }
+
+  .grimoire-section:last-child { border-bottom: none; }
+
+  .grimoire-roman {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    color: var(--gold-dim);
+    min-width: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .grimoire-name {
+    font-family: 'EB Garamond', serif;
+    font-size: 0.95rem;
+    color: var(--ink);
+    flex: 1;
+  }
+
+  .grimoire-status {
+    font-family: 'Cinzel', serif;
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.18em 0.55em;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .grimoire-status.readable   { background: rgba(42,112,72,0.15); color: #48a870; border: 1px solid rgba(42,112,72,0.25); }
+  .grimoire-status.partial    { background: rgba(200,146,42,0.12); color: var(--gold-bright); border: 1px solid rgba(200,146,42,0.2); }
+  .grimoire-status.locked     { background: rgba(144,112,176,0.12); color: var(--dignity-bright); border: 1px solid rgba(144,112,176,0.2); }
+  .grimoire-status.missing    { background: rgba(122,26,26,0.15); color: var(--blood-bright); border: 1px solid rgba(122,26,26,0.2); }
+  .grimoire-status.interest   { background: rgba(208,176,128,0.12); color: var(--first-bright); border: 1px solid rgba(208,176,128,0.2); }
+
+  /* ══ VISION / MEMORY ══ */
+  .vision-block {
+    margin: 2rem 0;
+    padding: 1.4rem 1.8rem;
+    background: rgba(14,10,20,0.7);
+    border-left: 2px solid var(--blood);
+    border-top: 1px solid rgba(122,26,26,0.15);
+    border-bottom: 1px solid rgba(122,26,26,0.15);
+  }
+
+  .vision-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.63rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--blood-bright);
+    margin-bottom: 0.7rem;
+  }
+
+  .vision-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: rgba(220,180,160,0.75);
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  /* ══ VOSS BLOCK ══ */
+  .voss-block {
+    margin: 2rem 0;
+    padding: 1.6rem 1.8rem;
+    background: linear-gradient(160deg, rgba(42,74,106,0.10) 0%, rgba(8,9,14,0.7) 100%);
+    border: 1px solid var(--border-voss);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .voss-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--voss-bright), var(--silver), transparent);
+    box-shadow: 0 0 8px rgba(74,122,170,0.3);
+  }
+
+  .voss-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.63rem;
+    letter-spacing: 0.38em;
+    text-transform: uppercase;
+    color: var(--voss-bright);
+    margin-bottom: 0.7rem;
+  }
+
+  .voss-body {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.03rem;
+    line-height: 1.85;
+    color: var(--ink);
+  }
+
+  .voss-body p { margin-bottom: 0.9em; }
+  .voss-body p:last-child { margin-bottom: 0; }
+  .voss-body em { color: var(--ink-dim); }
+  .voss-body strong { color: var(--voss-bright); }
+
+  /* ══ REVELATION ══ */
+  .revelation-block {
+    margin: 2rem 0;
+    padding: 1.5rem 1.8rem;
+    background: linear-gradient(160deg, rgba(58,138,170,0.08) 0%, rgba(8,9,14,0.6) 100%);
+    border: 1px solid var(--border-rune);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .revelation-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--rune-blue), transparent);
+    box-shadow: 0 0 8px var(--rune-glow);
+  }
+
+  .revelation-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.63rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--rune-blue);
+    margin-bottom: 0.8rem;
+  }
+
+  .revelation-list {
+    list-style: none;
+    counter-reset: rev;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .revelation-list li {
+    counter-increment: rev;
+    padding-left: 2.2rem;
+    position: relative;
+    font-size: 0.98rem;
+    line-height: 1.7;
+  }
+
+  .revelation-list li::before {
+    content: counter(rev);
+    position: absolute;
+    left: 0;
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--rune-blue);
+    background: rgba(58,138,170,0.15);
+    border: 1px solid rgba(58,138,170,0.2);
+    border-radius: 2px;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0.18em;
+  }
+
+  /* ══ SECTION DIVIDER ══ */
+  .scene-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem 0 2.5rem;
+  }
+
+  .scene-divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ink-faint));
+  }
+
+  .scene-divider-line:last-child {
+    background: linear-gradient(90deg, var(--ink-faint), transparent);
+  }
+
+  .scene-divider-glyph {
+    font-family: 'Cinzel', serif;
+    font-size: 0.66rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+  }
+
+  /* ══ FLOATING STATS ══ */
+  .floating-stats {
+    position: fixed;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+  }
+
+  .floating-stats.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .stat-pip {
+    width: 46px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 4px;
+    padding: 0.5rem 0.4rem;
+    text-align: center;
+  }
+
+  .stat-pip-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.42rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: block;
+    margin-bottom: 0.15rem;
+  }
+
+  .stat-pip-value {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.9rem;
+    font-weight: 900;
+    display: block;
+  }
+
+  .stat-pip-sub {
+    font-family: 'Cinzel', serif;
+    font-size: 0.5rem;
+    color: var(--ink-faint);
+    display: block;
+    letter-spacing: 0.1em;
+    margin-top: 0.1rem;
+  }
+
+  .stat-pip.hp      .stat-pip-value { color: var(--blood-bright); }
+  .stat-pip.san     .stat-pip-value { color: var(--sanity-color); }
+  .stat-pip.prov    .stat-pip-value { color: var(--dignity-bright); }
+  .stat-pip.first-p .stat-pip-value { color: var(--first-bright); }
+  .stat-pip.anc2    .stat-pip-value { color: var(--anc-bright); }
+
+  @media (max-width: 1100px) { .floating-stats { display: none; } }
+
+  /* ══════════════════════════════════════════
+     STAT TRACKERS
+  ══════════════════════════════════════════ */
+  .tracker-row { display: flex; gap: 1rem; flex-wrap: wrap; margin: 2rem 0; }
+
+  .tracker {
+    flex: 1; min-width: 180px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 6px; padding: 1rem 1.2rem;
+    position: relative; overflow: hidden;
+  }
+
+  .tracker.hp-tracker     { border-color: var(--border-blood); }
+  .tracker.sanity-tracker { border-color: rgba(155,89,182,0.25); }
+
+  .tracker-label { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.4rem; }
+  .tracker-values { display: flex; align-items: baseline; gap: 0.3rem; }
+  .tracker-current { font-family: 'Cinzel Decorative', serif; font-size: 2rem; font-weight: 900; line-height: 1; }
+  .hp-tracker     .tracker-current { color: var(--blood-bright); text-shadow: 0 0 12px rgba(192,57,43,0.3); }
+  .sanity-tracker .tracker-current { color: var(--sanity-color); text-shadow: 0 0 12px rgba(155,89,182,0.3); }
+  .tracker-slash { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--ink-faint); }
+  .tracker-max   { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--ink-dim); }
+  .tracker-bar   { margin-top: 0.7rem; height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+  .tracker-fill  { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+  .hp-tracker     .tracker-fill { background: linear-gradient(90deg, var(--blood), var(--blood-bright)); }
+  .sanity-tracker .tracker-fill { background: linear-gradient(90deg, var(--sanity-dim), var(--sanity-color)); }
+  .tracker-delta { font-family: 'EB Garamond', serif; font-style: italic; font-size: 0.85rem; color: var(--ink-faint); margin-top: 0.3rem; }
+
+  /* ══ FINALE ══ */
+  .finale-block {
+    margin: 3rem 0 0;
+    text-align: center;
+    padding: 3rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .finale-block::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 50% 50%, rgba(208,176,128,0.06), transparent);
+  }
+
+  .finale-quote {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1.22rem;
+    color: var(--ink-dim);
+    line-height: 1.9;
+    position: relative;
+    max-width: 640px;
+    margin: 0 auto 2rem;
+  }
+
+  .finale-quote em { color: var(--ink); font-style: normal; }
+
+  .finale-divider {
+    width: 140px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--first-bright), transparent);
+    margin: 0 auto 2rem;
+  }
+
+  .finale-coda {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ══ ANIMATIONS ══ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; }
+    50%       { opacity: 0.8; }
+  }
+
+  @keyframes goldPulse {
+    0%, 100% { opacity: 0.7; }
+    50%       { opacity: 1; }
+  }
+
+  @keyframes dignityPulse {
+    0%, 100% { opacity: 0.5; box-shadow: 0 0 10px rgba(192,152,224,0.3); }
+    50%       { opacity: 1;   box-shadow: 0 0 22px rgba(192,152,224,0.6); }
+  }
+
+  @keyframes firstPulse {
+    0%, 100% { opacity: 0.5; box-shadow: 0 0 10px rgba(208,176,128,0.3); }
+    50%       { opacity: 1;   box-shadow: 0 0 24px rgba(208,176,128,0.6); }
+  }
+
+  @keyframes falseLightFlicker {
+    0%, 90%, 100% { opacity: 1; }
+    91%, 94%       { opacity: 0.3; }
+    92%, 95%       { opacity: 0.8; }
+  }
+
+  .rune-flicker { animation: falseLightFlicker 9s ease-in-out infinite; }
+
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .cover { min-height: 85vh; padding: 4rem 1.2rem; }
+    .chapter-header { gap: 0.8rem; }
+    .chapter-number { font-size: 2rem; }
+    .prose.with-dropcap p:first-child::first-letter { font-size: 3.5em; }
+  }
+
+  @keyframes hourglass-turn {
+    0%   { transform: rotate(0deg); }
+    40%  { transform: rotate(0deg); }
+    50%  { transform: rotate(180deg); }
+    90%  { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .scene-divider-hourglass { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
+  .hourglass-svg { animation: hourglass-turn 5s ease-in-out infinite; transform-origin: 12px 14px; display: block; flex-shrink: 0; }
+  .scene-divider-time { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.35em; color: var(--ink-faint); text-transform: uppercase; white-space: nowrap; }
+  .scene-divider-time.highlight { color: var(--gold); opacity: 0.65; }
+  @keyframes chainpulse {
+    0%, 100% { opacity: 0.6; text-shadow: 0 0 6px rgba(208,176,128,0.3); }
+    50%       { opacity: 1;   text-shadow: 0 0 14px rgba(208,176,128,0.7); }
+  }
+  .chain-flicker { animation: chainpulse 2s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<!-- FLOATING STATS -->
+<div class="floating-stats" title="Estatísticas finais da Saga XVII">
+  <div class="stat-pip" style="border-color:rgba(208,176,128,0.25);padding:0.3rem 0.4rem;">
+    <span class="stat-pip-label" style="color:var(--first-bright);letter-spacing:0.15em;">FIM DA SAGA</span>
+  </div>
+  <div class="stat-pip hp">
+    <span class="stat-pip-label">PV</span>
+    <span class="stat-pip-value">29</span>
+    <span class="stat-pip-sub">/ 43</span>
+  </div>
+  <div class="stat-pip san">
+    <span class="stat-pip-label">SAN</span>
+    <span class="stat-pip-value">42</span>
+    <span class="stat-pip-sub">/ 42</span>
+  </div>
+  <div class="stat-pip prov">
+    <span class="stat-pip-label">PROV</span>
+    <span class="stat-pip-value">✦</span>
+  </div>
+  <div class="stat-pip first-p">
+    <span class="stat-pip-label">1ºS</span>
+    <span class="stat-pip-value">☽☾</span>
+  </div>
+  <div class="stat-pip anc2">
+    <span class="stat-pip-label">GRM</span>
+    <span class="stat-pip-value">VII</span>
+  </div>
+</div>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Vila Sepet &nbsp;·&nbsp; Catacumbas dos Ancestrais</div>
+  <div class="cover-numeral">XVII</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Os Primeiros</h1>
+  <p class="cover-subtitle">Saga Dezessete &nbsp;·&nbsp; Leyn Sepet &nbsp;·&nbsp; A Dignidade que Não Quebraram &nbsp;·&nbsp; ~02h30–05h30</p>
+  <div class="cover-tag">
+    <div class="cover-tag-line"></div>
+    <div class="cover-tag-text">Provação da Dignidade &nbsp;·&nbsp; Aldric &amp; Tobias &nbsp;·&nbsp; Os Fundadores</div>
+    <div class="cover-tag-line"></div>
+  </div>
+  <div class="cover-scroll-hint">
+    <span>Role para baixo</span>
+    <div class="scroll-line"></div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Dúvida que Ficou</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+        <p>O abraço grupal dissolve. Você se afasta levemente, olha para suas próprias mãos — manchadas de sangue de inimigos, marcadas por cicatrizes que nunca curam completamente.</p>
+      </div>
+    </div>
+
+    <div class="dialogue inner">
+      <div class="dialogue-speaker">Pensamento Interno — Leyn Sepet</div>
+      <div class="dialogue-text">"Sei que não devo forçar as pessoas a superarem seus obstáculos... Mas daqueles que são importantes pra mim, tenho que ao menos estar ao lado..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text"><p>Você olha para Kaira — radiante, transformada, viva. E a honestidade dói mais do que qualquer golpe que você já recebeu:</p></div>
+    </div>
+
+    <div class="dialogue inner">
+      <div class="dialogue-speaker">Pensamento Interno — Leyn Sepet</div>
+      <div class="dialogue-text">"Mas o medo de perder… bom, não posso negar que tenho…"</div>
+    </div>
+
+    <div class="dialogue inner">
+      <div class="dialogue-speaker">Pensamento Interno — Leyn Sepet</div>
+      <div class="dialogue-text">"Eu entendo a Câmara... Mas começo a me questionar se sou digno de estar ao lado delas."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+        <p>Não sobre força. Não sobre habilidade em combate. Sobre <strong>valor emocional</strong>. Se sua necessidade de proteger constantemente não é peso ao invés de apoio.</p>
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — percebendo seu silêncio</div>
+      <div class="dialogue-text">"Leyn... você está bem?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text"><p>Você força um sorriso. Vira-se para Kaira — ainda eufórica, segurando a lança, olhos dourados brilhando.</p></div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — voz rouca</div>
+      <div class="dialogue-text">"Você está deslumbrante."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira Sepet</div>
+      <div class="dialogue-text">"SÉRIO?! Você achou mesmo?! Eu me SINTO diferente! Mais forte! Mais... completa! Mas tio... VOCÊ que me trouxe até aqui. Sem você, eu ainda estaria na floresta, sozinha, com medo... Então obrigada. Por TUDO."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text"><p>Ela te abraça de novo — mais suave desta vez. Mara e Elise observam e sabem que algo está diferente em você. Mas não pressionam.</p></div>
+    </div>
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~02h30</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Decisão — Provação da Dignidade</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text"><p>Você se afasta do abraço. Olha para a saída do Salão Comunal — direção oeste, de volta para as Catacumbas.</p></div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Quero ir de volta às catacumbas."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text"><p>Todos param. Silêncio absoluto.</p></div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — confusão</div>
+      <div class="dialogue-text">"Agora? Por quê? Aconteceu algo?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Quero tentar a Provação da Dignidade."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"A... Provação... da Dignidade? Aquela que... o mapa mostrava... 'Teste de dignidade — armadilha se indigno'?"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira Sepet</div>
+      <div class="dialogue-text">"Tio... você JÁ é digno! Você salvou TODOS nós! Morreu DUAS VEZES! Como pode não ser digno?!"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — que vê através da máscara</div>
+      <div class="dialogue-text">"Você está questionando seu valor. Por causa do que a Câmara disse. Leyn... você NÃO precisa provar nada. Para ninguém. Muito menos para nós."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Não é para vocês. É para MIM. Preciso saber... se sou digno de estar ao lado de vocês. Ou se minha proteção excessiva é... peso."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira Sepet — segurando seu braço</div>
+      <div class="dialogue-text">"Tio, NÃO! Você não é peso! Você é ÂNCORA! A diferença é que âncora nos ESTABILIZA, não nos AFUNDA!"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"E se você REALMENTE quer fazer isso... nós vamos junto. Como você esteve conosco."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — preocupação tática</div>
+      <div class="dialogue-text">"A Provação da Dignidade pode ser perigosa se você não estiver 100%."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira Sepet</div>
+      <div class="dialogue-text">"Tio… eu ACABEI de completar minha Provação. Você pode descansar um pouco antes da sua."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Sempre... juntos... família..."</div>
+    </div>
+
+    <div class="prov-knowledge">
+      <div class="prov-knowledge-label">O que Leyn Sabe — Memória de 100 Anos Atrás</div>
+      <ul class="prov-knowledge-list">
+        <li>É teste <strong>moral</strong>, não físico — julga intenções, não ações</li>
+        <li>Pode revelar verdades sobre si mesmo que você não quer enfrentar</li>
+        <li><strong>Falhar</strong> pode ter consequências permanentes — perda de dignidade aos olhos da Vila, ou pior</li>
+        <li>A urgência interna corrói: até fazer isso, você sente que não merece estar ao lado delas</li>
+      </ul>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text"><p>Todos esperam sua decisão. Kaira está segurando sua mão, preocupada.</p></div>
+    </div>
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~02h33</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Aldric e Tobias Chegam</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+        <p>Antes de qualquer decisão final, você sente através da magia da Vila: Aldric Voss acabou de entrar no perímetro pelo Portão Norte. Um quilômetro de distância. E com ele — a presença humana agora identificável:</p>
+        <p><strong>Tobias. O ferreiro.</strong> Respiração acelerada. Batimento cardíaco rápido.</p>
+      </div>
+    </div>
+
+    <div class="link-block">
+      <div class="link-header">
+        <span class="link-icon">◈</span>
+        <span class="link-label">Detecção pela Vila — Família Sepet</span>
+      </div>
+      <div class="link-line"><span class="link-speaker">Mara:</span>"Aldric chegou. E trouxe... Tobias? Algo deve ter acontecido na aldeia."</div>
+      <div class="link-line"><span class="link-speaker">Kaira:</span>"Eles estão vindo para CÁ. Rápido." — seus novos sentidos primordiais completos detectando movimento.</div>
+      <div class="link-line"><span class="link-speaker">Elise:</span>"Leyn... decisão... é sua..., mas... Tobias não viria... sem motivo grave..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+        <p>A porta do Salão Comunal se abre.</p>
+        <p>Aldric entra primeiro. Trezentos anos refletem naquela postura — composta mesmo após quilômetros de corrida, a capa negra mal fora de lugar. Os olhos vermelhos e antigos varrem a sala imediatamente, fazendo inventário silencioso de cada rosto. Quando pousam em Kaira — transformada, lança na mão, postura de guerreira — ele para por exatamente meio segundo.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — quase para si</div>
+      <div class="dialogue-text">"Provação completada."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+        <p>Atrás dele entra Tobias. O garoto está destruído — suor escorrendo, joelhos tremendo, respiração em frangalhos. Roupa de ferreiro rasgada onde ele claramente caiu no caminho. Apoia-se no batente antes de se endireitar com o que lhe resta de dignidade.</p>
+        <p>Aldric fecha a porta. Com gesto breve, ativa um pequeno selo de silêncio nas dobradiças.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"O que aconteceu para vocês dois virem até aqui tão rápido?"</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Marcus encontrou algo na aldeia. Algo que julgou urgente o suficiente para não esperar até a manhã. Ele estava certo."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — para Tobias, com leve sorpresa</div>
+      <div class="dialogue-text">"E você, Tobias. Como conseguiu acompanhar a velocidade de Aldric?"</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — completamente sério</div>
+      <div class="dialogue-text">"Ele não conseguiu. Eu o carreguei."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — vermelho até as orelhas</div>
+      <div class="dialogue-text">"Eu tenho dignidade!"</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — sem piscar</div>
+      <div class="dialogue-text">"Tem. E aproximadamente dezoito quilômetros dela nas minhas costas."</div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Reações</div>
+      <div class="lore-text">Mara deixa escapar um som que tenta ser tosse. Kaira morde o lábio para não sorrir. Tobias suspira fundo e endireita a postura.</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text"><p>Tobias tira de dentro da jaqueta um pergaminho selado — cera vermelha, espiral simples gravada. O código pessoal de Marcus.</p></div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias</div>
+      <div class="dialogue-text">"Leyn... Marcus pediu pra eu entregar pessoalmente. Disse que você confiaria mais se viesse de mim. Mas antes do pergaminho, ele disse que você precisava ouvir o que EU vi. Com meus próprios olhos."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text"><p>Você aceita o pergaminho, mas não o abre ainda. Deixa Tobias falar. Quando termina — voz ainda rouca do esforço, mas firme — você fica quieto por um instante. Então, com a calma de quem já carregou informações mais pesadas que esta:</p></div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Entendido. Obrigado por trazerem isso pessoalmente. Agora preciso que saibam o que enfrentamos aqui, porque isso muda o que vem a seguir."</div>
+    </div>
+
+    <div class="scene-block">
+      <div class="scene-label">Relatório de Leyn — Situação Atual</div>
+      <ul class="scene-list">
+        <li><strong>Grimório dos cultistas:</strong> conosco, mas com selo mágico que atacou Leyn ao tentar forçar. Precisa de contra-magia para abrir com segurança.</li>
+        <li><strong>Devorador Menor:</strong> "o Vazio" — vivo. Fugiu com o Construto sobrevivente. Retornará com reforços.</li>
+        <li><strong>Prazo:</strong> três a quatro dias antes que o Culto reorganize um ataque em força.</li>
+        <li><strong>Provação da Dignidade:</strong> Leyn precisa de tempo para realizá-la antes do próximo confronto.</li>
+      </ul>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Kaira aperta a lança instintivamente. Mara endireita os ombros. Elise deixa os dedos deslizarem para perto do carcás.</p>
+    </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — cadência calma, recalculando</div>
+      <div class="dialogue-text">"Devorador Menor..."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Exato. Agora fugiram de volta à Fortaleza. Temos três a quatro dias antes que reorganizem um ataque em força."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — examinando Leyn por longo momento</div>
+      <div class="dialogue-text">"A Provação da Dignidade é teste moral. Não físico. O fato de você querer fazê-la voluntariamente, especialmente agora, já diz algo sobre sua resposta."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Quanto ao Grimório — me traga até ele."</div>
+    </div>
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~02h38</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Caixa de Madeira Escura</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Antes que você mova um passo em direção às catacumbas, Aldric tira algo de dentro da capa. Não é grande — uma caixa de madeira escura, do tamanho de uma mão fechada, gravada com runas de proteção contra deterioração. Ela está velha. Muito velha. A madeira tem aquela qualidade seca que só vem de séculos.</p>
+    </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Guardei isso por cem anos. Encontrei nos escombros de um acampamento Sepet destruído, duas semanas após o massacre. Não havia ninguém vivo para entregar. Então esperei."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Ele a coloca em suas mãos.</p>
+    </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Parece que a espera acabou."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Você sente, ao tocar a madeira, um formigamento familiar. Sangue Sepet está impregnado nela — não como maldição, como <em>chave</em>. A tampa se abre sob seus dedos sem resistência, como se sempre soubesse que chegaria sua vez.</p>
+      <p>Dentro, em veludo escurecido pelo tempo: um anel de prata com uma gema vermelha escura no centro. Gravado na parte interna do aro, em escrita vampírica antiga:</p>
+    </div>
+    </div>
+
+    <div class="vision-block">
+      <div class="vision-label">Inscrição Interna do Anel</div>
+      <div class="vision-text">"Que o último carregue o que os primeiros construíram."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>E embaixo do anel, dobrado com cuidado: um fragmento de pergaminho com três linhas escritas à mão.</p>
+    </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Não sei o que está escrito. A escrita é primordial antiga. Anterior ao que aprendi."</div>
+    </div>
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~02h40</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Carta de Gareth — Aldric e o Irmão</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Mara dá um passo à frente. Ela olha para Aldric com a franqueza direta que é completamente dela, tira de dentro da armadura a carta de Gareth Voss — onde a guardou com cuidado desde que saíram da aldeia — e a entrega sem cerimônia, mas com respeito absoluto.</p>
+    </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Antes de seguirmos... há algo que precisamos te dar. Encontramos isso nos pertences deixados pelo ferreiro Garrett. Pelo Gareth. Seu irmão."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Aldric não reage imediatamente. Seus olhos vermelhos pousam no papel com a primeira expressão completamente humana que você já viu nele. Ele pega a carta. Abre lentamente — controlando o ritmo, ou não vai conseguir terminar.</p>
+      <p>Lê em silêncio. Todos ficam quietos. Até Tobias, que não entende metade do que está acontecendo, percebe que este não é momento para perguntas.</p>
+      <p>Aldric termina de ler. Dobra a carta com precisão absoluta. A guarda dentro da capa, perto do peito — gesto inconsciente, não calculado. Quando levanta os olhos, a voz sai exatamente igual a sempre:</p>
+    </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Ele morreu feliz, então."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Uma pausa de três segundos.</p>
+    </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Idiota teimoso."</div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Aldric e Gareth</div>
+      <div class="lore-text">Não é raiva. É o jeito que irmãos mais velhos chamam os mais novos quando as palavras reais são grandes demais para caber em frases pequenas. Antes que alguém possa dizer qualquer coisa, Aldric se vira para você: "Vamos para as catacumbas."</div>
+    </div>
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~02h43</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Tobias e Kaira — O que Mudou</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+        <p>Você se volta para Tobias — que está de pé junto à parede, claramente tentando processar vampiros, cartas de irmãos mortos, uma entidade chamada Devorador Menor e uma vila de tochas douradas eternas, tudo ao mesmo tempo.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Tobias. Sei que está cansado. A vila é escura, sim — mas as tochas estão acesas. Você não notou nada de diferente nela?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+        <p>Você faz um gesto em direção a Kaira, que está ao seu lado com a lança de prata descansando no ombro, postura completamente diferente da criança assustada que ele conheceu na aldeia. Tobias pisca. Olha para Kaira de verdade pela primeira vez desde que entrou. E congela.</p>
+      </div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — apontando levemente, sem querer ser rude</div>
+      <div class="dialogue-text">"Você… você era… Você era mais baixa. E tinha o cabelo mais…" <em>(Para.)</em> "E seus olhos estavam… menos…"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — sorrindo, bordas novas no sorriso</div>
+      <div class="dialogue-text">"Brilhantes?"</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — corado</div>
+      <div class="dialogue-text">"Assustadores. Quer dizer — bonitos. Bonitos assustadores. Não que isso seja—"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — sorriso genuíno e divertido</div>
+      <div class="dialogue-text">"Obrigada, Tobias."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — curiosidade direta de ferreiro</div>
+      <div class="dialogue-text">"O que aconteceu com ela?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Ela cresceu."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text"><p>Tobias processa isso. Assente como se fizesse sentido perfeito, mesmo não fazendo.</p></div>
+    </div>
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~02h45</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Sentinela e as Perguntas dos Séculos</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>As tochas azuis pulsam com mais intensidade quando vocês descem. A Sentinela está exatamente onde a deixaram — posicionada entre as portas das Tumbas de Anciãos, espada fantasmagórica baixada. Ao ver vocês, faz reverência.</p>
+    </div>
+    </div>
+
+    <div class="dialogue sent">
+      <div class="dialogue-speaker">Sentinela das Catacumbas</div>
+      <div class="dialogue-text">"Família Sepet retorna. E traz aliados de valor. Aldric Voss. Trezentos e quarenta e dois anos de idade. Registro desta unidade: aliado confirmado da linhagem Sepet, verificado três vezes em vida."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Sentinela. Ainda funcional, vejo."</div>
+    </div>
+
+    <div class="dialogue sent">
+      <div class="dialogue-speaker">Sentinela</div>
+      <div class="dialogue-text">"Ainda necessária."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Aldric examina o Grimório do Culto com luvas de couro fino, murmura em élfico antigo, fica quieto por quase um minuto.</p>
+    </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Dois dias. Talvez um e meio, se trabalhar sem parar. O selo é profano, mas não é o mais complexo que já vi. A chave é desconstrução em camadas, não força direta. Faça sua Provação. Quando terminar, o Grimório estará aberto."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Você assente. Mas há perguntas primeiro.</p>
+    </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Sentinela — você me disse que a vila entrou no estado atual quando percebeu que não havia mais nenhum primordial vivo, noventa e sete anos atrás. Isso significa que um primordial esteve aqui por três anos após o massacre. Quem era ele?"</div>
+    </div>
+
+    <div class="history-block">
+      <div class="history-label">A Sentinela Responde — Kael Sepet</div>
+      <div class="history-body">
+        <p><strong>Kael Sepet.</strong> Seu avô. Patriarca da geração anterior à sua. Aproximadamente seiscentos e quarenta anos de idade quando morreu. Um dos mais velhos da linhagem ativa no momento do massacre.</p>
+        <p>Kael sobreviveu ao massacre inicial por uma razão: ele não estava na vila quando ocorreu. Retornou três dias depois e encontrou o que havia sobrado.</p>
+        <p>Passou os três anos seguintes sozinho. Reconstruindo o que podia. <strong>Enterrando os mortos. Registrando os nomes. Cada um dos cento e quarenta e sete.</strong></p>
+        <p>Quando o último nome foi gravado na última tumba... ele entrou naquela câmara — a Sentinela aponta para a porta mais ao fundo, além das tumbas, uma que vocês ainda não abriram — e não saiu.</p>
+        <p>"Esta unidade perdeu o sinal de presença primordial noventa e sete anos, dois meses e catorze dias atrás."</p>
+        <p>"O que Kael fez dentro daquela câmara — esta unidade não sabe. Mas a Vila não se apagou completamente. Apenas... dormiu. <em>Como se ele tivesse deixado algo aceso antes de partir.</em>"</p>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Kaira está olhando para a porta fechada com olhos que calculam coragem para uma pergunta que ainda não fez. Mara tem a mão no escudo — por instinto de segurar algo sólido. Elise olha para você. Você continua:</p>
+    </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"O que foi o grande ritual do massacre fundador — o de trezentos anos atrás?"</div>
+    </div>
+
+    <div class="history-block">
+      <div class="history-label">A Sentinela Responde — O Preço do Lar</div>
+      <div class="history-body">
+        <p>A Sentinela fica completamente imóvel. É a primeira vez que você a vê fazer isso. Nem a espada se move.</p>
+        <p>"Esta unidade foi criada no mesmo evento que o massacre fundador. Portanto a resposta que tenho é... incompleta. E parcial."</p>
+        <p>Há trezentos e quatro anos, os Fundadores do Clã Sepet escolheram este vale para estabelecer a Vila. O vale assenta sobre uma confluência de linhas de magia antiga — pré-vampírica, anterior até mesmo à primeira geração conhecida de primordiais.</p>
+        <p>O ritual de fundação foi chamado internamente de <strong>'O Preço do Lar'</strong>. Envolveu o sacrifício voluntário de cinco primordiais mais velhos da linhagem — os Fundadores originais — cujo sangue foi vertido simultaneamente nos quatro pontos cardinais do vale e no centro. Onde agora ficam as Catacumbas.</p>
+        <p>Este sangue criou três coisas permanentes: a <strong>Noite Eterna</strong> — proteção contra luz solar. O <strong>Vínculo da Vila</strong> — a conexão que permite primordiais Sepet sentirem e controlarem aspectos do ambiente. E esta unidade.</p>
+        <p>"Eu sou construída do sangue e da intenção dos cinco Fundadores. Não sou armadura animada. Sou... memória. Dever. <strong>Amor transformado em função.</strong>"</p>
+        <p>"O ritual foi considerado o maior ato de amor parental na história documentada da linhagem. Eles construíram uma casa para seus filhos e netos. E pagaram com tudo que tinham."</p>
+      </div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Tobias no Chão</div>
+      <div class="lore-text">Tobias está sentado num canto com as costas numa coluna. Ele parou de tentar entender e está apenas ouvindo, com a expressão de quem assiste uma peça de teatro num idioma que não domina mas que é obviamente importante. Aldric não moveu um músculo. Seus olhos vermelhos estão fixos na Sentinela com a atenção de quem arquiva cada palavra.</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Quão antiga é a linhagem Sepet?"</div>
+    </div>
+
+    <div class="history-block">
+      <div class="history-label">A Sentinela Responde — Os Primeiros</div>
+      <div class="history-body">
+        <p>"Esta é a pergunta mais difícil de responder com precisão."</p>
+        <p>Os registros chegam até dois mil e trezentos anos atrás — a data mais antiga que os Fundadores incluíram na memória da Sentinela. Nessa data, a linhagem Sepet já existia há tempo suficiente para ter história própria, tradições estabelecidas e ancestrais considerados 'antigos'.</p>
+        <p>"Isso sugere que a linhagem tem pelo menos <strong>quatro a cinco mil anos</strong> de existência contínua."</p>
+        <p>"Mas há uma informação que os Fundadores deixaram deliberadamente vaga — e esta unidade respeita essa escolha."</p>
+        <p>"A memória mais antiga que posso acessar é um fragmento. Uma imagem. Não palavras."</p>
+        <p>"Uma lua vermelha. Um campo de neve. <strong>Dois vampiros — um homem, uma mulher — de pé, olhando para o horizonte.</strong>"</p>
+        <p>"Os nomes deles não estão registrados. Apenas um título: <strong>'Os Primeiros'.</strong>"</p>
+        <p>"Se isso é origem ou mito — esta unidade não pode afirmar com certeza."</p>
+        <p>"Mas o sangue que corre em você, em Kaira, é o mesmo sangue daqueles dois. <strong>Ininterrupto. Por milênios.</strong>"</p>
+      </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira Sepet — olhando para as próprias mãos</div>
+      <div class="dialogue-text">"Cinco mil anos..."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — voz baixa</div>
+      <div class="dialogue-text">"E dois sobreviveram a cem anos de massacre, prisão e exílio. Esse sangue não quebra fácil."</div>
+    </div>
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~03h15</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Entrando na Provação</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Você fica em silêncio por um momento. Deixa tudo assentar — Kael e sua vigília solitária de três anos, os cinco Fundadores que se sacrificaram por amor, os Dois Primeiros na neve vermelha cujos nomes foram deixados no vento.</p>
+      <p>Então você se levanta.</p>
+    </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Vou entrar na Sala da Provação da Dignidade."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Kaira dá um passo à frente — depois para. Lembra do que a Câmara lhe ensinou. Deixa você ir. Mas segura sua mão por exatamente um segundo antes de soltar.</p>
+    </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira Sepet</div>
+      <div class="dialogue-text">"Volte para nós."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Mara bate o punho no escudo — uma vez, suave. Saudação de guerreira. Elise olha com olhos que não precisam de palavras. Aldric, sem se virar do Grimório, diz:</p>
+    </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Dignidade não é o que você faz quando todos estão olhando. É o que você escolhe quando ninguém está."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>A Sentinela flutua até uma porta que você não havia notado completamente antes: menor, sem ornamentos, sem runas visíveis. Madeira escura como ébano, com apenas um símbolo gravado no centro.</p>
+      <p>Uma balança.</p>
+      <p>A porta se abre sozinha. Do outro lado — não escuridão. Luz branca, quieta, sem fonte aparente. Você atravessa o limiar. A porta fecha atrás de você sem som.</p>
+    </div>
+    </div>
+
+    <div class="prov-block">
+      <div class="prov-label">A Sala da Provação da Dignidade</div>
+      <div class="prov-body">
+        <p>É menor do que você esperava. Paredes de pedra lisa, sem runas, sem ornamentos. Chão plano. Teto baixo. Uma sala que poderia ser qualquer sala, em qualquer lugar.</p>
+        <p>Exceto pelo que está no centro.</p>
+        <p>Uma cadeira. Simples. Madeira comum. E sentada nela — uma figura. <em>Não tem rosto definido. Não tem gênero. Não tem idade. Muda sutilmente a cada vez que você pisca, como se fosse um espelho tentando refletir a pessoa certa e não conseguindo decidir qual.</em></p>
+        <p>Quando fala, a voz não tem direção. Vem de dentro.</p>
+        <p><strong>"Leyn Sepet. Você veio até nós pela terceira vez."</strong></p>
+        <p><strong>"Primeira vez: você morreu lutando por desconhecidos."</strong></p>
+        <p><strong>"Segunda vez: você morreu lutando pela família que escolheu."</strong></p>
+        <p><strong>"Agora vem de pé, vivo, vitorioso — e ainda assim duvida."</strong></p>
+        <p><em>Interessante.</em></p>
+        <p>"A Provação da Dignidade não julga feitos. Não conta mortes ou vitórias. Não pesa ouro ou sangue inimigo."</p>
+        <p>"Ela faz uma única pergunta. E a resposta precisa ser verdadeira. Não a resposta que você quer dar. Não a que acha que deveria dar. <strong>A verdadeira.</strong>"</p>
+        <p>A luz branca fica levemente mais intensa.</p>
+        <p><strong>"Então, Leyn Sepet — último sangue primordial da linhagem mais antiga de Valtheris —"</strong></p>
+        <p><strong>"Por que você protege?"</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~03h18</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Por Que Você Protege — A Resposta de Leyn</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>A figura não se move enquanto você fala. A luz branca não pulsa. Não reage. Apenas escuta. E você fala — não com a voz de comandante, não com a voz de guerreiro ou de último primordial ou de tio ou de líder de família improvisada. Com a voz de Leyn Sepet. Só isso.</p>
+    </div>
+    </div>
+
+    <div class="answer-block">
+      <div class="answer-label">Leyn Sepet — A Resposta Verdadeira</div>
+      <div class="answer-body">
+        <p>"Como diabos eu deveria responder isso?"</p>
+        <p>Você não está perguntando para a figura. Está pensando em voz alta — e percebe, no mesmo instante, que essa honestidade já é parte da resposta.</p>
+        <p>"Sei que para vampiros, proteger alguém que não seja a si mesmo já é impensável. Conheço as histórias. Os massacres por poder. A frieza da linhagem quando decide que algo ou alguém é recurso, não vida."</p>
+        <p>Você olha para suas próprias mãos.</p>
+        <p>"Mas eu protejo. E estou tentando entender por quê — não para dar uma resposta bonita. Para ser honesto."</p>
+        <p>"Não vou dizer que essa vontade surgiu após minha primeira morte. Porque não foi. Não surgiu depois da segunda também. Não foi o trauma, não foi a prisão, não foi o século de escuridão que me transformou nisso."</p>
+        <p><strong>"Esse sentimento estava comigo antes de tudo. Antes do massacre. Antes da Vila queimar."</strong></p>
+        <p>"Estava lá quando eu treinava no campo com meu pai e ficava de olho nos meus irmãos menores ao mesmo tempo, mesmo sem precisar. Estava lá quando minha mãe tecia e eu ficava acordado mais tempo que devia só para ter certeza que a noite estava quieta."</p>
+        <p>Você levanta os olhos para a figura que não tem rosto.</p>
+        <p>"Não era por medo. Não era dever — ninguém me pediu. Não era cálculo de sobrevivência."</p>
+        <p><strong>"Era porque eu podia."</strong></p>
+        <p>"Porque eu tinha poder suficiente para fazer isso. E essa combinação — poder e a possibilidade de usá-lo para que algo importante continuasse existindo — me dava uma satisfação que nenhuma vitória em combate jamais deu."</p>
+        <p>"Vampiros buscam poder para consumir. Para acumular. Para que nada e ninguém possa ameaçá-los."</p>
+        <p><strong>"Eu busquei poder para que eu pudesse ficar entre os que amo e o que ameaça."</strong></p>
+        <p>"Não porque sou nobre. Não porque sou melhor que outros vampiros."</p>
+        <p>"Porque essa é a única coisa que me faz sentir que minha existência tem peso real. Que não estou apenas ocupando espaço num mundo que já tem gente demais fazendo isso."</p>
+        <p>"<strong>Eu protejo porque seria feliz protegendo. Porque sempre fui.</strong>"</p>
+        <p>"Isso é tudo. Não tem mais nada embaixo disso."</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~03h30</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Primeiro Ancestral — A Reverência</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Silêncio absoluto. A figura na cadeira fica completamente imóvel. E então — pela primeira vez desde que você entrou — ela tem um rosto.</p>
+      <p>Não é um rosto que você reconhece. Não é seu pai, não é sua mãe, não é Kaira ou Mara ou Selene. É um rosto velho. Muito velho. Com olhos vermelhos que carregam o peso de milênios e ainda assim parecem satisfeitos.</p>
+      <p>Um dos Primeiros.</p>
+    </div>
+    </div>
+
+    <div class="first-block">
+      <span class="first-glyph">☽☾</span>
+      <div class="first-label">O Primeiro — Fala ao Descendente</div>
+      <div class="first-body">
+        <p>Ele se levanta devagar. Com a dignidade específica de quem nunca teve pressa porque sempre soube que o tempo lhe pertencia. Caminha até você. Para a um passo de distância. E então faz algo que você não esperava.</p>
+        <p><strong>Se inclina.</strong></p>
+        <p>Não é reverência de servo para senhor. É de ancestral para descendente. De quem construiu para quem carrega.</p>
+        <p><strong>"Respondeu como Sepet."</strong></p>
+        <p>"Não como um vampiro que decidiu ser bom. Como alguém que sempre foi isso — e sobreviveu a um século tentando arrancar isso dele."</p>
+        <p><strong>"E não conseguiram."</strong></p>
+        <p>Ele levanta a mão. Pousa no seu ombro — e você sente. Não fantasma, não memória. <strong>Peso real. Calor de sangue que corre há cinco mil anos.</strong></p>
+        <p>"A Provação da Dignidade não testa se você é digno de poder. Testa se você sabe por que usa o que tem."</p>
+        <p>"Muitos chegaram aqui com respostas preparadas. Belas. Corretas. <em>Vazias.</em>"</p>
+        <p>"Você chegou com uma pergunta. E encontrou a resposta no meio dela."</p>
+        <p><strong>"Isso é mais raro do que você imagina."</strong></p>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>A luz branca da sala muda. Não some. Se transforma — de branca fria para algo mais próximo do dourado das tochas lá fora. Quente. Familiar.</p>
+      <p>As paredes lisas começam a revelar o que sempre esteve gravado nelas, invisível até agora: <strong>nomes</strong>. Centenas. Milhares. Em escrita primordial antiga — cada nome de cada Sepet que passou por esta sala antes de você. Alguns com marcas de aprovação. Alguns sem.</p>
+      <p>Você procura e encontra, na altura dos seus olhos, como se tivesse sido colocado ali esperando:</p>
+      <p><strong>Kael Sepet.</strong> Com uma marcação que o ancestral traduz sem que você precise perguntar:</p>
+    </div>
+    </div>
+
+    <div class="vision-block">
+      <div class="vision-label">Marcação de Kael Sepet nas Paredes</div>
+      <div class="vision-text">"Aquele que ficou quando todos foram. Aquele que enterrou os nomes para que não fossem esquecidos."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Logo abaixo, espaço em branco. Esperando.</p>
+      <p>A figura começa a desvanecer — não como névoa, mas como luz que se apaga porque já cumpriu sua função. Mas antes de sumir completamente:</p>
+    </div>
+    </div>
+
+    <div class="first-block">
+      <span class="first-glyph">✦</span>
+      <div class="first-label">Última Palavra do Ancestral</div>
+      <div class="first-body">
+        <p><strong>"O nome de Leyn Sepet será gravado aqui agora."</strong></p>
+        <p><strong>"A marcação dele será:"</strong></p>
+        <p><strong>'Aquele que protege porque sempre foi feliz fazendo isso.'</strong></p>
+        <p><strong>'E não deixou o mundo tirar isso dele.'</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~03h35</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── XI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Benefícios Permanentes — O Nome nas Paredes</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Você sente — não como magia externa, mas como algo que sempre esteve dentro de você tomando forma definitiva:</p>
+    </div>
+    </div>
+
+    <div class="ability-block">
+      <div class="ability-header">Provação da Dignidade — Completada · Benefícios Permanentes</div>
+      <div class="ability-list">
+        <div class="ability-entry">
+          <div class="ability-icon">🛡</div>
+          <div class="ability-content">
+            <div class="ability-name">Escudo do Protetor <span class="ability-tag">Passivo</span></div>
+            <div class="ability-desc">Quando um aliado a até 15 pés de você seria reduzido a 0 HP, você pode usar sua Reação para absorver metade do dano — transferindo-o para si mesmo.</div>
+            <div class="ability-quote">"O instinto de ficar entre os que ama e o perigo agora tem forma mecânica."</div>
+          </div>
+        </div>
+        <div class="ability-entry">
+          <div class="ability-icon">✦</div>
+          <div class="ability-content">
+            <div class="ability-name">Presença Ancestral <span class="ability-tag">1× por Descanso Longo</span></div>
+            <div class="ability-desc">Como Ação Bônus, manifesta-se como a linhagem Sepet completa por 1 minuto. Aliados a 30 pés ganham +2 em todas as rolagens de ataque e salvaguarda. Inimigos que o vejam devem fazer Salvaguarda de Sabedoria CD 14 ou ficam abalados (desvantagem em ataques contra você) por 1 rodada.</div>
+            <div class="ability-quote">"Cinco mil anos de sangue protegendo os seus."</div>
+          </div>
+        </div>
+        <div class="ability-entry">
+          <div class="ability-icon">☽</div>
+          <div class="ability-content">
+            <div class="ability-name">Nome Gravado <span class="ability-tag">Permanente</span></div>
+            <div class="ability-desc">Seu nome está nas paredes da Câmara. Enquanto a Vila Sepet existir, você não pode ser apagado — magias de supressão de identidade, amnésia forçada ou dissolução de linhagem não funcionam contra você dentro do perímetro da Vila.</div>
+            <div class="ability-quote">"Leyn Sepet. Aquele que protege porque sempre foi feliz fazendo isso. E não deixou o mundo tirar isso dele."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~05h10</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">De Volta à Família</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>A porta abre sozinha. A luz branca se apaga completamente atrás de você. Do outro lado, nas catacumbas, você ouve Kaira — que claramente estava sentada com as costas na porta — quase cair para trás quando ela abre.</p>
+    </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira Sepet</div>
+      <div class="dialogue-text">"TIO!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Ela se levanta num salto, olhos dourados varrendo você de cima a baixo procurando ferimentos. Quando não encontra nenhum, a expressão muda de pânico para alívio para algo que não tem nome, mas que parece muito com orgulho. Ela não pergunta como foi. Só abre os braços.</p>
+      <p>Você abraça Kaira de volta. Ela é mais forte agora — os braços que te seguram têm a força de uma primordial completa — mas o abraço em si é o mesmo de sempre. A sobrinha que passou cem anos sem família e ainda não acredita completamente que existe uma. Você deixa durar o tempo que ela precisar.</p>
+      <p>Quando se afastam, você olha ao redor. Mara com aquele sorriso de lado que ela finge que não é sorriso. Elise com as mãos entrelaçadas e os olhos brilhando. Aldric de costas, aparentemente absorto no Grimório — mas você conhece vampiros antigos o suficiente para saber que ele não perdeu um segundo da cena. Tobias está sentado numa pedra com a expressão de alguém que veio entregar uma carta e acabou assistindo à história toda de outra pessoa.</p>
+    </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Por quanto tempo fiquei fora? Dentro daquela sala pareceu que se passaram apenas alguns minutos."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira Sepet</div>
+      <div class="dialogue-text">"Quase duas horas, tio."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Ficamos tentando não ficar olhando para a porta."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Eu fiquei olhando para a porta."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira Sepet</div>
+      <div class="dialogue-text">"Eu também."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Eu fiquei olhando para a porta e afiando a adaga. É diferente."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — levantando a mão timidamente</div>
+      <div class="dialogue-text">"Eu dormi uns quarenta minutos no chão. Foi muito longo ficar acordado."</div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Ninguém o Julga</div>
+      <div class="lore-text">Ninguém o julga.</div>
+    </div>
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~05h15</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── XIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Núcleo do Construto — Uma Ideia</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Você se vira para Aldric e coloca nas mãos dele o Núcleo do Construto — a esfera de cristal negro, pesada, com aquele pulso lento e desconfortável que parece errado demais para ser ignorado.</p>
+    </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Você sabe como funciona?"</div>
+    </div>
+
+    <div class="voss-block">
+      <div class="voss-label">Aldric Voss — Análise do Núcleo</div>
+      <div class="voss-body">
+        <p>"É âncora. O que anima um Construto não é a pedra nem a carne — é a vontade que foi comprimida dentro disso aqui. Geralmente vontade roubada. Memória de alguém ou algo que não escolheu estar dentro."</p>
+        <p>Ele o vira lentamente nas mãos.</p>
+        <p>"Este está rachado. A vontade dentro está... dispersando. Como fumaça saindo de uma jarra quebrada. <em>Em algumas semanas não vai restar nada aproveitável.</em>"</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Seria possível integrar esse núcleo a uma espada? Para criar uma espada... viva?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Aldric finalmente te olha. É uma das poucas vezes que você vê genuína surpresa no rosto dele. Não choque — surpresa calculada, de quem não esperava a pergunta mas imediatamente começa a processar as implicações. Ele fica em silêncio por quase dez segundos.</p>
+    </div>
+    </div>
+
+    <div class="voss-block">
+      <div class="voss-label">Aldric Voss — Resposta sobre a Espada Viva</div>
+      <div class="voss-body">
+        <p>"Tecnicamente sim. Já foi feito antes. Não com núcleos de Construto especificamente, mas o princípio é o mesmo."</p>
+        <p>"O problema é o que está dentro. Uma espada com vontade roubada e corrompida vai <strong>lutar contra o portador</strong> tanto quanto contra o inimigo. Você precisaria ou purificar o núcleo antes de integrar..."</p>
+        <p>Pausa.</p>
+        <p>"...ou substituir o que está dentro por outra coisa. <strong>Uma vontade que quisesse estar lá.</strong>"</p>
+        <p>"Não é trabalho de dias. E não é trabalho que se faz às pressas."</p>
+        <p>Seus olhos vermelhos ficam em você um momento a mais. "Mas é uma ideia que merece ser perseguida. <em>Guarde isso com cuidado.</em>"</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~05h20</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── XIV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Kael e o Caixão Vazio</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — para a Sentinela</div>
+      <div class="dialogue-text">"Meu avô. Kael Sepet. Ele provavelmente morreu lá dentro. Você nunca considerou entrar para verificar? Para checar se o corpo ainda está lá?"</div>
+    </div>
+
+    <div class="history-block">
+      <div class="history-label">A Sentinela — Sobre Kael e a Porta Fechada</div>
+      <div class="history-body">
+        <p>"Esta unidade considerou. Múltiplas vezes ao longo de noventa e sete anos."</p>
+        <p>"A decisão foi: não."</p>
+        <p>"Kael Sepet construiu e gravou seu próprio nome na tumba antes de entrar naquela sala. Esta unidade observou o processo. Levou quatro dias. Ele trabalhou com as próprias mãos."</p>
+        <p>"Quando terminou, veio até esta unidade e disse três palavras."</p>
+        <p><strong>"'Pode me substituir.'"</strong></p>
+        <p>"E entrou."</p>
+        <p>"Esta unidade interpretou isso como instrução clara. Ele não queria ser encontrado. Não queria ser perturbado. Escolheu aquele lugar e aquela forma de partir. Respeitar isso pareceu mais importante do que a curiosidade de confirmar o óbvio."</p>
+        <p>A armadura flutuante se volta para você com o que, em um ser com rosto, seria uma expressão de peso.</p>
+        <p><strong>"Mas você está certo quanto ao caixão. Está vazio."</strong></p>
+        <p>"Esta unidade sabe porque foi ela quem o construiu. A pedido dele. Ele disse: 'Faça um para mim. Para que não seja o único sem nome gravado.'"</p>
+        <p>"Foram os últimos três dias que esta unidade passou com alguém antes de você chegar."</p>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Kaira está muito quieta. Você sabe que ela está pensando no avô que nunca conheceu — no homem que ficou sozinho enterrando cento e quarenta e sete nomes por três anos antes de gravar o próprio.</p>
+      <p>Mara pousa uma mão no ombro de Kaira, suave. Tobias está olhando para o chão com a expressão de quem entende perda mesmo sem entender o contexto. Você deixa o silêncio existir.</p>
+    </div>
+    </div>
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~05h22</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── XV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Três Coisas Urgentes</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Você estende a mão para Tobias. Ele entrega o pergaminho sem perguntas. Você quebra o lacre.</p>
+    </div>
+    </div>
+
+    <div class="letter-block">
+      <div class="letter-seal">
+        <span class="letter-seal-glyph">☊</span>
+        <span class="letter-seal-text">Pergaminho de Marcus &nbsp;·&nbsp; Lacre Pessoal · Cera Vermelha</span>
+      </div>
+      <div class="letter-text">
+        <p>"Leyn —</p>
+        <p>Três coisas que precisas saber antes que eu consiga chegar até você pessoalmente.</p>
+        <p class="warning">Primeira: dois dos soldados que ficaram conosco desapareceram na noite após sua partida. Não houve luta, não houve sangue. As armaduras estavam dobradas no chão dos quartos como se alguém tivesse simplesmente... saído delas. O Veterano acha deserção. Eu acho outra coisa. Cuidado com quem te segue.</p>
+        <p>Segunda: uma criança da aldeia ficou doente. Febre que não cede, olhos que ficam pretos por alguns segundos e voltam ao normal. A mãe jura que começou na noite que o padre explodiu. Não sei o que é. Mas sei que não é natural.</p>
+        <p class="urgent">Terceira, e mais urgente: encontrei escondido sob o assoalho da casa onde o padre ficou um mapa. Diferente do que vocês levaram. Este mostra algo que o outro não tem — uma marca a sudeste de Vila Sepet, aproximadamente sessenta quilômetros. Símbolo que não reconheço, mas Aldric provavelmente sim.</p>
+        <p>Tobias insistiu em vir junto. Não consegui convencê-lo do contrário depois que expliquei onde ficava a Vila. Desculpa pela inconveniência.</p>
+        <p>Confio que você e sua família estão bem.</p>
+      </div>
+      <div class="letter-sig">— Marcus</div>
+    </div>
+
+    <div class="revelation-block">
+      <div class="revelation-label">Três Alertas de Marcus</div>
+      <ol class="revelation-list">
+        <li><strong>Dois soldados desapareceram</strong> — armaduras dobradas no chão, sem rastro. Marcus suspeita de algo além de deserção.</li>
+        <li><strong>Criança doente na aldeia</strong> — febre persistente, olhos ficando pretos por segundos. Começou na noite da morte do padre.</li>
+        <li><strong>Mapa secundário encontrado</strong> — marca a sudeste da Vila Sepet, ~60 km. Símbolo desconhecido para Marcus.</li>
+      </ol>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Você termina de ler. O silêncio que se segue tem textura diferente. Aldric se aproxima devagar.</p>
+    </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Posso?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Você estende o pergaminho. Ele lê rapidamente. Quando chega à terceira parte, para. Não é pergunta. É reconhecimento.</p>
+    </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — olhos um meio tom mais escuros</div>
+      <div class="dialogue-text">"Símbolo a sudeste. Eu sei o que é."</div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Aldric Sabe</div>
+      <div class="lore-text">Mas não diz imediatamente o que é — e pelo jeito que os olhos vermelhos dele ficaram um meio tom mais escuros, você sabe que não é notícia simples.</div>
+    </div>
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~05h25</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── XVI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XVI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Anel e o Grimório de Técnicas Sepet</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Você tira o Anel de Prata da caixa de madeira escura que Aldric trouxe. A gema vermelha no centro pulsa uma vez quando você o desliza no dedo — reconhecimento de sangue, igual à armadura de Kaira. A gravação interna toca sua pele:</p>
+    </div>
+    </div>
+
+    <div class="vision-block">
+      <div class="vision-label">O Anel de Prata — Ao Ser Vestido</div>
+      <div class="vision-text">Não é apenas anel. É memória comprimida. Cinco mil anos de linhagem Sepet encapsulados em prata e pedra vermelha, aguardando alguém com sangue suficiente para ouvi-los. Por enquanto — apenas presença. Como ter a mão de alguém que você não vê.</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — para a Sentinela</div>
+      <div class="dialogue-text">"Onde está o Grimório de Técnicas Sepet?"</div>
+    </div>
+
+    <div class="dialogue sent">
+      <div class="dialogue-speaker">Sentinela</div>
+      <div class="dialogue-text">"Esta unidade aguardava que fosse solicitado."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Ela retorna do Arsenal com um volume de aparência modesta mas de presença impressionante. Encadernado em couro negro que parece novo apesar de ser muito antigo — as runas na capa são douradas, não gravadas, <em>crescidas</em>, como se o couro as tivesse absorvido com o tempo. As páginas têm cheiro de pergaminho muito velho preservado por magia.</p>
+    </div>
+    </div>
+
+    <div class="grimoire-block">
+      <div class="grimoire-header">Grimório de Técnicas Sepet &nbsp;·&nbsp; Compilado pelos Mestres das Gerações Três até Onze</div>
+      <div class="grimoire-body">
+        <div class="grimoire-section">
+          <span class="grimoire-roman">I</span>
+          <span class="grimoire-name">Fundamentos do Combate Primordial</span>
+          <span class="grimoire-status readable">Legível</span>
+        </div>
+        <div class="grimoire-section">
+          <span class="grimoire-roman">II</span>
+          <span class="grimoire-name">Técnicas de Sangue: Uso Ofensivo e Defensivo</span>
+          <span class="grimoire-status partial">Parcialmente Legível</span>
+        </div>
+        <div class="grimoire-section">
+          <span class="grimoire-roman">III</span>
+          <span class="grimoire-name">Vínculo de Arma Avançado: Além do Básico</span>
+          <span class="grimoire-status readable">Legível</span>
+        </div>
+        <div class="grimoire-section">
+          <span class="grimoire-roman">IV</span>
+          <span class="grimoire-name">A Estocada Perfeita: Variações e Expansões</span>
+          <span class="grimoire-status interest">⭐ Legível — Interesse Imediato</span>
+        </div>
+        <div class="grimoire-section">
+          <span class="grimoire-roman">V</span>
+          <span class="grimoire-name">Técnicas de Proteção: Escudo Vivo</span>
+          <span class="grimoire-status interest">⭐ Legível — Interesse Mara</span>
+        </div>
+        <div class="grimoire-section">
+          <span class="grimoire-roman">VI</span>
+          <span class="grimoire-name">Magia de Sangue Sepet</span>
+          <span class="grimoire-status locked">Primordial Antigo — Ilegível</span>
+        </div>
+        <div class="grimoire-section">
+          <span class="grimoire-roman">VII</span>
+          <span class="grimoire-name">[Páginas Arrancadas]</span>
+          <span class="grimoire-status missing">Destruído</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira Sepet — esticando o pescoço</div>
+      <div class="dialogue-text">"Variações da Estocada?"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — já de pé atrás de você</div>
+      <div class="dialogue-text">"Técnicas de Proteção. Me interessa."</div>
+    </div>
+
+    <div class="scene-block">
+      <div class="scene-label">Situação Final da Saga — Catacumbas Sepet</div>
+      <ul class="scene-list">
+        <li><strong>Leyn:</strong> Provação da Dignidade completada. Três habilidades permanentes. Anel de Prata vestido. Grimório de Técnicas Sepet em mãos.</li>
+        <li><strong>Aldric:</strong> Trabalhando no Grimório do Culto. Estima 1-2 dias para abertura. Sabe o que o símbolo no mapa significa — ainda não revelou.</li>
+        <li><strong>Três alertas de Marcus:</strong> soldados desaparecidos, criança doente, marca misteriosa a sudeste.</li>
+        <li><strong>Prazo:</strong> 3-4 dias antes do próximo ataque em força do Culto.</li>
+        <li><strong>Kaira e Mara:</strong> Ambas de olho no Grimório de Técnicas, querendo estudar suas seções.</li>
+        <li><strong>Tobias:</strong> Acordado do chão. Processando. Sobrevivendo.</li>
+      </ul>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narração</div>
+      <div class="dialogue-text">
+      <p>Aldric ainda está com o pergaminho de Marcus na mão, olhos vermelhos fixos em você com aquela expressão que você está aprendendo a reconhecer como <em>tenho informação importante e estou esperando o momento certo para dar</em>.</p>
+    </div>
+    </div>
+
+    <div class="tracker-row">
+      <div class="tracker hp-tracker">
+        <div class="tracker-label">PV — Final da Saga</div>
+        <div class="tracker-values">
+          <span class="tracker-current">29</span>
+          <span class="tracker-slash">/</span>
+          <span class="tracker-max">43</span>
+        </div>
+        <div class="tracker-bar"><div class="tracker-fill" style="width: 67%"></div></div>
+        <div class="tracker-delta">Sangue de Mara: 19→29 &nbsp;·&nbsp; Provação da Dignidade completa</div>
+      </div>
+      <div class="tracker sanity-tracker">
+        <div class="tracker-label">SAN — Final da Saga</div>
+        <div class="tracker-values">
+          <span class="tracker-current">42</span>
+          <span class="tracker-slash">/</span>
+          <span class="tracker-max">42</span>
+        </div>
+        <div class="tracker-bar"><div class="tracker-fill" style="width: 100%"></div></div>
+        <div class="tracker-delta">Mythos 18% (S8) &nbsp;·&nbsp; teto 50→42 &nbsp;·&nbsp; sem perdas</div>
+      </div>
+    </div>
+
+	    </div>
+
+  </section>
+
+  <!-- FINALE -->
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <span class="scene-divider-glyph chain-flicker">✦</span>
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time highlight">fim da saga xvii &nbsp;·&nbsp; ~05h30</span>
+      <span class="scene-divider-glyph chain-flicker">✦</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <div class="finale-block">
+    <p class="finale-quote">
+      Uma lua vermelha. Um campo de neve.<br>
+      Dois vampiros olhando para o horizonte — sem nome, apenas título:<br>
+      <em>Os Primeiros.</em><br><br>
+      Cinco mil anos depois, o último herdeiro daquele sangue<br>
+      entrou numa sala branca e descobriu<br>
+      que a coisa mais rara neste mundo não é poder.<br>
+      É saber por que você o usa.<br><br>
+      <em>E não deixar o mundo tirar isso de você.</em>
+    </p>
+    <div class="finale-divider"></div>
+    <div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Além do Véu da Carne &nbsp;·&nbsp; Vila Sepet</div>
+  </div>
+
+</div><!-- /page-wrapper -->
+<div id="saga-end-sentinel" style="height:1px;width:100%;position:relative;margin-top:-1px;"></div>
+
+<script>
+  (function () {
+    var tracker  = document.querySelector('.floating-stats');
+    var sentinel = document.getElementById('saga-end-sentinel');
+    if (!tracker || !sentinel) return;
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) { tracker.classList.add('visible'); }
+      });
+    }, { threshold: 0 });
+    observer.observe(sentinel);
+  })();
+</script>
+</body>
+</html>

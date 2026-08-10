@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juramento de Sangue — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">VI</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Juramento<br>de Sangue</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet, Mara Vell, Elise e Kaira</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Dizem que os juramentos mais fortes não nascem sobre espadas cruzadas, mas de joelhos, diante de quem tem todo o direito de recusar. Esta é a lenda de uma aliança selada não em batalha, mas numa escada de subsolo, entre um vampiro de trezentos anos e uma menina que só queria parar de ter medo.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Tempo para Pensar</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn mantinha a mão esquerda segurando a de Kaira. Com a direita, aproximou-se cautelosamente das marcas em seu pescoço.</p>
+
+    <p>Não tocou — ainda. Apenas observou.</p>
+
+    <p>Pensamentos silenciosos se acumulavam, um sobre o outro, como folhas caindo antes da tempestade: o padre de olhos diferentes. A traição que aquilo implicava. O "plano" que envolvera selar uma criança ainda no berço. As correntes que enfraqueceram bem no momento em que ele despertara — coincidência, ou mais um fio da mesma teia? O Devorador, prometendo que "outros Mestres viriam". O mapa ainda dobrado no bolso, com seu próprio vilarejo marcado em vermelho, como se alguém tivesse catalogado a destruição.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Visão Vampírica — As Correntes Espectrais</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>As correntes não eram físicas. Eram impressões mágicas, gravadas diretamente na alma dela.</p>
+
+    <p>Brilhavam com um azul-prateado fraco, pulsando de leve — como batimento cardíaco espectral. Os elos se entrelaçavam ao redor do pescoço, descendo pelas clavículas, desaparecendo sob a pele. Estavam enfraquecidas. Muito. Alguns elos quase transparentes, outros piscando de forma intermitente, como vela prestes a se apagar. Desfaziam-se sozinhas. Em dias, talvez semanas, cairiam por completo.</p>
+
+    <p>Ele quase conseguiu decifrar a estrutura mágica inteira. Percebeu que eram runas de contenção e cultivo. Mas os detalhes mais profundos — o verdadeiro propósito final — escapavam à sua compreensão arcana.</p>
+
+    <p>Tocou levemente uma das marcas.</p>
+
+    <p>Um choque elétrico leve percorreu seus dedos. Não doeu, mas sentiu algo fluindo — informação, gravada como cicatriz na própria magia:</p>
+
+    <p class="echo">…contenção… limitação… potencial selado… aguardar maturação… colheita futura…</p>
+
+    <p>Kaira vivera cem anos como sombra do que deveria ser. As correntes bloquearam sua força vampírica, sua velocidade, sua capacidade de gerar prole, seu acesso a poderes primordiais mais profundos. Ela não fora apenas poupada. Fora cultivada. Como planta que se deixa crescer só para ser colhida depois.</p>
+
+    <p>Kaira se mexeu levemente no sono, sentindo o toque nas correntes. Murmurou, voz sonolenta e assustada:</p>
+
+    <p>"Não… não tira… não ainda… dói quando tentam…"</p>
+
+    <p>Mesmo dormindo, o trauma permanecia, residual, entranhado fundo demais para um simples sono apagar.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Conclusão Fria</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Mas sua intuição de guerreiro, de tio, de protetor, completou o que a magia arcana não revelara.</p>
+
+    <p>As peças se encaixaram, uma a uma, frias como pedras num rio de inverno: olhos de duas cores, azul e dourado — e Kaira tinha os olhos dourados, traço raro da linhagem Sepet, mas não universal. Selene gritara "VOCÊ?!" — não a surpresa de ver um inimigo, mas a traição de alguém íntimo. O padre dissera "você será útil" — não como quem fala de um objeto qualquer, mas como quem fala de uma posse. E ele a selara, ao invés de matá-la, preservando algo dele mesmo nela.</p>
+
+    <p><strong>O padre era o pai dela.</strong></p>
+
+    <p>Um relacionamento proibido. Alguém que Selene amara, e que a traíra. Ele trocara o próprio clã pela sobrevivência, causara ou facilitara o massacre, e preservara a própria filha — não por amor paternal, mas como ferramenta para um dia futuro.</p>
+
+    <p>Uma raiva fria queimou dentro de Leyn. Não explosiva. Calculista.</p>
+
+    <p>Olhou para Kaira, dormindo, segurando sua mão, finalmente em paz.</p>
+
+    <p><em>Isso não vai acontecer. Não vou deixar.</em></p>
+
+    <p>Apertou gentilmente a mão dela.</p>
+
+    <p>Ela não seria ferramenta de ninguém. Não seria sacrificada. Não seria usada.</p>
+
+    <p>Ela era família. E ele protegia a família.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Plano de Defesa</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Mara despertou parcialmente do transe, sentindo através do vínculo a intensidade da emoção dele.</p>
+
+    <p>"Leyn…" murmurou, "você… descobriu algo… sobre as correntes…"</p>
+
+    <p>"Sua raiva…" acrescentou Elise, "está… fria… perigosa… o que você… descobriu…?"</p>
+
+    <p>"Mara, Elise…" disse ele, a voz baixa carregando um peso absoluto, "devemos nos preparar e ficar mais fortes."</p>
+
+    <p>Olhou para as correntes espectrais, piscando fracamente no pescoço da sobrinha adormecida.</p>
+
+    <p>"Um ser que traz destruição virá quando as correntes da Kaira desaparecerem."</p>
+
+    <p>"Quanto tempo temos?" Mara já assumira postura militar. "Dias? Semanas? E que tipo de ser? Cultista? Construto? Algo… pior?"</p>
+
+    <p>"As correntes…" disse Elise, o medo controlado na voz quebrada, "são rastreadores… quando caírem… ele saberá… onde ela está… Precisamos… de plano… de defesa… ou fuga…"</p>
+
+    <p>"Temos recursos limitados," ponderou Mara, já em modo de análise tática. "Esta aldeia não é fortaleza. Os soldados são leais, mas são oito. Nós somos quatro — três combatentes e uma criança." Virou-se para ele. "Leyn, você é líder. O que fazemos?"</p>
+
+    <p>"Podemos… tentar remover… correntes antes… de caírem naturalmente…?" perguntou Elise. "Interromper… o rastreamento…? Ou isso… machuca Kaira… mais…?"</p>
+
+    <p>Kaira continuava dormindo, inconsciente da conversa sobre seu próprio destino. Finalmente em paz, pela primeira vez em um século.</p>
+
+    <p>"Sabemos que virão atrás da gente," disse Leyn, com a clareza fria de um comandante. "Então ficaremos aqui e armaremos algumas armadilhas. Além de fortificar a vila e avisar os cavaleiros."</p>
+
+    <p>"Defesa em terreno conhecido," aprovou Mara. "Inteligente. Temos aldeões que nos devem a vida, soldados leais, conhecimento do território, e tempo para preparar. Mas precisamos começar AGORA. Assim que o sol se pôr."</p>
+
+    <p>"Eu posso…" calculou Elise, "cavar buracos… minha boca… escava bem… armadilhas… no chão… E posso… preparar ácido… mais forte… se tiver… ingredientes…"</p>
+
+    <p>"Precisaremos dividir tarefas," continuou Mara. "Você é líder, Leyn. Como organizamos? E Kaira… quando ela acordar… mantemos ela escondida? Ou a treinamos também?"</p>
+
+    <p>"Quanto…" hesitou Elise, "contamos… aos soldados? Sobre as correntes? Sobre o que… vem?"</p>
+
+    <p>Faltavam ainda cerca de duas horas até Kaira despertar naturalmente do transe.</p>
+
+    <p>"Vamos contar somente o necessário aos soldados," decidiu Leyn.</p>
+
+    <p>"Verdade estratégica sem revelar tudo," concordou Mara. "Inteligente. Eles lutarão melhor contra 'reforços da Igreja' do que contra 'entidade antiga rastreando criança vampira'."</p>
+
+    <p>"Nós três treinaremos aqui na oficina," disse ele. "E se a Kaira tiver interesse, ela também poderá treinar."</p>
+
+    <p>"Treino… em família…" murmurou Elise, "bom… ela precisa… saber defender-se…"</p>
+
+    <p>"Temos também que procurar um novo ferreiro entre os aldeões," acrescentou Leyn.</p>
+
+    <p>"Ferreiro profissional é improvável em aldeia pequena," ponderou Mara. "Mas alguém com experiência em metais? Talvez. Carpinteiro, ferradores, caçadores que fazem manutenção…"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Kaira Desperta. O Visitante Chega.</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Os olhos dourados de Kaira se abriram lentamente. Pela primeira vez em cem anos, ela acordara naturalmente — não por perigo, não por fome.</p>
+
+    <p>Ainda segurava a mão dele.</p>
+
+    <p>"Tio…" disse, um sorriso pequeno mas genuíno se formando, "eu… eu dormi… de verdade… não tive pesadelos…"</p>
+
+    <p>Então percebeu Mara e Elise já acordadas, olhando para Leyn com seriedade.</p>
+
+    <p>"O que… aconteceu?" perguntou. "Por que vocês estão… sérios?"</p>
+
+    <p>Do alto da escada: <strong>BAM BAM BAM.</strong> Batida na porta. A voz de Marcus.</p>
+
+    <p>"Senhor Leyn! O sol está se pondo! E… precisamos falar. Temos… visitante. Alguém que diz conhecer vampiros primordiais." Uma pausa tensa. "Não é hostil. Mas… é estranho. Muito estranho."</p>
+
+    <p>"Kaira," disse Leyn, tranquilizador, "estávamos montando um plano caso a mesma pessoa que atacou nossa vila volte a aparecer. Mas não se preocupe com isso ainda."</p>
+
+    <p>Ela assentiu. Mas ele viu — ela entendera a gravidade. Cem anos sobrevivendo sozinha a ensinaram a ler entrelinhas.</p>
+
+    <p>"Entendo, tio," disse. "Vou… vou esperar aqui."</p>
+
+    <p>"Vocês três fiquem aqui embaixo," disse ele a Mara e Elise. "Vou subir e ver do que se trata."</p>
+
+    <p>"Se for armadilha, grite," disse Mara, já em posição defensiva. "Estaremos lá em segundos."</p>
+
+    <p>"Cuidado…" acrescentou Elise, movendo-se para o lado de Kaira, "visitante estranho… após tudo… que aconteceu…"</p>
+
+    <p>"Volte logo, tio…" disse Kaira, segurando-se na cintura de Elise.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Aldric Voss — Linhagem Paralela</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele subiu. Degraus de pedra rangeram sob as botas. Elmo fechado na cabeça, espada longa à cintura — parecia exatamente o que era: guerreiro veterano pronto para a guerra.</p>
+
+    <p>"Senhor Leyn," disse Marcus. "O visitante está do lado de fora. Disse que… que 'sentiu o despertar de sangue primordial' e veio investigar." Uma pausa. "Ele… não é humano. Mas também não ataca. Apenas… espera. E pede para falar com você. Especificamente."</p>
+
+    <p>Uma figura alta, quase dois metros, capa negra com capuz baixo. Mãos pálidas cruzadas à frente, dedos longos e elegantes. Olhos vermelhos — como os dele — mas mais velhos. Muito mais velhos. Cicatrizes antigas no pescoço, um anel de prata incomum no dedo. Postura de guerreiro, não de cortesão. Cheiro de sangue velho, floresta, e algo mais — livros, talvez. Pergaminho. Palidez absoluta, e uma presença de poder antigo que emanava dele como calor de uma fogueira distante.</p>
+
+    <p>Leyn se virou para Marcus antes que o vampiro se aproximasse mais.</p>
+
+    <p>"Marcus, por que a barreira que disse para erguerem não o afeta? Vocês não usaram as runas certas?"</p>
+
+    <p>"Nós… nós desenhamos as runas de proteção básica, senhor," gaguejou Marcus, empalidecendo. "As que aprendemos no treinamento. Contra mortos-vivos menores, espíritos, corrupção… Mas contra vampiro PRIMORDIAL? Isso requer runas de alta ordem. Nós não…"</p>
+
+    <p>"As runas funcionam contra carniçais, zumbis, fantasmas menores," explicou o veterano. "Mas vampiro primordial é como tentar parar um tsunami com cerca de madeira. Se ele quisesse atacar, já estaria dentro."</p>
+
+    <p>O visitante, ainda à distância, ouvia tudo com audição vampírica. Sorriu de leve — não de zombaria, mas de compreensão.</p>
+
+    <p>"Suas runas são adequadas para ameaças comuns, soldados," disse. "Mas primordiais somos outra categoria."</p>
+
+    <p>Aproximou-se. Parou a dez pés de distância.</p>
+
+    <p>"Leyn Sepet. Último da linhagem Sepet. Ou… talvez não mais o último, se os rumores estão corretos." Inclinou a cabeça, em respeito. "Meu nome é Aldric Voss. Linhagem Voss — paralela à sua, não inimiga." Uma pausa. "Vim porque… senti algo impossível. Um primordial que MORREU… e RETORNOU. Isso não acontece. Nunca aconteceu." Outra pausa, mais grave. "E então senti… outra presença primordial. Jovem. Selada. Despertando. Você encontrou um sobrevivente. Da noite do massacre. Não encontrou?"</p>
+
+    <p>Sua voz ganhou urgência.</p>
+
+    <p>"Leyn Sepet. Eu não sou inimigo. Mas preciso saber: o que você planeja? Porque se as correntes caírem completamente… ELES virão. E não apenas um padre corrupto. Virá a Igreja. Virão os Cultos. E talvez… talvez algo pior."</p>
+
+    <p>"Senhor…" sussurrou Marcus, "ele é aliado? Inimigo? Você conhece esse vampiro?"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Diálogo dos Últimos</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn respondeu com voz firme. Sem hesitação.</p>
+
+    <p>"Aldric Voss, não me lembro de você."</p>
+
+    <p>"Não deveria," disse Aldric. "Linhagem Voss vivia nos territórios do norte. Distante de Sepet. Nossos clãs se encontravam raramente — apenas em conclaves de anciãos a cada século."</p>
+
+    <p>"E também não imaginava ver tantos da linhagem primordial ainda vivos."</p>
+
+    <p>"Tantos?" Curiosidade genuína atravessou o rosto de Aldric. "Você tem… outros? Além da criança selada?"</p>
+
+    <p>"Eu sou aquele que morreu e retornou," disse Leyn. "Mas como pode perceber, houve mudanças."</p>
+
+    <p>Aldric o estudou intensamente, os olhos vermelhos varrendo-o de cima a baixo — não com agressão, mas com análise.</p>
+
+    <p>"Sim… vejo," murmurou, franzindo a testa. "Seu sangue… é diferente. Não é apenas primordial. Há… compaixão? Humanidade? Impossível, mas… está lá." Uma pausa. "Você não deveria existir. E ainda assim, existe."</p>
+
+    <p>"Planejo derrotar quem deve ser derrotado e poupar os que nada sabem," disse Leyn, a mão no peito, confiante. "Ainda que a Igreja do Sol Agonizante, ou o Culto da Verdade Profunda, ou até aqueles seres ancestrais venham…"</p>
+
+    <p>Aldric se tensionou visivelmente ao ouvir "seres ancestrais".</p>
+
+    <p>"Você…" disse, espanto genuíno na voz, "você ENFRENTOU um dos Mestres? E sobreviveu?"</p>
+
+    <p>"…não é como na última vez," respondeu Leyn. "Agora temos tempo para nos preparar. Eu não cairei de novo. Não perderei minha família novamente."</p>
+
+    <p>Aldric ficou em silêncio por um longo momento.</p>
+
+    <p>"Família," disse, finalmente, e havia algo em sua voz que soava como saudade. "Você chama isso de família agora. Não clã. Não linhagem. Família."</p>
+
+    <p>"Então eu também me questiono, senhor Aldric," disse Leyn, encarando-o. "Você é um aliado ou um inimigo?"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Cinzas de Voss</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Aldric respirou fundo — desnecessário, mas hábito antigo de quatro séculos. Abriu a capa, mostrando que não carregava armas visíveis.</p>
+
+    <p>"Leyn Sepet. Vou ser direto porque você merece." Uma pausa pesada. "Sou o que resta da linhagem Voss. Meu clã também foi… destruído. Há trezentos anos. Pela mesma coalizão — Igreja, Cultos, e traição interna."</p>
+
+    <p>A dor atravessou seu rosto.</p>
+
+    <p>"Sobrevivi porque… porque abandonei meu clã. Estava caçando em território distante quando atacaram. Quando voltei… cinzas."</p>
+
+    <p>"Quando falo 'tantos'," disse Leyn, considerando, "me referia ao seu clã. Mas não imaginava que já estariam… me desculpe."</p>
+
+    <p>"Agradecido pela consideração," disse Aldric. "Não é fácil ser… o último. Você entende isso melhor que ninguém." Uma pausa. "Ou entendia. Até encontrar sobreviventes."</p>
+
+    <p>Respirou fundo mais uma vez — não pela dor física, mas pela antiga.</p>
+
+    <p>"Desde então, vivo escondido. Estudando. Procurando sobreviventes. E tentando entender… POR QUÊ. Por que massacraram todos os primordiais? Qual o propósito?"</p>
+
+    <p>Trezentos anos de estudo haviam lhe ensinado isto: a mesma coalizão que destruíra os Sepet destruíra os Voss, três séculos antes. Traição interna em ambos os casos — os massacres nunca foram apenas externos, alguém de dentro sempre facilitava. Um padrão claro de extermínio sistemático de todas as linhagens primordiais. Propósito desconhecido, mas não aleatório. Nada daquilo fora aleatório.</p>
+
+    <p>"E então sinto você," disse Aldric, olhando diretamente para Leyn. "Morto e ressuscitado. Com criança selada. Preparando defesa contra o inevitável."</p>
+
+    <p>Estendeu a mão — um gesto humano, não vampírico.</p>
+
+    <p>"Leyn Sepet, eu ofereço aliança. Não vassalagem. Não submissão. ALIANÇA. Ajudo você a proteger sua família. Você me ajuda a entender o que está acontecendo. E juntos… talvez descubramos a verdade."</p>
+
+    <p>"Enfrentar é uma palavra forte," disse Leyn. "Mas sobrevivi ao encontro com um, mesmo estando debilitado."</p>
+
+    <p>"Sobreviver a um Mestre Antigo, debilitado…" Aldric parecia genuinamente impressionado. "Isso é… extraordinário. Ou sorte tremenda. Ou você é mais forte do que aparenta." Uma pausa reflexiva. "Começo a entender por que você ressuscitou. Você é… persistente demais para simplesmente morrer."</p>
+
+    <p>"Aldric, ter você por aqui nos ajudaria bastante," disse Leyn. "Entre." Um aviso firme se seguiu. "Mas aviso: seja cuidadoso. Não seja rude com as garotas."</p>
+
+    <p>"Garotas? Plural?" Aldric pareceu genuinamente surpreso. "Você tem… companheiras? Prole?" Uma pausa, e então compreensão. "Ah. Sua 'família'. Entendo."</p>
+
+    <p>"Mara e Elise, que lutam ao meu lado," disse Leyn. "E Kaira. Minha sobrinha. Filha da minha irmã Selene."</p>
+
+    <p>Aldric absorveu o nome em silêncio, guardando-o com o cuidado de quem sabe o peso de um nome de família perdida.</p>
+
+    <p>Colocou a mão sobre o coração — juramento antigo.</p>
+
+    <p>"Juro por minha linhagem Voss: tratarei sua família com respeito devido. Nenhuma rudeza. Nenhuma ameaça."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">As Correntes Quebradas — Runas para o Futuro</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn se virou para Marcus. Tirou as correntes quebradas de prata alquímica que ainda carregava consigo — as mesmas que usara contra o primeiro cultista, agora guardadas como arma improvisada. As runas de contenção ainda brilhavam fracamente nelas: a mesma magia que suprimira seus poderes vampíricos durante o século de prisão.</p>
+
+    <p>"Marcus, faça algo parecido com isso."</p>
+
+    <p>"Estas são…" Marcus examinou as correntes com os olhos arregalados, "runas de alta contenção. Nível de Arcebispo. Eu… Senhor, eu não tenho conhecimento para CRIAR runas deste nível. Apenas para copiar padrões básicos."</p>
+
+    <p>"Mas podemos COPIAR estas, se tivermos materiais," disse o veterano, aproximando-se. "Prata, cinzel, tempo… e alguém com mão firme. Talvez dois ou três dias para fazer versões funcionais. E precisaríamos de mais prata."</p>
+
+    <p>"Posso ajudar com isso," ofereceu Aldric, observando as correntes. "Conheço runas antigas. Não sou mago, mas… trezentos anos estudando dá alguma compreensão." Uma pausa educada. "Se me permite, claro."</p>
+
+    <p>"Com ajuda dele," disse Marcus, aliviado, "talvez consigamos em um ou dois dias. Barreiras melhores. Armadilhas rúnicas. Proteções reais."</p>
+
+    <p>O plano se formou rapidamente: as correntes originais de prata alquímica serviriam de molde para copiar as runas de alta contenção. Aldric, com seus três séculos de estudo, orientaria a recriação. Elise cavaria armadilhas físicas com a própria boca e prepararia ácido concentrado. Treinariam juntos, em família, no subsolo da oficina — Kaira incluída, se quisesse. E os aldeões receberiam apenas a verdade estratégica necessária: "reforços da Igreja virão." Nada de detalhes sobrenaturais.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Aldric Desce. Kaira Entra em Pânico.</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Aldric entrou na casa. Movia-se com graça silenciosa, observando tudo — a simplicidade, os sinais de habitação recente, a escada que descia ao subsolo.</p>
+
+    <p>"Então… sua família está embaixo?"</p>
+
+    <p>Através do vínculo, Leyn sentiu tudo de uma vez: Mara e Elise, percebendo outro primordial entrando, já em posição de combate. E Kaira — aterrorizada. Outro vampiro antigo ativara todos os traumas dela. Ele a ouviu murmurar, tremendo: "Não... não... outro deles... vão me selar de novo... vão me usar..."</p>
+
+    <p>Aldric percebeu a hesitação dele.</p>
+
+    <p>"Elas não me conhecem," disse. "E têm razão para temer primordiais desconhecidos. Posso esperar aqui, se preferir preparar o terreno."</p>
+
+    <p>Leyn parou no topo da escada. Não desceu. Manteve posição onde podia ver tanto Aldric quanto o subsolo — vigilância discreta, mas absoluta.</p>
+
+    <p>Aldric percebeu, e respeitou. Afastou-se alguns passos. Mãos visíveis. Postura não-ameaçadora.</p>
+
+    <p>"Subam," chamou Leyn para baixo. "Tem alguém que quero apresentar para vocês. Um aliado."</p>
+
+    <p>Silêncio tenso vindo do subsolo. Depois, passos.</p>
+
+    <p>Mara subiu primeiro. Escudo à frente, adaga de prata na outra mão, postura de guarda-costas profissional. Emergiu e congelou ao ver Aldric. Olhos vermelhos encontraram olhos vermelhos. Avaliação completa em dois segundos: poder, antiguidade, perigo real. Posicionou-se ligeiramente entre Leyn e o recém-chegado — protetora, por instinto.</p>
+
+    <p>Elise subiu em seguida, mais hesitante. Sua boca vertical se abriu de leve, reflexo defensivo, antes que ela se controlasse e ficasse ao lado de Mara.</p>
+
+    <p>Kaira não subiu.</p>
+
+    <p>"Tio…" veio a voz pequena e assustada, do subsolo, "eu... eu não consigo... desculpa... o cheiro dele... me lembra... daquele dia..."</p>
+
+    <p>Ela estava tendo um ataque de pânico.</p>
+
+    <p>"A criança selada," disse Aldric, reconhecendo. "Ela tem trauma. De primordiais. Entendo." Não se ofendeu. Apenas reconheceu. Virou-se para Mara e Elise, fazendo uma reverência formal — gesto vampírico antigo. "Presumo que sejam prole de Leyn. Honrado em conhecê-las. Sou Aldric Voss."</p>
+
+    <p>"Aldric Voss," disse Mara, o escudo ainda erguido. "Leyn disse que você é aliado. Mas perdoe minha desconfiança — já fomos traídos demais. O que você ganha com essa aliança?"</p>
+
+    <p>"E como… sabemos…" acrescentou Elise, a voz trêmula mas corajosa, "que não é… armadilha…?"</p>
+
+    <p>"Perguntas justas," respeitou Aldric. "O que eu ganho? Verdade. Companhia. E talvez… redenção. Abandonei meu clã quando precisavam. Vivi três séculos em vergonha. Ajudar vocês é tentativa de fazer o certo, mesmo que tarde." Uma pausa. "Quanto a ser armadilha — não tenho como provar instantaneamente. Apenas tempo e ações demonstrarão."</p>
+
+    <p>"Leyn, você confia nele?" perguntou Mara.</p>
+
+    <p>"Eu entendo a preocupação de vocês," disse ele, a voz firme e clara. "Ele jurou pelo nome da família dele. Se tudo que ele disse até agora for verdade, então eu confio nele."</p>
+
+    <p>Mara manteve o escudo erguido por mais um momento. Então, lentamente, abaixou.</p>
+
+    <p>"Se você confia, eu confio," disse a Aldric. "Mas um movimento errado, e prata encontra seu coração. Entendido?"</p>
+
+    <p>"Entendo perfeitamente," disse Aldric. "E esperado. Proteger família é dever sagrado."</p>
+
+    <p>"Desculpe… desconfiança…" murmurou Elise, relaxando um pouco, "mas… Leyn é… nosso líder… nossa família… não podemos… arriscar…"</p>
+
+    <p>"Não peçam desculpas por lealdade," disse Aldric, gentil, sem condescendência. "É virtude rara nestes tempos sombrios."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Pirralha Mimada</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn desceu a escada. Devagar. Visível. Não queria assustá-la mais.</p>
+
+    <p>Kaira estava encolhida no canto mais escuro do subsolo, abraçando os joelhos, tremendo. As botas que ele lhe dera estavam largadas ao lado — ela as tirara, como quem se prepara para fugir descalça pela floresta mais uma vez.</p>
+
+    <p>Ajoelhou-se diante dela, na altura dos olhos.</p>
+
+    <p>"Eu estou aqui."</p>
+
+    <p>"Tio…" ela hiperventilava, "ele... ele é como aquele padre... primordial... poderoso... vai me levar... vai me usar..."</p>
+
+    <p>"Você lembra do que te prometi, certo?"</p>
+
+    <p>"Você... você disse..." ela se segurava na promessa como quem se segura numa corda, "que nenhum mal... vai me alcançar... aqui..."</p>
+
+    <p>"E eu cumpro minhas promessas," disse ele, o olhar firme e constante.</p>
+
+    <p>Mas a honestidade dele — por mais real que fosse — não era o que ela precisava ouvir naquele momento.</p>
+
+    <p>"Mas..., mas ele é tão forte..." o medo dela era racional, calculado. "tio... se ele quiser me pegar... você... você consegue me proteger dele?"</p>
+
+    <p>"Não garanto que consigo vencê-lo sozinho," disse ele, com honestidade. "Mas eu não estou sozinho aqui. Preciso que você confie em mim. Se você não estiver do meu lado, eu não posso fazer nada para te proteger."</p>
+
+    <p>A responsabilidade agora estava sobre ela. Uma criança de cento e dez anos que passara cem deles sozinha, aterrorizada, sem escolhas. Liberdade — mas liberdade aterroriza quem só conheceu prisão.</p>
+
+    <p>"Eu... eu não sei... tio... e se eu escolher errado... e se ele me pegar... e se..." A voz dela quebrou, espiral de pânico se fechando. "Eu sobrevivi cem anos FUGINDO... escondendo... não confiando em NINGUÉM além de mim... E agora você quer que eu... que eu apenas... CONFIE?" Desmoronou de vez. "E se eu errar de novo? E se eu confiar... e todos morrerem... como minha mãe... como o vilarejo... e eu fico sozinha... DE NOVO?"</p>
+
+    <p>Não era só medo de Aldric. Era medo de se apegar. De perder tudo, outra vez. Cem anos haviam ensinado a ela que confiar era sinônimo de luto. A liberdade de escolher aterrorizava mais que as próprias correntes.</p>
+
+    <p>Passos desceram a escada. Não eram de Aldric.</p>
+
+    <p>Era Mara.</p>
+
+    <p>Parou no meio do caminho. Viu Kaira em pânico total. Viu Leyn tentando, e falhando, em acalmá-la. Desceu o resto do caminho, devagar, e se ajoelhou ao lado dele, olhando para Kaira.</p>
+
+    <p>"Kaira. Olhe para mim."</p>
+
+    <p>A menina ergueu os olhos, tremendo.</p>
+
+    <p>"Você sabe o que eu era?" disse Mara. "Aberração. Monstro. Aprisionada por décadas. Transformada contra minha vontade. Perdi minha humanidade. Perdi meu nome. Perdi TUDO." Apontou para si mesma. "E então Leyn apareceu. E você sabe o que ele fez? Ele me viu. Não como monstro. Como PESSOA. Me deu ESCOLHA. Me transformou mantendo minha alma."</p>
+
+    <p>Estendeu a mão.</p>
+
+    <p>"E sim, tenho medo. Todo dia. Medo de que isso seja sonho. Medo de perder essa família. Medo de que os monstros voltem." Uma pausa. "Mas Kaira... medo não desaparece. Nunca desaparece completamente. Você apenas... aprende a andar COM ele. Ao lado de pessoas que também têm medo."</p>
+
+    <p>Kaira a estudou, processando.</p>
+
+    <p>"Você... você também tem medo?"</p>
+
+    <p>"Todo. Santo. Dia." Mara sorriu — triste, mas real. "Mas tenho Leyn. Tenho Elise. E agora... tenho você. E juntos, o medo é... suportável."</p>
+
+    <p>A respiração de Kaira, ainda irregular, começou a desacelerar.</p>
+
+    <p>"Se... se eu subir... e ele fizer algo... vocês vão me proteger?"</p>
+
+    <p>"Com minha vida," disse Mara, sem hesitar.</p>
+
+    <p>Kaira olhou para Leyn, esperando sua confirmação. Ele estendeu as mãos, devagar. Previsível. Dando a ela tempo para recusar, se quisesse.</p>
+
+    <p>Ela não recusou.</p>
+
+    <p>Ele a abraçou. Firme, mas gentil. Protetor absoluto.</p>
+
+    <p>"Não me faça repetir o que já te disse," disse, um tom que misturava carinho e exasperação de tio, "pirralha mimada."</p>
+
+    <p>Kaira congelou. Silêncio. Um segundo, apenas.</p>
+
+    <p>Então — ela riu.</p>
+
+    <p>Não uma risada completa. Um soluço-riso, o som quebrado de quando a emoção é forte demais para ter só um nome.</p>
+
+    <p>"Pirralha... mimada...? EU?" Enterrou o rosto no peito dele, ainda rindo e chorando ao mesmo tempo. "Eu comi RATOS por cem anos... e você... me chama... de MIMADA...?"</p>
+
+    <p>"Ele tem razão, sabe," disse Mara, sorrindo largamente. "Você está sendo um pouquinho dramática."</p>
+
+    <p>"EU NÃO SOU DRAMÁTICA!" protestou Kaira, indignada através das lágrimas. "Tem um VAMPIRO ANTIGO ASSUSTADOR lá em cima!"</p>
+
+    <p>Mas estava sorrindo agora. Pequeno, mas real. O corpo relaxando. A respiração se estabilizando. O tremor parando.</p>
+
+    <p>"Tio Leyn…" disse, chorosa mas mais firme, "se você diz que ele é... aliado... e promete que me protege... então... então eu confio." Uma pausa, fofa e séria ao mesmo tempo. "Mas se ele for mal com você, EU mordo ele. Entendeu?"</p>
+
+    <p>"Viu, Leyn?" Mara ria agora, abertamente. "Você criou um monstro. Agora ela vai te defender."</p>
+
+    <p>Kaira limpou as lágrimas. Calçou as botas de novo. Segurou a mão dele. Firme, dessa vez.</p>
+
+    <p>"Está bem," disse. "Eu... eu vou subir. Mas você fica perto, tá?"</p>
+
+    <p>Os três subiram a escada juntos.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Juramento por Voss</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>No andar principal, Aldric conversava baixo com Elise, mostrando algo — as correntes de prata alquímica. Explicava as runas, apontando padrões específicos.</p>
+
+    <p>"...veja aqui, esta runa específica suprime regeneração vampírica. E esta, limita força sobrenatural..."</p>
+
+    <p>Parou quando os viu subindo. Kaira emergiu da escada, agarrando a mão do tio com força, olhando para Aldric com medo ainda visível — mas controlado.</p>
+
+    <p>Aldric imediatamente se ajoelhou. Um gesto antigo de respeito a um membro jovem de linhagem primordial.</p>
+
+    <p>"Kaira Sepet," disse, a voz suave, sem ameaça alguma. "Filha de Selene. Sobrevivente do massacre. Honrado em conhecê-la." Uma pausa. "Sei que tenho... presença intimidadora. Peço desculpas pelo desconforto. Não sou ameaça para você ou sua família."</p>
+
+    <p>Kaira não respondeu de imediato. Estudou-o. Depois olhou para o tio. Depois para Mara e Elise.</p>
+
+    <p>"Você... você jura?" perguntou, a voz pequena, mas corajosa. "Pelo nome da sua família?"</p>
+
+    <p>Aldric colocou a mão sobre o coração.</p>
+
+    <p>"Juro por Voss. Por meus ancestrais. Por meu sangue. Não trarei mal a você ou aos seus."</p>
+
+    <p>Kaira assentiu, devagar.</p>
+
+    <p>"Então... então tudo bem," disse. "Mas se mentir, meu tio vai te bater."</p>
+
+    <p>"Isso é justo," disse Aldric, um sorriso genuíno e caloroso se abrindo. "E merecido, se eu trair confiança."</p>
+
+    <p>Marcus e o veterano observavam tudo com espanto mal disfarçado. Vampiros primordiais negociando. Sendo família. Protegendo uma criança.</p>
+
+    <p>Aquilo não deveria existir.</p>
+
+    <p>"Então..." disse Elise, quebrando a tensão, "agora que todos... se conhecem... podemos... voltar ao plano? Defesa da aldeia? Armadilhas?"</p>
+
+    <p>"Sim," concordou Mara. "Temos trabalho. Aldric, você disse que pode ajudar com runas?"</p>
+
+    <p>"Posso," disse Aldric, se levantando. "E mais — tenho conhecimento de táticas anti-primordiais. Se o padre que selou Kaira vier... ele será preparado. Mas nós também podemos estar."</p>
+
+    <p>O sol se pôs por completo.</p>
+
+    <p>E o trabalho começou: correntes de prata como molde, três séculos de conhecimento arcano, uma boca capaz de escavar o solo, e uma família — agora com mais um membro — decidida a não fugir desta vez.</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    Não houve batalha aquela noite. Nenhuma lâmina saiu da bainha, nenhum monstro caiu. Só uma menina que calçou as botas de novo, um vampiro antigo que se ajoelhou diante de quem mal chegava à sua cintura, e uma família que cresceu em número — e decidiu, juntos, que desta vez ninguém fugiria.
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Lenda Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+</div>
+
+</body>
+</html>

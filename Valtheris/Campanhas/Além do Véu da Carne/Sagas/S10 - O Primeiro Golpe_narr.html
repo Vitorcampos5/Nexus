@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O Primeiro Golpe — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">X</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">O Primeiro<br>Golpe</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet, Mara Vell, Elise e Kaira</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Dizem que a coragem não nasce pronta — ela se forja, golpe errado após golpe errado, até que um dia, sem aviso, acerta. Esta é a lenda do dia em que uma menina de cento e dez anos aprendeu a lutar, e da noite em que sua família aprendeu a planejar uma guerra.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Decisão — Treinar Kaira</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Foi Mara quem quebrou o silêncio primeiro, olhando para Leyn com a seriedade de quem já revirava a questão sozinha havia algum tempo.</p>
+
+    <p>"Leyn… ela está pronta," disse. "Não fisicamente — é criança. Mas mentalmente… ela está PRONTA. Devemos ensinar o básico de combate? Ou deixá-la descansar? Quando chegarmos à Vila Sepet e as correntes caírem, ela pode despertar poderes primordiais completos. Mas sem treino…"</p>
+
+    <p>"Tio… você pode me ensinar?" perguntou Kaira, ao lado. "Só o básico? Como segurar arma? Como… como não congelar de medo?"</p>
+
+    <p>"Ela tem o espírito da mãe," disse Mara. "Rebelde, mas corajosa quando importa. Se você ensinar, ela aprende rápido."</p>
+
+    <p>"Mas… ela é criança…" ponderou Elise. "Corpo pequeno… não vai… ganhar força… em horas… Mas… técnica… sobrevivência… isso… podemos ensinar…"</p>
+
+    <p>Kaira olhava para Leyn com aqueles olhos dourados cheios de determinação — a mesma que Selene tivera.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Treino Começa — Acorde o Predador</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn olhou para Kaira com seriedade absoluta. Pegou a espada curta e a entregou a ela. Era pesada para mãos pequenas, mas Kaira a segurou — tremendo, mas segurando.</p>
+
+    <p>"A partir de agora, deixe seu instinto de sobrevivência te guiar," disse ele, a voz firme, mas não cruel. "Nesse treino, você vai lutar comigo diretamente."</p>
+
+    <p>"Lutar… com VOCÊ?" Kaira arregalou os olhos. "Mas… você quer que eu… te ataque?"</p>
+
+    <p>"Leyn, ela é criança!" Mara se alarmou. "E você está com armadura élfica, se ela errar e você não desviar—"</p>
+
+    <p>"Isso é… muito arriscado… para primeira lição…" concordou Elise.</p>
+
+    <p>Mas então Mara parou. Entendeu.</p>
+
+    <p>"…você quer acordar o PREDADOR nela," disse, mais devagar. "Não o soldado. O vampiro primordial. Kaira sobreviveu cem anos na floresta. Caçando. Fugindo. Matando ratos com as mãos. Ela TEM instinto. Só está… adormecido."</p>
+
+    <p>Algo mudou nos olhos dourados de Kaira.</p>
+
+    <p>"Cem anos… eu fugi. Escondi. Sobrevivi. Mas nunca… LUTEI. Nunca enfrentei." Olhou para Leyn. "Tio… você quer… que eu pare de fugir?"</p>
+
+    <p>Ele apenas assentiu.</p>
+
+    <p>Kaira assumiu postura — desajeitada, mas instintiva. Pés afastados. Espada à frente. Como animal acuado prestes a atacar. As correntes no pescoço dela piscavam mais rápido agora, a cada cinco segundos. O estresse emocional acelerava o colapso.</p>
+
+    <p>"Eu… eu vou tentar," disse ela. "Me desculpa se… se eu machucar você…"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Primeiro Ataque — Desespero Puro</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn explodiu em movimento — velocidade vampírica pura, direto em direção a Kaira.</p>
+
+    <p>Ela ergueu a espada curta, desajeitada, tremendo, e atacou. Não era técnica. Era desespero. Um corte horizontal selvagem visando o tronco dele.</p>
+
+    <p>A esquiva dele foi automática. Girou ao redor da lâmina como um dançarino. A espada cortou apenas ar. Kaira tropeçou no próprio impulso, desequilibrada. Ele já estava atrás dela — não atacou, apenas tocou suas costas levemente.</p>
+
+    <p>"Você estaria morta," disse ele.</p>
+
+    <p>"De novo!" pediu ela, ainda segurando a espada. "Por favor! Eu… eu consigo melhor!"</p>
+
+    <p>As correntes estavam colapsando rápido demais. Talvez não houvesse seis, dezoito horas. Talvez só duas, oito.</p>
+
+    <p>"Leyn! As correntes!" alertou Mara.</p>
+
+    <p>"Ela está… muito estressada…" disse Elise. "Pode cair… antes de chegarmos… à Vila!"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Mudança de Abordagem — Controle Emocional</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn não se moveu. Apenas observou Kaira tremendo, respiração acelerada, correntes piscando descontroladamente.</p>
+
+    <p>"Certo, vamos continuar," disse, a voz firme, mas calma. "Mas acalme seus sentimentos e use mais os seus sentidos."</p>
+
+    <p>Apontou para as correntes no pescoço dela.</p>
+
+    <p>"Só teremos uma hora até eles saberem nossa localização nesse ritmo," continuou. "E ainda não estamos muito longe da vila, o que pode fazê-los passarem por lá. Você entende, Kaira?"</p>
+
+    <p>Ela parou de tremer.</p>
+
+    <p>"Eu… eu estou… fazendo elas caírem mais rápido?" perguntou. "Por estar com medo? Com raiva? Os aldeões… Marcus, Tobias, as crianças… se eles vierem para a vila por minha culpa…"</p>
+
+    <p>Fechou os olhos. Respirou fundo — hábito humano. Então abriu os olhos. As correntes desaceleraram levemente, piscando a cada cinco segundos agora.</p>
+
+    <p>"Tio… quando eu caçava ratos… na floresta…" disse ela, como uma revelação. "Eu não pensava. Não sentia. Apenas… existia. E me movia. É isso? É assim que guerreiros lutam?"</p>
+
+    <p>"Não exatamente," respondeu Mara. "Guerreiros SENTEM. Mas não deixam sentimentos controlarem movimentos. Leyn, quando você usa aquela técnica… a Estocada… você não PENSA, certo? Você SENTE a fraqueza. Observa. E então age."</p>
+
+    <p>"Como… quando eu cuspo ácido…" acrescentou Elise. "Não penso 'mira, calcule, atire'… apenas… sinto… onde deve ir… e vai…"</p>
+
+    <p>Kaira assumiu a postura novamente, mais calma.</p>
+
+    <p>"Então… eu não devo pensar 'corte ele'," disse. "Devo… sentir onde está a abertura? Tio… de novo. Mas dessa vez… eu não vou ter medo. Vou só… ver."</p>
+
+    <p>Havia algo diferente agora. Menos pânico. Mais predador. As correntes estabilizaram — piscando a cada sete segundos.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Segundo Ataque — Observação e Parry</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Me ataque," disse Leyn, em postura defensiva. "Sentindo essa abertura. Não pense. Veja."</p>
+
+    <p>Kaira respirou fundo. Olhos dourados fixos nele — não na cabeça, não no tronco, nele como um todo. Observou, como ele ensinara. Os pés. O peso. Os ombros. Procurando a fraqueza.</p>
+
+    <p>E então ela viu algo. O ombro esquerdo dele estava levemente mais baixo. Abertura mínima, mas existia.</p>
+
+    <p>Atacou — não selvagem desta vez, mas focada. Uma estocada direcionada ao ombro exposto. Leyn usou um parry: a mão direita se moveu, suave, precisa, e desviou a lâmina dela para o lado com o mínimo de força. A espada dela deslizou pela palma aberta dele, redirecionada. Ele não moveu os pés — apenas a mão.</p>
+
+    <p>"Melhor," disse ele. "Você VIU a abertura. Você ATACOU a abertura. Mas… você atacou ONDE ela estava. Não onde ela ESTARIA quando sua lâmina chegasse."</p>
+
+    <p>"Porque… porque você ia se mover?" perguntou ela.</p>
+
+    <p>"Exatamente. Então você não ataca onde o inimigo está. Você ataca onde ele VAI estar."</p>
+
+    <p>"É por isso que arqueiros miram à frente de alvos em movimento," acrescentou Mara. "Mesmo princípio."</p>
+
+    <p>"Posso… tentar de novo?" pediu Kaira.</p>
+
+    <p>Desta vez, ela o forçou a mover o pulso — não apenas os dedos. A lâmina dela deslizou por um ângulo diferente, mais calculado. A técnica visivelmente aprimorava.</p>
+
+    <p>"Muito melhor," disse Leyn. "Continue."</p>
+
+    <p>"Ela tem… talento natural…" sussurrou Elise para Mara. "Como Selene… devia ter…"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Terceiro Ataque — O Olhar Predatório</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Kaira assumiu posição pela terceira vez. Os olhos dourados dela agora tinham aquele foco predatório que Leyn reconhecia — o mesmo que Selene tivera. Ela não estava apenas olhando para ele. Estava LENDO os movimentos dele.</p>
+
+    <p>Observava como ele distribuía o peso. Como os ombros se moviam quando respirava. Como os olhos telegrafavam intenção.</p>
+
+    <p>"Eu vejo agora…" murmurou ela. "Não onde você está… onde você VAI estar…"</p>
+
+    <p>Desta vez, ela o forçou a mover o corpo inteiro — não apenas mão ou pulso, mas dar um passo lateral pequeno. A espada dela passou a centímetros do tronco dele.</p>
+
+    <p>"Três ataques," disse Mara, se levantando, impressionada. "Ela foi de 'selvagem desesperado' para 'quase acerta vampiro primordial'…"</p>
+
+    <p>"Ela tem… dom natural…" comentou Elise. "Ou… cem anos sobrevivendo… ensinaram… corpo…"</p>
+
+    <p>"Eu QUASE!" Kaira ofegava, mas sorria. "Eu senti! Eu VI onde você ia!"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Ensinamento Final — Velocidade e Precisão</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Você está fazendo um ótimo trabalho," disse Leyn. "Só precisa aprender mais uma coisa: como usar sua velocidade."</p>
+
+    <p>"Minha… velocidade?" Kaira franziu a testa. "Mas eu sou pequena… fraca…"</p>
+
+    <p>"Exatamente. Você é pequena. Tem vantagem quando se trata de mover o corpo todo. Por motivos fisiológicos, seus movimentos são mais rápidos do que um corpo adulto."</p>
+
+    <p>"É verdade!" confirmou Mara. "Quando eu era humana, vi crianças correrem entre soldados adultos como fantasmas. Somos maiores, mais fortes, mas ELAS são mais ágeis."</p>
+
+    <p>"Menor área… para mover…" acrescentou Elise. "Menos peso… mais explosão…"</p>
+
+    <p>"Então use essa arma com a precisão que tem tido até agora," concluiu Leyn.</p>
+
+    <p>"Eu não preciso ser forte como você…" Kaira processava, entendendo. "Preciso ser RÁPIDA como eu… E pequena… significa difícil de acertar…"</p>
+
+    <p>Assumiu postura novamente — mas desta vez, mais baixa. Joelhos flexionados. Corpo compacto.</p>
+
+    <p>"Tio… posso tentar uma última vez?" pediu, com determinação absoluta. "Usando tudo que aprendi?"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Primeiro Golpe — Acerto</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>As correntes piscavam a cada nove segundos agora — mais estáveis. Kaira estava calma. Focada. Mara e Elise se afastaram mais, dando espaço máximo.</p>
+
+    <p>Ela respirou fundo. Olhos dourados fixos em Leyn.</p>
+
+    <p>E então explodiu.</p>
+
+    <p>Não como nos ataques anteriores. Isto era diferente. O corpo pequeno se lançou baixo — quase rastejando — com uma velocidade que ele não esperava dela.</p>
+
+    <p>A espada curta tocou o tronco dele. Não penetrou a armadura élfica — ela não tinha força para isso. Mas tocou.</p>
+
+    <p>Kaira usara a velocidade. Vira onde ele ia estar e chegara lá primeiro. Baixa, compacta, explosiva — como só um corpo pequeno e cem anos de sobrevivência podem fazer. Ela não era inútil. Ela conseguia lutar.</p>
+
+    <p>"ELA ACERTOU!" Mara explodiu em comemoração. "PRIMEIRA LIÇÃO E ELA ACERTOU UM PRIMORDIAL!"</p>
+
+    <p>"Incrível!" Elise bateu palmas — movimento estranho, dificultado pela cota de malha. "Kaira… você… incrível!"</p>
+
+    <p>Kaira tremia, mas de euforia, não de medo.</p>
+
+    <p>"Eu acertei você! Eu usei a velocidade! Eu VI onde você ia estar e cheguei LÁ primeiro! Eu não sou inútil! Eu CONSIGO lutar!"</p>
+
+    <p>As correntes no pescoço dela pararam de piscar por três segundos completos — como se a própria confiança as enfraquecesse ainda mais. Então voltaram, piscando a cada dez segundos, mais devagar que antes. Mara percebeu: confiança e controle emocional as enfraqueciam. Medo e pânico as aceleravam.</p>
+
+    <p>"Leyn… as correntes…" disse ela. "Confiança e controle emocional as ENFRAQUECEM. Medo e pânico as ACELERAM. Se ela se mantiver calma e confiante… podemos ter mais tempo."</p>
+
+    <p>Kaira abraçou Leyn, ainda com a espada na mão.</p>
+
+    <p>"Obrigada, tio! Por me ensinar! Por acreditar que eu posso! Quando o padre vier… quando as correntes caírem… eu vou lutar. De verdade. Com vocês."</p>
+
+    <p>Leyn olhou para a menina em seus braços. Numa tarde, ela aprendera a observar antes de agir, a prever para onde o inimigo se moveria, a transformar o próprio tamanho em vantagem, e a sentir sem deixar que o sentimento a controlasse. Quatro lições. Uma guerreira nova.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Planejamento — O Mapa da Vila Sepet</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Muito bem," disse Leyn. "Você foi além do que qualquer outro Sepet com a sua idade. Bom, apesar de já ter cento e dez anos."</p>
+
+    <p>"Cento e dez anos…" Kaira riu. "Mas ainda criança… é estranho…"</p>
+
+    <p>"Vamos estudar sobre o mapa da Vila Sepet."</p>
+
+    <p>Leyn estendeu o mapa recuperado do baú de Gareth Voss. A vila era circular, cercada por muros de pedra de quatro metros de altura, com quarenta e sete edifícios marcados entre casas, armazéns e oficinas. No centro, a grande casa comunal onde se faziam as reuniões. Ao norte, o cemitério da família; ao sul, forjas e oficinas. A leste, marcada com o símbolo de uma lua crescente, ficava a Câmara da Provação. A oeste, três entradas secretas levavam a túneis subterrâneos.</p>
+
+    <p>Sob a vila inteira corria uma rede de catacumbas — a rota até o Cofre Principal, com duas câmaras laterais reservadas às Tumbas dos Anciãos, que não deveriam ser perturbadas, uma Sala de Provações que testava a dignidade de quem entrasse, e o próprio Cofre: uma câmara circular de dez metros de diâmetro. O mapa também marcava os perigos conhecidos — placas de pressão num corredor entre vinte e trinta metros, runas de fogo na parede leste da sala de provações, uma Sentinela Espectral que despertaria se os túmulos fossem perturbados, e uma fechadura tripla na porta do Cofre, com senha em Idioma Antigo Vampírico. Uma nota, rabiscada à margem, dizia que o Cofre continha um arsenal de emergência, relíquias da família e o grimório de técnicas Sepet.</p>
+
+    <p>"Estaremos em constante movimento quando chegarmos lá," disse Leyn, com tom de comandante. "Está estritamente proibido que o grupo se divida, a não ser em caso de emergência."</p>
+
+    <p>"Entendido," confirmou Mara. "Mantemos formação cerrada. Se alguém cai, todos param."</p>
+
+    <p>"Nunca… separar… família…" concordou Elise.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Câmara da Provação — O que Ela Faz</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Chegando na Vila, deveremos ir para o local onde os mais velhos faziam o ritual da maioridade," disse Leyn. "Aquele lugar… ele vai te mostrar todas as suas inseguranças e te fazer lutar contra elas."</p>
+
+    <p>Tocou o próprio rosto.</p>
+
+    <p>"Lembro de quando passei por lá. Até hoje não sei se aquela experiência foi real ou ilusória. E quando saí de lá, consegui a aparência que tenho hoje. Foi a aparência que meu corpo julgou ser necessária para lidar com todos meus medos naquela época."</p>
+
+    <p>"Espera…" Mara ficou preocupada. "Você quer dizer que… a Câmara MUDA os vampiros? Fisicamente? Kaira é criança. Se ela entrar e o corpo dela decidir mudar para 'lidar com medos'… ela pode virar adulta? Ou… ou algo pior?"</p>
+
+    <p>"E se… ela não sobreviver… às visões?" perguntou Elise. "Crianças… têm muitos medos… cem anos sozinha… traumas…"</p>
+
+    <p>Kaira parecia pequena, mas ia se determinando.</p>
+
+    <p>"Tio… eu tenho que ir?" perguntou. "Mesmo… mesmo se puder me mudar? Me machucar? Eu… eu tenho muito medo ainda… medo do padre… medo de estar sozinha de novo… medo de vocês morrerem… Se a Câmara mostrar TODOS esses medos… eu… eu não sei se aguento…"</p>
+
+    <p>Mas então ela parou. Respirou. Controlou.</p>
+
+    <p>"Mas… mas você passou," disse. "E saiu mais forte. Então… então eu vou também. Porque… porque quero ser forte como você."</p>
+
+    <p>"Sim, a Câmara muda a aparência dos vampiros," confirmou Leyn, virando-se para Mara. "É assim que os que são vampiros desde o nascimento 'amadurecem'. Não existe outra forma."</p>
+
+    <p>"Espera…" Mara processava, chocada. "Você quer dizer que… TODOS os primordiais… sem exceção… passaram por isso?"</p>
+
+    <p>Vampiros primordiais, ele explicou, todos se pareceriam com crianças sem a Câmara — por algum motivo, o crescimento para na idade de dezesseis anos. As correntes deviam ter atrasado ainda mais o desenvolvimento de Kaira. Sem elas, ela deveria ter passado pelo rito noventa e quatro anos atrás. Carregava quase um século de desenvolvimento suprimido.</p>
+
+    <p>"Então…" Kaira tocou o próprio rosto. "Então eu deveria ter… amadurecido há noventa e quatro anos… mas as correntes me mantiveram… criança?"</p>
+
+    <p>Processava a perda de quase um século.</p>
+
+    <p>"Particularmente, não acredito que ela vai virar algo pior," disse Leyn. "Assim como eu, aquele lugar também enxerga a ALMA de quem entra lá."</p>
+
+    <p>"Alma dela… é pura…" murmurou Elise. "Sobreviveu cem anos… sem se corromper… então Câmara… deve reconhecer…"</p>
+
+    <p>"Kaira, não se preocupe," disse Leyn, se virando para ela. "Você não vai estar sozinha. Estaremos com você."</p>
+
+    <p>"Vocês…" Kaira parecia esperançosa. "Vocês vão entrar comigo? Ou… ou ficar do lado de fora?"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Revelação Crítica — As Correntes e a Câmara</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"E sim, é possível que as correntes se quebrem só de Kaira entrar na Câmara," disse Leyn. "Pois ela não permite que impurezas toquem a alma de um primordial."</p>
+
+    <p>Todos pararam. Isso mudava tudo.</p>
+
+    <p>"Então…" Mara processou em voz alta. "A Câmara pode FORÇAR as correntes a caírem imediatamente… não importa quanto tempo resta… Isso significa que assim que Kaira entrar, o padre SABERÁ. Imediatamente."</p>
+
+    <p>"Então…" concordou Elise. "Precisamos estar… PRONTOS… para combate… ANTES… de entrarmos na Câmara… Não podemos ir para o Cofre DEPOIS. Só ANTES. Ou nunca."</p>
+
+    <p>Leyn se ajoelhou na frente de Kaira, olhos nos olhos.</p>
+
+    <p>"Quando as correntes quebrarem," disse, "você vai sentir o peso que carrega sobre os ombros desaparecer. Você vai se sentir mais leve. Mais forte. E também vai sentir fome."</p>
+
+    <p>Kaira tocou o estômago, instintivamente.</p>
+
+    <p>"Não deixe que ela te defina," continuou ele. "Você agora é uma Guerreira. Uma Sepet. Lembre dos nossos momentos quando algum mal tentar se mostrar para você. Lembre que você pode lutar. Lembre que VOCÊ é quem controla seu corpo."</p>
+
+    <p>Ela chorava, mas eram lágrimas de determinação.</p>
+
+    <p>"Eu… eu sou Guerreira," disse. "Eu sou Sepet. EU controlo meu corpo. EU escolho quem sou."</p>
+
+    <p>As correntes voltaram a piscar — a cada doze segundos. A confiança estava literalmente enfraquecendo o selo. A fé dela em si mesma era mais poderosa que qualquer magia supressora.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Decisão Tática — Cofre Primeiro</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Mara apontou o mapa, organizando o raciocínio em voz alta.</p>
+
+    <p>"Chegamos à Vila Sepet ao anoitecer," disse. "Decisão crítica: Cofre Principal — armadilhas e equipamento — ou direto para a Câmara da Provação? Assim que Kaira entrar na Câmara, as correntes podem cair imediatamente. O padre saberá a localização exata. Virá com tudo. Defendemos Kaira enquanto ela passa pela Provação."</p>
+
+    <p>"E… Aldric… chegará em três dias…" lembrou Elise. "Então não teremos… reforço… na primeira noite… Somos nós quatro… contra o que vier…"</p>
+
+    <p>"Tio… você é quem decide," disse Kaira. "Eu vou fazer o que você mandar. Mas… posso dar opinião? Se eu virar adulta ANTES da luta… posso ajudar a lutar de verdade. Agora sou só… criança com espada."</p>
+
+    <p>"E eu prefiro ter Leyn em PLENA capacidade durante o Cofre," ponderou Mara. "Se houver armadilhas mágicas, só você com sua visão mágica consegue identificar."</p>
+
+    <p>"Mas… Câmara primeiro…" contrapôs Elise, "significa Kaira vulnerável… em transe… quando padre chegar…"</p>
+
+    <p>"Elise, concordo com você," disse Leyn. "O Cofre Principal nas catacumbas seria um bom lugar para ir antes de visitar a Câmara. Mas aquele lugar é cheio de armadilhas. Desativar elas enquanto possivelmente estamos lutando com o Culto seria quase impossível."</p>
+
+    <p>Ponderou por um instante.</p>
+
+    <p>"Certo. Eu ouvi todas vocês," decidiu. "Ponderando tudo que ouvi, devemos ir ao Cofre. Mas tenham em mente que cada passo em falso lá pode ser FATAL."</p>
+
+    <p>"Entretanto, com alto risco vem altas recompensas," acrescentou. "Se conseguirmos algum equipamento, devemos ir IMEDIATAMENTE para a Câmara."</p>
+
+    <p>"Sem pausas. Sem exploração extra," resumiu Mara, em tom militar. "Pegamos o que precisamos, saímos, Câmara. Entendido. Formação nas catacumbas: Leyn na frente, guiado pela visão mágica dele, eu e Elise flanqueando, Kaira no centro, mais protegida."</p>
+
+    <p>Virou-se para Kaira.</p>
+
+    <p>"Você não toca em NADA. Não pisa em NADA. Só segue exatamente onde Leyn pisar. Entendido?"</p>
+
+    <p>"Sim!" respondeu Kaira. "Eu… eu fui silenciosa na floresta por cem anos. Consigo ser silenciosa aqui também."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Estudo das Catacumbas — A Rota Escolhida</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Havia três entradas conhecidas para as catacumbas. A do norte era um caminho mais longo, mas com menos armadilhas — a escolhida. A do sul ficava mais perto do Cofre, mas estava travada por uma porta rúnica. A do leste era um túnel de emergência, estreito e claustrofóbico.</p>
+
+    <p>Da entrada norte, a rota seguia por um corredor de cinquenta metros — com duas zonas de placas de pressão marcadas entre vinte e trinta metros —, passava perto de câmaras laterais reservadas às Tumbas dos Anciãos, que deveriam ser evitadas por completo por causa da Sentinela Espectral, e chegava a uma Sala de Provações que só deveria ser tentada depois da Câmara da Provação. No fim, o próprio Cofre Principal: a câmara circular de dez metros, com o arsenal, as relíquias e o grimório à espera. A porta do Cofre tinha fechadura tripla, com senha em Idioma Antigo Vampírico — só Leyn conseguia lê-la. Aldric, que chegaria em três dias, poderia ter ajudado, mas não estaria disponível na primeira noite.</p>
+
+    <p>"Entrada Norte é mais segura, mas mais longa," disse Mara. "Você sabe abrir portas rúnicas? Ou precisamos forçar?"</p>
+
+    <p>"E… Sentinela Espectral…" comentou Elise, "soa perigoso… muito perigoso… Se perturbarmos túmulos… acordamos ela… e lutamos ANTES de chegar ao Cofre…"</p>
+
+    <p>Kaira apontou algo no mapa.</p>
+
+    <p>"Tio… aqui diz 'Teste de dignidade — armadilha se indigno'…" leu, insegura. "Eu… eu sou digna? Como a armadilha sabe? Eu tenho medo que… que ela veja meu pai… e ache que sou… impura…"</p>
+
+    <p>"Vamos seguir pela Entrada Norte," decidiu Leyn. "Quanto à Sala de Provações, não devemos ir para ela sem termos informações completas. Você pode tentar, Kaira. Mas só DEPOIS que passarmos pela Câmara da Provação."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XIV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Estratégias Táticas — Sentinela, Armadilhas e Custo</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Não iremos aos túmulos dos Anciãos, a não ser que não tenhamos escolha," disse Leyn, pensando na Sentinela. "Se caso acabemos encurralados no Cofre e os cultistas cheguem lá… só talvez possamos usar a Sentinela Espectral contra eles."</p>
+
+    <p>"Usar a Sentinela… como arma?" Mara considerou. "Arriscado, mas… criativo."</p>
+
+    <p>"Um dos Anciãos — meu avô — me disse que a Sentinela Espectral protegeria o descanso dos vampiros primordiais," explicou Leyn. "Então acredito que entre cultistas e vampiros na mesma sala, ela atacaria aquilo que considerasse mais violador referente ao local."</p>
+
+    <p>"Então… ela atacaria… cultistas profanadores…" processou Elise, "antes de… vampiros legítimos…?"</p>
+
+    <p>"Mas isso é só uma aposta," admitiu ele. "Não tenho certeza se funcionaria dessa forma após cem anos."</p>
+
+    <p>"E se… e se ela nos atacar também?" perguntou Kaira. "Porque… porque eu tenho sangue do padre…"</p>
+
+    <p>"Você é Sepet pelo sangue da mãe," respondeu Mara. "E pela escolha. Sentinela deve ver isso."</p>
+
+    <p>Leyn pensou no custo de sua própria magia.</p>
+
+    <p>"Como eu disse antes, não há recompensa sem um custo," disse. "Vamos gastar ao todo quarenta minutos no Cofre. Não poder contar com aquela proteção mágica extra depois vai ser o preço para que todos fiquem seguros até conseguir entrar na sala do Cofre."</p>
+
+    <p>"Para evitar as armadilhas," continuou, "vou manter minha visão aberta para enxergar a magia escondida nelas. Infelizmente não sei abrir portas rúnicas. Não devemos forçar para não acionar ainda mais armadilhas."</p>
+
+    <p>"Essa sua visão é um ritual," calculou Mara. "Dez minutos para preparar, dura só dez minutos depois. Corredor até o Cofre: cinquenta metros. Andando devagar, cuidadoso… uns quinze, vinte minutos. Você vai precisar repetir duas vezes."</p>
+
+    <p>Ficou decidido: quarenta minutos gastos no Cofre, a visão mágica renovada duas vezes. Leyn ficaria sem aquela proteção extra durante o combate com o Culto — mais vulnerável, mas o equipamento recuperado talvez compensasse a diferença.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Cronograma — Meditação e Transe Compartilhado</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Eu aprovo seu cronograma, Mara," disse Leyn.</p>
+
+    <p>"Perfeito," respondeu ela, batendo continência por puro hábito militar.</p>
+
+    <p>O plano estava traçado: uma hora de descanso, com meditação vampírica compartilhada para que todos recuperassem energia; meia hora para preparar o equipamento — afiar armas, checar armaduras, organizar as estacas de prata; duas horas de viagem até a Vila Sepet, os quarenta quilômetros restantes vencidos em corrida vampírica; e a chegada, cerca de duas horas depois do anoitecer, com tempo de sobra antes do amanhecer para seguir da Entrada Norte ao Cofre e, depois, à Câmara da Provação.</p>
+
+    <p>Posicionaram-se na câmara da caverna — o círculo familiar de sempre. Leyn, Mara, Elise, Kaira.</p>
+
+    <p>"Tio… posso… meditar encostada em você?" pediu Kaira. "Me sinto mais segura assim…"</p>
+
+    <p>"Família medita junta," disse Mara. "Mais forte assim."</p>
+
+    <p>Através dos vínculos, sentiram-se uns aos outros durante a hora inteira de transe compartilhado. De Mara vinha uma determinação férrea, mas com uma ansiedade escondida — o medo de perder Leyn de novo. De Elise, nervosismo, mas lealdade absoluta, pronta para morrer pela família. De Kaira, um medo imenso, mas com uma coragem crescente — o desejo de fazer os outros orgulhosos. E delas, o que sentiam de Leyn era uma resolução inabalável, um propósito claro, uma proteção paternal absoluta.</p>
+
+    <p>As correntes de Kaira, durante toda a meditação, pararam de piscar por cinco minutos completos. A conexão familiar estava dissolvendo o selo mais rápido que qualquer outra coisa.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XVI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XVI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Inventário Final — Preparados</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Todos despertaram descansados. Focados. Mara distribuiu as seis estacas de prata que restavam. Elise afiava as lâminas — o som rítmico da pedra de amolar contra o metal. Mara verificava as armaduras. Kaira praticava os movimentos que Leyn ensinara — estocadas lentas, controladas, no ar.</p>
+
+    <p>Leyn levava sua espada longa e a armadura élfica reforçada, além de duas das estacas e o mapa recém-conquistado da Vila Sepet. Mara carregava seu escudo e uma adaga de prata; Elise, a cota de malha e a própria mordida ácida como arma. Kaira segurava a espada curta — a primeira arma de verdade que já tivera.</p>
+
+    <p>"Tio… posso ficar com esta espada?" perguntou, abraçando-a contra o peito. "Ela foi minha primeira arma de verdade…"</p>
+
+    <p>"Pode ficar com a espada," disse Leyn.</p>
+
+    <p>"Obrigada!" Ela a abraçou com mais força ainda. "Eu vou cuidar dela! E… e vou usá-la para proteger vocês também!"</p>
+
+    <p>"Primeira arma," disse Mara, nostálgica. "Sempre especial. A minha era um machado enferrujado que roubei de um bandido."</p>
+
+    <p>"A minha… era arco simples…" lembrou Elise. "De madeira barata… mas eu amava…"</p>
+
+    <p>"Sol se pondo," anunciou Mara, olhando lá fora. "Em duas horas, podemos partir. Última chance para revisar o plano. Algo que esquecemos? Algo que quer mudar?"</p>
+
+    <p>"E… durante viagem…" perguntou Elise, "mantemos formação? Quem vai… na frente?"</p>
+
+    <p>"Acredito que não temos nada para mudar no plano, a não ser que ocorra alguma emergência," disse Leyn. "Vamos manter a formação. Eu irei na frente."</p>
+
+    <p>"Flanco esquerdo coberto," confirmou Mara.</p>
+
+    <p>"Direita… protegida…" disse Elise.</p>
+
+    <p>"Eu… fico no meio…" murmurou Kaira. "Mais segura…"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XVII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XVII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Partida — "Pela Liberdade!"</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>O sol se pôs completamente. Era hora de partir.</p>
+
+    <p>"Estou pronta, tio," disse Kaira, nervosa, mas determinada. "Vamos… vamos para casa. Para a Vila Sepet."</p>
+
+    <p>Era a primeira vez que ela chamava a vila de "casa" — um lugar que mal lembrava, mas que agora representava família e pertencimento.</p>
+
+    <p>"E se… houver emergência?" perguntou ela. "O que fazemos?"</p>
+
+    <p>"Improvisamos," respondeu Mara, com o treinamento militar na voz. "Adaptamos. Sobrevivemos. Juntos."</p>
+
+    <p>"Em frente, minha família," disse Leyn. "Vamos atrás da nossa liberdade."</p>
+
+    <p>Mara bateu o escudo com a adaga — som metálico de guerra.</p>
+
+    <p>"PELA LIBERDADE!"</p>
+
+    <p>"Pela… FAMÍLIA!" gritou Elise.</p>
+
+    <p>"Pela… liberdade… e família…" ecoou Kaira, timidamente, mas com convicção.</p>
+
+    <p>As correntes no pescoço dela brilharam intensamente por um segundo — depois voltaram a piscar normalmente, a cada dez segundos. A Vila Sepet esperava. O Cofre esperava. A Câmara da Provação esperava.</p>
+
+    <p>O plano estava selado: chegariam à Vila Sepet cerca de duas horas após o anoitecer, pela Entrada Norte das catacumbas. Passariam quarenta minutos no Cofre Principal, recuperando o arsenal, as relíquias e o grimório. Sem pausas, seguiriam direto para a Câmara da Provação. Assim que Kaira entrasse, as correntes poderiam cair — e o padre saberia. Leyn, Mara e Elise a defenderiam enquanto ela passava pela Provação. Restaria apenas sobreviver até a chegada de Aldric, três dias depois.</p>
+
+    <p>"Improvisamos. Adaptamos. Sobrevivemos. Juntos," repetiu Mara, baixinho, quase um mantra.</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    Uma criança que sobreviveu cem anos na floresta<br>
+    aprendeu hoje que sobreviver e <em>lutar</em> são coisas diferentes.<br>
+    Que o primeiro golpe não é o mais forte —<br>
+    é o mais <em>honesto</em>.<br>
+    E que família não é o lugar onde você nasceu,<br>
+    mas o lugar de onde você não precisará mais fugir.
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Lenda Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+</div>
+
+</body>
+</html>

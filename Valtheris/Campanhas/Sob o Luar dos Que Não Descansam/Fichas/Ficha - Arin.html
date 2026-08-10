@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arin — Operadora do Limiar</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #03050f;
+    --specter:      #78c8f0;
+    --cold:         #b8dff8;
+    --moon:         #90b8d8;
+    --moon-bright:  #c8e8f8;
+    --pearl:        #c0d8f0;
+    --pearl-dark:   #6888aa;
+    --silver:       #7898b8;
+    --gold-light:   #c88040;
+    --ode-light:    #a070d0;
+    --sanity:       #2a5878;
+    --sanity-light: #4a88aa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--void);
+    background-image:
+      radial-gradient(ellipse at 15% 0%,   rgba(8,18,45,0.7)    0%, transparent 55%),
+      radial-gradient(ellipse at 85% 100%,  rgba(5,10,30,0.6)    0%, transparent 55%),
+      radial-gradient(ellipse at 50% 45%,   rgba(120,200,240,0.025) 0%, transparent 50%);
+    font-family: 'EB Garamond', serif;
+    color: var(--pearl);
+    padding: 40px 20px 60px;
+  }
+
+  .sheet {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ── HEADER ── */
+  .header { text-align: center; margin-bottom: 32px; }
+  .header-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--specter) 35%, var(--cold) 50%, var(--specter) 65%, transparent 100%);
+    margin: 10px 0;
+    transform-origin: center;
+  }
+  .bloodline-tag {
+    font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px;
+    color: var(--specter); text-transform: uppercase; margin-bottom: 8px;
+    opacity: 0.8;
+  }
+  .char-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 44px; letter-spacing: 3px;
+    color: var(--moon-bright); line-height: 1.1;
+  }
+  .char-subtitle {
+    font-family: 'Cinzel', serif; font-size: 10px;
+    color: var(--pearl-dark); letter-spacing: 2px;
+    margin-top: 8px; opacity: 0.85;
+  }
+  .alignment-badge {
+    display: inline-block; margin-left: 10px;
+    background: rgba(10,30,55,0.6);
+    border: 1px solid rgba(120,200,240,0.3);
+    color: var(--specter); font-size: 9px; letter-spacing: 2px;
+    padding: 2px 8px; border-radius: 2px;
+  }
+
+  /* ── VITAIS ── */
+  .vitals-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px; margin-bottom: 20px;
+  }
+  .vital-card {
+    background: rgba(6,12,24,0.7);
+    border: 1px solid rgba(120,200,240,0.14);
+    border-radius: 4px; padding: 14px 12px;
+  }
+  .vital-label {
+    font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px;
+    color: var(--silver); text-transform: uppercase;
+    margin-bottom: 8px; opacity: 0.8;
+  }
+  .vital-numbers { display: flex; align-items: baseline; gap: 4px; margin-bottom: 8px; }
+  .vital-current {
+    font-family: 'Cinzel Decorative', serif; font-size: 32px;
+    color: var(--moon-bright); line-height: 1;
+  }
+  .vital-current.hp  { color: #70c080; }
+  .vital-current.san { color: var(--sanity-light); }
+  .vital-current.ac  { color: var(--moon-bright); }
+  .vital-current.lim { color: #78c8f0; font-size: 24px; }
+  .vital-max {
+    font-family: 'Cinzel', serif; font-size: 14px; color: var(--pearl-dark);
+  }
+  .bar-track {
+    height: 3px; background: rgba(255,255,255,0.06);
+    border-radius: 2px; overflow: hidden; margin-bottom: 8px;
+  }
+  .bar-fill {
+    height: 100%; border-radius: 2px;
+  }
+  .bar-fill.hp  { background: linear-gradient(90deg, #4a9a60, #70c080); }
+  .bar-fill.san { background: linear-gradient(90deg, var(--sanity), var(--sanity-light)); }
+  .bar-fill.lim { background: linear-gradient(90deg, rgba(120,200,240,0.2), #78c8f0); }
+  .vital-note {
+    font-size: 10px; color: var(--pearl-dark); line-height: 1.5; opacity: 0.7;
+  }
+
+  /* ── NATURE BOX ── */
+  .nature-box {
+    background: rgba(5,10,20,0.6);
+    border: 1px solid rgba(120,200,240,0.12);
+    border-radius: 4px; padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+  .nature-box-title {
+    font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px;
+    color: var(--specter); text-transform: uppercase;
+    margin-bottom: 10px; opacity: 0.85;
+  }
+  .nature-rows { display: flex; flex-wrap: wrap; gap: 6px; }
+  .nature-row {
+    display: flex; align-items: flex-start; gap: 8px;
+    background: rgba(8,14,26,0.55);
+    border: 1px solid rgba(120,200,240,0.1);
+    border-radius: 3px; padding: 7px 10px;
+    flex: 1; min-width: 260px;
+  }
+  .nature-badge {
+    font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 1px;
+    padding: 2px 6px; border-radius: 2px; flex-shrink: 0; margin-top: 1px;
+  }
+  .badge-passive { background: rgba(14,30,50,0.6);  color: var(--specter);    border: 1px solid rgba(120,200,240,0.3); }
+  .badge-unique  { background: rgba(30,12,50,0.6);  color: var(--ode-light);  border: 1px solid rgba(130,60,180,0.4); }
+  .badge-warning { background: rgba(40,22,5,0.6);   color: #d09050;           border: 1px solid rgba(180,100,20,0.45); }
+  .nature-text { font-size: 12px; color: var(--pearl-dark); line-height: 1.5; }
+
+  /* ── ATRIBUTOS ── */
+  .section-title {
+    font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 3px;
+    color: var(--specter); text-transform: uppercase;
+    margin-bottom: 12px; opacity: 0.9;
+  }
+  .stats-row {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    gap: 8px; margin-bottom: 20px;
+  }
+  .stat-box {
+    background: rgba(6,12,22,0.7);
+    border: 1px solid rgba(120,200,240,0.12);
+    border-radius: 4px; padding: 12px 8px; text-align: center;
+    transition: border-color 0.2s;
+  }
+  .stat-box:hover { border-color: rgba(120,200,240,0.45); }
+  .stat-label { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px; color: var(--silver); text-transform: uppercase; margin-bottom: 5px; opacity: 0.85; }
+  .stat-value { font-family: 'Cinzel Decorative', serif; font-size: 27px; color: var(--moon-bright); line-height: 1; }
+  .stat-mod   { font-family: 'Cinzel', serif; font-size: 11px; color: var(--pearl-dark); margin-top: 3px; }
+
+  /* ── LAYOUTS ── */
+  .two-col {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 18px; margin-bottom: 24px;
+  }
+  .panel {
+    background: rgba(6,12,22,0.65);
+    border: 1px solid rgba(120,200,240,0.14);
+    border-radius: 4px; padding: 18px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .panel:hover {
+    border-color: rgba(120,200,240,0.28);
+    box-shadow: 0 0 22px rgba(120,200,240,0.06);
+  }
+
+  /* ── ABILITIES ── */
+  .ability-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: background 0.2s;
+  }
+  .ability-item:last-child { border-bottom: none; }
+  .ability-item:hover { background: rgba(120,200,240,0.035); }
+  .ability-item:hover .ability-dot {
+    transform: scale(1.4) translateX(2px);
+    box-shadow: 0 0 18px rgba(120,200,240,0.9);
+  }
+  .ability-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--specter);
+    margin-top: 6px; flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(120,200,240,0.6);
+  }
+  .ability-name { font-family: 'Cinzel', serif; font-size: 11px; color: var(--moon-bright); margin-bottom: 2px; }
+  .ability-desc { font-size: 12px; color: var(--pearl-dark); line-height: 1.5; font-style: italic; opacity: 0.85; }
+  .ability-status {
+    font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px;
+    padding: 1px 6px; border-radius: 2px; margin-left: auto; flex-shrink: 0;
+  }
+  .status-ready  { background: rgba(30,80,30,0.5);  color: #6abf6a; border: 1px solid rgba(30,80,30,0.6); }
+  .status-active { background: rgba(14,30,50,0.6);  color: var(--specter); border: 1px solid rgba(120,200,240,0.4); }
+  .status-react  { background: rgba(60,20,80,0.5);  color: var(--ode-light); border: 1px solid rgba(100,40,140,0.45); }
+  .status-cost   { background: rgba(50,30,5,0.5);   color: #e09040; border: 1px solid rgba(180,100,20,0.45); }
+
+  /* ── LIMIAR ROUNDS ── */
+  .round-grid {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .round-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 10px;
+    border-radius: 3px;
+    flex: 1; min-width: 110px;
+    transition: filter 0.25s, transform 0.2s;
+    cursor: pointer;
+  }
+  .round-pill:hover { filter: brightness(1.2); transform: translateY(-1px); }
+  .round-gem {
+    width: 10px; height: 10px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .round-name { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 1px; }
+  .round-sub  { font-size: 11px; font-style: italic; opacity: 0.7; margin-top: 1px; }
+
+  .round-r1 { background: rgba(14,35,55,0.55); border: 1px solid rgba(120,200,240,0.3);  color: var(--cold); }
+  .round-r2 { background: rgba(10,25,45,0.55); border: 1px solid rgba(120,200,240,0.45); color: var(--cold); }
+  .round-r3 { background: rgba(8,20,38,0.55);  border: 1px solid rgba(120,200,240,0.62); color: var(--pearl); }
+  .round-r4 { background: rgba(6,15,30,0.55);  border: 1px solid rgba(120,200,240,0.82); color: var(--moon-bright); }
+  .round-r5 { background: rgba(8,12,20,0.55);  border: 1px solid rgba(120,200,240,0.18); color: var(--pearl-dark); }
+
+  /* ── ATTACKS ── */
+  .attack-item { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s, padding-left 0.2s; }
+  .attack-item:last-child { border-bottom: none; }
+  .attack-item:hover { background: rgba(120,200,240,0.04); padding-left: 4px; }
+  .attack-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .attack-icon { font-size: 15px; }
+  .attack-bonus { margin-left: auto; font-family: 'Cinzel', serif; font-size: 13px; color: var(--moon-bright); }
+  .attack-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+  .attack-note { font-size: 12px; color: var(--pearl-dark); font-style: italic; opacity: 0.8; margin-top: 3px; }
+
+  /* ── SAVES & SKILLS ── */
+  .saves-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .save-item {
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 7px;
+    background: rgba(4,8,16,0.55);
+    border: 1px solid rgba(120,200,240,0.08); border-radius: 3px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .save-item:hover { border-color: rgba(120,200,240,0.3); background: rgba(120,200,240,0.04); }
+  .save-dot { width: 7px; height: 7px; border-radius: 50%; border: 1px solid rgba(120,200,240,0.4); flex-shrink: 0; }
+  .save-dot.prof { background: var(--specter); border-color: var(--specter); }
+  .save-name { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; color: var(--pearl-dark); text-transform: uppercase; flex: 1; }
+  .save-val  { font-family: 'Cinzel', serif; font-size: 12px; color: var(--moon-bright); }
+
+  .skill-row { display: flex; align-items: center; gap: 7px; padding: 4px 5px; transition: background 0.15s; border-radius: 2px; }
+  .skill-row:hover { background: rgba(120,200,240,0.03); }
+  .skill-dot { width: 6px; height: 6px; border-radius: 50%; border: 1px solid rgba(120,200,240,0.4); flex-shrink: 0; }
+  .skill-dot.prof { background: var(--specter); border-color: var(--specter); }
+  .skill-dot.exp  { background: var(--moon-bright); border-color: var(--moon-bright); }
+  .skill-name { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; color: var(--pearl-dark); text-transform: uppercase; flex: 1; }
+  .skill-val  { font-family: 'Cinzel', serif; font-size: 11px; color: var(--moon-bright); }
+  .skill-legend { margin-top: 6px; font-size: 10px; color: var(--pearl-dark); opacity: 0.5; font-style: italic; }
+
+  /* ── EQUIPMENT ── */
+  .equip-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 13px; transition: background 0.2s, padding-left 0.2s; }
+  .equip-item:last-child { border-bottom: none; }
+  .equip-item:hover { background: rgba(120,200,240,0.03); padding-left: 4px; }
+  .equip-icon { font-size: 15px; width: 22px; text-align: center; }
+  .equip-name { color: var(--pearl); flex: 1; }
+  .equip-name em { font-style: italic; font-size: 11px; color: var(--pearl-dark); opacity: 0.72; display: block; margin-top: 1px; }
+  .equip-count { font-family: 'Cinzel', serif; font-size: 10px; color: var(--silver); opacity: 0.8; }
+  .equip-note {
+    margin-top: 10px; padding: 7px 10px;
+    background: rgba(14,25,40,0.4);
+    border: 1px solid rgba(120,200,240,0.15); border-radius: 3px;
+    font-size: 11px; color: var(--pearl-dark); font-style: italic;
+  }
+
+  /* ── TAGS ── */
+  .tag {
+    display: inline-block; font-family: 'Cinzel', serif;
+    font-size: 9px; letter-spacing: 1px;
+    padding: 2px 7px; border-radius: 2px; margin: 2px 2px 0 0;
+    transition: transform 0.2s ease, filter 0.2s ease;
+  }
+  .tag:hover { transform: translateY(-1px); filter: brightness(1.2); }
+  .tag-specter { background: rgba(14,50,50,0.5);  color: var(--specter);    border: 1px solid rgba(120,200,240,0.35); }
+  .tag-moon    { background: rgba(20,30,50,0.5);  color: var(--moon);       border: 1px solid rgba(160,190,220,0.3); }
+  .tag-ode     { background: rgba(50,20,70,0.45); color: var(--ode-light);  border: 1px solid rgba(100,40,140,0.4); }
+  .tag-red     { background: rgba(60,5,5,0.45);   color: #e07070;           border: 1px solid rgba(140,20,20,0.4); }
+  .tag-gold    { background: rgba(60,45,5,0.4);   color: var(--gold-light); border: 1px solid rgba(201,168,76,0.3); }
+  .tag-silver  { background: rgba(20,35,48,0.45); color: var(--silver);     border: 1px solid rgba(100,150,180,0.3); }
+  .tag-cold    { background: rgba(10,25,50,0.5);  color: var(--cold);       border: 1px solid rgba(120,200,240,0.3); }
+
+  /* ── LORE ── */
+  .lore-panel {
+    background: rgba(6,12,22,0.65);
+    border: 1px solid rgba(120,200,240,0.12); border-radius: 4px;
+    padding: 18px; margin-bottom: 24px;
+  }
+  .lore-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s; border-radius: 3px; }
+  .lore-item:last-child { border-bottom: none; }
+  .lore-item:hover { background: rgba(120,200,240,0.04); }
+  .lore-icon { font-size: 17px; flex-shrink: 0; width: 24px; text-align: center; margin-top: 1px; }
+  .lore-key  { font-family: 'Cinzel', serif; font-size: 11px; color: var(--silver); margin-bottom: 3px; letter-spacing: 1px; }
+  .lore-val  { font-size: 13px; color: var(--pearl-dark); line-height: 1.5; }
+  .lore-val strong { color: var(--pearl); font-weight: 500; }
+
+  /* ── APPEARANCE & PERSONALITY ── */
+  .char-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s; border-radius: 3px; }
+  .char-item:last-child { border-bottom: none; }
+  .char-item:hover { background: rgba(120,200,240,0.035); }
+  .char-icon { font-size: 16px; flex-shrink: 0; width: 22px; text-align: center; margin-top: 2px; }
+  .char-key  { font-family: 'Cinzel', serif; font-size: 10px; color: var(--silver); margin-bottom: 2px; letter-spacing: 1px; }
+  .char-val  { font-size: 12px; color: var(--pearl-dark); line-height: 1.5; }
+  .char-val strong { color: var(--pearl); font-weight: 500; }
+
+  /* ── FOOTER ── */
+  .footer { text-align: center; margin-top: 36px; padding-top: 18px; border-top: 1px solid rgba(120,200,240,0.12); }
+  .footer-quote { font-style: italic; font-size: 15px; color: var(--pearl-dark); opacity: 0.6; line-height: 1.7; }
+  .footer-attr  { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px; color: var(--specter); opacity: 0.4; margin-top: 8px; }
+
+  /* ── ROUND INFO BUTTON ── */
+  .round-info-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: rgba(120,200,240,0.12); border: 1px solid rgba(120,200,240,0.4);
+    color: var(--specter); font-family: 'Cinzel', serif;
+    font-size: 9px; font-style: italic; cursor: pointer;
+    margin-left: 6px; vertical-align: middle;
+    transition: background 0.2s, border-color 0.2s; line-height: 1;
+  }
+  .round-info-btn:hover { background: rgba(120,200,240,0.25); border-color: var(--specter); }
+
+  /* ── ROUND DETAIL OVERLAY ── */
+  .round-detail-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.82); z-index: 1000;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .round-detail-overlay.open { display: flex; }
+  .round-detail-panel {
+    background: linear-gradient(135deg, #060e18, #0a1220);
+    border: 1px solid rgba(120,200,240,0.35); border-radius: 6px; padding: 24px;
+    max-width: 480px; width: 100%; position: relative;
+    box-shadow: 0 0 60px rgba(120,200,240,0.12), 0 0 120px rgba(0,0,0,0.95);
+  }
+  .round-detail-close {
+    position: absolute; top: 12px; right: 14px;
+    background: none; border: 1px solid rgba(120,200,240,0.3);
+    color: var(--specter); font-family: 'Cinzel', serif;
+    font-size: 11px; padding: 3px 10px; border-radius: 2px;
+    cursor: pointer; letter-spacing: 1px;
+  }
+  .round-detail-close:hover { background: rgba(120,200,240,0.1); }
+  .round-detail-num  { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px; color: var(--specter); text-transform: uppercase; margin-bottom: 6px; }
+  .round-detail-name { font-family: 'Cinzel Decorative', serif; font-size: 20px; color: var(--moon-bright); margin-bottom: 14px; line-height: 1.2; }
+  .round-detail-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .round-detail-desc { font-size: 13px; color: var(--pearl-dark); line-height: 1.65; border-top: 1px solid rgba(120,200,240,0.15); padding-top: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bar-fill.hp  { width: 100%; animation: none; }
+  .bar-fill.san { width: 100%; animation: none; }
+  .bar-fill.lim { width: 20%;  animation: none; }
+}
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    body { padding: 20px 12px; }
+    .char-name { font-size: 28px; }
+    .stats-row { grid-template-columns: repeat(3, 1fr); }
+    .vitals-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .two-col { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 420px) {
+    body { padding: 16px 8px; }
+    .char-name { font-size: 22px; letter-spacing: 1px; }
+    .stats-row { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .stat-value { font-size: 22px; }
+    .vital-current { font-size: 26px; }
+    .vital-current.lim { font-size: 26px; }
+    .saves-grid { grid-template-columns: 1fr; }
+    .nature-row { min-width: 100%; }
+  }
+
+/* ══════════════════════════════════════
+   ANIMAÇÕES — ARIN DO LIMIAR
+   ══════════════════════════════════════ */
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-22px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Nome */
+@keyframes nameReveal {
+  0%   { opacity: 0; letter-spacing: 26px; text-shadow: none; }
+  60%  { opacity: 1; letter-spacing: 5px; }
+  100% { opacity: 1; letter-spacing: 3px;
+         text-shadow: 0 0 50px rgba(120,200,240,.4), 0 0 20px rgba(180,220,255,.2), 0 2px 4px rgba(0,0,0,.9); }
+}
+@keyframes specterGlow {
+  0%, 100% { text-shadow: 0 0 50px rgba(120,200,240,.3), 0 0 20px rgba(180,220,255,.15), 0 2px 4px rgba(0,0,0,.9); }
+  50%       { text-shadow: 0 0 80px rgba(120,200,240,.65), 0 0 35px rgba(180,220,255,.3), 0 0 15px rgba(120,200,240,.2), 0 2px 4px rgba(0,0,0,.9); }
+}
+
+@keyframes lineDraw {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes dotBreathe {
+  0%, 100% { box-shadow: 0 0 6px rgba(120,200,240,.55); transform: scale(1); }
+  50%       { box-shadow: 0 0 16px rgba(120,200,240,.95), 0 0 6px rgba(120,200,240,.4); transform: scale(1.3); }
+}
+
+/* Gemas de round pulsam com intensidade crescente */
+@keyframes gemPulse1 { 0%,100%{box-shadow:0 0 5px currentColor;transform:scale(1);}50%{box-shadow:0 0 10px currentColor;transform:scale(1.1);} }
+@keyframes gemPulse2 { 0%,100%{box-shadow:0 0 6px currentColor;transform:scale(1);}50%{box-shadow:0 0 14px currentColor;transform:scale(1.15);} }
+@keyframes gemPulse3 { 0%,100%{box-shadow:0 0 8px currentColor;transform:scale(1);}50%{box-shadow:0 0 18px currentColor;transform:scale(1.2);} }
+@keyframes gemPulse4 { 0%,100%{box-shadow:0 0 10px currentColor;transform:scale(1);}50%{box-shadow:0 0 24px currentColor,0 0 8px currentColor;transform:scale(1.25);} }
+@keyframes gemPulse5 { 0%,100%{box-shadow:0 0 4px currentColor;transform:scale(1);}50%{box-shadow:0 0 8px currentColor;transform:scale(1.05);} }
+
+.round-r1 .round-gem { animation: gemPulse1 3.0s ease-in-out infinite; }
+.round-r2 .round-gem { animation: gemPulse2 2.7s ease-in-out 0.3s infinite; }
+.round-r3 .round-gem { animation: gemPulse3 2.4s ease-in-out 0.6s infinite; }
+.round-r4 .round-gem { animation: gemPulse4 2.0s ease-in-out 0.9s infinite; }
+.round-r5 .round-gem { animation: gemPulse5 4.0s ease-in-out 1.2s infinite; }
+
+@keyframes barGrow {
+  from { width: 0; }
+  to   { width: var(--bar-target); }
+}
+.bar-fill { animation: barGrow 1.1s cubic-bezier(.4,0,.2,1) 1.4s both; }
+.bar-fill.hp  { --bar-target: 100%; }
+.bar-fill.san { --bar-target: 100%; }
+.bar-fill.lim { --bar-target: 20%; }
+
+@keyframes numPop {
+  0%   { opacity: 0; transform: scale(.7); }
+  70%  { transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.vital-current { animation: numPop 0.6s cubic-bezier(.34,1.56,.64,1) 1.0s both; }
+
+.bloodline-tag { animation: fadeInDown 0.7s ease 0.1s both; }
+.header-line   { animation: lineDraw 0.9s cubic-bezier(.22,.68,0,1.2) 0.5s both; }
+.char-name     { animation: nameReveal 1.4s cubic-bezier(.22,.68,0,1.15) 0.4s both, specterGlow 5s ease-in-out 1.9s infinite; }
+.char-subtitle { animation: fadeInDown 0.7s ease 1.2s both; }
+
+.ability-dot { animation: dotBreathe 2.8s ease-in-out infinite; }
+.save-dot.prof { animation: dotBreathe 3.2s ease-in-out infinite; }
+
+.stats-row .stat-box { animation: fadeInUp 0.5s ease both; transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s; }
+.stats-row .stat-box:nth-child(1) { animation-delay: 0.05s; }
+.stats-row .stat-box:nth-child(2) { animation-delay: 0.12s; }
+.stats-row .stat-box:nth-child(3) { animation-delay: 0.19s; }
+.stats-row .stat-box:nth-child(4) { animation-delay: 0.26s; }
+.stats-row .stat-box:nth-child(5) { animation-delay: 0.33s; }
+.stats-row .stat-box:nth-child(6) { animation-delay: 0.40s; }
+.stats-row .stat-box:hover { border-color: rgba(120,200,240,.55); box-shadow: 0 0 14px rgba(120,200,240,.14); transform: translateY(-2px); }
+
+.nature-row { animation: slideInLeft 0.45s ease both; transition: border-color 0.25s, background 0.25s; }
+.nature-row:nth-child(1) { animation-delay: 0.05s; }
+.nature-row:nth-child(2) { animation-delay: 0.14s; }
+.nature-row:nth-child(3) { animation-delay: 0.23s; }
+.nature-row:nth-child(4) { animation-delay: 0.32s; }
+.nature-row:nth-child(5) { animation-delay: 0.41s; }
+.nature-row:hover { border-color: rgba(120,200,240,.35); background: rgba(120,200,240,.04); }
+
+@keyframes readyPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .65; }
+}
+.status-ready  { animation: readyPulse 3.5s ease-in-out infinite; }
+.status-active { animation: readyPulse 2.8s ease-in-out 0.5s infinite; }
+.alignment-badge { animation: readyPulse 4s ease-in-out 2s infinite; }
+
+.footer { animation: fadeIn 1.2s ease 0.8s both; }
+@keyframes quoteFade {
+  0%, 100% { opacity: .55; }
+  50%       { opacity: .85; }
+}
+.footer-quote { animation: quoteFade 8s ease-in-out 2s infinite; }
+
+/* ── Scroll reveal ── */
+.reveal {
+  opacity: 0; transform: translateY(22px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-left {
+  opacity: 0; transform: translateX(-18px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-line"></div>
+    <div class="bloodline-tag">✦ Humana · Operadora do Limiar · Graviturgia Inata · Contando ✦</div>
+    <h1 class="char-name">Arin</h1>
+    <div class="char-subtitle">
+      Humana Comum — Forçada através da Fronteira · Classe: Operadora do Limiar · Nível 4
+      <span class="alignment-badge">Neutro Verdadeiro</span>
+    </div>
+
+<main>
+    <div class="header-line"></div>
+  </div>
+
+  <!-- PORTRAIT -->
+  <div style="display:flex;justify-content:center;margin-bottom:32px;">
+    <div class="portrait-wrap" style="position:relative;width:240px;">
+      <img src="Perfil - Arin.png"
+           alt="Arin"
+           style="width:240px;height:300px;object-fit:cover;object-position:top center;border-radius:4px;border:1px solid rgba(78,196,196,.4);box-shadow:0 0 50px rgba(78,196,196,.2), 0 0 90px rgba(0,0,0,.85);display:block;filter:saturate(0.85) contrast(1.05);">
+      <div style="position:absolute;bottom:0;left:0;right:0;height:70px;background:linear-gradient(to top,rgba(8,13,20,1),transparent);border-radius:0 0 4px 4px;"></div>
+    </div>
+  </div>
+
+  <!-- PONTOS VITAIS -->
+  <div class="vitals-grid">
+    <div class="vital-card">
+      <div class="vital-label">Pontos de Vida</div>
+      <div class="vital-numbers">
+        <div class="vital-current hp">27</div>
+        <div class="vital-max">/ 27</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill hp"></div></div>
+      <div class="vital-note">d8 · nível 4 · CON +1 · (9 + 3×6 = 27) · Fora do Limiar — corpo humano comum, sem proteção especial</div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-label">Sanidade</div>
+      <div class="vital-numbers">
+        <div class="vital-current san">75</div>
+        <div class="vital-max">/ 75</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill san"></div></div>
+      <div class="vital-note">SAB 15 × 5 = 75 · Mythos 0% — ainda sem exposição direta a Seres Antigos</div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-label">Classe de Armadura</div>
+      <div class="vital-numbers">
+        <div class="vital-current ac">13</div>
+      </div>
+      <div class="vital-note">Vestes leves 11 + DES +2 · Velocidade 30 pés · Iniciativa +2 · No Limiar: imune a dano físico puro</div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-label">Estado Limiar</div>
+      <div class="vital-numbers">
+        <div class="vital-current lim">1×</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill lim"></div></div>
+      <div class="vital-note">Por descanso longo · Reação · Concentração · Máx. 5 rounds · O que resta está diminuindo</div>
+    </div>
+  </div>
+
+  <!-- CONDIÇÃO LIMIAR -->
+  <div class="nature-box">
+    <div class="nature-box-title">✦ Condição Limiar — Origem: Experimento da Igreja do Sol Agonizante · A fronteira entre planos não voltou ao lugar</div>
+    <div class="nature-rows">
+      <div class="nature-row">
+        <span class="nature-badge badge-passive">Racial</span>
+        <span class="nature-text">+1 em todos os atributos — versatilidade humana; nenhuma limitação inata de aptidão</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-passive">Racial</span>
+        <span class="nature-text">Tamanho Médio — deslocamento base 30 pés · Idiomas: Comum + 1 adicional</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-unique">Único</span>
+        <span class="nature-text">Limiar Aberto — forçada parcialmente pelo plano da morte e puxada de volta incompleta. A capacidade gravitúrgica emergiu da condição, não do estudo. Não tem grimório, não prepara magias. A condição é a fonte.</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-unique">Único</span>
+        <span class="nature-text">Anomalias permanentes — sombra incorreta: em luz múltipla projeta uma onde deveria ter várias. Eco visual: fração de segundo com duas dela no mesmo espaço, levemente deslocadas. Ela nunca menciona.</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-warning">Custo</span>
+        <span class="nature-text">A contagem — cada segundo no Estado Limiar é subtraído do que resta dela existir. Só ela sabe o número exato. Ninguém mais.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATRIBUTOS -->
+  <div class="section-title">✦ Atributos — Bônus de Proficiência +2</div>
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-label">Força</div><div class="stat-value">5</div><div class="stat-mod">−3</div></div>
+    <div class="stat-box"><div class="stat-label">Destreza</div><div class="stat-value">14</div><div class="stat-mod">+2</div></div>
+    <div class="stat-box"><div class="stat-label">Constituição</div><div class="stat-value">13</div><div class="stat-mod">+1</div></div>
+    <div class="stat-box"><div class="stat-label">Inteligência</div><div class="stat-value">19</div><div class="stat-mod">+4</div></div>
+    <div class="stat-box"><div class="stat-label">Sabedoria</div><div class="stat-value">15</div><div class="stat-mod">+2</div></div>
+    <div class="stat-box"><div class="stat-label">Carisma</div><div class="stat-value">8</div><div class="stat-mod">−1</div></div>
+  </div>
+
+  <!-- HABILIDADES + ESTADO LIMIAR -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="section-title">✦ Habilidades</div>
+
+      <div class="ability-item">
+        <div class="ability-dot"></div>
+        <div style="flex:1">
+          <div class="ability-name">Detecção Espectral — Térmica Direcional</div>
+          <div class="ability-desc">Percebe espectros como variação térmica direcional num raio de 18m. Sabe direção e intensidade aproximada — não forma nem intenção. Não é visão espectral: é a sensação de ausência de calor onde deveria haver. Não detectável ao usar.</div>
+        </div>
+        <div class="ability-status status-active">Passivo</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--cold)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Intangibilidade Parcial — Estado Limiar</div>
+          <div class="ability-desc">Ao ativar, ela e tudo em contato físico perdem peso e existência física parcial. Pode atravessar barreiras físicas. Imune a dano 100% físico. Todo outro tipo resolve normalmente. Objetos arremessados saem do raio e recuperam física imediatamente no ponto de saída.</div>
+        </div>
+        <div class="ability-status status-react">Reação</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--moon)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Graviturgia Inata — Disponível no Limiar</div>
+          <div class="ability-desc">Dentro do estado: objetos em contato perdem peso — tamanho não importa, só intenção. Pode interagir com objetos e arremessá-los. Pode atravessar barreiras não-mágicas. Não pode atacar corpo a corpo. Fora do Limiar: nenhuma dessas capacidades existe.</div>
+        </div>
+        <div class="ability-status status-active">No Limiar</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:#c8d8e8; box-shadow: 0 0 6px rgba(200,216,232,0.5);"></div>
+        <div style="flex:1">
+          <div class="ability-name">Ressonância com Paz — Passiva</div>
+          <div class="ability-desc">A inconstância presencial de Arin é percebida por Paz como estado permanente de fronteira. Paz se manifesta espontaneamente na presença dela. A interação entre as duas ainda não foi investigada por nenhuma delas.</div>
+        </div>
+        <div class="ability-status status-active">Passivo</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--ode-light)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Mísseis Mágicos — Exceção</div>
+          <div class="ability-desc">A intangibilidade não bloqueia tudo. Mísseis mágicos seguem assinatura, não presença física — acertam normalmente mesmo no Estado Limiar. Qualquer dano de origem não-física resolve normalmente.</div>
+        </div>
+        <div class="ability-status status-cost">Exceção</div>
+      </div>
+    </div>
+
+    <!-- ESTADO LIMIAR — 5 ROUNDS -->
+    <div class="panel">
+      <div class="section-title">✦ Estado Limiar — Progressão Visual</div>
+      <div style="font-size:12px;color:var(--pearl-dark);font-style:italic;margin-bottom:14px;line-height:1.6;">
+        Cada round visível para quem está na cena. Não é invisibilidade — é existir na fresta. O sinal escala enquanto ela permanece. O que cada um vê é o custo chegando à superfície.
+      </div>
+
+      <div class="round-grid">
+        <div class="round-pill round-r1">
+          <div class="round-gem" style="background:#b8e8ff; color:#b8e8ff;"></div>
+          <div>
+            <div class="round-name">Round 1 <button class="round-info-btn" onclick="openRoundDetail('r1')">i</button></div>
+            <div class="round-sub">Mormaço frio</div>
+          </div>
+        </div>
+        <div class="round-pill round-r2">
+          <div class="round-gem" style="background:#78c8f0; color:#78c8f0;"></div>
+          <div>
+            <div class="round-name">Round 2 <button class="round-info-btn" onclick="openRoundDetail('r2')">i</button></div>
+            <div class="round-sub">Sombra incorreta</div>
+          </div>
+        </div>
+      </div>
+      <div class="round-grid">
+        <div class="round-pill round-r3">
+          <div class="round-gem" style="background:#50a8e8; color:#50a8e8;"></div>
+          <div>
+            <div class="round-name">Round 3 <button class="round-info-btn" onclick="openRoundDetail('r3')">i</button></div>
+            <div class="round-sub">Exaustão visível</div>
+          </div>
+        </div>
+        <div class="round-pill round-r4">
+          <div class="round-gem" style="background:#38b8f0; color:#38b8f0;"></div>
+          <div>
+            <div class="round-name">Round 4 <button class="round-info-btn" onclick="openRoundDetail('r4')">i</button></div>
+            <div class="round-sub">Pico de desgaste</div>
+          </div>
+        </div>
+      </div>
+      <div class="round-grid">
+        <div class="round-pill round-r5" style="max-width:100%; flex:unset; width:100%;">
+          <div class="round-gem" style="background:#284058; color:#284058;"></div>
+          <div>
+            <div class="round-name">Round 5 <button class="round-info-btn" onclick="openRoundDetail('r5')">i</button></div>
+            <div class="round-sub">Retorno — parte ficou do outro lado</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px; padding:10px 14px; background:rgba(14,21,32,0.6); border-left:2px solid var(--specter); border-radius:2px; font-size:11px; color:var(--pearl-dark); line-height:1.6;">
+        <strong style="color:var(--specter);">Mecânica — Limiar Ativo</strong> · Ativação: <strong>Reação · Concentração</strong> · 1× por descanso longo · Duração máx.: 5 rounds · Alcance: corpo e tudo em contato físico · Ataques físicos puros: imune · Todo o resto: resolve normalmente
+      </div>
+
+      <div style="margin-top:12px; padding:8px 12px; background:rgba(40,22,5,0.15); border-left:2px solid rgba(200,128,64,0.6); border-radius:2px; font-size:10.5px; color:var(--pearl-dark); line-height:1.6; font-style:italic;">
+        A contagem é o que ela guarda. Cada ativação subtrai tempo real do que resta dela existir. O endpoint a campanha vai responder.
+      </div>
+    </div>
+  </div>
+
+  <!-- ATAQUES + SALVAGUARDAS -->
+  <div class="panel" style="margin-bottom:24px">
+    <div class="section-title">✦ Ataques — Graviturgia Inata e Arremessos</div>
+
+    <div class="attack-item">
+      <div class="attack-header">
+        <span class="attack-icon">❄️</span>
+        <span class="ability-name">Arremesso Gravitúrgico — Objeto Leve <em style="font-size:10px; color:var(--pearl-dark); font-style:italic; margin-left:6px;">(Limiar ativo)</em></span>
+        <span class="attack-bonus">+6 atq</span>
+      </div>
+      <div class="attack-tags">
+        <span class="tag tag-cold">1d6+4 impacto/perfurante</span>
+        <span class="tag tag-specter">perde peso no raio · recupera ao sair</span>
+        <span class="tag tag-silver">Alcance variável</span>
+      </div>
+      <div class="attack-note">Qualquer objeto pequeno em contato — pedra, faca, fragmento. Dentro do raio pesa zero; no ponto de saída recupera física e impacto completos.</div>
+    </div>
+
+    <div class="attack-item">
+      <div class="attack-header">
+        <span class="attack-icon">🌊</span>
+        <span class="ability-name">Arremesso Gravitúrgico — Objeto Médio <em style="font-size:10px; color:var(--pearl-dark); font-style:italic; margin-left:6px;">(Limiar ativo)</em></span>
+        <span class="attack-bonus">+6 atq</span>
+      </div>
+      <div class="attack-tags">
+        <span class="tag tag-cold">1d10+4 impacto</span>
+        <span class="tag tag-specter">tamanho não importa — só intenção</span>
+        <span class="tag tag-silver">Alcance variável</span>
+      </div>
+      <div class="attack-note">Objeto de tamanho médio que normalmente seria impossível de arremessar. Dentro do raio: sem peso. Fora: impacto proporcional ao tamanho original.</div>
+    </div>
+
+    <div class="attack-item">
+      <div class="attack-header">
+        <span class="attack-icon">⚡</span>
+        <span class="ability-name">Arremesso Gravitúrgico — Objeto Grande <em style="font-size:10px; color:var(--pearl-dark); font-style:italic; margin-left:6px;">(Limiar ativo)</em></span>
+        <span class="attack-bonus">+6 atq</span>
+      </div>
+      <div class="attack-tags">
+        <span class="tag tag-cold">1d12+4 impacto</span>
+        <span class="tag tag-red">desvantagem — difícil de dirigir com precisão</span>
+        <span class="tag tag-silver">Alvo de área · 10 pés</span>
+      </div>
+      <div class="attack-note">Objetos grandes arremessados perdem precisão. Ela sabe que está jogando força, não habilidade. Funciona — mas raramente é o método preferido.</div>
+    </div>
+
+    <div class="attack-item">
+      <div class="attack-header">
+        <span class="attack-icon">🗡️</span>
+        <span class="ability-name">Canivete de Emergência</span>
+        <span class="attack-bonus">+4 atq</span>
+      </div>
+      <div class="attack-tags">
+        <span class="tag tag-silver">1d4+2 perfurante</span>
+        <span class="tag tag-moon">5 / 20 pés · mundano</span>
+      </div>
+      <div class="attack-note">Para quando está fora do Limiar e não há outra opção. Ela não é guerreira — isso existe por necessidade, não por escolha.</div>
+    </div>
+
+    <div style="margin-top:18px">
+      <div class="section-title">✦ Salvaguardas</div>
+      <div class="saves-grid">
+        <div class="save-item"><div class="save-dot"></div><span class="save-name">Força</span><span class="save-val">−3</span></div>
+        <div class="save-item"><div class="save-dot"></div><span class="save-name">Destreza</span><span class="save-val">+2</span></div>
+        <div class="save-item"><div class="save-dot"></div><span class="save-name">Constituição</span><span class="save-val">+1</span></div>
+        <div class="save-item"><div class="save-dot prof"></div><span class="save-name">Inteligência</span><span class="save-val">+6</span></div>
+        <div class="save-item"><div class="save-dot prof"></div><span class="save-name">Sabedoria</span><span class="save-val">+4</span></div>
+        <div class="save-item"><div class="save-dot"></div><span class="save-name">Carisma</span><span class="save-val">−1</span></div>
+      </div>
+      <div style="margin-top:6px;font-size:10px;color:var(--pearl-dark);opacity:0.55;font-style:italic">● Proficiente · ○ Sem prof. · Bônus: +2</div>
+    </div>
+  </div>
+
+  <!-- EQUIPAMENTO + PERÍCIAS -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="section-title">✦ Equipamento</div>
+
+      <div class="equip-item">
+        <div class="equip-icon">🌀</div>
+        <div class="equip-name">Vestes de Camada Dupla — Sem Insígnia<em>Leves o suficiente para entrar no Limiar sem resistência · sem marca de origem</em></div>
+        <div class="equip-count"><span class="tag tag-silver">Equip.</span></div>
+      </div>
+      <div class="equip-item">
+        <div class="equip-icon">🗡️</div>
+        <div class="equip-name">Canivete de Emergência<em>Para o plano dos vivos quando o Limiar não é opção</em></div>
+        <div class="equip-count"><span class="tag tag-silver">Equip.</span></div>
+      </div>
+      <div class="equip-item">
+        <div class="equip-icon">📐</div>
+        <div class="equip-name">Caderneta de Cálculos — Cifrada<em>Registros de comportamento gravitúrgico, distâncias, pontos de saída observados</em></div>
+        <div class="equip-count"><span class="tag tag-moon">×1</span></div>
+      </div>
+      <div class="equip-item">
+        <div class="equip-icon">🧪</div>
+        <div class="equip-name">Sais de Barreira Espectral<em>Emergência — para quando a detecção térmica confirma presença hostil próxima</em></div>
+        <div class="equip-count"><span class="tag tag-silver">×2</span></div>
+      </div>
+      <div class="equip-item">
+        <div class="equip-icon">💊</div>
+        <div class="equip-name">Composto Calmante — Formulação Própria<em>Para os momentos pós-Limiar quando parte dela ficou do outro lado</em></div>
+        <div class="equip-count"><span class="tag tag-silver">×3</span></div>
+      </div>
+
+      <div class="equip-note">Não usa armadura — o Limiar exige que tudo em contato entre junto. Armadura pesada cria fricção no estado. Mobilidade é sobrevivência quando o corpo físico é o único escudo disponível.</div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">✦ Perícias D&D</div>
+      <div class="skill-row"><div class="skill-dot exp"></div><span class="skill-name">Arcanismo</span><span class="skill-val">+8</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Investigação</span><span class="skill-val">+6</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Percepção</span><span class="skill-val">+4</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Intuição</span><span class="skill-val">+4</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Furtividade</span><span class="skill-val">+4</span></div>
+      <div class="skill-row"><div class="skill-dot"></div><span class="skill-name">Demais perícias</span><span class="skill-val">−3 a +2</span></div>
+      <div class="skill-legend">◈◈ Especialista · ◈ Proficiente · ◯ Sem proficiência</div>
+
+      <div class="section-title" style="margin-top:18px">✦ Perícias CoC</div>
+      <div class="skill-row"><div class="skill-dot exp"></div><span class="skill-name">Física Planar / Graviturgia</span><span class="skill-val">70%</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Percepção Espectral</span><span class="skill-val">65%</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Ocultismo — Plano da Morte</span><span class="skill-val">50%</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Furtividade</span><span class="skill-val">55%</span></div>
+      <div class="skill-row"><div class="skill-dot"></div><span class="skill-name">Medicina / Compostos</span><span class="skill-val">40%</span></div>
+      <div class="skill-row" style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(90,155,186,.18);">
+        <div class="skill-dot" style="background:var(--sanity,#3a6b8a); opacity:.7;"></div>
+        <span class="skill-name" style="color:var(--sanity-light,#5a9bba); font-style:italic;">Mythos de Cthulhu</span>
+        <span class="skill-val" style="color:var(--sanity-light,#5a9bba);">0%</span>
+      </div>
+      <div style="font-size:.72rem; color:var(--text-dim,#7a7090); font-style:italic; margin-top:3px; padding-left:20px; line-height:1.4;">
+        Zero por ora — o Plano da Morte não é Mythos · Exposição ao Limiar não acumula Mythos · Apenas contato com os Seres Antigos acumula
+      </div>
+      <div class="skill-legend" style="margin-top:10px;">Rola 1d100 ≤ valor = sucesso · ≤ ½ = difícil · ≤ 1/5 = extremo</div>
+    </div>
+  </div>
+
+  <!-- LORE -->
+  <div class="section-title">✦ Lore &amp; Identidade</div>
+  <div class="lore-panel">
+    <div class="lore-item">
+      <div class="lore-icon">⛪</div>
+      <div>
+        <div class="lore-key">Origem — O Experimento da Igreja</div>
+        <div class="lore-val">Os inquisidores da Igreja do Sol Agonizante tentaram compreender o Plano da Morte sem morrer para acessá-lo. Arin foi forçada parcialmente através da fronteira e puxada de volta — incompleta. Ela sobreviveu. <strong>A fronteira não voltou ao lugar.</strong> A capacidade que emergiu não é magia estudada: é a condição respondendo ao que o corpo ainda tenta fazer.</div>
+      </div>
+    </div>
+    <div class="lore-item">
+      <div class="lore-icon">⛩️</div>
+      <div>
+        <div class="lore-key">O Inquisidor — Ainda Vivo</div>
+        <div class="lore-val">O inquisidor que conduziu o experimento ainda está ativo. Ainda trabalha para a Igreja. <strong>A Igreja tem alcance continental em Valtheris.</strong> Arin não fugiu da memória — só da localização. São coisas diferentes.</div>
+      </div>
+    </div>
+    <div class="lore-item">
+      <div class="lore-icon">📋</div>
+      <div>
+        <div class="lore-key">Soren — O Dossiê</div>
+        <div class="lore-val">Soren tem um dossiê de personagens sem nome. Os residuais que Arin deixa quando ativa o Estado Limiar têm uma composição que ele ainda não sabe nomear. <strong>Ela é um dado que ele não tem.</strong> O quanto ela sabe disso, e o quanto a Caçadora sabe que Soren está olhando para Arin — ainda não está estabelecido.</div>
+      </div>
+    </div>
+    <div class="lore-item">
+      <div class="lore-icon">🤫</div>
+      <div>
+        <div class="lore-key">A Caçadora — O Acordo Não Negociado</div>
+        <div class="lore-val">Arin esteve presente no momento em que a Caçadora tomou a decisão de abandonar o próprio nome. Foi a primeira missão que fizeram juntas. A Caçadora não sabia que havia alguém observando. Desde então, Arin carrega o nome. <strong>Nunca o usou.</strong> O acordo não foi negociado — apenas existe, sustentado pelo silêncio de ambas.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APARÊNCIA + PERSONALIDADE -->
+  <div class="two-col" style="margin-bottom:28px">
+    <div class="panel">
+      <div class="section-title">✦ Aparência</div>
+      <div class="char-item">
+        <div class="char-icon">🌫️</div>
+        <div><div class="char-key">A Distorção Constante</div><div class="char-val">Quem olha para ela por tempo suficiente percebe que algo não está certo. A sombra não é exata. Em luz direta é levemente grande demais. Em luz múltipla é uma onde deveria ser várias. Arin não reage quando alguém nota. Só espera que a pessoa decida o que está vendo.</div></div>
+      </div>
+      <div class="char-item">
+        <div class="char-icon">🌡️</div>
+        <div><div class="char-key">O Frio que Ela Traz</div><div class="char-val">Não é temperatura do ar — é a percepção de que o espaço ao redor dela é ligeiramente menos certo do que o resto da sala. Espectros sentem antes de humanos. Humanos sensíveis sentem como desconforto sem nome.</div></div>
+      </div>
+      <div class="char-item">
+        <div class="char-icon">📐</div>
+        <div><div class="char-key">Estrutura e Movimento</div><div class="char-val">Estatura mediana, construção contida. Move-se calculando espaço — não pelas razões de quem treinou combate, mas pelas razões de quem passou anos estimando distâncias entre objetos e suas trajetórias. Cada movimento tem finalidade. Nada é ornamental.</div></div>
+      </div>
+      <div class="char-item">
+        <div class="char-icon">👁️</div>
+        <div><div class="char-key">O Olhar que Calcula</div><div class="char-val">Diferente da Caçadora, que nunca olha diretamente — Arin olha. Mas o que ela registra quando olha é peso, trajetória, ponto de saída do raio. As pessoas tendem a achar que estão sendo avaliadas. Estão. Mas não da forma que imaginam.</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">✦ Personalidade</div>
+      <div class="char-item">
+        <div class="char-icon">🔢</div>
+        <div><div class="char-key">A Contagem que Ela Não Mostra</div><div class="char-val">Há um número que ela mantém com precisão constante. Não interfere com o que ela faz — interfere com o quanto ela hesita antes de fazer. Quem a conhece bem o suficiente vai perceber a hesitação. Quem não a conhece vai interpretar como cautela.</div></div>
+      </div>
+      <div class="char-item">
+        <div class="char-icon">⚖️</div>
+        <div><div class="char-key">Prioridade Sem Declaração</div><div class="char-val">Não explica suas escolhas — age por elas. A decisão de guardar o nome da Caçadora não foi anunciada. A decisão de usar o Limiar em vez de não usar também não. Quem está perto aprende a ler as ações, não esperar palavras.</div></div>
+      </div>
+      <div class="char-item">
+        <div class="char-icon">🌀</div>
+        <div><div class="char-key">Precisão Como Distância</div><div class="char-val">É muito precisa com palavras quando fala — o que torna o silêncio ainda mais informativo. Quando diz algo, quer dizer exatamente aquilo. Quando não diz nada, está calculando se o custo de falar é proporcional ao resultado. Quase nunca é.</div></div>
+      </div>
+      <div class="char-item">
+        <div class="char-icon">🌿</div>
+        <div><div class="char-key">Paz Sem Contexto</div><div class="char-val">A manifestação de Paz na presença dela é a única coisa que a surpreende com consistência. Ela sabe que é ressonância da condição. <strong>Isso não explica por que a presença de Paz a faz hesitar de uma forma diferente da contagem.</strong></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  </main>
+
+<div class="footer">
+    <div class="footer-quote">"Ela sobreviveu. A fronteira não voltou ao lugar.<br>O que ficou do outro lado ela ainda não parou de calcular."</div>
+    <div class="footer-attr">— Arin · Operadora do Limiar · Valtheris · Sob o Luar dos Que Não Descansam</div>
+  </div>
+
+</div>
+
+<!-- ROUND DETAIL OVERLAY -->
+<div class="round-detail-overlay" id="roundDetailOverlay" onclick="closeRoundDetail(event)">
+  <div class="round-detail-panel" id="roundDetailPanel">
+    <button class="round-detail-close" onclick="closeRoundDetail()">✕ Fechar</button>
+    <div class="round-detail-num"  id="rdNum"></div>
+    <div class="round-detail-name" id="rdName"></div>
+    <div class="round-detail-tags" id="rdTags"></div>
+    <div class="round-detail-desc" id="rdDesc"></div>
+  </div>
+</div>
+
+<script>
+/* ── ROUND DATA ── */
+const ROUND_DATA = {
+  r1: {
+    num:  'Estado Limiar · Round 1 de 5',
+    name: 'Mormaço Frio',
+    tags: ['Limiar aberto', '0–6 segundos', 'Perceptível'],
+    desc: 'A fresta está aberta. O ar ao redor de Arin resfria de forma localizada e direcional — como se o espaço ao seu redor estivesse ligeiramente fora de fase com o resto do ambiente. Quem olha vê a distorção de mormaço, mas fria: o calor não sobe, a realidade ao redor enfraquece.\n\nEla e tudo em contato físico entraram no estado. Armas perdem peso. Vestimentas perdem fricção. Barreiras físicas deixam de ser obstáculo.\n\nPara quem está na cena: a percepção é clara, a localização não. Sabe-se que algo aconteceu — não exatamente onde ela está ou em qual plano.\n\nImunidade a dano físico puro ativa. Graviturgia inata disponível.'
+  },
+  r2: {
+    num:  'Estado Limiar · Round 2 de 5',
+    name: 'Sombra Incorreta',
+    tags: ['6–12 segundos', 'O plano físico não a reconhece mais completamente', 'Visível'],
+    desc: 'A anomalia da sombra se intensifica de forma ilegível para quem não a conhece — e legível demais para quem conhece. Em luz múltipla ela projeta uma sombra onde deveria projetar várias. Em luz direta, a sombra tem forma aproximada mas bordas que não correspondem à posição real.\n\nO plano físico já não registra sua presença com precisão. Isso não a torna invisível — torna a informação visual sobre ela imprecisa. Ataques que dependem de leitura de posição têm dificuldade acrescida de localizar exatamente onde ela está no espaço.\n\nO custo já está chegando à superfície — ainda não visível no corpo, mas o padrão de sombra incorreta é o primeiro sinal que alguém treinado reconheceria.'
+  },
+  r3: {
+    num:  'Estado Limiar · Round 3 de 5',
+    name: 'Exaustão Visível',
+    tags: ['12–18 segundos', 'O custo chega à superfície', 'Quem olha entende'],
+    desc: 'O custo chegou à superfície do corpo. Não é dano — é o esforço de existir nos dois planos ao mesmo tempo por mais tempo do que o corpo consegue processar sem sinal externo.\n\nQuem está na cena e a observou desde o round 1 entende que o que está vendo não é cansaço de combate. É outra coisa. O padrão é específico o suficiente para quem já viu antes — ou específico o suficiente para quem nunca viu antes reconhecer que nunca viu isso antes.\n\nEla pode continuar. O custo continua visível. A contagem interna está em algum lugar que só ela sabe.'
+  },
+  r4: {
+    num:  'Estado Limiar · Round 4 de 5',
+    name: 'Pico de Desgaste',
+    tags: ['18–24 segundos', 'Limite real', 'Sem bônus mecânico'],
+    desc: 'Usa tudo que tem. Isso não significa que tem mais — significa que o que resta está sendo usado completamente.\n\nNão há bônus mecânico neste round. O pico é o pico de desgaste, não de poder. Quem está olhando para ela entende que é agora ou não é — não porque ela ficou mais forte, mas porque é evidente que ela não vai sustentar mais do que isso.\n\nA distorção de mormaço está no máximo. A sombra está completamente incorreta. O corpo está visível no esforço. A graviturgia continua funcional porque a condição ainda sustenta — mas o sustento está no limite.\n\nQuem hesitava em agir entende que o momento é este.'
+  },
+  r5: {
+    num:  'Estado Limiar · Round 5 de 5 · Encerramento',
+    name: 'Retorno',
+    tags: ['24–30 segundos', 'Estado encerrado', 'Parte ficou do outro lado'],
+    desc: 'O estado encerra. Ela está aqui.\n\nMas diferente de como entrou. O corpo retorna ao plano físico completamente — a imunidade encerra, a graviturgia encerra, a distorção de mormaço encerra. Para todos os efeitos mecânicos, ela está no plano dos vivos e opera pelas regras do plano dos vivos.\n\nO que não retorna é a parte que ficou do outro lado. Não é visível no corpo. Não é quantificável em termos de jogo. É a sensação específica do round 5 — de que o custo pago desta vez foi real de uma forma que os rounds anteriores não eram, e que ela sabe exatamente quantos segundos isso representou.\n\nA contagem continua. Ela também.'
+  }
+};
+
+const roundOverlay = document.getElementById('roundDetailOverlay');
+
+function openRoundDetail(id) {
+  const r = ROUND_DATA[id];
+  if (!r) return;
+  document.getElementById('rdNum').textContent  = r.num;
+  document.getElementById('rdName').textContent = r.name;
+  const tagsEl = document.getElementById('rdTags');
+  tagsEl.innerHTML = r.tags.map(t => `<span class="tag tag-specter">${t}</span>`).join('');
+  document.getElementById('rdDesc').textContent = r.desc;
+  roundOverlay.classList.add('open');
+}
+
+function closeRoundDetail(e) {
+  if (!e || e.target === roundOverlay) {
+    roundOverlay.classList.remove('open');
+  }
+}
+
+/* ── 1. IntersectionObserver ── */
+(function () {
+  const targets = [
+    '.nature-box', '.vitals-grid', '.stats-row',
+    '.two-col', '.panel', '.lore-panel',
+    '.lore-item', '.char-item', '.ability-item',
+    '.round-grid',
+  ];
+  targets.forEach(sel => {
+    document.querySelectorAll(sel).forEach((el, i) => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.88) return;
+      el.classList.add('reveal');
+      el.style.transitionDelay = (i * 0.055) + 's';
+    });
+  });
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal, .reveal-left').forEach(el => io.observe(el));
+})();
+
+/* ── 2. Contador numérico nos atributos ── */
+(function () {
+  function animateCounter(el) {
+    const target = parseInt(el.textContent, 10);
+    if (isNaN(target)) return;
+    const steps = Math.floor(900 / 16);
+    let current = 0;
+    const inc = target / steps;
+    const timer = setInterval(() => {
+      current += inc;
+      if (current >= target) { el.textContent = target; clearInterval(timer); return; }
+      el.textContent = Math.floor(current);
+    }, 16);
+  }
+  const io2 = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { animateCounter(e.target); io2.unobserve(e.target); }
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.stat-value').forEach(el => io2.observe(el));
+})();
+
+/* ── 3. Stagger em listas ── */
+(function () {
+  ['lore-item', 'char-item', 'ability-item', 'attack-item', 'equip-item', 'save-item'].forEach(cls => {
+    document.querySelectorAll('.' + cls).forEach((el, i) => {
+      el.style.transitionDelay = (i * 0.04) + 's';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

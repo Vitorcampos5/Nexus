@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Os Primeiros — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .letter {
+    font-style: italic; color: var(--ink-dim);
+    border-left: 1px solid rgba(232,184,75,.25);
+    padding-left: 1.3rem; margin: 1.6rem 0;
+  }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">XVII</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Os<br>Primeiros</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet, Mara Vell, Elise e Kaira</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Antes dos massacres, antes dos nomes gravados em pedra, havia apenas dois vampiros e um horizonte nevado. Esta é a lenda de tudo que veio depois — e de um guerreiro que precisou descer sozinho, mais uma vez, para descobrir que a pergunta certa vale mais que qualquer resposta ensaiada.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Dúvida que Ficou</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>O abraço grupal se dissolve. Leyn se afasta levemente, olha para as próprias mãos — manchadas de sangue de inimigos, marcadas por cicatrizes que nunca curam completamente.</p>
+
+    <p><em>Sei que não devo forçar as pessoas a superarem seus obstáculos... Mas daqueles que são importantes pra mim, tenho que ao menos estar ao lado...</em></p>
+
+    <p>Olhou para Kaira — radiante, transformada, viva. E a honestidade doeu mais do que qualquer golpe que já recebera.</p>
+
+    <p><em>Mas o medo de perder... bom, não posso negar que tenho...</em></p>
+
+    <p><em>Eu entendo a Câmara... Mas começo a me questionar se sou digno de estar ao lado delas.</em></p>
+
+    <p>Não sobre força. Não sobre habilidade em combate. Sobre valor emocional. Se sua necessidade de proteger constantemente era peso ao invés de apoio.</p>
+
+    <p>"Leyn... você está bem?" Mara percebera o silêncio dele.</p>
+
+    <p>Ele forçou um sorriso. Virou-se para Kaira — ainda eufórica, segurando a lança, olhos dourados brilhando.</p>
+
+    <p>"Você está deslumbrante," disse, a voz rouca.</p>
+
+    <p>"SÉRIO?! Você achou mesmo?!" Ela estava radiante. "Eu me SINTO diferente! Mais forte! Mais... completa! Mas tio... VOCÊ que me trouxe até aqui. Sem você, eu ainda estaria na floresta, sozinha, com medo... Então obrigada. Por TUDO."</p>
+
+    <p>Ela o abraçou de novo — mais suave desta vez. Mara e Elise observavam e sabiam que algo estava diferente nele. Mas não pressionaram.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Decisão — Provação da Dignidade</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele se afastou do abraço. Olhou para a saída do Salão Comunal — direção oeste, de volta para as Catacumbas.</p>
+
+    <p>"Quero ir de volta às catacumbas," disse.</p>
+
+    <p>Todos pararam. Silêncio absoluto.</p>
+
+    <p>"Agora? Por quê?" Mara franziu a testa, confusa. "Aconteceu algo?"</p>
+
+    <p>"Quero tentar a Provação da Dignidade."</p>
+
+    <p>"A... Provação... da Dignidade?" Elise hesitou. "Aquela que... o mapa mostrava... 'Teste de dignidade — armadilha se indigno'?"</p>
+
+    <p>"Tio... você JÁ é digno!" Kaira protestou. "Você salvou TODOS nós! Morreu DUAS VEZES! Como pode não ser digno?!"</p>
+
+    <p>"Você está questionando seu valor," disse Mara, que via através da máscara. "Por causa do que a Câmara disse. Leyn... você NÃO precisa provar nada. Para ninguém. Muito menos para nós."</p>
+
+    <p>"Não é para vocês," respondeu. "É para MIM. Preciso saber... se sou digno de estar ao lado de vocês. Ou se minha proteção excessiva é... peso."</p>
+
+    <p>"Tio, NÃO!" Kaira segurou o braço dele. "Você não é peso! Você é ÂNCORA! A diferença é que âncora nos ESTABILIZA, não nos AFUNDA!"</p>
+
+    <p>"E se você REALMENTE quer fazer isso," disse Mara, "nós vamos junto. Como você esteve conosco." Uma pausa tática. "A Provação da Dignidade pode ser perigosa se você não estiver cem por cento."</p>
+
+    <p>"Tio… eu ACABEI de completar minha Provação," disse Kaira. "Você pode descansar um pouco antes da sua."</p>
+
+    <p>"Sempre... juntos... família..." disse Elise.</p>
+
+    <p>Ele lembrava do que sabia sobre aquela sala, de cem anos atrás: era teste moral, não físico — julgava intenções, não ações. Podia revelar verdades sobre si mesmo que ele não queria enfrentar. Falhar podia ter consequências permanentes. E a urgência que sentia agora corroía — até enfrentá-la, sentia que não merecia estar ao lado delas.</p>
+
+    <p>Todos esperaram sua decisão. Kaira segurava sua mão, preocupada.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Aldric e Tobias Chegam</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Antes de qualquer decisão final, sentiu através da magia da Vila: Aldric Voss acabara de entrar no perímetro pelo Portão Norte. Um quilômetro de distância. E com ele — a presença humana agora identificável: Tobias. O ferreiro. Respiração acelerada. Batimento cardíaco rápido.</p>
+
+    <p><em>Aldric chegou. E trouxe... Tobias?</em> transmitiu Mara, através do vínculo. <em>Algo deve ter acontecido na aldeia.</em></p>
+
+    <p><em>Eles estão vindo para CÁ. Rápido</em> — Kaira, seus novos sentidos primordiais completos detectando o movimento.</p>
+
+    <p><em>Leyn... decisão... é sua...</em> disse Elise, <em>mas... Tobias não viria... sem motivo grave...</em></p>
+
+    <p>A porta do Salão Comunal se abriu.</p>
+
+    <p>Aldric entrou primeiro. Trezentos anos refletiam naquela postura — composta mesmo após quilômetros de corrida, a capa negra mal fora de lugar. Os olhos vermelhos e antigos varreram a sala imediatamente, fazendo inventário silencioso de cada rosto. Quando pousaram em Kaira — transformada, lança na mão, postura de guerreira — ele parou por exatamente meio segundo.</p>
+
+    <p>"Provação completada," disse, quase para si mesmo.</p>
+
+    <p>Atrás dele entrou Tobias. O garoto estava destruído — suor escorrendo, joelhos tremendo, respiração em frangalhos. Roupa de ferreiro rasgada onde claramente caíra no caminho. Apoiou-se no batente antes de se endireitar com o que lhe restava de dignidade.</p>
+
+    <p>Aldric fechou a porta. Com gesto breve, ativou um pequeno selo de silêncio nas dobradiças.</p>
+
+    <p>"O que aconteceu para vocês dois virem até aqui tão rápido?" perguntou Leyn.</p>
+
+    <p>"Marcus encontrou algo na aldeia," disse Aldric. "Algo que julgou urgente o suficiente para não esperar até a manhã. Ele estava certo."</p>
+
+    <p>"E você, Tobias," disse Leyn, com leve surpresa. "Como conseguiu acompanhar a velocidade de Aldric?"</p>
+
+    <p>"Ele não conseguiu," disse Aldric, completamente sério. "Eu o carreguei."</p>
+
+    <p>"Eu tenho dignidade!" Tobias ficou vermelho até as orelhas.</p>
+
+    <p>"Tem," disse Aldric, sem piscar. "E aproximadamente dezoito quilômetros dela nas minhas costas."</p>
+
+    <p>Mara deixou escapar um som que tentava ser tosse. Kaira mordeu o lábio para não sorrir. Tobias suspirou fundo e endireitou a postura.</p>
+
+    <p>Tirou de dentro da jaqueta um pergaminho selado — cera vermelha, espiral simples gravada. O código pessoal de Marcus.</p>
+
+    <p>"Leyn... Marcus pediu pra eu entregar pessoalmente," disse. "Disse que você confiaria mais se viesse de mim. Mas antes do pergaminho, ele disse que você precisava ouvir o que EU vi. Com meus próprios olhos."</p>
+
+    <p>Leyn aceitou o pergaminho, mas não o abriu ainda. Deixou Tobias falar. Quando terminou — voz ainda rouca do esforço, mas firme — ele ficou quieto por um instante. Então, com a calma de quem já carregara informações mais pesadas que aquela:</p>
+
+    <p>"Entendido," disse. "Obrigado por trazerem isso pessoalmente. Agora preciso que saibam o que enfrentamos aqui, porque isso muda o que vem a seguir."</p>
+
+    <p>Explicou: o grimório dos cultistas estava com eles, mas com um selo mágico que atacara Leyn ao tentar forçar — precisava de contra-magia para abrir com segurança. O Devorador Menor — "o Vazio" — continuava vivo, fugira com o construto sobrevivente, e retornaria com reforços. Restavam três a quatro dias antes que o Culto reorganizasse um ataque em força. E a Provação da Dignidade precisava acontecer antes do próximo confronto.</p>
+
+    <p>Kaira apertou a lança instintivamente. Mara endireitou os ombros. Elise deixou os dedos deslizarem para perto do carcás.</p>
+
+    <p>"Devorador Menor..." repetiu Aldric, cadência calma, recalculando.</p>
+
+    <p>"Exato," disse Leyn. "Agora fugiram de volta à Fortaleza. Temos três a quatro dias antes que reorganizem um ataque em força."</p>
+
+    <p>Aldric examinou Leyn por um longo momento.</p>
+
+    <p>"A Provação da Dignidade é teste moral. Não físico," disse. "O fato de você querer fazê-la voluntariamente, especialmente agora, já diz algo sobre sua resposta." Uma pausa. "Quanto ao Grimório — me traga até ele."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Caixa de Madeira Escura</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Antes que dessem um passo em direção às catacumbas, Aldric tirou algo de dentro da capa. Não era grande — uma caixa de madeira escura, do tamanho de uma mão fechada, gravada com runas de proteção contra deterioração. Estava velha. Muito velha. A madeira tinha aquela qualidade seca que só vem de séculos.</p>
+
+    <p>"Guardei isso por cem anos," disse. "Encontrei nos escombros de um acampamento Sepet destruído, duas semanas após o massacre. Não havia ninguém vivo para entregar. Então esperei."</p>
+
+    <p>Colocou-a nas mãos de Leyn.</p>
+
+    <p>"Parece que a espera acabou."</p>
+
+    <p>Ele sentiu, ao tocar a madeira, um formigamento familiar. Sangue Sepet estava impregnado nela — não como maldição, como chave. A tampa se abriu sob seus dedos sem resistência, como se sempre soubesse que chegaria sua vez.</p>
+
+    <p>Dentro, em veludo escurecido pelo tempo: um anel de prata com uma gema vermelha escura no centro. Gravado na parte interna do aro, em escrita vampírica antiga: <em>"Que o último carregue o que os primeiros construíram."</em></p>
+
+    <p>E embaixo do anel, dobrado com cuidado: um fragmento de pergaminho com três linhas escritas à mão.</p>
+
+    <p>"Não sei o que está escrito," disse Aldric. "A escrita é primordial antiga. Anterior ao que aprendi."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Carta de Gareth — Aldric e o Irmão</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Mara deu um passo à frente. Olhou para Aldric com a franqueza direta que era completamente dela, tirou de dentro da armadura a carta de Gareth Voss — onde a guardara com cuidado desde que saíram da aldeia — e a entregou sem cerimônia, mas com respeito absoluto.</p>
+
+    <p>"Antes de seguirmos... há algo que precisamos te dar," disse. "Encontramos isso nos pertences deixados pelo ferreiro Garrett. Pelo Gareth. Seu irmão."</p>
+
+    <p>Aldric não reagiu imediatamente. Seus olhos vermelhos pousaram no papel com a primeira expressão completamente humana que qualquer um deles já vira nele. Pegou a carta. Abriu lentamente — controlando o ritmo, ou não conseguiria terminar.</p>
+
+    <p>Leu em silêncio. Todos ficaram quietos. Até Tobias, que não entendia metade do que estava acontecendo, percebeu que aquele não era momento para perguntas.</p>
+
+    <p>Aldric terminou de ler. Dobrou a carta com precisão absoluta. Guardou-a dentro da capa, perto do peito — gesto inconsciente, não calculado. Quando levantou os olhos, a voz saiu exatamente igual a sempre:</p>
+
+    <p>"Ele morreu feliz, então."</p>
+
+    <p>Uma pausa de três segundos.</p>
+
+    <p>"Idiota teimoso."</p>
+
+    <p>Não era raiva. Era o jeito que irmãos mais velhos chamam os mais novos quando as palavras reais são grandes demais para caber em frases pequenas.</p>
+
+    <p>Antes que alguém pudesse dizer qualquer coisa, virou-se:</p>
+
+    <p>"Vamos para as catacumbas."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Tobias e Kaira — O que Mudou</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn se voltou para Tobias — que estava de pé junto à parede, claramente tentando processar vampiros, cartas de irmãos mortos, uma entidade chamada Devorador Menor e uma vila de tochas douradas eternas, tudo ao mesmo tempo.</p>
+
+    <p>"Tobias. Sei que está cansado," disse. "A vila é escura, sim — mas as tochas estão acesas. Você não notou nada de diferente nela?"</p>
+
+    <p>Fez um gesto em direção a Kaira, que estava ao lado dele com a lança de prata descansando no ombro, postura completamente diferente da criança assustada que ele conhecera na aldeia. Tobias piscou. Olhou para Kaira de verdade pela primeira vez desde que entrara. E congelou.</p>
+
+    <p>"Você… você era… Você era mais baixa," disse, apontando levemente, sem querer ser rude. "E tinha o cabelo mais…" Parou. "E seus olhos estavam… menos…"</p>
+
+    <p>"Brilhantes?" sugeriu Kaira, sorrindo, bordas novas no sorriso.</p>
+
+    <p>"Assustadores," disse Tobias, corado. "Quer dizer — bonitos. Bonitos assustadores. Não que isso seja—"</p>
+
+    <p>"Obrigada, Tobias," disse ela, sorriso genuíno e divertido.</p>
+
+    <p>"O que aconteceu com ela?" perguntou, curiosidade direta de ferreiro.</p>
+
+    <p>"Ela cresceu," disse Leyn.</p>
+
+    <p>Tobias processou isso. Assentiu como se fizesse sentido perfeito, mesmo não fazendo.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Sentinela e as Perguntas dos Séculos</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>As tochas azuis pulsaram com mais intensidade quando desceram. A Sentinela estava exatamente onde a deixaram — posicionada entre as portas das Tumbas de Anciãos, espada fantasmagórica baixada. Ao vê-los, fez reverência.</p>
+
+    <p>"Família Sepet retorna," disse. "E traz aliados de valor. Aldric Voss. Trezentos e quarenta e dois anos de idade. Registro desta unidade: aliado confirmado da linhagem Sepet, verificado três vezes em vida."</p>
+
+    <p>"Sentinela. Ainda funcional, vejo," disse Aldric.</p>
+
+    <p>"Ainda necessária."</p>
+
+    <p>Aldric examinou o Grimório do Culto com luvas de couro fino, murmurou em élfico antigo, ficou quieto por quase um minuto.</p>
+
+    <p>"Dois dias," disse. "Talvez um e meio, se trabalhar sem parar. O selo é profano, mas não é o mais complexo que já vi. A chave é desconstrução em camadas, não força direta. Faça sua Provação. Quando terminar, o Grimório estará aberto."</p>
+
+    <p>Leyn assentiu. Mas havia perguntas primeiro.</p>
+
+    <p>"Sentinela," disse. "Você me disse que a vila entrou no estado atual quando percebeu que não havia mais nenhum primordial vivo, noventa e sete anos atrás. Isso significa que um primordial esteve aqui por três anos após o massacre. Quem era ele?"</p>
+
+    <p>"Kael Sepet," disse a Sentinela. "Seu avô. Patriarca da geração anterior à sua. Aproximadamente seiscentos e quarenta anos de idade quando morreu. Um dos mais velhos da linhagem ativa no momento do massacre. Kael sobreviveu ao massacre inicial por uma razão: ele não estava na vila quando ocorreu. Retornou três dias depois e encontrou o que havia sobrado. Passou os três anos seguintes sozinho. Reconstruindo o que podia. Enterrando os mortos. Registrando os nomes. Cada um dos cento e quarenta e sete. Quando o último nome foi gravado na última tumba... ele entrou naquela câmara" — apontou para a porta mais ao fundo, além das tumbas, uma que ainda não tinham aberto — "e não saiu. Esta unidade perdeu o sinal de presença primordial noventa e sete anos, dois meses e catorze dias atrás. O que Kael fez dentro daquela câmara — esta unidade não sabe. Mas a Vila não se apagou completamente. Apenas... dormiu. Como se ele tivesse deixado algo aceso antes de partir."</p>
+
+    <p>Kaira estava olhando para a porta fechada com olhos que calculavam coragem para uma pergunta que ainda não fizera. Mara tinha a mão no escudo — por instinto de segurar algo sólido. Elise olhou para Leyn. Ele continuou:</p>
+
+    <p>"O que foi o grande ritual do massacre fundador — o de trezentos anos atrás?"</p>
+
+    <p>A Sentinela ficou completamente imóvel. Era a primeira vez que a viam fazer isso. Nem a espada se moveu.</p>
+
+    <p>"Esta unidade foi criada no mesmo evento que o massacre fundador," disse. "Portanto a resposta que tenho é... incompleta. E parcial. Há trezentos e quatro anos, os Fundadores do Clã Sepet escolheram este vale para estabelecer a Vila. O vale assenta sobre uma confluência de linhas de magia antiga — pré-vampírica, anterior até mesmo à primeira geração conhecida de primordiais. O ritual de fundação foi chamado internamente de 'O Preço do Lar'. Envolveu o sacrifício voluntário de cinco primordiais mais velhos da linhagem — os Fundadores originais — cujo sangue foi vertido simultaneamente nos quatro pontos cardinais do vale e no centro. Onde agora ficam as Catacumbas. Este sangue criou três coisas permanentes: a Noite Eterna — proteção contra luz solar. O Vínculo da Vila — a conexão que permite primordiais Sepet sentirem e controlarem aspectos do ambiente. E esta unidade. Eu sou construída do sangue e da intenção dos cinco Fundadores. Não sou armadura animada. Sou... memória. Dever. Amor transformado em função. O ritual foi considerado o maior ato de amor parental na história documentada da linhagem. Eles construíram uma casa para seus filhos e netos. E pagaram com tudo que tinham."</p>
+
+    <p>Tobias estava sentado num canto com as costas numa coluna, tendo parado de tentar entender, apenas ouvindo, com a expressão de quem assiste uma peça de teatro num idioma que não domina mas que é obviamente importante. Aldric não movera um músculo. Seus olhos vermelhos estavam fixos na Sentinela com a atenção de quem arquiva cada palavra.</p>
+
+    <p>"Quão antiga é a linhagem Sepet?" perguntou Leyn.</p>
+
+    <p>"Esta é a pergunta mais difícil de responder com precisão," disse a Sentinela. "Os registros chegam até dois mil e trezentos anos atrás — a data mais antiga que os Fundadores incluíram na memória desta unidade. Nessa data, a linhagem Sepet já existia há tempo suficiente para ter história própria, tradições estabelecidas e ancestrais considerados 'antigos'. Isso sugere que a linhagem tem pelo menos quatro a cinco mil anos de existência contínua. Mas há uma informação que os Fundadores deixaram deliberadamente vaga — e esta unidade respeita essa escolha. A memória mais antiga que posso acessar é um fragmento. Uma imagem. Não palavras. Uma lua vermelha. Um campo de neve. Dois vampiros — um homem, uma mulher — de pé, olhando para o horizonte. Os nomes deles não estão registrados. Apenas um título: 'Os Primeiros'. Se isso é origem ou mito — esta unidade não pode afirmar com certeza. Mas o sangue que corre em você, em Kaira, é o mesmo sangue daqueles dois. Ininterrupto. Por milênios."</p>
+
+    <p>"Cinco mil anos..." Kaira olhava para as próprias mãos.</p>
+
+    <p>"E dois sobreviveram a cem anos de massacre, prisão e exílio," disse Mara, a voz baixa. "Esse sangue não quebra fácil."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Entrando na Provação</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele ficou em silêncio por um momento. Deixou tudo assentar — Kael e sua vigília solitária de três anos, os cinco Fundadores que se sacrificaram por amor, os Dois Primeiros na neve vermelha cujos nomes foram deixados no vento.</p>
+
+    <p>Então se levantou.</p>
+
+    <p>"Vou entrar na Sala da Provação da Dignidade," disse.</p>
+
+    <p>Kaira deu um passo à frente — depois parou. Lembrou do que a Câmara lhe ensinara. Deixou-o ir. Mas segurou sua mão por exatamente um segundo antes de soltar.</p>
+
+    <p>"Volte para nós."</p>
+
+    <p>Mara bateu o punho no escudo — uma vez, suave. Saudação de guerreira. Elise olhou com olhos que não precisavam de palavras. Aldric, sem se virar do Grimório, disse:</p>
+
+    <p>"Dignidade não é o que você faz quando todos estão olhando. É o que você escolhe quando ninguém está."</p>
+
+    <p>A Sentinela flutuou até uma porta que ele não notara completamente antes: menor, sem ornamentos, sem runas visíveis. Madeira escura como ébano, com apenas um símbolo gravado no centro. Uma balança.</p>
+
+    <p>A porta se abriu sozinha. Do outro lado — não escuridão. Luz branca, quieta, sem fonte aparente. Atravessou o limiar. A porta fechou atrás dele sem som.</p>
+
+    <p>A sala era menor do que esperava. Paredes de pedra lisa, sem runas, sem ornamentos. Chão plano. Teto baixo. Uma sala que poderia ser qualquer sala, em qualquer lugar.</p>
+
+    <p>Exceto pelo que estava no centro.</p>
+
+    <p>Uma cadeira. Simples. Madeira comum. E sentada nela — uma figura. Não tinha rosto definido. Não tinha gênero. Não tinha idade. Mudava sutilmente a cada vez que ele piscava, como se fosse um espelho tentando refletir a pessoa certa e não conseguindo decidir qual.</p>
+
+    <p>Quando falou, a voz não tinha direção. Vinha de dentro.</p>
+
+    <p>"Leyn Sepet. Você veio até nós pela terceira vez," disse. "Primeira vez: você morreu lutando por desconhecidos. Segunda vez: você morreu lutando pela família que escolheu. Agora vem de pé, vivo, vitorioso — e ainda assim duvida. Interessante." Uma pausa. "A Provação da Dignidade não julga feitos. Não conta mortes ou vitórias. Não pesa ouro ou sangue inimigo. Ela faz uma única pergunta. E a resposta precisa ser verdadeira. Não a resposta que você quer dar. Não a que acha que deveria dar. A verdadeira."</p>
+
+    <p>A luz branca ficou levemente mais intensa.</p>
+
+    <p>"Então, Leyn Sepet — último sangue primordial da linhagem mais antiga de Valtheris — por que você protege?"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Por Que Você Protege — A Resposta de Leyn</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>A figura não se moveu enquanto ele falava. A luz branca não pulsou. Não reagiu. Apenas escutou. E ele falou — não com a voz de comandante, não com a voz de guerreiro ou de último primordial ou de tio ou de líder de família improvisada. Com a voz de Leyn Sepet. Só isso.</p>
+
+    <p>"Como diabos eu deveria responder isso?"</p>
+
+    <p>Não estava perguntando para a figura. Estava pensando em voz alta — e percebeu, no mesmo instante, que aquela honestidade já era parte da resposta.</p>
+
+    <p>"Sei que para vampiros, proteger alguém que não seja a si mesmo já é impensável. Conheço as histórias. Os massacres por poder. A frieza da linhagem quando decide que algo ou alguém é recurso, não vida."</p>
+
+    <p>Olhou para as próprias mãos.</p>
+
+    <p>"Mas eu protejo. E estou tentando entender por quê — não para dar uma resposta bonita. Para ser honesto."</p>
+
+    <p>"Não vou dizer que essa vontade surgiu após minha primeira morte. Porque não foi. Não surgiu depois da segunda também. Não foi o trauma, não foi a prisão, não foi o século de escuridão que me transformou nisso."</p>
+
+    <p>"Esse sentimento estava comigo antes de tudo. Antes do massacre. Antes da Vila queimar."</p>
+
+    <p>"Estava lá quando eu treinava no campo com meu pai e ficava de olho nos meus irmãos menores ao mesmo tempo, mesmo sem precisar. Estava lá quando minha mãe tecia e eu ficava acordado mais tempo que devia só para ter certeza que a noite estava quieta."</p>
+
+    <p>Levantou os olhos para a figura que não tinha rosto.</p>
+
+    <p>"Não era por medo. Não era dever — ninguém me pediu. Não era cálculo de sobrevivência."</p>
+
+    <p>"Era porque eu podia."</p>
+
+    <p>"Porque eu tinha poder suficiente para fazer isso. E essa combinação — poder e a possibilidade de usá-lo para que algo importante continuasse existindo — me dava uma satisfação que nenhuma vitória em combate jamais deu."</p>
+
+    <p>"Vampiros buscam poder para consumir. Para acumular. Para que nada e ninguém possa ameaçá-los."</p>
+
+    <p>"Eu busquei poder para que eu pudesse ficar entre os que amo e o que ameaça."</p>
+
+    <p>"Não porque sou nobre. Não porque sou melhor que outros vampiros."</p>
+
+    <p>"Porque essa é a única coisa que me faz sentir que minha existência tem peso real. Que não estou apenas ocupando espaço num mundo que já tem gente demais fazendo isso."</p>
+
+    <p>"Eu protejo porque seria feliz protegendo. Porque sempre fui."</p>
+
+    <p>"Isso é tudo. Não tem mais nada embaixo disso."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Primeiro Ancestral — A Reverência</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Silêncio absoluto. A figura na cadeira ficou completamente imóvel. E então — pela primeira vez desde que ele entrara — ela teve um rosto.</p>
+
+    <p>Não era um rosto que reconhecia. Não era seu pai, não era sua mãe, não era Kaira ou Mara ou Selene. Era um rosto velho. Muito velho. Com olhos vermelhos que carregavam o peso de milênios e ainda assim pareciam satisfeitos.</p>
+
+    <p>Um dos Primeiros.</p>
+
+    <p>Ele se levantou devagar. Com a dignidade específica de quem nunca teve pressa porque sempre soube que o tempo lhe pertencia. Caminhou até Leyn. Parou a um passo de distância. E então fez algo que ele não esperava.</p>
+
+    <p>Se inclinou.</p>
+
+    <p>Não era reverência de servo para senhor. Era de ancestral para descendente. De quem construiu para quem carrega.</p>
+
+    <p>"Respondeu como Sepet," disse. "Não como um vampiro que decidiu ser bom. Como alguém que sempre foi isso — e sobreviveu a um século tentando arrancar isso dele. E não conseguiram."</p>
+
+    <p>Ergueu a mão. Pousou no ombro dele — e Leyn sentiu. Não fantasma, não memória. Peso real. Calor de sangue que corre há cinco mil anos.</p>
+
+    <p>"A Provação da Dignidade não testa se você é digno de poder. Testa se você sabe por que usa o que tem," disse. "Muitos chegaram aqui com respostas preparadas. Belas. Corretas. Vazias. Você chegou com uma pergunta. E encontrou a resposta no meio dela. Isso é mais raro do que você imagina."</p>
+
+    <p>A luz branca da sala mudou. Não sumiu. Se transformou — de branca fria para algo mais próximo do dourado das tochas lá fora. Quente. Familiar.</p>
+
+    <p>As paredes lisas começaram a revelar o que sempre estivera gravado nelas, invisível até então: nomes. Centenas. Milhares. Em escrita primordial antiga — cada nome de cada Sepet que passara por aquela sala antes dele. Alguns com marcas de aprovação. Alguns sem.</p>
+
+    <p>Ele procurou e encontrou, na altura dos próprios olhos, como se tivesse sido colocado ali esperando: <strong>Kael Sepet.</strong> Com uma marcação que o ancestral traduziu sem que precisasse perguntar: <em>"Aquele que ficou quando todos foram. Aquele que enterrou os nomes para que não fossem esquecidos."</em></p>
+
+    <p>Logo abaixo, espaço em branco. Esperando.</p>
+
+    <p>A figura começou a desvanecer — não como névoa, mas como luz que se apaga porque já cumprira sua função. Mas antes de sumir completamente:</p>
+
+    <p>"O nome de Leyn Sepet será gravado aqui agora," disse. "A marcação dele será: <em>'Aquele que protege porque sempre foi feliz fazendo isso. E não deixou o mundo tirar isso dele.'</em>"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Benefícios Permanentes — O Nome nas Paredes</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele sentiu — não como magia externa, mas como algo que sempre estivera dentro dele tomando forma definitiva. Três dádivas, permanentes.</p>
+
+    <p>A primeira: o instinto de ficar entre os que ama e o perigo agora tinha forma verdadeira — quando alguém próximo estivesse prestes a cair, ele poderia intervir, absorvendo parte do golpe sobre si mesmo.</p>
+
+    <p>A segunda: cinco mil anos de sangue protegendo os seus — em momentos de maior necessidade, podia se manifestar como a linhagem Sepet completa, fortalecendo quem lutava ao seu lado e fazendo inimigos hesitarem diante dele.</p>
+
+    <p>A terceira, e talvez a mais profunda: seu nome estava agora nas paredes da Câmara. Enquanto a Vila Sepet existisse, ele não poderia ser apagado — nenhuma magia de esquecimento, nenhuma tentativa de dissolver quem ele era, funcionaria contra ele ali dentro. Leyn Sepet. Aquele que protege porque sempre foi feliz fazendo isso. E não deixou o mundo tirar isso dele.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">De Volta à Família</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>A porta abriu sozinha. A luz branca se apagou completamente atrás dele. Do outro lado, nas catacumbas, ouviu Kaira — que claramente estivera sentada com as costas na porta — quase cair para trás quando ela abriu.</p>
+
+    <p>"TIO!"</p>
+
+    <p>Ela se levantou num salto, olhos dourados varrendo-o de cima a baixo procurando ferimentos. Quando não encontrou nenhum, a expressão mudou de pânico para alívio para algo que não tinha nome, mas que parecia muito com orgulho. Não perguntou como fora. Só abriu os braços.</p>
+
+    <p>Ele a abraçou de volta. Ela estava mais forte agora — os braços que o seguravam tinham a força de uma primordial completa — mas o abraço em si era o mesmo de sempre. A sobrinha que passara cem anos sem família e ainda não acreditava completamente que existia uma. Ele deixou durar o tempo que ela precisasse.</p>
+
+    <p>Quando se afastaram, olhou ao redor. Mara com aquele sorriso de lado que fingia que não era sorriso. Elise com as mãos entrelaçadas e os olhos brilhando. Aldric de costas, aparentemente absorto no Grimório — mas ele conhecia vampiros antigos o suficiente para saber que não perdera um segundo da cena. Tobias sentado numa pedra com a expressão de alguém que viera entregar uma carta e acabara assistindo à história toda de outra pessoa.</p>
+
+    <p>"Por quanto tempo fiquei fora?" perguntou. "Dentro daquela sala pareceu que se passaram apenas alguns minutos."</p>
+
+    <p>"Quase duas horas, tio," disse Kaira.</p>
+
+    <p>"Ficamos tentando não ficar olhando para a porta," disse Mara.</p>
+
+    <p>"Eu fiquei olhando para a porta," disse Elise.</p>
+
+    <p>"Eu também," disse Kaira.</p>
+
+    <p>"Eu fiquei olhando para a porta e afiando a adaga," disse Mara. "É diferente."</p>
+
+    <p>"Eu dormi uns quarenta minutos no chão," disse Tobias, levantando a mão timidamente. "Foi muito longo ficar acordado."</p>
+
+    <p>Ninguém o julgou.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Núcleo do Construto — Uma Ideia</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele se virou para Aldric e colocou nas mãos dele o núcleo do construto — a esfera de cristal negro, pesada, com aquele pulso lento e desconfortável que parecia errado demais para ser ignorado.</p>
+
+    <p>"Você sabe como funciona?" perguntou.</p>
+
+    <p>"É âncora," disse Aldric. "O que anima um construto não é a pedra nem a carne — é a vontade que foi comprimida dentro disso aqui. Geralmente vontade roubada. Memória de alguém ou algo que não escolheu estar dentro." Virou-o lentamente nas mãos. "Este está rachado. A vontade dentro está... dispersando. Como fumaça saindo de uma jarra quebrada. Em algumas semanas não vai restar nada aproveitável."</p>
+
+    <p>"Seria possível integrar esse núcleo a uma espada?" perguntou Leyn. "Para criar uma espada... viva?"</p>
+
+    <p>Aldric finalmente o olhou. Foi uma das poucas vezes que alguém ali via genuína surpresa no rosto dele. Não choque — surpresa calculada, de quem não esperava a pergunta mas imediatamente começa a processar as implicações. Ficou em silêncio por quase dez segundos.</p>
+
+    <p>"Tecnicamente sim," disse. "Já foi feito antes. Não com núcleos de construto especificamente, mas o princípio é o mesmo. O problema é o que está dentro. Uma espada com vontade roubada e corrompida vai lutar contra o portador tanto quanto contra o inimigo. Você precisaria ou purificar o núcleo antes de integrar..." Pausa. "...ou substituir o que está dentro por outra coisa. Uma vontade que quisesse estar lá. Não é trabalho de dias. E não é trabalho que se faz às pressas." Seus olhos vermelhos ficaram nele um momento a mais. "Mas é uma ideia que merece ser perseguida. Guarde isso com cuidado."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XIV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Kael e o Caixão Vazio</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Meu avô. Kael Sepet," disse Leyn, para a Sentinela. "Ele provavelmente morreu lá dentro. Você nunca considerou entrar para verificar? Para checar se o corpo ainda está lá?"</p>
+
+    <p>"Esta unidade considerou. Múltiplas vezes ao longo de noventa e sete anos," disse ela. "A decisão foi: não. Kael Sepet construiu e gravou seu próprio nome na tumba antes de entrar naquela sala. Esta unidade observou o processo. Levou quatro dias. Ele trabalhou com as próprias mãos. Quando terminou, veio até esta unidade e disse três palavras: 'Pode me substituir.' E entrou. Esta unidade interpretou isso como instrução clara. Ele não queria ser encontrado. Não queria ser perturbado. Escolheu aquele lugar e aquela forma de partir. Respeitar isso pareceu mais importante do que a curiosidade de confirmar o óbvio." A armadura flutuante se voltou para ele com o que, em um ser com rosto, seria uma expressão de peso. "Mas você está certo quanto ao caixão. Está vazio. Esta unidade sabe porque foi ela quem o construiu. A pedido dele. Ele disse: 'Faça um para mim. Para que não seja o único sem nome gravado.' Foram os últimos três dias que esta unidade passou com alguém antes de você chegar."</p>
+
+    <p>Kaira estava muito quieta. Leyn sabia que ela pensava no avô que nunca conhecera — no homem que ficara sozinho enterrando cento e quarenta e sete nomes por três anos antes de gravar o próprio.</p>
+
+    <p>Mara pousou uma mão no ombro de Kaira, suave. Tobias olhava para o chão com a expressão de quem entende perda mesmo sem entender o contexto. Leyn deixou o silêncio existir.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Três Coisas Urgentes</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Estendeu a mão para Tobias. Ele entregou o pergaminho sem perguntas. Leyn quebrou o lacre.</p>
+
+    <p class="letter">
+      Leyn —<br><br>
+      Três coisas que precisas saber antes que eu consiga chegar até você pessoalmente.<br><br>
+      Primeira: dois dos soldados que ficaram conosco desapareceram na noite após sua partida. Não houve luta, não houve sangue. As armaduras estavam dobradas no chão dos quartos como se alguém tivesse simplesmente... saído delas. O Veterano acha deserção. Eu acho outra coisa. Cuidado com quem te segue.<br><br>
+      Segunda: uma criança da aldeia ficou doente. Febre que não cede, olhos que ficam pretos por alguns segundos e voltam ao normal. A mãe jura que começou na noite que o padre explodiu. Não sei o que é. Mas sei que não é natural.<br><br>
+      Terceira, e mais urgente: encontrei escondido sob o assoalho da casa onde o padre ficou um mapa. Diferente do que vocês levaram. Este mostra algo que o outro não tem — uma marca a sudeste de Vila Sepet, aproximadamente sessenta quilômetros. Símbolo que não reconheço, mas Aldric provavelmente sim.<br><br>
+      Tobias insistiu em vir junto. Não consegui convencê-lo do contrário depois que expliquei onde ficava a Vila. Desculpa pela inconveniência.<br><br>
+      Confio que você e sua família estão bem.<br><br>
+      — Marcus
+    </p>
+
+    <p>Terminou de ler. O silêncio que se seguiu tinha textura diferente. Aldric se aproximou devagar.</p>
+
+    <p>"Posso?"</p>
+
+    <p>Leyn estendeu o pergaminho. Ele leu rapidamente. Quando chegou à terceira parte, parou. Não era pergunta. Era reconhecimento.</p>
+
+    <p>"Símbolo a sudeste," disse, os olhos um meio tom mais escuros. "Eu sei o que é."</p>
+
+    <p>Mas não disse imediatamente o que era — e pelo jeito que seus olhos vermelhos tinham escurecido, todos souberam que não era notícia simples.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XVI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XVI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Anel e o Grimório de Técnicas Sepet</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Tirou o anel de prata da caixa de madeira escura que Aldric trouxera. A gema vermelha no centro pulsou uma vez quando o deslizou no dedo — reconhecimento de sangue, igual à armadura de Kaira. A gravação interna tocou sua pele.</p>
+
+    <p>Não era apenas anel. Era memória comprimida. Cinco mil anos de linhagem Sepet encapsulados em prata e pedra vermelha, aguardando alguém com sangue suficiente para ouvi-los. Por enquanto — apenas presença. Como ter a mão de alguém que não se vê.</p>
+
+    <p>"Onde está o Grimório de Técnicas Sepet?" perguntou à Sentinela.</p>
+
+    <p>"Esta unidade aguardava que fosse solicitado," disse ela.</p>
+
+    <p>Retornou do Arsenal com um volume de aparência modesta mas de presença impressionante. Encadernado em couro negro que parecia novo apesar de ser muito antigo — as runas na capa eram douradas, não gravadas, crescidas, como se o couro as tivesse absorvido com o tempo. As páginas tinham cheiro de pergaminho muito velho preservado por magia.</p>
+
+    <p>Sete seções compunham o volume, compilado pelos Mestres das Gerações Três até Onze. Fundamentos do Combate Primordial — legível. Técnicas de Sangue: Uso Ofensivo e Defensivo — parcialmente legível. Vínculo de Arma Avançado — legível. A Estocada Perfeita: Variações e Expansões — legível, e algo nela chamou a atenção de Leyn imediatamente. Técnicas de Proteção: Escudo Vivo — legível, e os olhos de Mara já estavam nela. Magia de Sangue Sepet — primordial antigo demais, ilegível. E a última seção: páginas arrancadas. Destruídas.</p>
+
+    <p>"Variações da Estocada?" Kaira esticou o pescoço, curiosa.</p>
+
+    <p>"Técnicas de Proteção," disse Mara, já de pé atrás dele. "Me interessa."</p>
+
+    <p>Aldric ainda segurava o pergaminho de Marcus, os olhos vermelhos fixos em Leyn com aquela expressão que ele estava aprendendo a reconhecer como <em>tenho informação importante e estou esperando o momento certo para dar</em>.</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    Uma lua vermelha. Um campo de neve.<br>
+    Dois vampiros olhando para o horizonte — sem nome, apenas título:<br>
+    <em>Os Primeiros.</em><br><br>
+    Cinco mil anos depois, o último herdeiro daquele sangue<br>
+    entrou numa sala branca e descobriu<br>
+    que a coisa mais rara neste mundo não é poder.<br>
+    É saber por que você o usa.<br><br>
+    <em>E não deixar o mundo tirar isso de você.</em>
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Além do Véu da Carne &nbsp;·&nbsp; Vila Sepet</div>
+</div>
+
+</body>
+</html>

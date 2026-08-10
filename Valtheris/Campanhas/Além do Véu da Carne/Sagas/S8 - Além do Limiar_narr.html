@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Além do Limiar — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+
+  /* ── Guardian voices ── */
+  .voz-mulher {
+    color: #faf5ea;
+    text-shadow:
+      0 0 10px rgba(255,255,255,.65),
+      0 0 24px rgba(232,184,75,.4);
+  }
+
+  .voz-homem {
+    color: #4a4356;
+    font-weight: 700;
+    letter-spacing: .015em;
+    text-shadow:
+      1px 0 0 rgba(158,138,114,.45),
+      -1px 0 0 rgba(158,138,114,.25);
+  }
+
+  .voz-crianca {
+    color: var(--gold-bright);
+    text-shadow: 0 0 10px rgba(232,184,75,.55);
+    animation: sand-glow 2.6s ease-in-out infinite;
+  }
+
+  .echo.vozes-convergentes {
+    color: var(--ink) !important;
+    opacity: 1 !important;
+    text-shadow:
+      0 0 10px rgba(250,245,234,.6),
+      0 0 20px rgba(232,184,75,.5),
+      1px 0 0 rgba(74,67,86,.65),
+      -1px 0 0 rgba(74,67,86,.65);
+    animation: vozes-convergentes-pulso 2.8s ease-in-out infinite;
+  }
+
+  @keyframes sand-glow {
+    0%, 100% { letter-spacing: .01em; text-shadow: 0 0 8px rgba(232,184,75,.5); }
+    50%      { letter-spacing: .04em; text-shadow: 0 0 16px rgba(232,184,75,.85), 0 0 3px rgba(255,255,255,.35); }
+  }
+
+  @keyframes vozes-convergentes-pulso {
+    0%, 100% {
+      letter-spacing: .025em;
+      text-shadow:
+        0 0 10px rgba(250,245,234,.6),
+        0 0 20px rgba(232,184,75,.5),
+        1px 0 0 rgba(74,67,86,.65),
+        -1px 0 0 rgba(74,67,86,.65);
+    }
+    50% {
+      letter-spacing: .06em;
+      text-shadow:
+        0 0 16px rgba(250,245,234,.85),
+        0 0 30px rgba(232,184,75,.75),
+        1.5px 0 0 rgba(74,67,86,.8),
+        -1.5px 0 0 rgba(74,67,86,.8);
+    }
+  }
+
+  /* ── Limiar (threshold) marker ── */
+  .limiar-mark {
+    text-align: center;
+    font-family: 'Cinzel', serif; font-size: .56rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--violet-bright); opacity: .8;
+    margin-bottom: 2.4rem;
+  }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">VIII</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Além do<br>Limiar</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet, Mara Vell, Elise e Kaira</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Dizem que a morte só assusta quem nunca ousou negociar com ela — e que existe, em algum lugar entre o mundo dos vivos e o descanso final, uma fronteira onde até as regras mais antigas podem ser postas à prova. Esta é a lenda do que se encontra além dela, quando um coração teimoso demais se recusa a ficar quieto.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Clareira Derretida</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Marcha silenciosa pela floresta. A lua cheia iluminava entre as árvores retorcidas com precisão cirúrgica — a visão no escuro de Leyn perfazia tudo, enquanto os soldados carregavam tochas baixas mais por costume que por necessidade.</p>
+
+    <p>Quinhentos metros: tudo normal. Sons noturnos — corujas, pequenos animais, vento atravessando galhos.</p>
+
+    <p>Um quilômetro: calor anormal no ar. Como estar perto de fornalha invisível. Suor escorrendo por baixo do elmo de Marcus.</p>
+
+    <p>Um quilômetro e meio: cheiro. Enxofre. Carne queimada. Madeira carbonizada. Helena murmurava orações.</p>
+
+    <p>Mil e oitocentos metros: a borda da clareira.</p>
+
+    <p>"Senhor... está ficando quente..." sussurrou Marcus, "muito quente..."</p>
+
+    <p>"Por todos os deuses..." murmurou Helena. "o que É isso?"</p>
+
+    <p>O centro da clareira não fora queimado. Fora derretido. Pedras viraram lava solidificada. Árvores eram estátuas de carvão. A grama simplesmente não existia mais — consumida tão completamente que nem cinzas restaram.</p>
+
+    <p>E no centro: uma figura. Dois metros e vinte de altura. Humanoide, mas errada. Pele que não era pele — era rachada, como cerâmica quebrada, e entre as rachaduras fluía fogo líquido. Onde deveriam estar olhos, havia duas chamas azuis ardendo em órbitas vazias. Estava parada. Imóvel. Como estátua que crepitava constantemente e vazava vapor em espirais invisíveis.</p>
+
+    <p>"...sinto... sangue primordial... próximo..." disse a criatura, a voz como vidro quebrando, "mas não... a criança... onde... está... a selada...?"</p>
+
+    <p>A cabeça se virou — movimento mecânico, antinatural, como engrenagem de relógio de torre girando.</p>
+
+    <p>"...não está aqui... mas próximo... dias... talvez horas..." Uma pausa, quase triste. "...ordens são claras... encontrar... capturar... levar aos Mestres..."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Paralisia e Análise</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn congelou. Não era covardia — era resposta visceral do cérebro reptiliano diante de algo que não deveria existir. Três segundos de paralisia absoluta enquanto seu sistema nervoso tentava catalogar o que seus olhos viam, e fracassava.</p>
+
+    <p>Aquela criatura não era demônio. Não era elemental. Não era morto-vivo. Era híbrido — humano transformado em recipiente para fogo profano. Como Mara e Elise haviam sido transformadas em aberrações. Mas isso era pior. Mais completo. Mais perfeito em sua monstruosidade.</p>
+
+    <p>E foi ali, catalogando o tamanho real daquela ameaça, que Leyn entendeu: não podia levar aquela coisa de volta para a aldeia. Um erro de cálculo, um passo em falso, e o fogo que aquela criatura carregava reduziria casas, aldeões, tudo que acabaram de proteger, a cinzas. O plano original — recuar para as defesas da vila — estava morto antes mesmo de nascer. Precisava de outro caminho.</p>
+
+    <p>E então, através da paralisia, sua intuição vampírica se afiou: um campeão transformado do Culto da Verdade Profunda. Um humano que aceitara a "benção" de um Mestre Antigo de fogo e fora reforjado. Nível muito superior ao dele — não um servo sem mente, mas uma inteligência com missão específica e hierarquia a responder. Fogo em área de dez a quinze metros de raio. Força física sobre-humana comparável a construtos. Não sentia dor convencional.</p>
+
+    <p>Mas também: água em grande quantidade poderia apagar temporariamente as chamas internas. Frio extremo causaria dano. Prata poderia ferir o núcleo humano que ainda existia lá dentro. E, mais importante: aquela coisa procurava, não atacava cegamente. Tinha ordens específicas — encontrar a criança selada. Kaira. Prioridade de captura viva acima de combate.</p>
+
+    <p>A paralisia durou três segundos. Força de vontade absoluta a quebrou. Marcus estava ao lado dele, tremendo, escudo quase caindo — mas funcional. O veterano estava calmo pela experiência. Helena orava. Darius mirava com flecha tremendo.</p>
+
+    <p>O Arauto farejou o ar. Deu um passo na direção deles.</p>
+
+    <p>"...sinto... presença... vida... escondida... onde...?" Uma pausa. "...ali... floresta... algo... vive... espiões? defensores?"</p>
+
+    <p>"Seja lá o que decidir..." disse o veterano, urgente, "decida rápido. Ele está PROCURANDO. Em minutos, pode nos farejar."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Plano do Rio</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Tem algum rio nas proximidades?" sussurrou Leyn, baixo, urgente.</p>
+
+    <p>"Sim!" respondeu Marcus, rápido. "Rio Corvinal — quatrocentos metros a oeste daqui. Não é largo, mas é profundo. Água corrente forte, vinda das montanhas. Tem margem rochosa de um lado, floresta densa do outro."</p>
+
+    <p>"Vamos atraí-lo até lá," disse Leyn. "Eu serei a isca."</p>
+
+    <p>"Senhor, NÃO!" protestou Marcus. "Você é líder, não pode—"</p>
+
+    <p>"Ele tem razão de ser isca," cortou o veterano, pragmático. "Vampiro primordial — o Arauto vai QUERER seguir. Nós humanos, ele pode ignorar. Mas como garantimos que ele te siga e não simplesmente te incinere na hora?"</p>
+
+    <p>"E água corrente... senhor..." acrescentou Helena, preocupada, "você é vampiro. Água corrente te enfraquece também."</p>
+
+    <p>"Posso atirar agora," ofereceu Darius, ainda mirando. "Distrair ele. Dar tempo para senhor correr."</p>
+
+    <p>"Marcus, quando eu atacar, lidere o caminho até o rio," ordenou Leyn, rápido. "CORRAM. Veterano, Helena, Darius — sigam Marcus. Preparem posições no rio. Eu seguro ele aqui, depois alcanço vocês."</p>
+
+    <p>"Não morra, vampiro," disse o veterano, já partindo. "Sua família precisa de você."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Ataque Surpresa</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>O Arauto nem viu Leyn vindo.</p>
+
+    <p>Ele explodiu da cobertura. Velocidade vampírica pura. A espada longa brilhou sob a lua. Sentiu onde atacar — as rachaduras no peito, o núcleo de fogo exposto.</p>
+
+    <p>A lâmina penetrou as rachaduras do peito. Encontrou o núcleo de fogo — o coração transformado. Fogo explodiu das rachaduras ao redor do ponto de impacto. Calor intenso o atingiu, mas ele já estava girando.</p>
+
+    <p>"AAARRRGHHH!" rugiu o Arauto.</p>
+
+    <p>Uma estaca de prata voou para o olho — mas o Arauto se contorceu no último segundo. A prata passou raspando a lateral da cabeça, arrancando um pedaço de cerâmica carbonizada, mas não penetrou a órbita. A estaca caiu no chão entre pegadas de fogo líquido.</p>
+
+    <p>Marcus e os outros já estavam correndo para o rio. Leyn ficou cara a cara com o Arauto Ardente. E ele ainda estava de pé.</p>
+
+    <p>A estaca caiu. E pela primeira vez desde que escapara da prisão, Leyn olhou de verdade.</p>
+
+    <p>Duas chamas azuis onde deveriam existir olhos. Sem pupila. Sem íris. Sem nada que o reconhecesse como pessoa — apenas como alvo. Por um instante que durou uma eternidade, seu cérebro tentou catalogar o que via e falhou completamente. Não era medo. Era a compreensão visceral de que aquilo já não guardava nada de humano — nem lembrança, nem vontade própria, apenas um propósito imposto de fora, queimando onde um dia existira uma pessoa.</p>
+
+    <p>Ele empurrou para baixo. Mas alguma coisa ficou — uma sombra no fundo da mente, esperando a hora certa para voltar.</p>
+
+    <p>"...vampiro... primordial... VOCÊ..." reconheceu o Arauto. "...onde... ESTÁ... A CRIANÇA?!"</p>
+
+    <p>Fogo começou a pulsar ao redor dele. Preparando ataque em área.</p>
+
+    <p>Leyn disparou em velocidade vampírica e correu — não como covarde, mas como tático.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Jato de Fogo</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele corria pela floresta. Atrás dele, árvores explodiam em chamas quando o Arauto passava perto — rastro de fogo líquido marcando cada passo do perseguidor. O rio estava a trezentos e cinquenta metros.</p>
+
+    <p>"NÃO FOGE!" rugiu o Arauto, perseguindo. As rachaduras em seu peito escancararam, e um jato de fogo irrompeu na direção das costas de Leyn.</p>
+
+    <p>O jato o atingiu em cheio. Chamas azuis e laranjas explodiram contra suas costas. O manto escuro pegou fogo instantaneamente. Cabelo chamuscou. A pele nas costas queimou até doer de um jeito que nem cem anos de correntes haviam ensinado.</p>
+
+    <p>Ele caiu. Não por escolha — por dor absoluta. O corpo bateu no chão da floresta, rolando, e parou de se mover.</p>
+
+    <p>O mundo se esvaziou por completo. Não sentia mais o próprio corpo — só a escuridão tentando engolir o que restava dele.</p>
+
+    <p><em>LEYN! O QUE ESTÁ ACONTECENDO?!</em> Mara, através do vínculo, o pânico dela atravessando quilômetros de floresta como grito abafado.</p>
+
+    <p>Sentiu o fio que ainda o prendia à vida esticar-se até quase arrebentar — e não arrebentar, por muito pouco.</p>
+
+    <p>Um passo mais perto do fim, e ele nem soubera.</p>
+
+    <p>Mas alguma coisa nele se recusou a apagar por completo. Mesmo caído, queimando, ele rastejou à frente — centímetros, não metros, mas rastejou. Parar era morrer. Kaira estava contando com ele. Ele prometera voltar.</p>
+
+    <p>O Arauto se aproximou. Passos lentos, deliberados. Pegadas de fogo líquido no musgo da floresta.</p>
+
+    <p>"...vampiro... resistente..." disse. "...mas... cai... como todos..."</p>
+
+    <p>O fio esticou ainda mais dessa vez. Por um instante não houve nada — nem dor, nem pensamento, só o vazio se aproximando mais um passo.</p>
+
+    <p>Sentiu, com a clareza que só a beira da morte permite, que não aguentaria um segundo golpe como aquele. Mais um, e não haveria retorno nenhum — nem lágrimas, nem sacrifício. Só o fim, definitivo, no chão frio de uma floresta que não era a sua.</p>
+
+    <p>Ergueu a mão. Preparando o golpe final.</p>
+
+    <p>Mas então:</p>
+
+    <p><strong>SSSSHHHHHHHH!</strong> — uma flecha cravou-se nele. Darius, a oitenta metros, acertara em cheio.</p>
+
+    <p>"...MAIS... INSETOS...!" o Arauto se virou.</p>
+
+    <p>"SENHOR LEYN! LEVANTA!" gritou Marcus, de algum lugar à frente. "O RIO ESTÁ A CEM METROS!"</p>
+
+    <p>Helena e o veterano apareceram correndo de volta — desobedecendo as ordens, escolhendo ali, naquele instante, arriscar a própria vida por ele em vez de seguir em segurança rumo ao rio.</p>
+
+    <p>"NÃO O DEIXAMOS PARA TRÁS!" gritaram juntos.</p>
+
+    <p>Agarraram-no pelos braços e o arrastaram. O Arauto começou a perseguir o grupo todo agora.</p>
+
+    <p>Uma segunda flecha de Darius penetrou o pescoço do Arauto — crítica, certeira. Ele tropeçou. O jato de fogo seguinte errou completamente, queimando apenas árvores ao lado. Helena e o veterano aproveitaram os segundos ganhos — os últimos cinquenta metros até o rio foram percorridos arrastando Leyn, o corpo dele já sem forças para ajudar.</p>
+
+    <p>Foi deitado em pedras secas na margem, longe da água corrente. E do outro lado da floresta:</p>
+
+    <p>Um rugido vampírico.</p>
+
+    <p>"COLOQUEM ELE NA MARGEM!" gritou Marcus. "ELE NÃO PODE ENTRAR NA ÁGUA!"</p>
+
+    <p>Através do vínculo, o terror de Mara chegou nítido, cortado só pela urgência: <em>LEYN ESTÁ MORRENDO! EU SINTO! ALDRIC, AS ESTACAS, AGORA! TEMOS QUE IR!</em></p>
+
+    <p>Mara, Elise e Aldric já corriam da aldeia em direção a eles. Aldric carregava doze estacas de prata que Tobias conseguira forjar — cada uma um instrumento de esperança e desespero ao mesmo tempo. Kaira ficara na aldeia, protegida, mas desesperada.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Sempre</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Três vezes. Três momentos onde tudo poderia ter terminado. Três vezes Mara chegara.</p>
+
+    <p>A primeira vez: quando ele estava morrendo, ela entregara um frasco de sangue com as mãos ainda trêmulas de aberração que mal recuperara um pouco de si mesma. A segunda vez: na mesa de sacrifício, ela quebrara as correntes e lutara enquanto chorava, e o trouxera de volta. Agora — a terceira vez — ela corria através da floresta como furacão de fúria.</p>
+
+    <p><em>MARA! Ajuda!</em> enviou ele, através do vínculo.</p>
+
+    <p><em>AGUENTA!</em> respondeu ela, mental, furiosa e desesperada. <em>EU VOU TE SALVAR! DE NOVO! SEMPRE!</em></p>
+
+    <p><em>Diga a Aldric para atrair o Arauto até próximo ao rio,</em> ordenou ele. <em>Foque em não ser atingido por ele.</em></p>
+
+    <p><em>ENTENDIDO! ELE JÁ ESTÁ INDO!</em></p>
+
+    <p>Mara explodiu da floresta. "FIQUE LONGE DO MEU SALVADOR, MONSTRO DE FOGO!"</p>
+
+    <p>"Arauto," disse Aldric, frio. "Seu erro foi ferir um dos nossos."</p>
+
+    <p>"Você... vai... PAGAR..." sibilou Elise, das sombras, boca aberta.</p>
+
+    <p>Aldric correu em direção ao Arauto com espada em guarda alta — movimento provocativo e deliberado. Acertou-o, a prata queimando a carne transformada, atraindo-o para longe. "Venha, abominação! Me pegue se conseguir!" gritou, recuando estrategicamente em direção ao rio.</p>
+
+    <p>Mara correu até Leyn. Ajoelhou-se. Deixou cair escudo e armas. Tinha apenas segundos.</p>
+
+    <p>Mordeu o próprio pulso. Sangue vampírico jorrou.</p>
+
+    <p>"LEYN!" gritou, desesperada. "NÃO! NÃO DE NOVO! BEBE!"</p>
+
+    <p>O sangue dela desceu pela garganta dele. Mas o corpo não respondeu. O coração morto — que nunca batera forte, mas sempre existira como sinal de que a vida artificial persistia — parou completamente. A regeneração vampírica não veio. Não desta vez.</p>
+
+    <p>Enquanto isso, o combate continuava. Elise cuspiu um jato de ácido massivo, acertando em cheio, corroendo as rachaduras do Arauto. Ele estava sendo cercado, atacado, empurrado para o rio.</p>
+
+    <p>"BASTA!" rugiu o Arauto.</p>
+
+    <p>Uma explosão de fogo em área atingiu todos ao redor. Aldric resistiu, ferido mas de pé. Elise gritou de dor, mas não parou. Darius foi queimado, armadura carbonizada.</p>
+
+    <p>Eles aguentaram. Porque Leyn pedira que honrassem isso.</p>
+
+    <p>E enquanto a batalha continuava ao redor dele, Leyn usou seus últimos segundos de consciência para enviar palavras através dos vínculos.</p>
+
+    <p><em>Mara... cuide da Kaira... e da Elise... coordene todos para derrubar o Arauto no rio... não podemos deixar que ele chegue à aldeia...</em></p>
+
+    <p><em>EU VOU! EU PROMETO!</em> respondeu ela, através das lágrimas.</p>
+
+    <p><em>Obrigado por estar do meu lado... como um anjo da guarda, Mara.</em></p>
+
+    <p><em>Você ME salvou primeiro... eu só... só retribuo...</em></p>
+
+    <p><em>Elise... tente não me encontrar tão cedo.</em></p>
+
+    <p><em>Não vou... prometo...</em> respondeu ela, queimada, ainda lutando. <em>mas... volte... por favor...</em></p>
+
+    <p><em>Kaira... eu vou cumprir minha promessa,</em> enviou ele, para a aldeia distante. <em>O tio só vai demorar mais um pouco pra voltar. Mas acredite em mim.</em></p>
+
+    <p><em>TIO! TIOOOO!</em> veio a resposta dela, sentindo o vínculo mesmo de longe. <em>NÃO! VOCÊ PROMETEU!</em></p>
+
+    <p>Tobias tentou segurá-la, mas ela caiu de joelhos, chorando. Não havia nada que palavras pudessem fazer quando o vínculo que conectava dois corações simplesmente sumia — como chama apagada pelo vento.</p>
+
+    <p>"Ele... ele prometeu..." soluçou Kaira, de joelhos. "voltar... sempre voltar..."</p>
+
+    <p><em>Obrigado... por serem... a minha família,</em> enviou Leyn, a última mensagem.</p>
+
+    <p>E então — silêncio.</p>
+
+    <p>O vínculo com Mara desapareceu. O vínculo com Elise desapareceu. O vínculo com Kaira desapareceu.</p>
+
+    <p>Leyn Sepet, o Renascido, o último primordial da linhagem Sepet...</p>
+
+    <p><strong>morreu.</strong></p>
+
+    <p>Mas a história não terminou.</p>
+
+    <p>Mara se levantou. Limpou as lágrimas. Pegou o escudo. Pegou as estacas de prata. Seus olhos vermelhos queimavam com fúria absoluta.</p>
+
+    <p>"ALDRIC! ELISE! SOLDADOS!" gritou, voz de comandante. "EMPURREM ELE PRO RIO! AGORA! POR LEYN!"</p>
+
+    <p>Todos obedeceram. Porque ele morrera pedindo. E eles honrariam isso.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="limiar-mark">✦ o mundo dos mortos ✦</div>
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Os Guardiões do Limiar</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Escuridão. Não era vazio — era transição. Leyn não sentia corpo. Não sentia dor. Apenas consciência flutuando em espaço que não tinha dimensões para ser descrito em linguagem dos vivos.</p>
+
+    <p>E então ouviu vozes.</p>
+
+    <p class="echo vozes-convergentes">…ele voltou… de novo… duas vezes em tão pouco tempo… isso não é natural… mas ele não pertence aqui… nem pertence lá… ele é… anomalia…</p>
+
+    <p>As vozes vinham de todos os lados ao mesmo tempo, atemporais — como se sempre tivessem estado ali, esperando pacientemente por este encontro.</p>
+
+    <p>Três figuras se formaram diante dele.</p>
+
+    <p>Uma mulher de vestes brancas, olhos que viam tudo — não com poder, mas com inevitabilidade. Cada detalhe dela era exatamente o que deveria ser, e isso a tornava mais inquietante que qualquer distorção.</p>
+
+    <p>Um homem de armadura negra, segurando uma espada que cortava destinos, não carne. Severo, direto. Não cruel — apenas absolutamente imparcial, na forma que juízes deveriam ser e raramente são.</p>
+
+    <p>E uma criança que mudava de idade, segurando uma ampulheta. Ora tinha cinco anos, ora oitenta, ora algo incalculável. Seus olhos eram iguais em todas as idades — completamente cientes de todas as coisas que já aconteceram e ainda acontecerão.</p>
+
+    <p><span class="voz-mulher">"Leyn Sepet,"</span> disse a Mulher de Branco. <span class="voz-mulher">"Você retorna. Mas desta vez... não há lágrimas de compaixão para te trazer de volta. Não há sacrifício divino."</span></p>
+
+    <p><span class="voz-homem">"Você prometeu à criança,"</span> disse o Homem de Armadura Negra. <span class="voz-homem">"Mas mortos não cumprem promessas. Apenas os vivos."</span></p>
+
+    <p><span class="voz-crianca">"Há caminho de volta,"</span> disse a Criança, séria por um momento. <span class="voz-crianca">"Mas tem um PREÇO. Sempre tem um preço para quem desafia a morte."</span></p>
+
+    <p>Três opções se apresentaram, cada uma mais amarga que a anterior: uma dívida de alma, retornando cada vez mais fraco, um pouco de sua própria vitalidade arrancada a cada nova morte, até que um dia não sobraria nada para arrancar. Um pacto de serviço, sem perda alguma de força, mas convocado uma vez por ano para cumprir uma missão que não poderia recusar — e recusar significaria o fim, ali mesmo, sem chance de retorno. Ou uma troca de lembranças: voltar livre de dívida e de serviço, mas esquecendo rostos e nomes da família original — mãe, pai, irmãos, Selene. Guardaria Mara, Elise, Kaira. Perderia o resto para sempre.</p>
+
+    <p>E então, no fundo do limiar, onde a escuridão se dissolvia em algo diferente — não luz de sala, não luz de sol, mas a luz específica de lugares que existem para além da geometria comum — ele viu uma figura esperando.</p>
+
+    <p>Selene. Sua irmã.</p>
+
+    <p>Ela sorria. Triste, mas amorosa. Cabelos negros, olhos dourados — os mesmos olhos de Kaira.</p>
+
+    <p>"Leyn..." disse ela. "você pode ficar... se quiser... não precisa lutar mais..."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Negociação</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Não esperava encontrar seres como vocês desse lado," disse Leyn, desafiador. "Na verdade, nem imaginei ter mais uma chance. Guardiões do Limiar, certo?"</p>
+
+    <p>Continuou, desafiando as próprias regras que os cercavam.</p>
+
+    <p>"Vocês ditam as regras por aqui, mas algo me diz que não conseguem lidar com a minha existência da forma com que lidam com as outras. Por isso estão desesperados para ter o controle sobre mim. Estou certo?"</p>
+
+    <p>Nenhuma resposta ainda. Ele pressionou mais.</p>
+
+    <p>"Vocês disseram que eu não pertenço nem aqui nem ao mundo físico. Se eu recusar a proposta de vocês, podem me deixar morto por aqui — mas por quanto tempo acham que vão conseguir? Aposto que estiveram assistindo minha jornada desde minha primeira morte. Acham que o ser antigo que estava curioso com a minha existência não apareceria por aqui?"</p>
+
+    <p>Sua voz ganhou um tom orgulhoso, ousado.</p>
+
+    <p>"Além disso, eu não preciso dele para mostrar minha influência nesse plano, e vocês também priorizam a eficiência do trabalho de vocês — eu odiaria ter que causar um grande atraso nesse trabalho. Não vou me curvar a ninguém. Tenho pessoas a quem proteger, já estou atrasado, então não me faça atrasar o lado de vocês também. Eu preciso voltar."</p>
+
+    <p>Silêncio absoluto.</p>
+
+    <p>As três figuras congelaram. Não de surpresa. De reconhecimento.</p>
+
+    <p><span class="voz-mulher">"Ah,"</span> disse a Mulher de Branco, rindo por eternidades. <span class="voz-mulher">"AÍ está. A TEIMOSIA que desafia a própria morte."</span></p>
+
+    <p><span class="voz-homem">"Você... está CORRETO, anomalia,"</span> disse o Homem de Armadura. <span class="voz-homem">"Não conseguimos lidar com você como com outros. Você quebrou as regras. Duas vezes."</span></p>
+
+    <p><span class="voz-crianca">"E você PERCEBEU,"</span> disse a Criança, sorrindo travessa. <span class="voz-crianca">"Mais rápido que a maioria. Interessante. EU GOSTO DELE! Ele é engraçado!"</span></p>
+
+    <p>A Mulher se aproximou — ele não a viu se mover, ela simplesmente estava mais perto.</p>
+
+    <p><span class="voz-mulher">"Sim, Leyn Sepet. Assistimos. Desde a primeira morte. Desde as lágrimas. Desde a compaixão que NÃO DEVERIA trazer mortos de volta. Você é problema. Buraco nas regras. E sim... estamos 'desesperados' — sua palavra — para estabelecer CONTROLE."</span></p>
+
+    <p><span class="voz-homem">"Porque se não controlarmos VOCÊ,"</span> disse o Homem de Armadura, <span class="voz-homem">"outros vão tentar. Já tentam."</span></p>
+
+    <p>Sombras se moviam no fundo daquele espaço entre mundos — não Guardiões, mas outras coisas. Entidades que não pertenciam ali, mas não pertenciam a lugar nenhum. Uma delas, ele reconheceu pelo cheiro — mesmo morto, mesmo ali, o instinto primordial a identificou.</p>
+
+    <p>O Devorador. Observando. Esperando. Interessado.</p>
+
+    <p class="echo">…a anomalia… interessante… se os Guardiões não o controlarem… talvez nós possamos…</p>
+
+    <p><span class="voz-crianca">"Viu?"</span> disse a Criança, séria agora. <span class="voz-crianca">"ELES querem você. E se você ficar aqui sem vínculo aos Guardiões, eles VÃO te pegar. E aí... bem, você vira DELES."</span></p>
+
+    <p><span class="voz-mulher">"Então sim,"</span> disse a Mulher de Branco. <span class="voz-mulher">"Você está certo. Preferimos você vinculado a NÓS do que a ELES. E quanto a 'não se curvar a ninguém'... isso não é CURVAR. É NEGOCIAÇÃO. Você tem algo que queremos: ser controlável. Nós temos algo que você quer: retorno à vida."</span></p>
+
+    <p><span class="voz-homem">"E sobre 'atrasar nosso trabalho'..."</span> disse o Homem de Armadura, apontando para uma fila infinita de almas ao longe. <span class="voz-homem">"cada segundo conversando com você, cem almas não são processadas. Então sim. Você JÁ está atrasando. Você realmente vai nos CHANTAGEAR com eficiência burocrática?"</span></p>
+
+    <p>Da luz dourada, Selene riu, orgulhosa.</p>
+
+    <p>"Esse é meu irmão," disse. "Teimoso até na morte."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Contrato Revisado</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p><span class="voz-mulher">"Muito bem, Leyn Sepet,"</span> suspirou a Mulher de Branco. <span class="voz-mulher">"Você ganhou. Não pelas ameaças — são vazias, você não tem poder real aqui. Mas pela AUDÁCIA."</span></p>
+
+    <p><span class="voz-homem">"E porque, francamente,"</span> acrescentou o Homem de Armadura, <span class="voz-homem">"você está certo. Preferimos que você esteja vivo e cooperativo do que morto e causando problema."</span></p>
+
+    <p><span class="voz-crianca">"ENTÃO!"</span> disse a Criança, animada. <span class="voz-crianca">"Nova proposta! Já que você é ESPECIAL:"</span></p>
+
+    <p>Os termos vieram, gravados no próprio ar entre eles: ele viveria e agiria livremente, sem restrições ao seu caminho. Uma vez — apenas uma — quando os Guardiões precisassem, o convocariam para uma missão. Não seria suicida. Não seria contra sua família. Seria algo que apenas ele poderia fazer, por ser anomalia — e ele poderia negociar os termos quando a missão viesse. Em troca, os Guardiões o protegeriam das entidades externas — como o Devorador — que quisessem reivindicá-lo quando morresse novamente. E retornaria com tudo intacto: memórias, poder, a força plena de antes.</p>
+
+    <p>Havia também uma bênção adicional: uma única vez, em toda sua existência, se caísse no limite da morte, poderia escolher voltar com um sopro de vida — determinação tão absoluta que desafiaria a morte mais uma vez.</p>
+
+    <p>"Vocês têm sorte," disse Leyn, um sorriso teimoso se formando. "Estou de bom humor por ver minha irmã. Eu aceito a oferta revisada."</p>
+
+    <p>Os três Guardiões assentiram em uníssono.</p>
+
+    <p><span class="voz-mulher">"CONTRATO ACEITO,"</span> disse a Mulher de Branco, tocando o peito dele. <span class="voz-mulher">"Gravado na sua alma. Quando o momento chegar, você SABERÁ."</span></p>
+
+    <p><span class="voz-homem">"PROTEÇÃO CONCEDIDA,"</span> disse o Homem de Armadura, marcando sua testa. <span class="voz-homem">"Entidades externas não podem reivindicar você sem nossa permissão."</span></p>
+
+    <p><span class="voz-crianca">"BENÇÃO DADA!"</span> disse a Criança, soprando como quem sopra um dente-de-leão. <span class="voz-crianca">"'Determinação Inabalável' — porque você é teimoso demais até pra morte! Agora VAI! Você tem uma promessa para cumprir!"</span></p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Irmã</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele se virou para Selene. Caminhou até a luz dourada onde ela esperava. Ela era exatamente como ele lembrava — como deveria sempre ter sido, antes de tudo queimar.</p>
+
+    <p>Cabelos negros. Olhos dourados — os mesmos olhos de Kaira. Sorriso gentil, mas forte. O sorriso de alguém que esperara muito tempo por algo que finalmente chegara.</p>
+
+    <p>"Um dia estaremos juntos de novo, como uma família," disse ele. "Mas até lá, me observe daqui, está bem?"</p>
+
+    <p>Ela o abraçou de volta — forte, real, presente.</p>
+
+    <p>"Sempre observei, irmãozinho teimoso," disse. "Desde o dia que te selaram." Riu através das lágrimas. "E continuarei observando. Cuide da minha Kaira. Ela é... ela é tudo que restou de mim no mundo dos vivos."</p>
+
+    <p>Afastou-se, segurando o rosto dele entre as mãos.</p>
+
+    <p>"E Leyn... obrigada. Por não desistir dela. Por fazer o que eu não pude: dar família a ela."</p>
+
+    <p>Beijou sua testa — gesto de irmã mais velha — e sorriu.</p>
+
+    <p>"Agora VAI. Eles estão te esperando. E o Arauto ainda está vivo."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XI ── -->
+  <section class="chapter">
+    <div class="limiar-mark">✦ retorno ao mundo dos vivos ✦</div>
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Renascimento</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p><strong>GASP.</strong></p>
+
+    <p>Seus olhos abriram. Vermelhos. Vivos. Ar encheu pulmões que não precisavam dele, mas o fizeram mesmo assim — como ritual, como afirmação.</p>
+
+    <p>Marcus e Helena, ao seu lado, pularam de susto.</p>
+
+    <p>"ELE... ELE VOLTOU?!"</p>
+
+    <p>À margem do Rio Corvinal, o corpo de Leyn Sepet se erguera pela segunda vez naquela noite — a segunda ressurreição, memórias intactas, poder intacto, um contrato gravado na própria alma.</p>
+
+    <p>A cinquenta metros: Aldric, Mara e Elise ainda lutavam contra o Arauto Ardente. O monstro de fogo estava a metros da água. Eles empurravam, atacavam, tentavam derrubá-lo. Mas ele resistia. Aldric tinha queimaduras severas. Mara estava exausta. Elise mal conseguia ficar de pé.</p>
+
+    <p>"NÃO TENHO MAIS FLECHAS!" gritou Darius.</p>
+
+    <p>"NÃO PODEMOS CHEGAR PERTO!" gritou o veterano. "O CALOR É DEMAIS!"</p>
+
+    <p>Iam perder.</p>
+
+    <p>Mara se virou — e o viu. De pé. Lágrimas explodiram de seus olhos.</p>
+
+    <p>"VOCÊ VOLTOU!" gritou, desmoronando de alívio. "VOCÊ REALMENTE VOLTOU!"</p>
+
+    <p><em>TIO! TIO ESTÁ VIVO!</em> veio o grito de Kaira, na aldeia, sentindo o vínculo restaurado.</p>
+
+    <p>"...IMPOSSÍVEL..." balbuciou o Arauto, confuso pela primeira vez. "...você... ESTAVA MORTO... EU SENTI..."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Estocada Espiral</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Cinquenta metros. Velocidade vampírica máxima. Segundos.</p>
+
+    <p>Mara o viu vindo.</p>
+
+    <p>"LEYN! ELE VAI EXPLODIR!" gritou.</p>
+
+    <p>Mas ele já estava lá — e já esperava por isso. A postura de guarda que assumira no último instante não era reação. Era emboscada preparada, arma erguida, contando os segundos até o Arauto morder a isca.</p>
+
+    <p>Pela primeira vez na batalha, houve medo genuíno na voz do Arauto.</p>
+
+    <p>"VOCÊ... IMPOSSÍVEL... MORTOS... NÃO VOLTAM...!" gritou, desesperado. "NÃO! EU NÃO POSSO FALHAR!"</p>
+
+    <p>O jato de fogo veio — concentrado, certeiro, o suficiente para acabar com tudo.</p>
+
+    <p>Em pleno voo espiral, Leyn torceu o corpo. A espada girou com ele, criando um escudo de aço em rotação. A lâmina desviou o jato de fogo. Chamas passaram raspando — queimando o ar ao redor, chamuscando alguns fios de cabelo — mas não o atingiram.</p>
+
+    <p>"IMPOSSÍVEL!" berrou o Arauto.</p>
+
+    <p>O momentum do movimento espiral não se quebrou. O desvio fluiu perfeitamente para o ataque. Era a vez dele agora — um voo em espiral que combinava velocidade vampírica, técnica de guerreiro, e a determinação de alguém que acabara de negociar com a própria morte e voltara insatisfeito.</p>
+
+    <p>A espada longa superior penetrou o centro exato do peito do Arauto — onde o fogo era mais intenso, onde o núcleo humano ainda existia. Perfuração completa. A lâmina atravessou cerâmica, carne transformada, e encontrou o coração de fogo.</p>
+
+    <p>E então ele empurrou. Com toda sua força. Com toda sua determinação. Com a promessa feita a Kaira.</p>
+
+    <p>"VOCÊ NÃO VAI MACHUCAR MINHA FAMÍLIA!" rugiu.</p>
+
+    <p>O Arauto foi arremessado para trás. Seus pés deixaram o chão. Voou — literalmente — pelos últimos três metros.</p>
+
+    <p><strong>SPLASH.</strong></p>
+
+    <p>Caiu na água corrente do Rio Corvinal.</p>
+
+    <p>O fogo que fluía entre as rachaduras apagou instantaneamente ao contato com a água fria de montanha. Vapor explodiu ao redor dele. O corpo de cerâmica começou a rachar — não de dano, mas de choque térmico, de temperatura impossível encontrando temperatura impossível.</p>
+
+    <p>Tentou se levantar, mas a água corrente o arrastou. Forte. Implacável. Fria como montanha.</p>
+
+    <p><strong>CRACK. CRACK. CRACK.</strong></p>
+
+    <p>As rachaduras se expandiram. Pedaços de cerâmica se soltaram. E então Leyn viu: por baixo da cerâmica, carne humana. Queimada, deformada, mas humana. Um rosto emergiu brevemente — olhos humanos, não de fogo, o encararam.</p>
+
+    <p>"...obri...gado..." foram as últimas palavras do homem lá dentro.</p>
+
+    <p>Ele estivera preso. A transformação não fora bênção — fora prisão. O humano que existira dentro da cerâmica e do fogo profano estivera consciente de tudo, incapaz de controlar nada, forçado a cumprir ordens que o horror habitando seu corpo lhe impunha.</p>
+
+    <p>E Leyn o libertara.</p>
+
+    <p>O corpo se desfez completamente na correnteza. Cerâmica virou pó. Fogo apagou. A humanidade lá dentro finalmente descansou.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O que Mudou</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn finalmente percebeu. Não com os olhos — com algo mais fundo, mais antigo, que só existira como possibilidade antes e agora existia como fato.</p>
+
+    <p>Quando morrera e voltara, algo mudara nele. Os Guardiões do Limiar o trouxeram de volta, mas a morte deixara marcas — não físicas, mas espirituais. Não fraqueza. O oposto.</p>
+
+    <p>Sempre fora guerreiro. Mas agora havia uma centelha de magia correndo através do sangue primordial ressuscitado. Instintiva, não estudada. Como se a segunda travessia pela morte tivesse desbloqueado algo que o primeiro século de prisão e o primeiro retorno apenas sugeriram.</p>
+
+    <p>Um contrato com os Guardiões do Limiar, gravado na alma: proteção contra entidades externas que quisessem reivindicá-lo, uma missão futura ainda por vir, negociável quando chegasse. E uma bênção que só poderia usar uma vez em toda a sua existência — "Determinação Inabalável" — capaz de trazê-lo de volta à beira da morte mais uma vez, quando realmente precisasse.</p>
+
+    <p>Força plena restaurada. Tudo intacto — sem dívida imediata, sem perda de memória.</p>
+
+    <p>E algo novo: uma centelha de magia instintiva, não estudada, correndo agora pelo sangue primordial ressuscitado — como se a segunda travessia pela morte tivesse desbloqueado algo que a primeira apenas insinuara.</p>
+
+    <p>Os cem anos de prisão não o enfraqueceram em nada — como se a morte tivesse queimado as últimas ressonâncias das correntes que o prenderam por um século.</p>
+
+    <p>E Selene observando. Ela prometera. Do outro lado, sempre estivera ali. E continuaria.</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    Ele morreu prometendo voltar. Depois discutiu com a própria morte até ela recuar. E quando os olhos vermelhos se abriram de novo à margem de um rio, vivos e furiosos, o primeiro pensamento não foi sobre o inimigo derrotado, nem sobre os Guardiões que cederam. Foi sobre uma menina numa aldeia distante, ainda de joelhos, ainda esperando por uma promessa que, contra todas as regras do além, seria cumprida.
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Lenda Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+</div>
+
+</body>
+</html>

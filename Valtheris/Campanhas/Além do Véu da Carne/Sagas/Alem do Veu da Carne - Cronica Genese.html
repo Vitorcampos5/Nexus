@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>Crônica Gênese — Além do Véu da Carne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #0a0a0e;
+    --stone: #16161e;
+    --stone-edge: #2c2c38;
+    --rune-blue: #5b8aa6;
+    --rune-glow: #9bc4dd;
+    --violet: #b08fc4;
+    --ember: #e8a55a;
+    --blood: #8b1a2b;
+    --blood-glow: #e0495a;
+    --gold: #d4b06a;
+    --bone: #e8e1d3;
+    --bone-dim: #9b9387;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: var(--void);
+    background-image: radial-gradient(ellipse 80% 50% at 50% -10%, #14141c 0%, var(--void) 55%);
+    color: var(--bone);
+    font-family:'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Cfilter id="n"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23n)"/%3E%3C/svg%3E');
+    background-size: 180px 180px;
+  }
+  .page { max-width: 700px; margin: 0 auto; padding: 0 1.5rem; position: relative; }
+
+  .frontispice {
+    min-height: 100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding: 4rem 1.5rem; position: relative;
+  }
+  .seal { width: clamp(170px, 32vw, 260px); margin-bottom: 2rem; }
+  .seal-ring, .seal-ring-inner { fill: none; stroke: var(--rune-blue); stroke-width: 1; opacity: 0.45; }
+  .seal-tick { stroke: var(--rune-blue); stroke-width: 1.5; opacity: 0.5; }
+  .seal-crack {
+    fill: none; stroke: var(--rune-glow); stroke-width: 2;
+    stroke-linecap: round; stroke-linejoin: round;
+    filter: drop-shadow(0 0 4px var(--rune-glow)) drop-shadow(0 0 12px var(--rune-blue));
+    animation: pulse-glow 4.5s ease-in-out infinite;
+  }
+  @keyframes pulse-glow { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+
+  .eyebrow {
+    font-family:'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.4em;
+    color: var(--rune-blue); text-transform: uppercase; margin-bottom: 1.25rem;
+  }
+  .title {
+    font-family:'Cinzel', serif; font-weight: 900;
+    font-size: clamp(2.6rem, 9vw, 4.8rem); letter-spacing: 0.14em;
+    color: var(--bone); text-shadow: 0 0 30px rgba(91,138,166,0.35);
+    margin-bottom: 0.75rem;
+  }
+  .subtitle {
+    font-style: italic; font-size: clamp(1.1rem, 3vw, 1.5rem);
+    color: var(--gold); letter-spacing: 0.05em; margin-bottom: 2.5rem;
+  }
+  .epigraph {
+    font-style: italic; font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+    color: var(--bone-dim); max-width: 28em; line-height: 1.9;
+  }
+  .colophon {
+    position:absolute; bottom: 2rem; left:0; right:0; text-align:center;
+    font-family:'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.25em;
+    color: var(--stone-edge); text-transform: uppercase;
+  }
+
+  .chapter { position: relative; isolation: isolate; padding: 4rem 0 5rem; }
+  .chapter::before {
+    content:''; position:absolute; z-index:-1; top: 0; left: 50%;
+    transform: translateX(-50%); width: 160%; height: 100%;
+    background: radial-gradient(ellipse 50% 40% at 50% 0%, var(--chapter-glow) 0%, transparent 70%);
+    opacity: 0.12; pointer-events:none;
+  }
+  .ch-leis { --chapter-glow: var(--rune-blue); }
+  .ch-mundo { --chapter-glow: #6a7fa0; }
+  .ch-sangue { --chapter-glow: #9a5a6e; }
+  .ch-despertar { --chapter-glow: var(--blood); }
+
+  .chapter-head { display:flex; align-items:center; gap: 1.5rem; margin-bottom: 2.5rem; }
+  .chapter-num {
+    font-family:'Cinzel', serif; font-weight: 900;
+    font-size: clamp(2.8rem, 9vw, 4.5rem); color: var(--chapter-glow);
+    line-height: 1; opacity: 0.9;
+  }
+  .chapter-title {
+    font-family:'Cinzel', serif; font-weight: 600;
+    font-size: clamp(1rem, 2.5vw, 1.3rem); text-transform: uppercase;
+    letter-spacing: 0.25em; color: var(--bone);
+  }
+  .char-tag {
+    font-family:'Cinzel', serif; font-size: 0.78rem; letter-spacing: 0.35em;
+    text-transform: uppercase; color: var(--chapter-glow); margin-top: 0.5rem;
+  }
+  @media (max-width: 520px) {
+    .chapter-head { flex-direction:column; align-items:flex-start; gap:0.5rem; }
+  }
+  .chapter p { margin-bottom: 1.4rem; color: var(--bone); }
+
+  .law { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--stone-edge); }
+  .law:last-child { border-bottom:none; padding-bottom:0; margin-bottom:0; }
+  .law-name {
+    font-family:'Cinzel', serif; font-weight:600; font-size: 0.85rem;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--chapter-glow);
+    margin-bottom: 0.75rem;
+  }
+  .law-formula {
+    font-family:'Cinzel', serif; font-size: clamp(1.1rem, 3vw, 1.4rem);
+    color: var(--gold); margin-bottom: 0.75rem; letter-spacing: 0.05em;
+  }
+
+  .faction { margin-bottom: 1.75rem; }
+  .faction-name {
+    font-family:'Cinzel', serif; font-weight:600; font-size: 1rem;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--bone);
+    margin-bottom: 0.4rem;
+  }
+  .faction-glyph { color: var(--chapter-glow); margin-right: 0.6em; display:inline-block; width:1em; }
+  .faction p { color: var(--bone-dim); margin-bottom:0; }
+  .world-quote {
+    font-style: italic; text-align:center; font-size: clamp(1.15rem, 3vw, 1.5rem);
+    color: var(--ember); margin-top: 2.5rem; line-height: 1.7;
+  }
+
+  .oath {
+    margin: 2rem 0; padding: 1.5rem 1.75rem; border-left: 2px solid var(--chapter-glow);
+    background: rgba(154,90,110,0.05); font-style: italic; color: var(--bone);
+  }
+
+  .dice-label { text-align:center; color: var(--bone-dim); font-style: italic; margin-bottom: 1.25rem; }
+  .dice-row { display:flex; justify-content:center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0; }
+  .die {
+    width: 3rem; height: 3rem; display:flex; align-items:center; justify-content:center;
+    background: var(--stone); border: 1px solid var(--chapter-glow); border-radius: 3px;
+    font-family:'Cinzel', serif; font-weight:600; font-size: 1.2rem; color: var(--bone);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.55);
+  }
+
+  .crack-divider { display:block; width: min(440px, 78%); height: 32px; margin: 0 auto; }
+  .crack-divider path {
+    fill:none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+    animation: pulse-glow 5s ease-in-out infinite;
+  }
+  .crack-1 path { stroke: var(--rune-glow); filter: drop-shadow(0 0 3px var(--rune-glow)) drop-shadow(0 0 8px var(--rune-blue)); }
+  .crack-2 path { stroke: var(--violet); filter: drop-shadow(0 0 3px var(--violet)) drop-shadow(0 0 8px var(--violet)); }
+  .crack-3 path { stroke: var(--ember); filter: drop-shadow(0 0 4px var(--ember)) drop-shadow(0 0 10px var(--gold)); }
+  .crack-final path { stroke: var(--blood-glow); stroke-width:2; filter: drop-shadow(0 0 4px var(--blood-glow)) drop-shadow(0 0 16px var(--blood)); }
+
+  .roll-callout { text-align:center; margin: 3rem 0; }
+  .roll-callout > .crack-divider:first-child { margin-bottom: 1.5rem; }
+  .roll-callout > .crack-divider:last-child { margin-top: 1.5rem; }
+  .roll-meta {
+    font-family:'Cinzel', serif; font-size:0.8rem; letter-spacing:0.3em;
+    text-transform:uppercase; color: var(--bone-dim); margin-bottom: 0.5rem;
+  }
+  .roll-number {
+    font-family:'Cinzel', serif; font-weight:900; font-size: clamp(4rem, 16vw, 7rem);
+    line-height:1; color: var(--blood-glow);
+    text-shadow: 0 0 25px rgba(224,73,90,0.55), 0 0 60px rgba(212,176,106,0.25);
+  }
+  .roll-formula { font-style: italic; font-size:0.85rem; color: var(--bone-dim); margin-top: 0.25rem; margin-bottom: 0.75rem; }
+  .roll-result {
+    font-family:'Cinzel', serif; font-weight:600; font-size: 1.1rem; letter-spacing:0.35em;
+    text-transform:uppercase; color: var(--gold); margin-top: 0.5rem;
+  }
+  .final-line {
+    font-style: italic; text-align:center; font-size: clamp(1.3rem, 4vw, 1.9rem);
+    color: var(--bone); margin-top: 2.5rem; line-height:1.6;
+  }
+  footer { text-align:center; padding: 4rem 1.5rem 5rem; }
+  footer .eyebrow { color: var(--blood); opacity:0.6; margin-bottom:0.75rem; }
+  footer p { font-style:italic; color: var(--bone-dim); font-size:0.95rem; }
+
+  @media (max-width: 400px) {
+    body { font-size: 1rem; }
+    .page { padding: 0 1.25rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .seal-crack, .crack-divider path { animation: none !important; opacity: 0.85; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<section class="frontispice">
+  <svg class="seal" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle class="seal-ring" cx="140" cy="140" r="110"/>
+    <circle class="seal-ring-inner" cx="140" cy="140" r="80"/>
+    <g class="seal-ticks">
+      <line class="seal-tick" x1="250" y1="140" x2="236" y2="140"/>
+      <line class="seal-tick" x1="235.26" y1="195" x2="223.14" y2="188"/>
+      <line class="seal-tick" x1="195" y1="235.26" x2="188" y2="223.14"/>
+      <line class="seal-tick" x1="140" y1="250" x2="140" y2="236"/>
+      <line class="seal-tick" x1="85" y1="235.26" x2="92" y2="223.14"/>
+      <line class="seal-tick" x1="44.74" y1="195" x2="56.86" y2="188"/>
+      <line class="seal-tick" x1="30" y1="140" x2="44" y2="140"/>
+      <line class="seal-tick" x1="44.74" y1="85" x2="56.86" y2="92"/>
+      <line class="seal-tick" x1="85" y1="44.74" x2="92" y2="56.86"/>
+      <line class="seal-tick" x1="140" y1="30" x2="140" y2="44"/>
+      <line class="seal-tick" x1="195" y1="44.74" x2="188" y2="56.86"/>
+      <line class="seal-tick" x1="235.26" y1="85" x2="223.14" y2="92"/>
+    </g>
+    <path class="seal-crack" d="M22,178 L62,160 L86,196 L118,138 L152,178 L182,118 L214,160 L258,102"/>
+  </svg>
+  <p class="eyebrow">Registro Zero</p>
+  <h1 class="title">Crônica Gênese</h1>
+  <p class="subtitle">Além do Véu da Carne</p>
+  <p class="epigraph">Cem anos de pedra. Cem anos de fome. E então — uma rachadura.</p>
+  <p class="colophon">31 · 12 · 2025 — primeiro registro, sem alterações</p>
+</section>
+
+<div class="page">
+
+  <section class="chapter ch-leis">
+    <div class="chapter-head">
+      <span class="chapter-num">I</span>
+      <div><h2 class="chapter-title">As Leis do Vazio</h2></div>
+    </div>
+    <p>Antes de qualquer nome, qualquer saga, qualquer rosto — havia regras. As leis que decidem quem enlouquece, quem morre, e o preço de cada poder roubado dos deuses esquecidos.</p>
+
+    <div class="law">
+      <p class="law-name">Sanidade</p>
+      <p class="law-formula">Sanidade = Sabedoria × 5</p>
+      <p>Todo encontro com o horror cósmico exige um teste de Sabedoria. Falhar custa de 1d4 a 1d10 pontos de Sanidade, conforme o horror enfrentado. Quando a Sanidade chega a zero, não há retorno: a loucura é permanente, e o personagem está perdido.</p>
+    </div>
+
+    <div class="law">
+      <p class="law-name">Morte</p>
+      <p>Zero Pontos de Vida não é o fim — é inconsciência, e sangramento. Mas três falhas em salvaguardas contra a morte selam o destino: morte permanente. Um único golpe que cause dano igual à metade do PV máximo pode matar instantaneamente. Não existe ressurreição neste mundo. O que morre, morre.</p>
+    </div>
+
+    <div class="law">
+      <p class="law-name">Corrupção</p>
+      <p>Todo poder tem preço. O uso de magia arcana ou divina corrompida pode exigir testes de Constituição ou Sabedoria — o poder corrói por dentro antes de corroer por fora.</p>
+    </div>
+  </section>
+
+  <svg class="crack-divider crack-1" viewBox="0 0 600 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M0,20 L60,17 L100,23 L160,16 L210,24 L270,17 L330,23 L390,16 L450,24 L510,17 L570,22 L600,19"/>
+  </svg>
+
+  <section class="chapter ch-mundo">
+    <div class="chapter-head">
+      <span class="chapter-num">II</span>
+      <div><h2 class="chapter-title">Valtheris, o Continente Caído</h2></div>
+    </div>
+    <p>Outrora um bastião de civilização, Valtheris hoje é um cadáver que ainda respira. Sobre os seus ossos, três forças disputam o que resta:</p>
+
+    <div class="faction">
+      <p class="faction-name"><span class="faction-glyph">☀</span>A Igreja do Sol Agonizante</p>
+      <p>Fanáticos que queimam os "impuros" em nome de uma luz que já não aquece.</p>
+    </div>
+    <div class="faction">
+      <p class="faction-name"><span class="faction-glyph">♦</span>Os Nobres Sanguessugas</p>
+      <p>Aristocratas corrompidos por pactos com Coisas Antigas, sugando o continente como sanguessugas sugam sangue.</p>
+    </div>
+    <div class="faction">
+      <p class="faction-name"><span class="faction-glyph">✶</span>O Culto da Verdade Profunda</p>
+      <p>Adoradores de entidades que existem além das estrelas, esperando o instante em que os véus se rompam.</p>
+    </div>
+
+    <p class="world-quote">Cidades queimam. Aldeias desaparecem.<br>Algo antigo desperta.</p>
+  </section>
+
+  <svg class="crack-divider crack-2" viewBox="0 0 600 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M0,20 L55,14 L90,28 L140,10 L190,26 L240,14 L300,30 L360,12 L420,26 L480,16 L540,24 L600,18"/>
+  </svg>
+
+  <section class="chapter ch-sangue">
+    <div class="chapter-head">
+      <span class="chapter-num">III</span>
+      <div>
+        <h2 class="chapter-title">O Sangue de Sepet</h2>
+        <p class="char-tag">Vampiro · Guerreiro</p>
+      </div>
+    </div>
+    <p>Cem anos atrás, Leyn Sepet era apenas um guerreiro em formação — corpo e mente forjados dia após dia para proteger sua família numa era de trevas e guerra. A Igreja da Luz caçava seu povo, e também humanos inocentes, a mando de nobres corruptos e de seres mais antigos que a própria linhagem vampírica.</p>
+    <p>Então, eles chegaram. O vilarejo foi devastado. Pai, mãe, todos os que vieram antes dele — mortos diante de seus olhos. Algo se rompeu em Leyn naquele dia: suas próprias mãos trucidaram muitos dos invasores, num frenesi que ele mesmo não controlava. Por fim, foi selado.</p>
+    <p>Hoje, cem anos depois, a magia da selagem finalmente perde força.</p>
+
+    <div class="oath">
+      Há uma linha que Leyn jamais cruzaria — nem para sobreviver: ele nunca mataria aqueles que considera puros.
+    </div>
+
+    <p class="dice-label">Seis números, lançados antes da primeira respiração — o destino em forma de dados:</p>
+    <div class="dice-row">
+      <div class="die">15</div>
+      <div class="die">14</div>
+      <div class="die">12</div>
+      <div class="die">9</div>
+      <div class="die">9</div>
+      <div class="die">13</div>
+    </div>
+  </section>
+
+  <svg class="crack-divider crack-3" viewBox="0 0 600 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M0,22 L50,8 L85,32 L130,4 L180,30 L225,6 L290,34 L350,4 L410,30 L470,8 L530,32 L600,14"/>
+  </svg>
+
+  <section class="chapter ch-despertar">
+    <div class="chapter-head">
+      <span class="chapter-num">IV</span>
+      <div><h2 class="chapter-title">O Despertar</h2></div>
+    </div>
+
+    <p>A pedra fria contra as costas. Correntes de prata, queimando carne morta há um século. As runas de contenção — azul fantasmagórico — mantinham Leyn preso entre a consciência e o vazio.</p>
+    <p>Mas agora... elas piscam. Enfraquecem. Uma rachadura se abre na pedra. Luz fraca — não solar, graças aos deuses esquecidos — vaza por ela.</p>
+    <p>As mãos tremem. A sede é insuportável. Ele não é mais o guerreiro disciplinado. É fome com forma.</p>
+
+    <div class="roll-callout">
+      <svg class="crack-divider crack-final" viewBox="0 0 600 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M0,22 L50,8 L85,32 L130,4 L180,30 L225,6 L290,34 L350,4 L410,30 L470,8 L530,32 L600,14"/>
+      </svg>
+      <p class="roll-meta">Teste de Sabedoria — CD 12</p>
+      <p class="roll-number">17</p>
+      <p class="roll-formula">1d20 + 1</p>
+      <p class="roll-result">Sucesso</p>
+      <svg class="crack-divider crack-final" viewBox="0 0 600 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M0,22 L50,8 L85,32 L130,4 L180,30 L225,6 L290,34 L350,4 L410,30 L470,8 L530,32 L600,14"/>
+      </svg>
+    </div>
+
+    <p>Os olhos se abrem. Vermelhos. Famintos. Mas controlados.</p>
+    <p>Cem anos de escuridão não apagaram quem ele era. As memórias vêm em cascata — o vilarejo em chamas, o cheiro de sangue vampírico queimando sob luz sagrada, o rosto da mãe se desfazendo em cinzas.</p>
+    <p>Mas ele empurra tudo para baixo.</p>
+
+    <p class="final-line">Foco. Sobrevivência primeiro.<br>Vingança depois.</p>
+  </section>
+
+</div>
+
+<footer>
+  <p class="eyebrow">Registro Zero — Fim</p>
+  <p>A crônica que se seguiu ainda está sendo escrita.</p>
+</footer>
+
+</body>
+</html>

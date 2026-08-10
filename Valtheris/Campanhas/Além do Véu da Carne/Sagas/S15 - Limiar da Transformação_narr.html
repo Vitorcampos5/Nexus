@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Limiar da Transformação — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">XV</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Limiar da<br>Transformação</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet, Mara Vell, Elise e Kaira</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Há cem anos, um jovem vampiro entrou sozinho na Câmara da Provação e saiu transformado — mais alto, mais forte, mais só. Hoje, sua sobrinha se prepara para cruzar a mesma porta. Mas desta vez, ninguém entra sozinho — mesmo que a provação, no fim, seja sempre de uma pessoa só.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Alívio — A Família ao Redor do Túmulo</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn passou a mão pelo rosto, limpando as lágrimas vermelhas que já secavam nas bochechas. Pela primeira vez em muito tempo, não sentia vergonha por ter chorado. Sentia alívio.</p>
+
+    <p>"Estou feliz de ter vocês ao meu lado," disse, a voz ainda rouca, mas o calor genuíno.</p>
+
+    <p>Kaira estava de pé, segurando a lança — olhos dourados brilhando com determinação renovada. Mara, escudo baixado, expressão suave, orgulho no olhar. Elise, mãos entrelaçadas, um pequeno sorriso tímido.</p>
+
+    <p>"E nós estamos felizes de estar ao SEU lado, Leyn," disse Mara, o tom firme, sem espaço para dúvida. "Você nos deu mais que vida. Nos deu FAMÍLIA. Propósito. Esperança."</p>
+
+    <p>"Nunca... pensei... que seria... tão feliz... sendo vampira..." Elise limpava a própria lágrima. "Mas com vocês... sinto que... pertenço... pela primeira vez..."</p>
+
+    <p>"Tio... você me ensinou que força não é nunca chorar..." disse Kaira. "É chorar E continuar..."</p>
+
+    <p>Segurando a lança com mais firmeza, acrescentou:</p>
+
+    <p>"Estou pronta. Me ensina?"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Lição — A Lança Como Respiração</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn se levantou — pernas ainda um pouco trêmulas, mas funcionais. Se aproximou de Kaira. Tocou a arma dela — a lança de prata pura, dois metros de comprimento, cabo de ébano, lâmina brilhando suavemente.</p>
+
+    <p>"Kaira, vou te ensinar a criar um vínculo com a lança," disse. "Você se lembra do nosso treinamento na caverna, onde você aprendeu o básico?"</p>
+
+    <p>"Sim! Observar... prever... atacar onde o inimigo VAI estar..."</p>
+
+    <p>"O princípio é quase o mesmo," disse, guiando a mão dela. "Só que dessa vez, você deve se concentrar em ONDE sua lança está..."</p>
+
+    <p>Havia três princípios para o vínculo, ele explicou: primeiro, saber onde a lança <em>está</em> agora — cada centímetro, cada imperfeição. Segundo, saber onde ela <em>vai estar</em> quando golpear — o caminho traçado antes de existir. E terceiro, entender que ela é uma <em>extensão dela mesma</em> — não ferramenta, mas membro.</p>
+
+    <p>"Extensão..." Kaira franziu a testa, concentrada. "Como meu braço?"</p>
+
+    <p>"Exatamente." Ele demonstrou com a própria espada. "O peso dela, o tamanho, é tudo parte de você. Vê? Eu não penso 'mova a espada'. Eu penso 'mova o braço' e a espada É meu braço."</p>
+
+    <p>"É... estranho..." Ela testava, girando a lança de forma desajeitada. "Ela é pesada... mas também... parte de mim?"</p>
+
+    <p>Ele se ajoelhou, a mão no peito dela.</p>
+
+    <p>"Quando você respira — nós não precisamos, mas — você sente que o ar que estava fora agora é parte de você... e quando libera, você solta essa energia... e quando respira novamente, essa energia volta."</p>
+
+    <p>Ela respirou instintivamente — hábito mantido. O ar entrou, encheu pulmões desnecessários. Ela expirou. Sentiu o ciclo.</p>
+
+    <p>"Mesmo quando você lançar ela a grandes distâncias," continuou ele, "você não pode perder essa noção da sua mente. Entendeu?"</p>
+
+    <p>Ele viu o momento exato que ela compreendeu. Os olhos dourados se arregalaram.</p>
+
+    <p>"AH!" Entusiasmo puro. "Então... a lança é como respirar! Quando eu a jogo, ela sai de mim, mas ainda É minha... e quando volto a segurar, ela retorna! E mesmo longe, eu SINTO onde ela está, como sinto o ar ao redor!"</p>
+
+    <p>Foi o primeiro sorriso genuíno dela desde as catacumbas.</p>
+
+    <p><em>Exatamente,</em> pensou Leyn.</p>
+
+    <p>"Agora, senta," disse. "Coloca a lança no colo. E medita."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Ritual do Vínculo — Uma Hora</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Kaira se sentou de pernas cruzadas, a lança repousando horizontalmente no colo. Leyn se sentou ao lado dela — não tocando, mas presente. Mara e Elise formaram um círculo ao redor do túmulo de Selene. As tochas douradas diminuíram levemente — atmosfera reverente.</p>
+
+    <p>Kaira fechou os olhos. Respiração controlada. Mãos tocando o cabo de ébano.</p>
+
+    <p>"Sinta cada centímetro da lança," guiou Leyn. "O peso exato... o ponto de equilíbrio... as micro imperfeições que a tornam única..."</p>
+
+    <p>Nos primeiros minutos, ela murmurou, descobrindo detalhes: "Sinto... o cabo é liso aqui... mas áspero ali... a lâmina está fria... mas o ébano está quente do meu toque..."</p>
+
+    <p>Aos trinta minutos, estava completamente imóvel. Apenas respirando, por hábito. Através do vínculo familiar, Leyn sentiu energia dourada — muito sutil — começando a fluir dela para a arma. Mara e Elise observavam em silêncio respeitoso.</p>
+
+    <p>Aos quarenta e cinco minutos, a lança começou a brilhar levemente — não luz física forte, mas uma aura dourada, visível apenas para vampiros e seres mágicos. Kaira sussurrou, olhos ainda fechados:</p>
+
+    <p>"Eu... eu sinto ela... como sinto meu coração... como sinto meus ossos... ela É minha..."</p>
+
+    <p>Aos sessenta minutos, algo aconteceu — não um som físico, mas um reconhecimento espiritual. A lança e Kaira se tornaram uma coisa só.</p>
+
+    <p>"EU CONSEGUI!" Os olhos dela brilhavam intensamente dourado. "Ela é... ela é MINHA! De verdade! Sinto ela como sinto meus dedos!"</p>
+
+    <p>Jogou a lança para cima — três metros no ar. Fechou os olhos. Estendeu a mão.</p>
+
+    <p>A lança caiu perfeitamente na palma dela.</p>
+
+    <p>"FUNCIONOU!" gritou. "Eu SABIA onde ela estava sem VER!"</p>
+
+    <p>"Impressionante!" Mara bateu palmas. "Primeira tentativa e já dominou o básico!"</p>
+
+    <p>"Talvez... talento natural..." disse Elise. "Igual mãe dela... tinha..."</p>
+
+    <p>O vínculo estava completo. Nunca mais Kaira seria desarmada de verdade — bastaria estender a mão e pensar nela, e a lança viria, não importa a distância, como se fosse parte do próprio corpo.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Transe Vampírico Compartilhado — Uma Hora</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Agora, nos acompanhe em nosso transe vampírico," disse Leyn.</p>
+
+    <p>Acomodaram-se: ele encostado na coluna de pedra, espada longa ao lado. Kaira ao seu lado direito, lança no colo, cabeça descansando em seu ombro. Mara ao seu lado esquerdo, escudo apoiado. Elise formando o círculo, de frente para todos.</p>
+
+    <p>Vampiros não sonham. Mas compartilham, através dos vínculos. Durante a hora de transe, sentiram uns aos outros.</p>
+
+    <p>De Leyn, os outros sentiram alívio — por ter chorado e liberado a dor —, determinação renovada, amor profundo pela família, e uma paz interna que ele não sentia há cem anos.</p>
+
+    <p>De Kaira, Leyn sentiu tristeza ainda presente, mas não mais dilacerante; gratidão imensa; a conexão nova e vibrante com a lança; saudade de Selene, mas também aceitação.</p>
+
+    <p>De Mara, ele sentiu admiração por ele ter mostrado vulnerabilidade, proteção feroz por todos, e orgulho de ser parte daquela família.</p>
+
+    <p>De Elise, sentiu pertencimento completo, gratidão por ter sido incluída no momento com Selene, e determinação de nunca decepcionar a família.</p>
+
+    <p>E de Selene — espiritual, através do túmulo — apenas aprovação absoluta, paz completa, amor eterno.</p>
+
+    <p class="echo">Descansem, minha família escolhida… vocês merecem…</p>
+
+    <p>Quando acordaram do transe, estavam completamente restaurados — feridas fechadas, forças renovadas, a exaustão emocional removida, a clareza mental de volta.</p>
+
+    <p>"Isso foi..." Mara se espreguiçou. "Revigorante. Me sinto pronta para enfrentar um exército."</p>
+
+    <p>"Flechas... trinta e oito restantes..." Elise fazia inventário mental. "Ácido... recarregado..."</p>
+
+    <p>"Nunca me senti tão conectada com uma arma..." Kaira testou um movimento de estocada, rápido, perfeito. "Obrigada, tio..."</p>
+
+    <p>"Muito bem," disse Mara, se levantando, pragmática. "Estamos descansados. Emocionalmente estáveis. Kaira tem vínculo com a lança." Olhou para Leyn. "Qual o próximo passo, Leyn?"</p>
+
+    <p>"Temos... opções..." Elise listava nos dedos. "Um: estudar o Grimório do Culto... pode ter informações sobre o Ritual de Convergência... Dois: examinar o núcleo do construto e o mapa... Três: ir para a Câmara da Provação... Kaira está pronta agora... Quatro: explorar mais as catacumbas... pode ter outros tesouros... Cinco: voltar para a superfície... preparar defesas... caso o Devorador volte com reforços..."</p>
+
+    <p>"E... e tem a tumba de outros ancestrais aqui..." disse Kaira, olhando ao redor da câmara. "Meu avô Kael... minha avó Lyra... outros cento e quarenta e cinco vampiros... Há vinte e nove outros túmulos além do de mãe. Talvez... talvez devamos prestar respeitos? Ou isso pode esperar?"</p>
+
+    <p>"Vamos subir e ir para a Câmara da Provação," decidiu Leyn, firme.</p>
+
+    <p>"Sim!" Kaira se iluminou. "Estou pronta! Vamos!"</p>
+
+    <p>"Entendido," disse Mara, já pensando taticamente. "Formação de marcha?"</p>
+
+    <p>"Vou na... retaguarda... cobrindo..." disse Elise, pegando o arco.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Os Itens — Núcleo, Grimório e Mapa</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Subiram cinquenta metros de corredor de volta à antecâmara do Arsenal. Formação mantida: Leyn liderando com espada em mão, Mara ao lado esquerdo com escudo levantado, Kaira ao centro com lança pronta e confiante, Elise na retaguarda com arco encaixado.</p>
+
+    <p>Passaram pelos cadáveres: os oito cultistas guerreiros, os três conjuradores mortos, a pilha de destroços do primeiro construto. O corredor ainda cheirava a carne queimada, prata oxidada e sangue negro dos corrompidos.</p>
+
+    <p>Enquanto caminhava, Leyn olhou para trás — a pilha de pedras e carne que fora o construto. Lembrou do poder bruto dele. Da resistência. Da magia que o animava.</p>
+
+    <p><em>Como deve funcionar o núcleo do construto?</em> pensou. <em>Se conseguíssemos entender... talvez pudéssemos usar contra o Culto...</em></p>
+
+    <p>"Pensando no construto?" Mara percebeu o olhar.</p>
+
+    <p>"Sim. Me perguntando como funciona o núcleo."</p>
+
+    <p>"Quando eu era aberração..." Ela franziu a testa. "Sentia algo similar dentro de mim... como um motor mágico... mas não entendia... Depois que você me transformou, senti o núcleo se dissolver... substituído por... vida vampírica verdadeira..."</p>
+
+    <p>Cinquenta metros depois, retornaram à antecâmara do Arsenal. A Sentinela aguardava com tudo organizado.</p>
+
+    <p>"Bem-vindos de volta, Família Sepet," disse, fazendo reverência. "Descanso foi produtivo?"</p>
+
+    <p>"Sim," disse Leyn. "Obrigado por guardar tudo."</p>
+
+    <p>"Todos os itens intactos e catalogados," relatou a Sentinela: os cinco símbolos profanos, as ordens escritas fragmentadas, o grimório do Culto ainda não aberto, o mapa parcial de Valtheris, o cajado com cristal corrompido, o núcleo do construto, e as duas doses de veneno suicida.</p>
+
+    <p>Leyn se aproximou. Pegou o núcleo do construto — tamanho de um punho fechado, dois quilos, opaco, com rachaduras, pulsando levemente uma vez a cada dez segundos. Quente ao toque.</p>
+
+    <p>Tentou entender a magia por instinto, mas era inútil — magia profana, confusa, caótica, alienígena. Não era arcana estruturada, não era vampírica. Estava além da sua compreensão atual.</p>
+
+    <p>"É magia," disse, a frustração controlada. "Nunca foi meu ponto forte mesmo."</p>
+
+    <p>"Posso tentar, tio?" Kaira se aproximou, curiosa.</p>
+
+    <p>"NÃO RECOMENDADO," interveio a Sentinela, rapidamente. "Núcleo contém energia corrompida dos Mestres Antigos. Toque prolongado pode infectar mente não-treinada. Apenas usuários experientes de magia profana ou arcanistas especializados podem analisar com segurança."</p>
+
+    <p>"Oh..." Kaira recuou. "Então é perigoso mesmo..."</p>
+
+    <p>"Queria tentar utilizar esse núcleo de alguma forma," disse Leyn, "mas mesmo tendo ideias, não sei como funciona."</p>
+
+    <p>"Se quiser, posso carregar," ofereceu Mara. "Tenho mais força que você."</p>
+
+    <p>"Ou podemos... deixar com... a Sentinela..." sugeriu Elise, "até termos... um especialista..."</p>
+
+    <p>"Aldric Voss, quando chegar, pode ter conhecimento para analisar," disse a Sentinela. "Ele viveu trezentos anos e estudou magia profana para combatê-la."</p>
+
+    <p>Decidiram guardar o núcleo por enquanto.</p>
+
+    <p>Em seguida, Leyn pegou o grimório do Culto — capa de couro curtido que parecia pele humana, o símbolo do Culto gravado em prata, um olho tentaculado, fechadura mágica brilhando roxo, cerca de cem páginas. Tentou abrir. A fechadura resistiu. Não era tranca física — era selo mágico.</p>
+
+    <p>Forçou. O grimório reagiu hostilmente — runas que ele não reconhecia, padrões alienígenas.</p>
+
+    <p>Dor aguda atravessou sua cabeça. Como agulhas perfurando o cérebro. Ele largou o grimório com um thud abafado.</p>
+
+    <p>"ARGH!"</p>
+
+    <p>"LEYN!" Mara o segurou. "O que aconteceu?!"</p>
+
+    <p>"TIO!"</p>
+
+    <p>"O livro..." Elise mirava o grimório, alarmada. "Atacou ele?"</p>
+
+    <p>"AVISO," disse a Sentinela. "Grimório do Culto possui proteções contra leitores não-autorizados. Choque psíquico é resposta padrão."</p>
+
+    <p>"Estou bem..." disse Leyn, se recuperando. "Só... surpreso... Ele tem proteção mágica. Não consigo abrir sozinho."</p>
+
+    <p>"Então precisamos de alguém que saiba magia profana..." disse Mara, "ou um conjurador experiente..."</p>
+
+    <p>"Aldric... quando chegar... pode ajudar?" perguntou Elise.</p>
+
+    <p>"Aldric Voss tem conhecimento extenso de contra-magia," confirmou a Sentinela. "Pode desarmar selos profanos com tempo e preparação adequados. Estimativa: duas a três horas de trabalho ritual."</p>
+
+    <p>Havia um dilema circular, e todos perceberam ao mesmo tempo: precisavam de Aldric para abrir o grimório. Precisavam do grimório para decifrar o mapa. Precisavam do mapa para descobrir onde era o Ritual de Convergência. Aldric chegaria em cerca de um dia. Os cultistas podiam voltar em doze a vinte e quatro horas — mas o acampamento revelado pelo mapa mudava esse cálculo.</p>
+
+    <p>Leyn pegou o mapa parcial de Valtheris — pergaminho velho, manchado de sangue dos cultistas. O que conseguiam ler: a Vila Sepet marcada com um X vermelho, anotada como "Localização da Criança Selada"; uma fortaleza do Culto a sudeste, cerca de cento e cinquenta quilômetros da Vila, marcada "Base Principal — Acesso Restrito"; um "Ponto de Convergência" com a localização exata em cifra ilegível; um símbolo de portal ou círculo ritual perto desse ponto; e uma data anotada — Lua Nova, catorze dias restantes.</p>
+
+    <p>"Então eles têm catorze dias para completar o 'Ritual de Convergência'..." disse Mara. "Seja lá o que for isso... E precisam de Kaira VIVA para isso."</p>
+
+    <p>"Mas não diz... ONDE... é o Ponto de Convergência..." disse Elise. "Precisamos... decifrar... isso..."</p>
+
+    <p>"Cifra do Culto da Verdade Profunda é baseada em linguagem dos Mestres Antigos," explicou a Sentinela. "Requer conhecimento especializado ou item de tradução. Grimório provavelmente contém a chave de decifração. Mas está selado."</p>
+
+    <p>"Então..." Kaira franziu a testa. "Precisamos de Aldric para abrir o grimório... para decifrar o mapa... para descobrir onde é o ritual? E ele chega em... quanto tempo?"</p>
+
+    <p>"Aldric Voss partiu da aldeia há cerca de seis horas," respondeu a Sentinela. "Viagem até a Vila Sepet leva um dia caminhando. Chegada estimada: algumas horas."</p>
+
+    <p>"E os cultistas podem voltar em doze a vinte e quatro horas..." ponderou Mara. "Não podemos esperar Aldric para tudo. Precisamos avançar."</p>
+
+    <p>Consultando o mapa mental da Vila, acrescentou:</p>
+
+    <p>"Muito bem. Então vamos. A Câmara da Provação fica a leste da Vila, no centro mágico. Cerca de duzentos metros daqui."</p>
+
+    <p>"Correto," confirmou a Sentinela. "Câmara da Provação é o coração espiritual da Vila Sepet. A entrada está no Salão Comunal Central. Devo acompanhar? Ou continuar guardando itens e catacumbas?"</p>
+
+    <p>"Tio..." Kaira olhou para ele, curiosidade e nervosismo. "A Câmara... é perigosa? Você passou por ela... como foi?"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Revelação do Acampamento — Tempo Ganho</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Com a decisão de ir à Câmara confirmada, Leyn compartilhou uma informação que ficara pendente.</p>
+
+    <p>"Mara, não acho que precise ficar tão preocupada com 'não termos tempo suficiente'," disse. "Afinal, o 'Vazio' e um construto não têm lá uma velocidade excepcional. E o esconderijo deles é a cento e cinquenta quilômetros da vila, segundo o mapa."</p>
+
+    <p>"Cento e cinquenta quilômetros..." calculou Mara. "Com velocidade vampírica levaria... dois a três dias. Humanos a pé, quatro a cinco dias. Mas o Devorador chegou RÁPIDO demais da última vez. Como?"</p>
+
+    <p>"Eu não disse pra vocês antes por não ter considerado ser uma informação importante," disse Leyn, "mas... na floresta tinha traços de que alguém havia acampado por perto da vila. Acho que eram eles. Isso explica o porquê de terem chegado tão rápido da última vez."</p>
+
+    <p>"CLARO!" Mara bateu na própria testa. "Eles já estavam PRÓXIMOS! Acampados esperando as correntes de Kaira caírem!"</p>
+
+    <p>"Então... quando as correntes... quebraram..." processou Elise, "eles apenas... correram dois ou três quilômetros... não cento e cinquenta... Mas agora... fugiram... de volta para... a Fortaleza?"</p>
+
+    <p>"Exatamente," assentiu Leyn. "Então temos TEMPO. Pelo menos três a quatro dias antes que mobilizem uma nova força de ataque."</p>
+
+    <p>"Isso muda tudo," disse Mara, relaxando visivelmente. "Podemos fazer a Câmara com calma. Investigar a Vila. Preparar defesas adequadas. Obrigada por compartilhar isso. Informação é metade da vitória."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Ordens Finais — Sentinela, Elise, Kaira</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Antes de partir, Leyn distribuiu as últimas responsabilidades.</p>
+
+    <p>Virou-se para a armadura flutuante e fez uma reverência respeitosa — guerreiro para guerreiro.</p>
+
+    <p>"Sentinela, você deve ficar aqui cuidando do Cofre e da Tumba," disse, o tom solene. "Por favor, continue guardando as catacumbas e defendendo a honra daqueles que já partiram."</p>
+
+    <p>"Honrado por sua confiança, Leyn Sepet," disse ela, a reverência ainda mais profunda. "Último de sua linhagem, mas não menor em valor. Enquanto eu existir, nenhum profanador violará este lugar sagrado. Juro por minha função ancestral e pela memória dos cento e quarenta e sete caídos. Vão com a bênção dos Ancestrais. E retornem vitoriosos."</p>
+
+    <p>A espada fantasmagórica dela brilhou intensamente por um momento. Ela se posicionou de volta entre os itens catalogados.</p>
+
+    <p>"Elise, pegue as doses de veneno," disse Leyn. "Use na ponta de suas flechas quando achar necessário."</p>
+
+    <p>"Veneno suicida... dos cultistas..." Elise examinou os frascos. "É potente... provavelmente... paralisa ou mata... em segundos..."</p>
+
+    <p>"Veneno é neurotoxina extraída de criatura abissal," acrescentou a Sentinela. "Funciona em humanos, construtos biológicos e mortos-vivos fracos. NÃO funciona em: construtos puramente mecânicos, espíritos, demônios maiores."</p>
+
+    <p>"Vou guardar..." disse Elise, guardando com cuidado, "para emergências... ou alvos... prioritários..."</p>
+
+    <p>Leyn se virou para Kaira.</p>
+
+    <p>"Quanto à Câmara da Provação, Kaira..." disse. "Você já está mais forte do que eu quando a enfrentei."</p>
+
+    <p>"Sério?!"</p>
+
+    <p>Ele fez carinho no cabelo dela.</p>
+
+    <p>"E também está bem mais confiante. Então acho que vai conseguir facilmente."</p>
+
+    <p>"Mais forte que você..." Ela parecia incrédula. "Tio, você é LENDÁRIO... como posso ser mais forte?"</p>
+
+    <p>"Porque você o TEM ao seu lado," respondeu Mara por ele. "E nós. Leyn enfrentou a Câmara sozinho, há cem anos, sem família, sem apoio. Você nos tem. Isso te faz infinitamente mais forte."</p>
+
+    <p>"E você..." acrescentou Elise, "passou por... cem anos... de sobrevivência... sozinha... isso forja... força mental... que armas... não dão..."</p>
+
+    <p>"Vocês estão certos..." A confiança de Kaira crescia. "Eu NÃO estou sozinha... nunca mais vou estar..."</p>
+
+    <p>Apertou a lança.</p>
+
+    <p>"Estou pronta. Vamos enfrentar a Câmara JUNTOS."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Inventário Final — O que Levamos, o que Deixamos</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Antes de partir, reorganizaram o que levariam. Leyn ficou com a espada longa vinculada, a armadura élfica reforçada, seis estacas de prata, o frasco de sangue Sepet de emergência preservado de Kael havia trezentos anos, um pergaminho de velocidade, o núcleo do construto e o mapa de Valtheris.</p>
+
+    <p>Deixaram com a Sentinela o grimório do Culto — ainda selado, impossível de abrir sem Aldric —, os cinco símbolos profanos, as ordens escritas, e o cajado com cristal corrompido. O veneno suicida, Elise decidiu levar consigo — as duas doses guardadas para quando fossem necessárias.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Vila Sepet — Retorno à Superfície</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Então, vamos lá?" disse Leyn.</p>
+
+    <p>"VAMOS!" Mara, entusiasmada.</p>
+
+    <p>"Sim... vamos..." Elise, determinada.</p>
+
+    <p>"VAMOS, TIO!" Kaira, animada.</p>
+
+    <p>Emergiram na Vila Sepet. A Magia de Escudo Noturno ainda funcionava — dentro do perímetro, a luz da lua não entrava. Escuridão absoluta para humanos. Perfeita para vampiros.</p>
+
+    <p>Viram, com visão vampírica: os quarenta e sete edifícios em ruínas, a maioria com tetos desabados; a rua de pedras rachadas com ervas daninhas crescendo entre elas; sangue seco ainda visível nas paredes depois de cem anos, preservado pela magia; silêncio absoluto, nem vento, nem animais. E as tochas nas paredes, que agora queimavam com chamas douradas — não mais azuis — iluminando o caminho para leste.</p>
+
+    <p>"Eu... eu lembro daqui..." disse Kaira, maravilhada e dolorida. "Vagamente... da minha infância... Ali... ali era onde eu brincava com outras crianças vampiras... antes do massacre..."</p>
+
+    <p>"E um dia, vamos reconstruir," disse Mara, a mão no ombro dela. "Fazer a Vila viver de novo."</p>
+
+    <p>Avançaram pela rua principal. Aos cem metros: a Casa do Ferreiro, a Praça Central com a fonte seca, a estátua quebrada de um vampiro antigo, os restos da Forja Comunitária. Aos cento e cinquenta metros, o edifício maior se destacava à frente — o único de três andares na Vila, uma torre cilíndrica de pedra negra, o telhado intacto, o único que não desabara. Porta dupla de madeira reforçada, três metros de altura. O símbolo Sepet gigante acima da porta — a Lua Carmesim, brilhando dourada. Energia mágica visível pulsando ao redor da torre.</p>
+
+    <p>"Sinto... tanta magia... vindo dali..." sussurrou Elise. "É como... estar perto... de sol... mas não queima..."</p>
+
+    <p>"A Câmara está LÁ DENTRO?" perguntou Mara.</p>
+
+    <p>Leyn assentiu. Memórias de cem anos atrás retornaram: ele, jovem vampiro de dezesseis anos de aparência, entrando sozinho. Enfrentando seus medos. Saindo transformado — mais alto, mais forte, amadurecido.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Verificação — Nenhum Inimigo</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Pararam em frente à porta dupla. Kaira respirou fundo. Antes de cruzar o limiar, Leyn parou. Fechou os olhos por um momento. Estendeu seus sentidos vampíricos.</p>
+
+    <p>Nada de hostil no ar — nenhum batimento cardíaco humano escondido, apenas o pulsar rítmico da magia da Câmara, como uma respiração lenta. No olfato, apenas pedra antiga e incenso queimado há muito tempo — nenhum cheiro de cultistas, nem de construtos. Magicamente, sentiu que a Vila os reconhecia; a Câmara estava ativa, mas não agressiva; nenhuma presença profana num raio de cem metros. E nada de furtivo, nenhuma armadilha preparada — apenas o fluxo constante de magia saindo da Câmara.</p>
+
+    <p>"Tudo limpo?" perguntou Mara.</p>
+
+    <p>"Sim," disse Leyn. "Nenhum inimigo por perto. Podemos prosseguir."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Porta Abre — Os Ancestrais Chamam</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Pararam em frente à porta dupla. Kaira respirou fundo — hábito desnecessário, mas necessário agora.</p>
+
+    <p>"Então... é aqui..." disse, olhando para a porta. "Onde tudo vai acontecer..."</p>
+
+    <p>Olhou para Leyn.</p>
+
+    <p>"Tio... quando entrarmos... o que vai acontecer comigo?"</p>
+
+    <p>Antes que ele respondesse, ele olhou para ela — na frente da porta aberta, luz dourada iluminando o rosto dela. Armadura cerimonial Sepet brilhando. Lança de prata na mão. Olhos dourados fixos na entrada.</p>
+
+    <p><strong>CRRRRRRRR...</strong></p>
+
+    <p>A porta se abriu sozinha. Madeira antiga rangendo. Luz dourada jorrou de dentro — não era luz física, era energia espiritual pura.</p>
+
+    <p class="echo">Kaira Sepet… filha de Selene… última jovem primordial… BEM-VINDA À CÂMARA DA PROVAÇÃO… Entre… e confronte… o que te impede… de ser quem deve ser… Seus companheiros… podem entrar… mas não podem interferir… a Provação é SUA… Está pronta… para enfrentar… VOCÊ MESMA?</p>
+
+    <p>Kaira estava tremendo — não de medo. De antecipação absoluta.</p>
+
+    <p>"Eu... eu estou..." Olhou para os outros três. "Vocês... vocês vão MESMO entrar comigo? Mesmo não podendo ajudar?"</p>
+
+    <p>"Apenas para ESTAR lá," disse Mara. "Você não estará sozinha, mesmo lutando sozinha."</p>
+
+    <p>"Sempre... ao seu lado..." disse Elise.</p>
+
+    <p>"Tio?"</p>
+
+    <p>"Estaremos te observando," disse Leyn, firme, reconfortante. "Faça seu melhor, Kaira."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Primeiro Passo</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>A porta estava aberta. A luz dourada pulsava — como um batimento cardíaco. A Câmara da Provação aguardava.</p>
+
+    <p>"Vou fazer," disse Kaira, um sorriso nervoso, mas genuíno. "Por mim. Por você. Por todos nós."</p>
+
+    <p>Respirou fundo — hábito desnecessário, mas reconfortante.</p>
+
+    <p>"E quando sair..." disse, "vou ser quem sempre deveria ter sido."</p>
+
+    <p>Determinação absoluta.</p>
+
+    <p>Virou-se de volta para a porta.</p>
+
+    <p>Deu o primeiro passo.</p>
+
+    <p>O vínculo dela com a lança estava pronto e ativo. A família completa — Leyn, Mara, Elise — entrava como testemunhas, não como combatentes; os Ancestrais haviam determinado que a Provação era só dela, e eles apenas estariam lá. Restavam cerca de três a quatro dias antes do próximo ataque — a noite era longa, e a Câmara, intemporal. O núcleo do construto seguia guardado, o grimório esperava por Aldric, e o mapa já revelara o essencial: catorze dias até o Ritual de Convergência.</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    Cem anos sozinha.<br>
+    Uma lança que vibra ao reconhecê-la.<br>
+    Três vampiras que observam enquanto ela dá o primeiro passo.<br><br>
+    A luz dourada dos ancestrais não julga —<br>
+    apenas <em>aguarda</em>.<br><br>
+    A Provação é dela. Sempre foi.
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+</div>
+
+</body>
+</html>

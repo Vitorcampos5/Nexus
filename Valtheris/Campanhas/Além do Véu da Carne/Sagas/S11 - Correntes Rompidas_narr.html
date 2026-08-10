@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Correntes Rompidas — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">XI</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Correntes<br>Rompidas</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet, Mara Vell, Elise e Kaira</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Dizem que a fome mais antiga não é a do estômago, mas a da solidão — e que, às vezes, a cura para ambas chega junto, na mesma noite, na mesma mordida. Esta é a lenda de uma vila que nunca esqueceu seu próprio sangue, e de duas correntes que se romperam ao mesmo tempo: uma visível, outra não.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Corrida pelos Quarenta Quilômetros</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Vocês explodem da caverna na velocidade máxima. A floresta noturna se torna borrão de sombras e lua fragmentada entre galhos. Quarenta quilômetros os separam da Vila Sepet — talvez duas horas e meia no ritmo que mantêm.</p>
+
+    <p>Na primeira hora, a floresta é densa: árvores retorcidas, galhos baixos, névoa crescente. Corujas. Lobos distantes. Vento passando pela copa. Kaira corre surpreendentemente bem — cem anos na floresta a ensinaram a se mover entre árvores sem tropeçar.</p>
+
+    <p>"Ela é rápida," observou Mara. "Mais rápida que esperava."</p>
+
+    <p>"Instinto... de sobrevivência... ainda funciona..." disse Elise.</p>
+
+    <p>Na marca de uma hora, param brevemente para Kaira recuperar o fôlego — a resistência dela ainda limitada por décadas de supressão.</p>
+
+    <p>"Desculpa..." disse Kaira, ofegante. "Precisava parar..."</p>
+
+    <p>Quando avistam a Vila ao longe, os sentidos vampíricos de todos varrem a área ao redor. Nenhum perseguidor imediato — nenhum cheiro de cultista, nenhum som de passos, nenhuma presença hostil num raio de duzentos metros. Mas pegadas antigas, de semanas ou talvez meses, marcam o perímetro externo: alguém vigiou a Vila recentemente, mas não entrou. A quinhentos metros ao sul, restos de acampamento — fogueira apagada há tempo, comida abandonada. E a escuridão da própria Vila não é natural. Sentem a magia pulsando ali, como um coração batendo devagar sob a pedra.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Cheiro do Massacre</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Uma hora depois, o cheiro muda. Não é mais floresta natural. É outra coisa — memória preservada em moléculas que sobrevivem à queima de mundos. Cinzas velhas, cem anos velhas. Pedra queimada. E, para quem tem narinas de predador primordial, sangue antigo que nunca evaporou de verdade, apenas se fundiu com a pedra e o solo até virar parte do lugar.</p>
+
+    <p>Mara parou, farejando.</p>
+
+    <p>"Isso é... é o cheiro de massacre..." disse. Era a memória de quando ela própria participara de um, cem anos atrás — de que lado ela estava então, nunca nomeava.</p>
+
+    <p>"Morte..." murmurou Elise. "Muita morte... ainda ecoa..."</p>
+
+    <p>Kaira congelou.</p>
+
+    <p>"Eu... eu lembro desse cheiro..." disse. "Do dia que minha mãe..."</p>
+
+    <p>Não terminou. Não precisava.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Vila Sepet</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Quinze minutos depois, veem — através das árvores, no horizonte, a silhueta que existia apenas em memória e mapa há cem anos.</p>
+
+    <p>Muros de pedra negra, quatro metros de altura, parcialmente desmoronados onde o tempo foi mais impaciente. Quarenta e sete edifícios, a maioria em ruínas, tetos desabados como bocas abertas para o céu. A torre central ainda de pé, silhueta contra a lua. E ao redor de tudo, escuridão absoluta — não apenas noite, mas ausência de luz. A Magia de Escudo Noturno ainda funciona depois de cem anos, bloqueando até os raios lunares, como se uma redoma invisível existisse exatamente nos limites da vila.</p>
+
+    <p>"A magia..." sussurrou Mara. "Ainda ativa... isso é... incrível e aterrorizante..."</p>
+
+    <p>"Escuridão perfeita..." disse Elise. "Vampiros reinam... mas também... esconde... o que vive lá..."</p>
+
+    <p>Kaira segurou a mão de Leyn.</p>
+
+    <p>"Tio... tem... tem algo lá dentro..." disse. "Eu sinto..."</p>
+
+    <p>Ele também sentia. Através do vínculo com o local, com o próprio sangue Sepet. Algo vivia na Vila. Não era fantasma. Não era cultista. Era antigo.</p>
+
+    <p>Estavam a duzentos metros da entrada principal. O Portão Norte esperava.</p>
+
+    <p>"Entramos?" perguntou Mara. "Ou observamos primeiro?"</p>
+
+    <p>"Eu sinto..." disse Elise. "Magia... muita magia... vinda de dentro..."</p>
+
+    <p>As correntes no pescoço de Kaira pulsavam mais rápido agora — a proximidade da Câmara da Provação forçava o colapso. Sentiam a fonte que as havia criado.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Rugido do Sul</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Antes que respondam, do céu, distante — algo.</p>
+
+    <p>Não é trovão. Não é vento. É um RUGIDO. Grave. Profundo. Que faz a terra tremer levemente sob os pés. Vem de muito longe — talvez trinta, quarenta quilômetros ao sul. O som ecoa por dez segundos. Depois, silêncio absoluto. Nenhum deles vê nada no céu. Mas todos sentiram.</p>
+
+    <p>"Que diabos foi ISSO?!" Mara olhou para o céu.</p>
+
+    <p>"Dragão...?" arriscou Elise. "Mas... dragões... não rugem... assim... tão... profundo..."</p>
+
+    <p>"Um dragão," disse Leyn. "Ainda bem que está longe da gente."</p>
+
+    <p>"Trinta quilômetros não é TÃO longe para um dragão," ponderou Mara, "se ele voar para cá..."</p>
+
+    <p>"E o rugido..." insistiu Elise, "tão profundo... tremeu... o chão... isso não é... dragão normal..."</p>
+
+    <p>"O que... o que FOI isso?!" Kaira tremia.</p>
+
+    <p>Mara se recompôs, focada. "Não sei. Mas estava LONGE. Não é ameaça imediata. Leyn, decisão: entramos na Vila AGORA? Ou esperamos? As correntes de Kaira estão acelerando..."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Entrada no Portão Norte</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Vamos entrar na vila," disse Leyn, determinado. "Devemos ir ao Cofre imediatamente. Cada segundo é importante."</p>
+
+    <p>"Tio..." Kaira apertou a mão dele. "As correntes... estão ARDENDO agora..."</p>
+
+    <p>Chegaram ao Portão Principal — ferro negro, cinco metros de altura, entreaberto. Nunca fora fechado desde o massacre: a pressa dos atacantes, ou a indiferença dos que restaram, o deixara assim. O símbolo Sepet gravado no arco — Lua Carmesim. Sangue seco ainda visível na pedra, cem anos, mas preservado pela magia da vila como testemunho intencional.</p>
+
+    <p>Quando cruzaram o limiar, escuridão absoluta caiu sobre eles. Não era cegueira — os olhos vampíricos funcionavam perfeitamente. Mas a luz da lua desaparecia, como se entrassem em uma dimensão separada.</p>
+
+    <p>Em visão vampírica pura, viram a rua principal, pedras rachadas, ervas daninhas crescendo entre elas como dedos verdes buscando o que não existia mais. Casas destruídas. Tetos desabados. Paredes queimadas. Portas arrancadas das dobradiças. Sangue seco em todos os lugares — nas paredes, no chão, manchando janelas que haviam perdido os vidros havia muito. Mas não havia corpos. Alguém os removera. Ou algo os levara.</p>
+
+    <p>E então ouviram um sussurro.</p>
+
+    <p class="echo">…Sepet… voltou… sangue… retornou… a Vila… acorda…</p>
+
+    <p>"Fantasmas?!" Mara ergueu o escudo. "Leyn, há fantasmas aqui?!"</p>
+
+    <p>"Não..." disse Elise. "Não são fantasmas... é a própria Vila... FALANDO..."</p>
+
+    <p>"Tio..." Kaira tremia. "A Vila me conhece... ela sabe que eu sou Sepet... as correntes estão DERRETENDO!"</p>
+
+    <p>Tochas apagadas havia cem anos acenderam sozinhas com fogo azul fantasmagórico. Portas rangiam, abrindo e fechando por conta própria. Sombras se moviam mesmo sem fontes de luz. Não era hostilidade. Era reconhecimento. A magia da Vila sabia que um Sepet legítimo havia retornado.</p>
+
+    <p>Não teriam muito tempo. A cada passo em direção à entrada norte, as correntes de Kaira perdiam coesão. O fogo azul das tochas acompanhava o avanço deles pelas ruínas, como um guia silencioso.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Kaira é Chamada</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Rota confirmada: Portão Norte, rua principal por cinquenta metros, virar a leste, entrada norte das catacumbas por mais trinta.</p>
+
+    <p>A trinta metros da entrada, encontraram a porta de pedra negra marcada no mapa. Símbolos gravados nela: <em>Aqui descansam os Anciãos. Respeito ou Ruína.</em></p>
+
+    <p>"Entrada Norte. Confirmado," disse Mara. "Leyn, você abre ou eu empurro?"</p>
+
+    <p>As correntes de Kaira explodiram em luz dourada.</p>
+
+    <p>"TIO!" gritou ela. "ELAS VÃO CAIR! AGORA! A CÂMARA ESTÁ ME CHAMANDO! EU A SINTO! ELA QUER QUE EU VÁ! QUER ME LIBERTAR!"</p>
+
+    <p>Chorava. "Desculpa! Desculpa! Eu tentei segurar, mas a Vila... a Câmara... é FORTE DEMAIS!"</p>
+
+    <p>"LEYN!" A voz de Mara já era pura urgência. "DECISÃO! AGORA!"</p>
+
+    <p>Ele se abaixou, abraçando Kaira firmemente. Seus braços envolveram a menina tremendo.</p>
+
+    <p>"Está tudo bem," disse. "Estamos aqui com você. Não precisa mais se segurar. Não precisa mais conter suas correntes. O que quer que venha atrás da gente, estaremos prontos para enfrentar como uma família."</p>
+
+    <p>"Tio..." Kaira o abraçou de volta. "Eu... eu tenho tanto medo... mas com você aqui... eu consigo... Pode... pode me carregar? Minhas pernas... estão fracas..."</p>
+
+    <p>Ele a ergueu nos braços. Ela era leve — muito leve para cento e dez anos. Como uma criança de verdade. Aninhou-se contra ele, segurando a espada curta com uma mão, agarrando a armadura dele com a outra.</p>
+
+    <p>"Obrigada..." disse. "Por estar aqui... por não me abandonar..."</p>
+
+    <p>"Leyn..." A voz de Mara quebrou. "Você é... você é o melhor de nós..."</p>
+
+    <p>Elise limpou uma lágrima. "Família... de verdade... não abandona... nunca..."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Catacumbas — Detectar Magia</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Virou-se para Mara e Elise, ainda carregando Kaira.</p>
+
+    <p>"Vamos continuar pelo caminho do Cofre," disse. "Mara, Elise — me sigam."</p>
+
+    <p>Fechou os olhos por um instante, deixando energia mágica fluir enquanto carregava Kaira. Sua visão se expandiu — agora via a magia como auras coloridas sobrepostas ao mundo físico, por dez minutos. Mara empurrou a porta de pedra das catacumbas enquanto o ritual se completava.</p>
+
+    <p>A porta rangeu — pedra contra pedra, som de cem anos de silêncio sendo quebrado. Ar frio e seco jorrou para fora, preservado por um século. Cheiro de terra antiga, pedra, e algo mais: incenso, talvez. Ou especiarias de embalsamamento.</p>
+
+    <p>O corredor tinha três metros de largura, dois e meio de altura. Paredes de pedra negra perfeitamente cortadas. Tochas mágicas acenderam automaticamente com fogo azul. Chão de mosaico em padrão de luas carmesim.</p>
+
+    <p>Através da magia, via tudo de uma vez: uma aura azul fraca nas tochas — luz perpétua, ativa há cem anos sem manutenção, ainda funcional por estar ancorada na pedra da própria vila. Vinte metros à frente, uma aura vermelha intensa no chão — cinco placas de pressão cobrindo toda a largura do corredor, três seguras, duas ativas, runas ocultas visíveis apenas com magia. A trinta metros, nas paredes laterais, uma aura verde — runas de fogo, armadilha elemental secundária para quem pisasse errado. Ao fundo, uma aura dourada pulsante — a Câmara do Cofre, magia de proteção forte, pulsando como um coração. E a quarenta metros, uma aura violeta em movimento — uma entidade mágica ativa, que não deveria estar ali, aproximando-se devagar. Deliberadamente.</p>
+
+    <p>"Leyn..." sussurrou Mara. "Você vê algo? Seu olhar mudou... Detectar Magia está ativo?"</p>
+
+    <p>"Tio..." disse Kaira, em seus braços, a voz ficando mais profunda. "Está começando... eu sinto meu corpo... querendo mudar..."</p>
+
+    <p>Sua voz soava mais madura a cada palavra. O corpo dela em seus braços estava esquentando — vampiros não costumam ser quentes. A transformação física estava começando.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Primeira Armadilha</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Quinze metros percorridos. Tudo calmo. Apenas o som de passos ecoando em pedra que não ouvia passos havia um século.</p>
+
+    <p>A cinco metros da primeira armadilha, via-a claramente — vermelha e inequívoca. Tentou decifrar o padrão das placas, mas as auras vermelhas pulsavam junto com tantas outras fontes mágicas ao redor — as tochas azuis, a aura dourada do Cofre ao fundo, a entidade violeta se aproximando, e especialmente as correntes de Kaira se despedaçando em seus braços — que era demais. Sua mente não conseguia filtrar. Tudo se misturava em cacofonia mágica.</p>
+
+    <p>"Eu não consigo detectar ao certo quais placas são seguras," disse, frustrado, "com tantas flutuações de magias."</p>
+
+    <p>"Então não pisamos nelas," avaliou Mara. "Podemos pular? Contornar? Ou eu e Elise testamos com peso leve primeiro?"</p>
+
+    <p>A aura violeta — agora a vinte e cinco metros — se movia em direção a eles. Lentamente. Deliberadamente. Ainda não viam a entidade fisicamente, apenas a assinatura mágica dela.</p>
+
+    <p>"Cheiro... diferente..." farejou Elise. "Não é morto-vivo... não é vivo... é... construto?"</p>
+
+    <p>"Se for sentinela automática," ponderou Mara, "pode atacar intrusos... ou reconhecer Sepet..."</p>
+
+    <p>"A Vila... conhece a Vila..." murmurou Kaira, sonolenta, a transformação começando. "Não vai machucar... Sepet verdadeiro..."</p>
+
+    <p>Suas pálpebras estavam pesadas. O corpo dela estava quente em seus braços. A transformação física começava com força crescente. Ele olhou para ela — mudando visivelmente, corpo aquecendo como se tivesse febre, cabelo crescendo levemente, feições ficando menos infantis, mãos ficando maiores.</p>
+
+    <p>"Essa transformação só deveria acontecer dentro da Câmara da Provação..." murmurou Leyn. "Será que ao longo dos séculos, o poder da Câmara vazou para toda a vila?"</p>
+
+    <p>"Tio..." A voz de Kaira soava mais intensa agora, os olhos dourados mais vivos, quase adolescente. "Eu ouço ela... a Câmara... ela está... CANTANDO para mim... Ela diz... que a Vila inteira... é extensão dela... que TODO vampiro Sepet... que entra aqui... é testado..."</p>
+
+    <p>Tocou o próprio rosto. "Eu estou... crescendo? Eu sou... mais alta?"</p>
+
+    <p>"Leyn, ela ESTÁ crescendo!" Mara estava chocada. "O corpo dela está amadurecendo NA FRENTE DOS NOSSOS OLHOS!"</p>
+
+    <p>"A Câmara..." Elise teve a revelação. "Não é sala... é a VILA INTEIRA... por isso... magia tão forte... por isso... escuridão eterna..."</p>
+
+    <p>Mara e Elise esperavam suas ordens — tensas, mas confiantes. A aura violeta da entidade estava a vinte metros e se aproximando. As armadilhas bloqueavam o avanço. Kaira amadurecia em seus braços. Restavam oito minutos de Detectar Magia.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Armadura-Sentinela</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>A aura violeta estava a quinze metros. E então viram o que era.</p>
+
+    <p>Uma armadura completa de placas negras. Vazia — não havia corpo dentro. O capacete com visor fechado brilhava violeta por dentro. Espada longa fantasmagórica na mão direita. Escudo com o símbolo Sepet na esquerda. Flutuava vinte centímetros acima do chão, deixando os mosaicos de luas carmesim visíveis abaixo dela.</p>
+
+    <p>"Sangue Sepet detectado," disse a armadura, voz metálica, ecoante, mas não hostil. "Linhagem confirmada. Portador legítimo identificado. Leyn Sepet. Último guerreiro. Reconhecido. Permissão para acessar Arsenal concedida."</p>
+
+    <p>Parou a dez metros. O visor violeta se moveu — olhando para Kaira em seus braços.</p>
+
+    <p>"Kaira Sepet," disse. "Filha de Selene. Selada injustamente. Transformação em progresso." Uma pausa. "ALERTA: Transformação fora da Câmara central é... irregular. Mas não perigosa. A Vila inteira É a Câmara desde o Grande Ritual de trezentos anos atrás."</p>
+
+    <p>"Um... guardião automatizado?" Mara baixou o escudo. "Construto de proteção?"</p>
+
+    <p>"Ele..." disse Elise. "Reconheceu... vocês dois... como família..."</p>
+
+    <p>"Armadilhas não afetam sangue Sepet legítimo," acrescentou a Sentinela. "Podem atravessar com segurança. Só atacam profanadores."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">As Correntes Finalmente Quebram</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p><strong>CRACK. CRACK. CRACK.</strong></p>
+
+    <p>As correntes espectrais de Kaira explodiram em fragmentos de luz dourada.</p>
+
+    <p>Ela gritou — não de dor, mas de libertação.</p>
+
+    <p>Em trinta segundos, o corpo dela mudou por completo. A altura subiu de um metro e quarenta para um metro e sessenta e cinco — corpo de criança de dez anos tornando-se adolescente de dezesseis. O cabelo cresceu até a cintura, negro, denso, como o de Selene. As feições amadureceram, o rosto se tornando estranhamente parecido com o da mãe. Os olhos dourados brilhavam com poder primordial, pupilas dilatando. As roupas rasgavam nas costuras pela velocidade do crescimento. E os sentidos primordiais completos despertaram, instantâneos.</p>
+
+    <p>Kaira caiu dos braços dele — não porque ele a soltou, mas porque ficou pesada demais para segurar confortavelmente. Ficou de pé, cambaleando, testando pernas mais longas do que jamais usara.</p>
+
+    <p>"Eu... eu sou... GRANDE?" A voz, agora completamente madura, soava como um soprano rico. "E eu sinto... PODER... tanto poder... eu posso... eu posso SENTIR tudo!"</p>
+
+    <p>Os olhos dourados se acenderam. "Tio... eu vejo TUDO agora! A magia da Vila! As armadilhas! A entidade! EU VEJO!"</p>
+
+    <p>Ela acabara de despertar os sentidos primordiais completos.</p>
+
+    <p>E então Kaira congelou. A mão foi ao estômago. Os olhos se arregalaram.</p>
+
+    <p>"Tio..." disse, assustada consigo mesma. "Eu... eu estou com FOME... tanta fome... não é fome de rato... é... é..."</p>
+
+    <p>Olhou para Leyn. Para Mara. Para Elise. Os olhos dela piscaram vermelho por um segundo.</p>
+
+    <p>Cento e dez anos de supressão. Décadas comendo ratos e animais pequenos, nunca saciando de verdade. A transformação liberara não apenas o corpo e os poderes — liberara também a necessidade primordial que estivera contida junto com tudo o mais.</p>
+
+    <p>Ela precisava controlar o impulso recém-liberado, e por um instante, a fome venceu.</p>
+
+    <p>Deu um passo em direção a Leyn. Não ameaçadora — mas faminta.</p>
+
+    <p>"Tio..." lutava contra si mesma. "Seu sangue... cheira tão... BOM... eu preciso... eu..."</p>
+
+    <p>Sacudiu a cabeça. "NÃO! Eu sou GUERREIRA! Eu CONTROLO meu corpo!"</p>
+
+    <p>Mara se moveu entre os dois, escudo erguido. "Kaira! Olhe para MIM! Você É guerreira! Você É Sepet! A fome não te DEFINE!"</p>
+
+    <p>"Fome primordial," disse a Sentinela, pragmática. "Esperado. Alimentação necessária em breve ou frenesi inevitável. Arsenal contém sangue preservado de emergência. Cinquenta metros à frente. Sugestão: alimentar a jovem antes de prosseguir."</p>
+
+    <p>E do mundo exterior, através da magia da Vila, todos sentiram.</p>
+
+    <p>"Presença profana detectada," alertou a Sentinela. "Cultistas do Vazio. ETA: quinze a vinte minutos até chegarem ao perímetro da Vila. O selo foi quebrado. Eles sabem."</p>
+
+    <p>"LEYN!" Mara já gritava. "DECISÃO! OS CULTISTAS VÊM!"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Ato de Fé</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele caminhou diretamente em direção a Kaira. Sem medo. Sem hesitação. Seus olhos vermelhos encontraram os dourados dela — agora na mesma altura, ela transformada em adolescente.</p>
+
+    <p>"Mara, Elise, está tudo bem," disse. "Apenas confiem nela."</p>
+
+    <p>"Leyn..." Mara hesitava. "Você tem certeza? Fome primordial recém-despertada é..."</p>
+
+    <p>Não terminou a frase. Confiava nele.</p>
+
+    <p>"Se você... diz..." Elise recuou, mas obedeceu. "Confiamos..."</p>
+
+    <p>Ele removeu a própria capa — o manto escuro que sobrevivera a tantas batalhas — e envolveu o corpo de Kaira com ela. As roupas dela estavam rasgadas pela transformação súbita; a capa a cobriu, dando dignidade e calor.</p>
+
+    <p>"Venha," disse. "Está tudo bem. Se alimente."</p>
+
+    <p>"Tio..." Ela tremia, lágrimas douradas escorrendo. "Eu... eu posso machucar você... eu não sei... controlar ainda... E se eu... e se eu não PARAR?"</p>
+
+    <p>Ele expôs o próprio pescoço. "Eu confio em você, Kaira. Você é Guerreira. Você é Sepet. Você CONTROLA seu corpo."</p>
+
+    <p>Através do vínculo, transmitiu a Mara e Elise: <em>Se eu acabar desmaiando, me levem à sala do Cofre. Peçam à Sentinela para guiar vocês. Ela protegerá nossa família.</em></p>
+
+    <p><em>Leyn... você é louco...</em> respondeu Mara, mentalmente. <em>Mas... entendido. Te protegeremos.</em></p>
+
+    <p><em>Não morra... de novo... por favor...</em> pediu Elise.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Mordida — O Sangue que Reconhece</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele a abraçou firmemente. Ela estava mais alta agora — o queixo alcançava o ombro dele perfeitamente. Como deveria ser.</p>
+
+    <p>"Venha," disse.</p>
+
+    <p>Kaira soluçou uma vez. Então suas presas — agora completas, primordiais, afiadas — encontraram o pescoço dele.</p>
+
+    <p>A dor não era como ferimento de batalha. Não era como morte. Era queimadura e gelo ao mesmo tempo — presas primordiais não apenas perfuram, elas drenam com eficiência absoluta. Mas junto com a dor vinha outra coisa: a fome dela sendo saciada, a agonia de cento e dez anos de fome parcial finalmente sendo alimentada de verdade pela primeira vez. Poder fluindo — o sangue dele, ressuscitado por duas mortes e dois retornos, fortalecendo-a enquanto bebia. E gratidão absoluta: ela chorava enquanto bebia, lágrimas douradas caindo no pescoço dele. Os sangues dos dois se reconheciam. Ele era tio. Ela era sobrinha. O vínculo que já existia explodia em intensidade — família de sangue verdadeiro descobrindo que o termo tinha peso literal.</p>
+
+    <p>Dez segundos. Vinte segundos. Ele perdia força, a visão embaçando nas bordas. Kaira bebia profundamente.</p>
+
+    <p>Mas então — parou.</p>
+
+    <p>Não porque ele a forçou. Não porque Mara interveio.</p>
+
+    <p>Porque ela escolheu parar.</p>
+
+    <p>"Eu..." Afastou-se, os olhos dourados brilhantes. "Eu parei... EU CONSEGUI PARAR!"</p>
+
+    <p>"O sangue..." Havia admiração e alívio na voz dela. "Tio, seu sangue é... INCRÍVEL... eu sinto... eu sinto como se pudesse fazer QUALQUER COISA!"</p>
+
+    <p>Ele cambaleou, e ela o segurou.</p>
+
+    <p>"Desculpa!" disse. "Eu tomei demais?! Você está bem?!"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Pós-Alimentação — O que o Sangue Revelou</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Mara correu até ele, segurando-o.</p>
+
+    <p>"Leyn!" disse. "Você está... merda, você está pálido até para vampiro!"</p>
+
+    <p>"Precisamos..." disse Elise. "Do sangue preservado... do Arsenal... para você... agora..."</p>
+
+    <p>Ele estava tonto, marcas de presas visíveis no pescoço, mas consciente. O Arsenal ficava a quarenta metros. Kaira, por outro lado, estava completamente saciada — poder primordial ativo, controle demonstrado diante de todos.</p>
+
+    <p>"Vínculo familiar demonstrado," avaliou a Sentinela. "Confiança absoluta confirmada. Controle primordial em jovem Sepet: APROVADO." Uma pausa. "Sangue de Leyn Sepet fortaleceu a jovem significativamente. Ela agora possui força de vampiro primordial adulto completo. Mas Leyn Sepet está enfraquecido. Arsenal está quarenta metros à frente. Permissão para escoltar família concedida. Cultistas: doze minutos até chegarem ao perímetro. Sugestão: alimentar Leyn, equipar-se, preparar defesa."</p>
+
+    <p>A armadura começou a flutuar pelo corredor à frente deles. O símbolo Sepet no escudo brilhava violeta — guia fiel de quem nunca parara de vigiar, mesmo cem anos sem ter família para vigiar.</p>
+
+    <p>Kaira olhou para ele, preocupada.</p>
+
+    <p>"Tio..." disse. "Eu sinto sua fraqueza através do sangue agora... EU te enfraqueci..."</p>
+
+    <p>As lágrimas voltaram. "Mas... mas também sinto... VOCÊ dentro de mim... suas memórias... suas emoções... eu SINTO quanto você me ama..."</p>
+
+    <p>Segurou o rosto dele com as duas mãos.</p>
+
+    <p>"E eu te amo também..." disse. "Mais que tudo..."</p>
+
+    <p>Quando um primordial alimenta diretamente alguém de sua linhagem com o próprio sangue, o vínculo transcende a relação comum entre criador e criado. Kaira não recebera apenas sangue — recebera memórias, emoções, fragmentos de um século de existência do tio. E Leyn sentiu, por sua vez, a gratidão de cem anos de solidão finalmente encontrando o que procurava.</p>
+
+    <p>O Arsenal esperava. Os cultistas vinham. Doze minutos.</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    Cem anos de correntes.<br>
+    Trinta segundos de transformação.<br>
+    Uma mordida que foi escolha — não fome.<br><br>
+    Ele expôs o pescoço para a sobrinha que nunca teve<br>
+    e disse <em>eu confio em você</em><br>
+    em vez de <em>eu te proibo</em>.<br><br>
+    E ela parou.<br>
+    Porque guerreiras escolhem quando parar.<br><br>
+    <em>As correntes rompidas não foram as espectrais no pescoço dela —<br>
+    foram as invisíveis que os dois carregavam<br>
+    há cem anos de solidão separados.</em>
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+</div>
+
+</body>
+</html>

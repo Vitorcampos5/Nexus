@@ -1,0 +1,2801 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saga XVIII — A Estaca e a Rachadura | Além do Véu da Carne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #060408;
+    --bg-deep:        #0d0910;
+    --bg-chamber:     #120d16;
+    --bg-card:        #1a1220;
+    --bg-card-alt:    #160e1c;
+
+    --ink:            #e2c9a8;
+    --ink-dim:        #9e8a72;
+    --ink-faint:      #5a4e42;
+
+    --blood:          #8b1a1a;
+    --blood-bright:   #c0392b;
+    --blood-glow:     #ff4040;
+
+    --silver:         #b8c4d0;
+    --silver-dim:     #697580;
+    --rune-blue:      #4a9ebe;
+    --rune-glow:      #7ec8e3;
+
+    --gold:           #c9963c;
+    --gold-bright:    #e8b84b;
+
+    --sanity-color:   #9b59b6;
+    --sanity-dim:     #6c3483;
+
+    /* Forest/infiltration palette — new for S18 */
+    --forest-dark:    #1a2818;
+    --forest-mid:     #2a3828;
+    --detect-blue:    #5090e0;
+    --detect-glow:    #90c0ff;
+    --detect-inert:   #8090a0;
+    --crack-rust:     #b05028;
+    --crack-glow:     #d07848;
+    --stake-purple:   #7840a0;
+    --stake-glow:     #b080d8;
+    --stake-bright:   #a060d0;
+    --patrol-red:     #b04030;
+    --patrol-glow:    #d06050;
+    --crystal-red:    #c03830;
+    --crystal-glow:   #f06050;
+    --davren-gold:    #c89830;
+    --davren-bright:  #e8c060;
+
+    /* Personagens */
+    --mara-color:     #e8943a;
+    --elise-color:    #3ab8c9;
+    --kaira-color:    #e8c84a;
+    --aldric-color:   #a0556e;
+    --sentinela-color:#78c8f0;
+    --tobias-color:   #a87848;
+    --conjurador-color:#9060c0;
+    --guerreiro-color: #888898;
+    --vor-color:       #c04830;
+
+    --success:        #2e7d52;
+    --success-bright: #4caf80;
+    --fail:           #7d2e2e;
+    --fail-bright:    #c0392b;
+    --crit-fail:      #5c1a1a;
+
+    --border-subtle:  rgba(255,255,255,0.04);
+    --border-dim:     rgba(255,255,255,0.08);
+    --border-gold:    rgba(201,150,60,0.3);
+    --border-blood:   rgba(139,26,26,0.4);
+    --border-rune:    rgba(74,158,190,0.35);
+    --border-detect:  rgba(80,144,224,0.35);
+    --border-stake:   rgba(120,64,160,0.4);
+    --border-crack:   rgba(176,80,40,0.4);
+    --border-patrol:  rgba(176,64,48,0.35);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2rem 8rem;
+  }
+
+  /* ══════════════════════════════════════════
+     COVER
+  ══════════════════════════════════════════ */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 65% 50% at 50% 40%, rgba(26,40,24,0.6) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 50% 85%, rgba(139,26,26,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 20% at 70% 55%, rgba(120,64,160,0.06) 0%, transparent 60%);
+  }
+
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--silver-dim);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(3.5rem, 13vw, 9rem);
+    font-weight: 900;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(80,144,224,0.4);
+    background: linear-gradient(180deg, rgba(80,144,224,0.22) 0%, transparent 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    margin-bottom: -0.1em;
+    opacity: 0;
+    animation: fadeUp 1s 0.5s forwards;
+    user-select: none;
+    letter-spacing: 0.06em;
+  }
+
+  .cover-divider {
+    width: 100%;
+    max-width: 500px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--stake-purple) 30%, var(--crack-rust) 70%, transparent);
+    margin: 1.5rem auto;
+    position: relative;
+    opacity: 0;
+    animation: fadeIn 1s 0.9s forwards;
+  }
+
+  .cover-divider::before,
+  .cover-divider::after {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--crack-rust);
+    font-size: 0.6rem;
+  }
+  .cover-divider::before { left: calc(30% - 8px); }
+  .cover-divider::after  { right: calc(30% - 8px); }
+
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 4vw, 2.4rem);
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    line-height: 1.3;
+    margin: 1rem 0 0.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.7s forwards;
+    text-shadow: 0 0 40px rgba(120,64,160,0.3);
+  }
+
+  .cover-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.3em;
+    color: var(--silver-dim);
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 1s forwards;
+  }
+
+  .cover-scroll-hint {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeIn 1.5s 2s forwards;
+  }
+
+  .cover-scroll-hint span {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(180deg, var(--ink-faint), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ══════════════════════════════════════════
+     CHAPTERS
+  ══════════════════════════════════════════ */
+  .chapter { margin-top: 6rem; padding-top: 2rem; }
+
+  .chapter-header { display: flex; align-items: center; gap: 1.2rem; margin-bottom: 2rem; }
+
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: var(--blood);
+    line-height: 1;
+    min-width: 2ch;
+    text-align: right;
+    text-shadow: 0 0 20px rgba(192,57,43,0.3);
+    flex-shrink: 0;
+  }
+
+  .chapter-title-block { flex: 1; }
+
+  .chapter-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    line-height: 1.2;
+  }
+
+  .chapter-rule {
+    height: 1px;
+    background: linear-gradient(90deg, var(--blood) 0%, rgba(139,26,26,0.15) 100%);
+    margin-top: 0.5rem;
+  }
+
+  /* ══════════════════════════════════════════
+     PROSE
+  ══════════════════════════════════════════ */
+  .prose {
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.9;
+    margin-bottom: 1.8rem;
+  }
+
+  .prose p { margin-bottom: 1.2em; }
+  .prose p:last-child { margin-bottom: 0; }
+  .prose strong { font-weight: 600; color: #f0d9bc; }
+  .prose em { font-style: italic; color: var(--ink-dim); }
+
+  .prose.with-dropcap p:first-child::first-letter {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 4.5em;
+    font-weight: 900;
+    float: left;
+    line-height: 0.75;
+    margin: 0.1em 0.1em -0.05em 0;
+    color: var(--blood);
+    text-shadow: 0 0 20px rgba(139,26,26,0.5);
+  }
+
+  /* ══════════════════════════════════════════
+     INTEL BLOCK — reconnaissance info
+  ══════════════════════════════════════════ */
+  .intel-block {
+    margin: 2rem 0;
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border-rune);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .intel-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--rune-blue), transparent);
+    box-shadow: 0 0 8px var(--rune-glow);
+  }
+
+  .intel-header {
+    padding: 0.85rem 1.5rem;
+    background: rgba(74,158,190,0.07);
+    border-bottom: 1px solid var(--border-rune);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .intel-icon { font-size: 0.95rem; color: var(--rune-blue); }
+
+  .intel-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--rune-glow);
+  }
+
+  .intel-body { padding: 1.2rem 1.5rem; }
+
+  /* ══════════════════════════════════════════
+     STAKE BLOCK — ritual anchor found
+  ══════════════════════════════════════════ */
+  .stake-block {
+    margin: 2.5rem 0;
+    padding: 1.8rem 2rem;
+    background: linear-gradient(135deg, rgba(120,64,160,0.10) 0%, rgba(10,6,18,0.85) 100%);
+    border: 1px solid var(--border-stake);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stake-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--stake-purple), var(--stake-glow), var(--stake-purple), transparent);
+    box-shadow: 0 0 14px rgba(120,64,160,0.45);
+    animation: stakePulse 4s ease-in-out infinite;
+  }
+
+  .stake-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--stake-glow);
+    margin-bottom: 0.8rem;
+  }
+
+  .stake-desc {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.02rem;
+    color: var(--ink);
+    line-height: 1.8;
+  }
+
+  .stake-desc strong { color: var(--stake-glow); }
+
+  .stake-runes {
+    margin-top: 1rem;
+    padding: 0.8rem 1.1rem;
+    background: rgba(120,64,160,0.10);
+    border: 1px solid rgba(120,64,160,0.2);
+    border-radius: 4px;
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.93rem;
+    color: rgba(176,128,216,0.85);
+    line-height: 1.7;
+  }
+
+  /* ══════════════════════════════════════════
+     DETECT BLOCK — detection stone
+  ══════════════════════════════════════════ */
+  .detect-block {
+    margin: 2rem 0;
+    padding: 1.4rem 1.8rem;
+    background: linear-gradient(135deg, rgba(80,144,224,0.07) 0%, rgba(10,8,16,0.8) 100%);
+    border: 1px solid var(--border-detect);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .detect-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--detect-blue), transparent);
+    box-shadow: 0 0 8px rgba(80,144,224,0.35);
+    animation: detectPulse 3s ease-in-out infinite;
+  }
+
+  .detect-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--detect-blue);
+    margin-bottom: 0.8rem;
+  }
+
+  .detect-status {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .detect-gem {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--detect-blue);
+    flex-shrink: 0;
+  }
+
+  .detect-gem.inert   { background: rgba(128,144,160,0.3); border-color: var(--detect-inert); }
+  .detect-gem.weak    { background: rgba(80,144,224,0.25); border-color: var(--detect-blue); box-shadow: 0 0 6px rgba(80,144,224,0.3); animation: detectPulse 2s ease-in-out infinite; }
+  .detect-gem.strong  { background: rgba(80,144,224,0.6); border-color: var(--detect-glow); box-shadow: 0 0 14px rgba(144,192,255,0.6); animation: detectPulse 0.8s ease-in-out infinite; }
+
+  .detect-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.97rem;
+    color: var(--detect-glow);
+    line-height: 1.65;
+  }
+
+  /* ══════════════════════════════════════════
+     PATROL BLOCK — enemy radio chatter
+  ══════════════════════════════════════════ */
+  .patrol-block {
+    margin: 2rem 0;
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border-patrol);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .patrol-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--patrol-red), transparent);
+    box-shadow: 0 0 10px rgba(176,64,48,0.4);
+  }
+
+  .patrol-header {
+    padding: 0.75rem 1.5rem;
+    background: rgba(176,64,48,0.08);
+    border-bottom: 1px solid var(--border-patrol);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .patrol-icon { font-size: 0.9rem; color: var(--patrol-glow); }
+  .patrol-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--patrol-glow);
+  }
+
+  .patrol-body { padding: 1rem 1.5rem; }
+
+  .patrol-line {
+    display: flex;
+    gap: 0.8rem;
+    align-items: flex-start;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.035);
+  }
+
+  .patrol-line:last-child { border-bottom: none; }
+
+  .patrol-source {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    min-width: 6.5rem;
+    padding-top: 0.1rem;
+  }
+
+  .patrol-line.equipe-1 .patrol-source { color: var(--patrol-red); }
+  .patrol-line.equipe-2 .patrol-source { color: #a06030; }
+  .patrol-line.equipe-3 .patrol-source { color: #a04050; }
+  .patrol-line.vor      .patrol-source { color: var(--crystal-glow); }
+  .patrol-line.mestra   .patrol-source { color: var(--stake-glow); }
+
+  .patrol-msg {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.97rem;
+    color: var(--ink);
+    line-height: 1.6;
+  }
+
+  /* ══════════════════════════════════════════
+     CRYSTAL COMM — red communication crystal
+  ══════════════════════════════════════════ */
+  .crystal-comm {
+    margin: 1.5rem 0;
+    padding: 1rem 1.4rem;
+    background: linear-gradient(135deg, rgba(192,56,48,0.08) 0%, rgba(10,6,13,0.8) 100%);
+    border: 1px solid rgba(192,56,48,0.3);
+    border-radius: 5px;
+    position: relative;
+    border-left: 3px solid var(--crystal-red);
+  }
+
+  .crystal-comm::before {
+    content: '◈';
+    position: absolute;
+    top: 0.9rem;
+    left: -0.1rem;
+    transform: translateX(-50%);
+    color: var(--crystal-glow);
+    font-size: 0.7rem;
+    background: var(--bg-void);
+    padding: 0 0.15em;
+  }
+
+  .crystal-source {
+    font-family: 'Cinzel', serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--crystal-glow);
+    margin-bottom: 0.4rem;
+  }
+
+  .crystal-msg {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1.02rem;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* ══════════════════════════════════════════
+     CRACK BLOCK — the defection/doubt moment
+  ══════════════════════════════════════════ */
+  .crack-block {
+    margin: 2.5rem 0;
+    padding: 1.8rem 2rem;
+    background: linear-gradient(135deg, rgba(176,80,40,0.09) 0%, rgba(10,6,13,0.85) 100%);
+    border: 1px solid var(--border-crack);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .crack-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--crack-rust), var(--crack-glow), var(--crack-rust), transparent);
+    box-shadow: 0 0 12px rgba(176,80,40,0.4);
+  }
+
+  .crack-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--crack-glow);
+    margin-bottom: 0.9rem;
+  }
+
+  .crack-text {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.02rem;
+    color: var(--ink);
+    line-height: 1.85;
+  }
+
+  /* ══════════════════════════════════════════
+     ROLL BLOCKS
+  ══════════════════════════════════════════ */
+  .roll-block {
+    margin: 2rem 0;
+    border-left: 3px solid var(--rune-blue);
+    background: linear-gradient(135deg, rgba(74,158,190,0.05) 0%, rgba(10,6,13,0.6) 100%);
+    border-radius: 0 6px 6px 0;
+    padding: 1.2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .roll-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 3px;
+    background: var(--rune-blue);
+    box-shadow: 0 0 12px var(--rune-glow);
+  }
+
+  .roll-block.success {
+    border-left-color: var(--success-bright);
+    background: linear-gradient(135deg, rgba(46,125,82,0.07) 0%, rgba(10,6,13,0.6) 100%);
+  }
+  .roll-block.success::before { background: var(--success-bright); box-shadow: 0 0 12px var(--success-bright); }
+
+  .roll-block.fail {
+    border-left-color: var(--fail-bright);
+    background: linear-gradient(135deg, rgba(125,46,46,0.09) 0%, rgba(10,6,13,0.6) 100%);
+  }
+  .roll-block.fail::before { background: var(--fail-bright); box-shadow: 0 0 12px rgba(192,57,43,0.5); }
+
+  .roll-block.crit-fail {
+    border-left-color: #8b0000;
+    background: linear-gradient(135deg, rgba(92,26,26,0.15) 0%, rgba(10,6,13,0.6) 100%);
+  }
+  .roll-block.crit-fail::before { background: #8b0000; box-shadow: 0 0 18px rgba(139,0,0,0.7); }
+
+  .roll-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.6rem;
+  }
+
+  .roll-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--silver);
+  }
+
+  .roll-formula {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: var(--ink-dim);
+  }
+
+  .roll-result-line { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+
+  .roll-dice {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .roll-block.success   .roll-dice { color: var(--success-bright); }
+  .roll-block.fail      .roll-dice { color: var(--fail-bright); }
+  .roll-block.crit-fail .roll-dice { color: #ff2020; text-shadow: 0 0 14px rgba(255,32,32,0.5); }
+
+  .roll-verdict {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 0.25em 0.8em;
+    border-radius: 2px;
+  }
+
+  .roll-block.success   .roll-verdict { background: rgba(46,125,82,0.2); color: var(--success-bright); border: 1px solid rgba(76,175,128,0.3); }
+  .roll-block.fail      .roll-verdict { background: rgba(125,46,46,0.2); color: var(--fail-bright);    border: 1px solid rgba(192,57,43,0.3); }
+  .roll-block.crit-fail .roll-verdict { background: rgba(92,26,26,0.3);  color: #ff4040;              border: 1px solid rgba(255,32,32,0.3); }
+
+  .roll-note {
+    margin-top: 0.5rem;
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: var(--ink-dim);
+  }
+
+  /* ══════════════════════════════════════════
+     LORE CALLOUT
+  ══════════════════════════════════════════ */
+  .lore-callout {
+    margin: 2rem 0;
+    padding: 1.4rem 1.8rem;
+    background: linear-gradient(135deg, rgba(201,150,60,0.05) 0%, transparent 80%);
+    border: 1px solid var(--border-gold);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .lore-callout::before {
+    content: '✦';
+    position: absolute;
+    top: -0.5em;
+    left: 1.5rem;
+    background: var(--bg-void);
+    padding: 0 0.4em;
+    color: var(--gold);
+    font-size: 0.7rem;
+  }
+
+  .lore-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+  }
+
+  .lore-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: var(--ink-dim);
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+
+  /* ══════════════════════════════════════════
+     WARNING / THREAT INFO
+  ══════════════════════════════════════════ */
+  .warning-block {
+    margin: 2rem 0;
+    padding: 1.4rem 1.8rem;
+    background: linear-gradient(135deg, rgba(184,128,58,0.07) 0%, rgba(10,6,13,0.7) 100%);
+    border: 1px solid rgba(184,128,58,0.3);
+    border-radius: 6px;
+    border-left: 3px solid var(--gold);
+  }
+
+  .warning-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    margin-bottom: 0.8rem;
+  }
+
+  .warning-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .warning-list li {
+    padding-left: 1.3rem;
+    position: relative;
+    font-family: 'EB Garamond', serif;
+    font-size: 0.97rem;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  .warning-list li::before {
+    content: attr(data-num);
+    position: absolute;
+    left: 0;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  /* ══════════════════════════════════════════
+     DAVREN BLOCK — the Archbishop
+  ══════════════════════════════════════════ */
+  .davren-block {
+    margin: 2.5rem 0;
+    background: var(--bg-card-alt);
+    border: 1px solid rgba(200,152,48,0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .davren-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--davren-gold), var(--davren-bright), var(--davren-gold), transparent);
+    box-shadow: 0 0 12px rgba(200,152,48,0.35);
+  }
+
+  .davren-header {
+    padding: 0.9rem 1.5rem;
+    background: rgba(200,152,48,0.07);
+    border-bottom: 1px solid rgba(200,152,48,0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .davren-icon { font-size: 1rem; color: var(--davren-gold); }
+
+  .davren-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--davren-bright);
+  }
+
+  .davren-body { padding: 1.2rem 1.5rem; }
+
+  .davren-trait {
+    display: flex;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    align-items: flex-start;
+  }
+
+  .davren-trait:last-child { border-bottom: none; }
+
+  .davren-num {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--davren-gold);
+    flex-shrink: 0;
+    min-width: 1.2rem;
+  }
+
+  .davren-desc {
+    font-family: 'EB Garamond', serif;
+    font-size: 0.98rem;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  .davren-relic {
+    margin-top: 0.5rem;
+    padding: 0.8rem 1.1rem;
+    background: rgba(200,152,48,0.07);
+    border: 1px solid rgba(200,152,48,0.2);
+    border-radius: 4px;
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.93rem;
+    color: var(--davren-bright);
+    line-height: 1.7;
+  }
+
+  /* ══════════════════════════════════════════
+     SENTINELA BLOCK
+  ══════════════════════════════════════════ */
+  .sentinela-block {
+    margin: 2rem 0;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba(96,176,224,0.07) 0%, rgba(8,12,20,0.85) 100%);
+    border: 1px solid rgba(96,176,224,0.22);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sentinela-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--sentinela-color), transparent);
+    box-shadow: 0 0 10px rgba(96,176,224,0.4);
+    animation: senPulse 4s ease-in-out infinite;
+  }
+
+  .sentinela-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--sentinela-color);
+    margin-bottom: 0.8rem;
+  }
+
+  .sentinela-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: rgba(144,208,248,0.9);
+    line-height: 1.75;
+  }
+
+  /* ══════════════════════════════════════════
+     REVELATION BLOCK
+  ══════════════════════════════════════════ */
+  .revelation-block {
+    margin: 2rem 0;
+    padding: 1.5rem 1.8rem;
+    background: linear-gradient(160deg, rgba(74,158,190,0.08) 0%, rgba(10,6,13,0.6) 100%);
+    border: 1px solid var(--border-rune);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .revelation-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--rune-blue), transparent);
+    box-shadow: 0 0 8px var(--rune-glow);
+  }
+
+  .revelation-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--rune-blue);
+    margin-bottom: 0.8rem;
+  }
+
+  .revelation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    list-style: none;
+    counter-reset: revelation;
+  }
+
+  .revelation-list li {
+    counter-increment: revelation;
+    padding-left: 2.2rem;
+    position: relative;
+    font-size: 0.98rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  .revelation-list li::before {
+    content: counter(revelation);
+    position: absolute;
+    left: 0;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--rune-blue);
+    background: rgba(74,158,190,0.15);
+    border: 1px solid rgba(74,158,190,0.2);
+    border-radius: 2px;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0.2em;
+  }
+
+  /* ══════════════════════════════════════════
+     DIALOGUE
+  ══════════════════════════════════════════ */
+  .dialogue {
+    margin: 1.5rem 0;
+    padding: 1.2rem 1.5rem;
+    background: rgba(255,255,255,0.02);
+    border-left: 2px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+  }
+
+  .dialogue.leyn        { border-left-color: var(--silver);           background: rgba(184,196,208,0.04); }
+  .dialogue.mara        { border-left-color: var(--mara-color);       background: rgba(232,148,58,0.05); }
+  .dialogue.elise       { border-left-color: var(--elise-color);      background: rgba(58,184,201,0.04); }
+  .dialogue.kaira       { border-left-color: var(--kaira-color);      background: rgba(232,200,74,0.05); }
+  .dialogue.aldric      { border-left-color: var(--aldric-color);     background: rgba(160,85,110,0.07); }
+  .dialogue.sentinela   { border-left-color: var(--sentinela-color);  background: rgba(96,176,224,0.05); }
+  .dialogue.tobias      { border-left-color: var(--tobias-color);     background: rgba(168,120,72,0.05); }
+  .dialogue.conjurador  { border-left-color: var(--conjurador-color); background: rgba(144,96,192,0.07); }
+  .dialogue.guerreiro   { border-left-color: var(--guerreiro-color);  background: rgba(136,136,152,0.05); }
+  .dialogue.vor         { border-left-color: var(--vor-color);        background: rgba(192,72,48,0.07); }
+  .dialogue.whisper {
+    border-left-color: var(--silver);
+    background: rgba(184,196,208,0.06);
+    font-style: italic;
+    border-left-width: 1px;
+    padding: 0.9rem 1.3rem;
+  }
+
+  .dialogue.gm {
+    border-left-color: var(--gold);
+    background: linear-gradient(135deg, rgba(201,150,60,0.05) 0%, rgba(9,11,16,0.35) 100%);
+    padding: 1.3rem 1.6rem;
+  }
+
+  .dialogue.gm .dialogue-speaker { color: var(--gold); letter-spacing: 0.4em; }
+
+  .dialogue.gm .dialogue-text {
+    font-style: normal;
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.9;
+  }
+
+  .dialogue.gm .dialogue-text p { margin-bottom: 1.1em; }
+  .dialogue.gm .dialogue-text p:last-child { margin-bottom: 0; }
+  .dialogue.gm .dialogue-text strong { font-weight: 600; color: #f0d9bc; }
+  .dialogue.gm .dialogue-text em { font-style: italic; color: var(--ink-dim); }
+
+  .dialogue.gm.with-dropcap .dialogue-text p:first-child::first-letter {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 4.5em;
+    font-weight: 900;
+    float: left;
+    line-height: 0.75;
+    margin: 0.1em 0.1em -0.05em 0;
+    color: var(--blood);
+    text-shadow: 0 0 20px rgba(139,26,26,0.5);
+  }
+
+  .dialogue-speaker {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .dialogue.leyn       .dialogue-speaker { color: var(--silver); }
+  .dialogue.mara       .dialogue-speaker { color: var(--mara-color); }
+  .dialogue.elise      .dialogue-speaker { color: var(--elise-color); }
+  .dialogue.kaira      .dialogue-speaker { color: var(--kaira-color); }
+  .dialogue.aldric     .dialogue-speaker { color: var(--aldric-color); }
+  .dialogue.sentinela  .dialogue-speaker { color: var(--sentinela-color); }
+  .dialogue.tobias     .dialogue-speaker { color: var(--tobias-color); }
+  .dialogue.conjurador .dialogue-speaker { color: var(--conjurador-color); }
+  .dialogue.guerreiro  .dialogue-speaker { color: var(--guerreiro-color); }
+  .dialogue.vor        .dialogue-speaker { color: var(--vor-color); }
+  .dialogue.whisper    .dialogue-speaker { color: rgba(184,196,208,0.5); }
+
+  .dialogue-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* ══════════════════════════════════════════
+     SCENE DIVIDER
+  ══════════════════════════════════════════ */
+  .scene-divider { display: flex; align-items: center; gap: 1rem; margin: 3rem 0 2.5rem; }
+  .scene-divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--ink-faint)); }
+  .scene-divider-line:last-child { background: linear-gradient(90deg, var(--ink-faint), transparent); }
+  .scene-divider-glyph {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  /* ══════════════════════════════════════════
+     FINALE
+  ══════════════════════════════════════════ */
+  .finale-block {
+    margin: 3rem 0 0;
+    text-align: center;
+    padding: 3rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .finale-block::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(120,64,160,0.06), transparent);
+  }
+
+  .finale-quote {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--ink-dim);
+    line-height: 1.8;
+    position: relative;
+    max-width: 580px;
+    margin: 0 auto 2rem;
+  }
+
+  .finale-quote em { color: var(--ink); font-style: normal; }
+
+  .finale-divider {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--stake-purple), transparent);
+    margin: 0 auto 2rem;
+  }
+
+  .finale-coda {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ══════════════════════════════════════════
+     FLOATING STATS
+  ══════════════════════════════════════════ */
+  .floating-stats {
+    position: fixed; right: 1.5rem; top: 50%; transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 0.5rem; z-index: 10;
+    opacity: 0; pointer-events: none; transition: opacity 0.8s ease;
+  }
+  .floating-stats.visible { opacity: 1; pointer-events: auto; }
+
+  .stat-pip {
+    width: 46px; background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 4px; padding: 0.5rem 0.4rem; text-align: center;
+  }
+
+  .stat-pip-label {
+    font-family: 'Cinzel', serif; font-size: 0.42rem;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink-faint); display: block; margin-bottom: 0.15rem;
+  }
+
+  .stat-pip-value {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.9rem; font-weight: 900; display: block;
+  }
+
+  .stat-pip-sub {
+    font-family: 'Cinzel', serif; font-size: 0.5rem;
+    color: var(--ink-faint); display: block; letter-spacing: 0.1em; margin-top: 0.1rem;
+  }
+
+  .stat-pip.hp     .stat-pip-value { color: var(--blood-bright); }
+  .stat-pip.nucleo .stat-pip-value { color: var(--amber-bright); }
+  .stat-pip.vitoria .stat-pip-value { color: var(--victória-bright); }
+  .stat-pip.san     .stat-pip-value { color: var(--sanity-color); }
+
+  @media (max-width: 1100px) { .floating-stats { display: none; } }
+
+  /* ══════════════════════════════════════════
+     STAT TRACKERS
+  ══════════════════════════════════════════ */
+  .tracker-row { display: flex; gap: 1rem; flex-wrap: wrap; margin: 2rem 0; }
+
+  .tracker {
+    flex: 1; min-width: 180px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 6px; padding: 1rem 1.2rem;
+    position: relative; overflow: hidden;
+  }
+
+  .tracker.hp-tracker     { border-color: var(--border-blood); }
+  .tracker.sanity-tracker { border-color: rgba(155,89,182,0.25); }
+
+  .tracker-label { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.4rem; }
+  .tracker-values { display: flex; align-items: baseline; gap: 0.3rem; }
+  .tracker-current { font-family: 'Cinzel Decorative', serif; font-size: 2rem; font-weight: 900; line-height: 1; }
+  .hp-tracker     .tracker-current { color: var(--blood-bright); text-shadow: 0 0 12px rgba(192,57,43,0.3); }
+  .sanity-tracker .tracker-current { color: var(--sanity-color); text-shadow: 0 0 12px rgba(155,89,182,0.3); }
+  .tracker-slash { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--ink-faint); }
+  .tracker-max   { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--ink-dim); }
+  .tracker-bar   { margin-top: 0.7rem; height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+  .tracker-fill  { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+  .hp-tracker     .tracker-fill { background: linear-gradient(90deg, var(--blood), var(--blood-bright)); }
+  .sanity-tracker .tracker-fill { background: linear-gradient(90deg, var(--sanity-dim), var(--sanity-color)); }
+  .tracker-delta { font-family: 'EB Garamond', serif; font-style: italic; font-size: 0.85rem; color: var(--ink-faint); margin-top: 0.3rem; }
+
+  /* CHAINPULSE */
+  @keyframes chainpulse {
+    0%, 100% { opacity: 0.6; text-shadow: 0 0 6px rgba(120,64,160,0.3); }
+    50%       { opacity: 1;   text-shadow: 0 0 14px rgba(120,64,160,0.7); }
+  }
+  .chain-flicker { animation: chainpulse 2s ease-in-out infinite; }
+
+  /* ══════════════════════════════════════════
+     ANIMATIONS
+  ══════════════════════════════════════════ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50%       { opacity: 0.8; transform: scaleY(1.1); }
+  }
+  @keyframes stakePulse {
+    0%, 100% { opacity: 0.7; box-shadow: 0 0 8px rgba(120,64,160,0.35); }
+    50%       { opacity: 1;   box-shadow: 0 0 20px rgba(120,64,160,0.6); }
+  }
+  @keyframes detectPulse {
+    0%, 100% { opacity: 0.6; }
+    50%       { opacity: 1; }
+  }
+  @keyframes senPulse {
+    0%, 100% { opacity: 0.6; box-shadow: 0 0 6px rgba(96,176,224,0.3); }
+    50%       { opacity: 1;   box-shadow: 0 0 14px rgba(96,176,224,0.6); }
+  }
+  @keyframes runeFlicker {
+    0%, 95%, 100% { opacity: 1; }
+    96%, 98%      { opacity: 0.4; }
+    97%, 99%      { opacity: 0.9; }
+  }
+
+  .rune-flicker { animation: runeFlicker 8s ease-in-out infinite; }
+
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .cover { min-height: 85vh; padding: 4rem 1.2rem; }
+    .chapter-header { gap: 0.8rem; }
+    .chapter-number { font-size: 2rem; }
+    .prose.with-dropcap p:first-child::first-letter { font-size: 3.5em; }
+  }
+
+  @keyframes hourglass-turn {
+    0%   { transform: rotate(0deg); }
+    40%  { transform: rotate(0deg); }
+    50%  { transform: rotate(180deg); }
+    90%  { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .scene-divider-hourglass { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
+  .hourglass-svg { animation: hourglass-turn 5s ease-in-out infinite; transform-origin: 12px 14px; display: block; flex-shrink: 0; }
+  .scene-divider-time { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.35em; color: var(--ink-faint); text-transform: uppercase; white-space: nowrap; }
+  .scene-divider-time.highlight { color: var(--gold); opacity: 0.65; }
+  .chain-flicker { animation: chainpulse 2s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<div class="floating-stats" title="Estatísticas finais da Saga XVIII">
+  <div class="stat-pip" style="border-color:rgba(120,64,160,0.25);padding:0.3rem 0.4rem;">
+    <span class="stat-pip-label" style="color:var(--stake-bright);letter-spacing:0.15em;">FIM DA SAGA</span>
+  </div>
+  <div class="stat-pip hp">
+    <span class="stat-pip-label">PV</span>
+    <span class="stat-pip-value">29</span>
+    <span class="stat-pip-sub">/ 43</span>
+  </div>
+  <div class="stat-pip san">
+    <span class="stat-pip-label">SAN</span>
+    <span class="stat-pip-value">42</span>
+    <span class="stat-pip-sub">/ 42</span>
+  </div>
+</div>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">XVIII</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">A Estaca e<br>a Rachadura</h1>
+  <p class="cover-subtitle">Saga Dezoito &nbsp;·&nbsp; Leyn Sepet &nbsp;·&nbsp; ~05h30–06h38</p>
+
+  <div class="cover-scroll-hint">
+    <span>Role para baixo</span>
+    <div class="scroll-line"></div>
+  </div>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── CAPÍTULO I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Distribuição Final — Grimório, Escudo e Cristal</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Você fecha o Grimório de Técnicas Sepet — deixando a palma da mão repousar na capa de couro negro por um segundo, sentindo o peso de gerações naquelas páginas — e o estende para Mara.</p>
+      <p>Ela o pega com cuidado, quase reverência. Seus olhos varrem a capa, os dedos traçando as runas douradas.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Técnicas de Proteção. Acho que você vai gostar da Seção Cinco."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Aquele Sorriso de Lado que Nunca Admite ser Sorriso</div>
+      <div class="dialogue-text">"Vai ser minha leitura noturna favorita."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Ela o segura contra o peito com um braço — o Grimório ao lado do escudo agora, como se fossem igualmente importantes.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Kaira, vá ao Arsenal. Pegue um escudo."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Piscando</div>
+      <div class="dialogue-text">"Um escudo? Eu... eu escolhi a lança justamente pra ter alcance—"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Interrompendo Gentilmente</div>
+      <div class="dialogue-text">"Eu sei. Mas você escolheu Estilo de Luta: Proteção. E esse estilo só funciona se você tiver um escudo para defender os outros."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Realização Cruzando o Rosto</div>
+      <div class="dialogue-text">"Ah. ...eu não tinha pensado nisso."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Som Baixo, Genuíno</div>
+      <div class="dialogue-text">"Bem-vinda ao problema de todo guerreiro que escolhe proteção antes de pensar na logística."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Kaira corre para o Arsenal — um pouco envergonhada mas sorrindo. Você a ouve conversando com a Sentinela sobre qual escudo seria melhor para alguém que usa lança de alcance.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~05h32</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Aldric — O Triângulo e a Criança Possuída</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Você se vira para Aldric. Ele está com o pergaminho de Marcus em uma das mãos, os olhos vermelhos fixos em você com aquela calma de trezentos e quarenta e dois anos que nunca tem pressa, mas sempre está atenta.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"O que significa o símbolo?"</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Dobrando o Pergaminho com Deliberação</div>
+      <div class="dialogue-text">"É um marcador de Ponto de Ancoragem. Os cultistas usam para estabilizar portais ou rituais que precisam de múltiplos locais conectados. Sozinho, não faz nada. Mas se você tiver três ou mais desses pontos formando um triângulo ritual..."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"...você consegue abrir uma passagem temporária entre planos. Ou invocar algo que normalmente não conseguiria existir aqui por mais de alguns segundos."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Seus dedos tamborilam levemente no pergaminho.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"O Ritual de Convergência que o grimório menciona precisa de exatamente três pontos. Vila Sepet é um. Esse símbolo no mapa de Marcus a sudeste é o segundo."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Cruzando os Braços</div>
+      <div class="dialogue-text">"O terceiro ainda não sabemos onde é. Mas está cifrado no mapa que vocês têm. Quando eu abrir o Grimório do Culto, teremos a chave para decifrar. E saberemos exatamente onde eles planejam completar o ritual."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Você faz a segunda pergunta antes que ele possa respirar.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Além disso — aquilo que a vila está enfrentando agora. A criança doente. Você presenciou isso de primeira mão?"</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Sim. Estive lá quando a mãe trouxe a menina ao Marcus. Sete anos, se lembro bem. Febre alta. Delírio. E os olhos."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Ele fecha os próprios olhos por um segundo, como se estivesse revendo a cena.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Ficam completamente negros. Sem pupila, sem branco. Apenas preto absoluto. Dura entre três a cinco segundos. Depois voltam ao normal e a criança não lembra de nada."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Mas enquanto os olhos estão negros, ela fala. Não com a voz dela — com múltiplas vozes ao mesmo tempo. Idiomas que ela não deveria conhecer. Eu reconheci fragmentos. Um deles era Profano Antigo."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"O que ela disse?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Aldric te olha direto nos olhos.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Direto nos seus Olhos</div>
+      <div class="dialogue-text">"'O selo quebrou. Ela acordou. Estamos vindo buscar o que é nosso.'"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>O silêncio que se segue é pesado. Mara fecha o Grimório de Técnicas com força. Elise está com a mão no arco, mesmo não tendo alvo. Kaira — que estava voltando do Arsenal com um escudo médio nas mãos — congela no lugar ao ouvir as últimas palavras.</p>
+        <p>Você continua.</p>
+      </div>
+    </div>
+
+    <div class="intel-block">
+      <div class="intel-header">
+        <span class="intel-icon">◈</span>
+        <span class="intel-title">Ritual de Convergência — Estrutura</span>
+      </div>
+      <div class="intel-body">
+        <div class="dialogue gm" style="margin:0;"><div class="dialogue-speaker">Narrador</div><div class="dialogue-text">
+          <p>O Ritual de Convergência precisa de exatamente <strong>três pontos de ancoragem</strong> formando triângulo.</p>
+          <p style="margin-bottom:0;"><strong>Ponto I:</strong> Vila Sepet — confirmado. &nbsp;·&nbsp; <strong>Ponto II:</strong> Sudeste, ~60 km — marcado no mapa de Marcus. &nbsp;·&nbsp; <strong>Ponto III:</strong> Localização cifrada no mapa — chave de decifração está no Grimório do Culto (selado).</p>
+        </div></div>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~05h38</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Arcebispo Davren — A Lança do Amanhecer</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"A essa hora, a Igreja do Sol Agonizante já deve estar quase chegando à aldeia, não?"</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Marcus estimou que chegariam um dia depois de mim. Então sim — provavelmente chegam amanhã ao amanhecer."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Você terminou o trabalho de proteção do perímetro? A runa de arcebispo?"</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Sorriso Muito Fino</div>
+      <div class="dialogue-text">"Terminei. A runa está completa. E adicionei três camadas extras que arcebispos normalmente não usam porque... bem, porque exigem magia vampírica para ativar. Se a Igreja tentar atacar a aldeia enquanto o perímetro estiver ativo, vão ter uma surpresa muito desagradável — runas de contenção se revertendo e transformando luz sagrada em algo que queima quem a conjurou."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Quanto tempo o perímetro aguenta?"</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Contra ataque convencional da Igreja? Indefinidamente, desde que alguém com sangue primordial recarregue as runas a cada três dias."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Contra o Devorador Menor e um exército de cultistas? Talvez um dia. Talvez menos."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Cruzando os Braços</div>
+      <div class="dialogue-text">"Marcus sabe disso. Ele tem ordens claras: se virem o Culto se aproximando em força, evacuam todos para a floresta sul e abandonam a aldeia. Não tentam defender. Apenas ganham tempo."</div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Perímetro de Aldric — Durabilidade</div>
+      <div class="lore-text">Contra ataque convencional da Igreja: indefinidamente, desde que alguém com sangue primordial recarregue as runas a cada 3 dias. Contra Devorador Menor e exército de cultistas: talvez 1 dia, talvez menos. Se o Culto vier em força, Marcus tem ordens claras: evacuação para a floresta sul — ganhar tempo, não defender.</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"O Padre Cornelius mencionou estar seguindo ordens de um Arcebispo chamado Davren. Vamos ficar de olho nele especificamente."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Aldric fica muito quieto. Você percebe a mudança imediatamente.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Você conhece esse nome."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Respirando Fundo</div>
+      <div class="dialogue-text">"Arcebispo Davren Solharte. Líder da ala militar da Igreja do Sol Agonizante. Famoso por três coisas."</div>
+    </div>
+
+    <div class="davren-block">
+      <div class="davren-header">
+        <span class="davren-icon">☀</span>
+        <span class="davren-title">Arcebispo Davren Solharte — Perfil</span>
+      </div>
+      <div class="davren-body">
+        <div class="davren-trait">
+          <span class="davren-num">I</span>
+          <div class="davren-desc"><strong>Pureza fanática.</strong> Não tolera heresia de nenhuma forma.</div>
+        </div>
+        <div class="davren-trait">
+          <span class="davren-num">II</span>
+          <div class="davren-desc"><strong>Eficiência brutal.</strong> Quando ele declara uma região como "contaminada", a população inteira desaparece em menos de uma semana.</div>
+        </div>
+        <div class="davren-trait">
+          <span class="davren-num">III</span>
+          <div class="davren-desc">
+            <strong>A Relíquia.</strong>
+            <div class="davren-relic">"A Lança do Amanhecer" — fragmento de luz solar aprisionada em cristal. Queima mortos-vivos em um raio de 30 pés apenas por estar próxima. Pode ser bloqueada, desviada ou absorvida com materiais certos — mas nada no Arsenal cobre isso especificamente. Mantos de contenção mágica do Arsenal reduzem (não eliminam) o perigo por tempo limitado.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Isso... é um problema."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Kaira recua meio passo instintivamente. Mara aperta o cabo da espada.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"É. Mas é um problema que podemos contornar se soubermos que ele está vindo. Luz solar aprisionada ainda é luz — e luz pode ser bloqueada, desviada ou absorvida se você tiver os materiais certos."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Para a Sentinela</div>
+      <div class="dialogue-text">"Arsenal tem algo que funcione contra relíquias solares?"</div>
+    </div>
+
+    <div class="dialogue sentinela">
+      <div class="dialogue-speaker">A Sentinela</div>
+      <div class="dialogue-text">"Negativo. Nada específico. Mas os Fundadores eram práticos. Mantos de contenção mágica no Arsenal podem bloquear radiação solar por tempo limitado. Não elimina o perigo. Apenas reduz."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Você guarda essa informação mentalmente.</p>
+        <p>Mara te olha com aquela franqueza direta que é marca dela.</p>
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"E a Provação da Dignidade? O que aconteceu lá?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Todos ficam atentos. Até a Sentinela parece inclinar levemente na sua direção.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~05h42</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Tobias e Elise — A Oficina de Cem Anos</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Sei que você não tem muito o que fazer aqui. Mas a Vila Sepet também tem uma oficina. Caso queira visitá-la."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Para Elise</div>
+      <div class="dialogue-text">"Elise pode te acompanhar até lá."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Como Se Tivessem Jogado Corda de Salvação</div>
+      <div class="dialogue-text">"Uma oficina? Aqui? Mesmo com tudo... vazio?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Não está vazia. Está esperando."</div>
+    </div>
+
+    <div class="dialogue tobias">
+      <div class="dialogue-speaker">Tobias — Olhos Arregalados</div>
+      <div class="dialogue-text">"Sério?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Sério. A Vila tem um ferreiro de volta depois de cem anos. As ferramentas vão ficar felizes."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Tobias sorri — primeiro sorriso genuíno desde que chegou — e segue Elise para fora das Catacumbas. Você os ouve subindo as escadas, a voz entrecortada de Elise explicando que a oficina fica na Rua dos Artesãos, perto do Salão Comunal.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~05h45</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Provação da Dignidade — O Que Você Viu</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Agora são apenas cinco. Você. Mara. Kaira (testando o peso do escudo médio com a lança). Aldric. E a Sentinela.</p>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Aldric quebra o silêncio primeiro — afirmação, não pergunta.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Afirmação, Não Pergunta</div>
+      <div class="dialogue-text">"Você completou a Provação da Dignidade. Posso perguntar o que ela mostrou? Ou é privado?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Você olha para cada um dos presentes — Mara com o Grimório de Técnicas nos braços, Kaira ajustando o escudo médio com a lança, Aldric esperando com aquela paciência de séculos, a Sentinela imóvel como sempre.</p>
+        <p>Você fica quieto por alguns segundos — não procurando palavras, mas decidindo quais usar.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Eu vi um ser que, à primeira vista, não tinha forma."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Ele me fez uma pergunta. E eu encontrei a resposta que precisava."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Olhando o Anel dos Fundadores</div>
+      <div class="dialogue-text">"Ele... bom, acho que era um dos Primeiros."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Silêncio absoluto. Kaira prende a respiração. Mara olha para você com admiração e reverência misturadas. Aldric não se move — mas você vê nos olhos vermelhos dele reconhecimento profundo, como se soubesse o peso do que você acabou de dizer.</p>
+      <p>A Sentinela faz algo que você nunca viu antes. Ela se ajoelha.</p>
+      </div>
+    </div>
+
+    <div class="sentinela-block">
+      <div class="sentinela-label">A Sentinela — Ajoelhada</div>
+      <div class="sentinela-text">"Os Primeiros não aparecem facilmente. Nem para qualquer um. Que tenham falado com você... significa que a linhagem reconhece Leyn Sepet como digno de carregar o nome. Esta unidade se sente honrada por servir sob sua presença."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Você não sabe o que responder. Então não responde. Apenas aceita com um aceno de cabeça.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Voltando ao Urgente</div>
+      <div class="dialogue-text">"Se eles querem usar a Vila Sepet como um ponto de ancoragem, terão que chegar próximo a ela para estabelecer esse tal artefato. E apesar de tudo que vem ocorrendo nos exigir pressa e urgência, acho que podemos dizer com certeza uma coisa:"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Eles não conseguirão usar a Vila Sepet. Não conosco aqui."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Punho no Escudo</div>
+      <div class="dialogue-text">"Concordo. Essa é NOSSA casa agora. Não deles."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"E se tentarem entrar, a gente mostra por que foi má ideia."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Aldric permanece quieto, mas há concordância no jeito que ele inclina levemente a cabeça.</p>
+      </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Quebrando o Momento</div>
+      <div class="dialogue-text">"Então... vamos procurar essa âncora agora? Ou esperamos Elise e Tobias voltarem?"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Decisão tática. Procuramos em grupo completo ou dividimos?"</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Deixando a Escolha Clara</div>
+      <div class="dialogue-text">"Eu preciso de aproximadamente mais quarenta minutos de trabalho contínuo para abrir o Grimório do Culto. Depois disso, posso ajudar na busca. Ou posso ir agora e abrir o grimório depois. O que prefere?"</div>
+    </div>
+
+    <div class="dialogue sentinela">
+      <div class="dialogue-speaker">A Sentinela</div>
+      <div class="dialogue-text">"Esta unidade pode patrulhar o perímetro enquanto vocês procuram. Ou permanecer aqui guardando o Arsenal e as Tumbas."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>A noite ainda tem horas. Tobias e Elise estão explorando a oficina — você sente através da Vila que eles estão bem, e Tobias está absolutamente maravilhado com as ferramentas de cem anos atrás que ainda funcionam perfeitamente. Marcus e os outros na aldeia estão seguros por enquanto, protegidos pelas runas de Aldric. O Devorador Menor e os cultistas estão a dias de distância na Fortaleza.</p>
+        <p>Mas o artefato de ancoragem — se realmente está ao redor da Vila — é ameaça presente.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~05h47</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Decisão Solitária — e o Confronto</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Vamos procurar ao redor da vila. Ver se achamos algo. Segundo o mapa, o formato do perímetro deve ser um triângulo. Já temos duas marcações para nos guiar — aqui e sessenta quilômetros a sudeste. Mesmo que não saibamos exatamente como é o artefato de ancoragem, vindo deles..."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"...não duvido que esteja enterrado próximo. E escondido com magia."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Artefatos de ancoragem costumam ser estacas rituais. Pedra ou metal, geralmente do comprimento de um braço, gravadas com símbolos profanos. Enterradas na vertical com apenas alguns centímetros expostos. São difíceis de encontrar sem Detectar Magia ativa. Mas uma vez encontradas, são frágeis — basta quebrar as runas na superfície para invalidar completamente."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Se estivermos procurando em um raio de um quilômetro ao redor da Vila? Com quatro pessoas e magia de detecção? Duas a três horas."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Então faremos isso. E quando terminarmos de destruir a âncora, voltamos para a aldeia."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Para Aldric</div>
+      <div class="dialogue-text">"Precisamos observar como a Igreja lida com os aldeões. Se vierem corruptos de novo — iguais ao Padre Cornelius — atacamos."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Você acha que a Igreja inteira está comprometida? Ou apenas alguns membros?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Não sei. Mas o Padre Cornelius mencionou estar seguindo ordens de um Arcebispo chamado Davren. Vamos ficar de olho nele especificamente."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Então você faz a escolha.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Eu vou procurar sozinho, vocês devem ficar dentro do perímetro da vila."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Há um silêncio com textura específica. Não é concordância. Não é discordância. É reconhecimento.</p>
+      <p>Mara dá dois passos na sua direção — deliberados — e para a um metro de distância.</p>
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Observação, Não Acusação</div>
+      <div class="dialogue-text">"Você acabou de sair de uma Provação que te mostrou algo sobre proteção excessiva. E a primeira coisa que faz é mandar todos ficarem seguros enquanto você vai sozinho procurar um artefato profano potencialmente armadilhado."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Estou entendendo certo?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Com a Honestidade que a Provação Ensinou</div>
+      <div class="dialogue-text">"Sim. Estou fazendo exatamente isso. E sei como soa."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Mas não é por achar que vocês não conseguem. É porque cada um de vocês tem algo mais importante para fazer agora. Kaira precisa aprender a usar o escudo. Você precisa estudar as técnicas de proteção. Aldric tem o grimório. Tobias e Elise estão ocupados."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"...eu sou o único que pode sair do perímetro sem deixar a Vila desprotegida. Porque se algo vier enquanto estou fora, vocês estão aqui. Mas se todos formos e algo vier, perdemos tudo."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Cruzando os Braços</div>
+      <div class="dialogue-text">"Você tem razão tática. Odeio admitir, mas tem."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Batendo no Escudo Uma Vez</div>
+      <div class="dialogue-text">"Mas vou dizer uma coisa: você volta em três horas. Não quatro. Não 'assim que terminar'. TRÊS HORAS. Se não voltar, eu saio atrás de você. E quando te encontrar, vou te arrastar de volta pela orelha. Entendido?"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — Voz Pequena mas Firme</div>
+      <div class="dialogue-text">"Tio... eu sei que você precisa fazer isso. Eu entendo. Só... só não morra de novo. Por favor. Duas vezes já foi demais."</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~05h48</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Cristal de Aldric — O Núcleo e o Custo</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss — Tirando Cristal de Dentro da Capa</div>
+      <div class="dialogue-text">"Três horas é razoável para varrer um quilômetro de perímetro se você souber o que procura. E vou te dar algo que vai ajudar."</div>
+    </div>
+
+    <div class="detect-block">
+      <div class="detect-label">Pedra de Detecção — Descrição</div>
+      <div class="detect-status">
+        <div class="detect-gem inert"></div>
+        <div class="detect-text">Cristal azul claro, tamanho de um polegar, corrente fina de prata. Brilha quando está a menos de 50 pés de magia profana ativa. Não é precisa — mas poupa de vasculhar cada centímetro do chão.</div>
+      </div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"E quanto ao núcleo... posso te ajudar a purificá-lo. Mas preciso que você entenda: purificar não é o mesmo que esvaziar. O que está lá dentro — a vontade roubada, a dor, a raiva — não desaparece. Apenas... muda de forma."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Você vai precisar oferecer algo em troca. Uma memória. Uma emoção. Algo seu que possa substituir o que está corrompido dentro."</div>
+    </div>
+
+    <div class="dialogue aldric">
+      <div class="dialogue-speaker">Aldric Voss</div>
+      <div class="dialogue-text">"Pense nisso enquanto procura. E quando voltar, me diga se ainda quer fazer."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Sentinela, por favor auxilie todos eles."</div>
+    </div>
+
+    <div class="sentinela-block">
+      <div class="sentinela-label">A Sentinela — Observação Pessoal</div>
+      <div class="sentinela-text">"Ordem recebida: auxiliar Mara Vell, Kaira Sepet e Aldric Voss durante sua ausência. Observação pessoal, se permitido: os Fundadores também faziam isso. Iam sozinhos quando achavam que protegiam melhor assim. Funcionou. Até que não funcionou mais."</div>
+    </div>
+
+    <div class="sentinela-block">
+      <div class="sentinela-label">A Sentinela</div>
+      <div class="sentinela-text">"Esta unidade não julga sua escolha. Apenas... lembra que você não é mais o único Sepet vivo. E que os outros também podem proteger você."</div>
+    </div>
+
+    <div class="sentinela-block">
+      <div class="sentinela-label">A Sentinela</div>
+      <div class="sentinela-text">"Boa caçada."</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~05h50</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Vila Noturna — Saída para o Perímetro</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Você sobe das Catacumbas. A Vila Sepet te recebe com tochas douradas pulsando suavemente — mais calmas agora que Kaira completou a Provação. Como se a própria Vila estivesse aliviada.</p>
+      <p>Você passa pelo Salão Comunal. Pela Rua dos Artesãos — onde ouve, distante, o som de Tobias testando uma bigorna na oficina e Elise rindo baixinho de algo que ele disse.</p>
+      <p>Continua até o Portão Norte. A noite eterna da Vila termina aqui. Do lado de fora — a escuridão natural de Valtheris. Sem lua. Sem estrelas visíveis através das nuvens densas.</p>
+      </div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Metodologia de Busca</div>
+      <div class="lore-text">Sentido horário, borda da Noite Eterna sempre à esquerda. Pedra de Detecção na mão, espada vinculada solta na bainha. Terreno misto: floresta densa ao norte e leste, campo aberto ao sul, colinas baixas ao oeste. Pontos de atenção: troncos caídos, pedras grandes, depressões no solo.</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Enquanto você varre o perímetro, algo chama atenção no horizonte leste: uma faixa de âmbar pálido rasgando as nuvens, promessa de amanhecer. O instinto acende um alarme — mas o alarme não dispara. O calor não vem. Não há ardor na pele, nenhum formigamento nos nervos que annunciam luz radiante.</p>
+        <p>Você entende em segundos. A barreira dos Fundadores não apenas bane a luz — ela distorce o próprio tecido da realidade ao redor do seu perímetro. A pressão absoluta da Noite Eterna se irradia para fora como peso invisível, curvando o espaço onde a escuridão e o mundo natural se encontram. A aurora existe lá no horizonte, mas seus raios purificadores — os que queimam — chegam refratados, dispersados, esvaziados de potência pela interferência mágica. São luz sem dente. Fogo sem calor.</p>
+        <p>Você tem tempo. Não muito. Mas o suficiente para terminar o que começou.</p>
+      </div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Mecânica — Penumbra Radiante do Perímetro</div>
+      <div class="lore-text">A densidade da barreira mágica dos Fundadores cria uma zona de refração que se estende por aproximadamente 1 km ao redor da borda externa da Vila Sepet. Dentro dessa faixa, o dano radiante solar (1d10 por turno) só começa a ser aplicado 45 minutos após o nascer do sol oficial do calendário. O sol é visível no horizonte — mas seus raios purificadores não conseguem penetrar a atmosfera distorcida pela Noite Eterna. Operações externas rápidas permanecem viáveis nessa janela. Além do raio de 1 km, a regra padrão se aplica sem margem.</div>
+    </div>
+
+    <div class="detect-block">
+      <div class="detect-label">Pedra de Detecção — 40 Minutos de Varredura</div>
+      <div class="detect-status">
+        <div class="detect-gem inert"></div>
+        <div class="detect-text">Inerte ao longo de todo o lado norte. Cobertura de ~1/3 do perímetro. Você está prestes a virar para leste quando—</div>
+      </div>
+    </div>
+
+    <div class="detect-block">
+      <div class="detect-label">Pedra de Detecção — Brilho!</div>
+      <div class="detect-status">
+        <div class="detect-gem weak"></div>
+        <div class="detect-text">Não forte. Fraco, pulsante. Como batimento cardíaco distante. A uns 30 pés à frente — pedra achatada que parece fora de lugar. Regular demais para ser natural. Parcialmente escondida por arbusto espinhoso.</div>
+      </div>
+    </div>
+
+    <div class="detect-block">
+      <div class="detect-label">Aproximando — 10 Pés</div>
+      <div class="detect-status">
+        <div class="detect-gem strong"></div>
+        <div class="detect-text">Brilho intenso. Você encontrou o artefato.</div>
+      </div>
+    </div>
+
+    <div class="stake-block">
+      <div class="stake-label">Artefato de Ancoragem — Ponto I (Vila Sepet)</div>
+      <div class="stake-desc">Pedra achatada de ~1 metro de diâmetro. No centro, quase completamente coberto por musgo crescido propositalmente: topo de uma <strong>estaca ritual</strong>. Pedra negra. 10 centímetros expostos.</div>
+      <div class="stake-runes">Runas profanas gravadas em espiral ao redor, brilhando muito fracamente com luz roxa doentia. A estaca aguarda conexão com os outros dois pontos do triângulo. Sozinha — inofensiva. Completada — abre passagem entre planos.</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Mas há algo errado. Você fica imóvel, instintos de guerreiro gritando.</p>
+      </div>
+    </div>
+
+    <div class="roll-block success">
+      <div class="roll-header">
+        <span class="roll-name">Percepção (Sabedoria)</span>
+        <span class="roll-formula">1d20 + 1</span>
+      </div>
+      <div class="roll-result-line">
+        <span class="roll-dice">16 + 1 = 17</span>
+        <span class="roll-verdict">Sucesso Sólido</span>
+      </div>
+    </div>
+
+    <div class="revelation-block">
+      <div class="revelation-label">Três Percepções Simultâneas</div>
+      <ul class="revelation-list">
+        <li>O musgo ao redor da estaca está <strong>morto na base</strong> — queimado quimicamente. Alguém esteve aqui recentemente, usou algo para limpar o musgo, depois o recolocou para esconder. Máximo dois dias.</li>
+        <li>Há <strong>pegadas</strong>. Humanas. Botas pesadas. Dois conjuntos diferentes. Frescas.</li>
+        <li>Você ouve, distante mas se aproximando: <strong>passos. Múltiplos. Coordenados.</strong> Não estão tentando ser silenciosos.</li>
+      </ul>
+    </div>
+
+    <div class="dialogue vor">
+      <div class="dialogue-speaker">Voz Distante — Gritando</div>
+      <div class="dialogue-text">"Verificação de rotina no Ponto Alfa! Equipe Três reportando!"</div>
+    </div>
+
+    <div class="dialogue vor">
+      <div class="dialogue-speaker">Voz Mais Perto</div>
+      <div class="dialogue-text">"Confirmado! Ponto Alfa deve estar intacto! Matem qualquer coisa que encontrarem por perto!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Cultistas. Patrulha de verificação. Dois minutos antes de chegarem ao arbusto.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~06h31</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Retirada — Dentro da Noite Eterna</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="roll-block fail">
+      <div class="roll-header">
+        <span class="roll-name">Furtividade (Destreza)</span>
+        <span class="roll-formula">1d20 + 2</span>
+      </div>
+      <div class="roll-result-line">
+        <span class="roll-dice">4 + 2 = 6</span>
+        <span class="roll-verdict">Falha</span>
+      </div>
+      <div class="roll-note">Galho seco estala sob sua bota. Folhas do arbusto rangem. No silêncio absoluto da floresta noturna — barulho suficiente.</div>
+    </div>
+
+    <div class="dialogue guerreiro">
+      <div class="dialogue-speaker">Cultista Guerreiro — Jovem, Nervoso</div>
+      <div class="dialogue-text">"ALTO! QUEM ESTÁ AÍ?!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Você continua recuando — não corre, mas acelera. Dez metros até a borda da escuridão eterna. Oito. Seis.</p>
+      </div>
+    </div>
+
+    <div class="dialogue guerreiro">
+      <div class="dialogue-speaker">Cultista Guerreiro</div>
+      <div class="dialogue-text">"TEM ALGUÉM NA ESTACA! CÓDIGO VERMELHO!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Você cruza a linha. A mudança é imediata.</p>
+        <p>A escuridão natural de Valtheris — que ainda permitia contornos vagos, sombras distinguíveis — se transforma na escuridão absoluta da Vila Sepet. Para humanos: <strong>cegueira total</strong>. Para você: <strong>clareza perfeita</strong>. Visão no escuro vampírica de sessenta pés transforma a noite em dia monocromático.</p>
+        <p>Você se posiciona atrás de uma árvore grossa, dez metros dentro do perímetro, e observa. Três figuras emergem da floresta, correndo.</p>
+      </div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Composição da Equipe Três</div>
+      <div class="lore-text">Dois guerreiros — armadura de couro negro, símbolos profanos nos peitorais, espadas curtas desembainhadas, tochas na mão esquerda. Um conjurador — manto roxo escuro, cajado, olhos brilhando levemente com magia ativa.</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Eles param exatamente na borda da Noite Eterna. As tochas iluminam apenas os primeiros dois metros — depois, nada. Como se a luz simplesmente se recusasse a entrar.</p>
+      </div>
+    </div>
+
+    <div class="dialogue guerreiro">
+      <div class="dialogue-speaker">Guerreiro Jovem — Respiração Acelerada</div>
+      <div class="dialogue-text">"Ele entrou na zona morta!"</div>
+    </div>
+
+    <div class="dialogue conjurador">
+      <div class="dialogue-speaker">Conjurador — Imediato</div>
+      <div class="dialogue-text">"RECUEM! Não entrem! Isso é território Sepet! Vocês vão morrer em segundos!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>O conjurador arremessa um orbe de luz roxa para dentro da escuridão. Ele viaja cinco metros e simplesmente deixa de existir — como se a escuridão o tivesse devorado.</p>
+      </div>
+    </div>
+
+    <div class="dialogue conjurador">
+      <div class="dialogue-speaker">Conjurador</div>
+      <div class="dialogue-text">"Confirmado. Barreira ativa. A Vila ainda está protegida. Um de vocês. Volte AGORA e reporte ao Capitão Vor. Possível vampiro primordial. Solicite reforços imediatos."</div>
+    </div>
+
+    <div class="patrol-block">
+      <div class="patrol-header">
+        <span class="patrol-icon">📻</span>
+        <span class="patrol-title">Cristal de Comunicação — Relato ao Capitão Vor</span>
+      </div>
+      <div class="patrol-body">
+        <div class="patrol-line equipe-3">
+          <span class="patrol-source">Equipe Três</span>
+          <span class="patrol-msg">"Capitão Vor. Ponto Alfa teve contato hostil. Intruso recuou para dentro da Noite Eterna. Barreira confirmada ativa. Aguardando ordens."</span>
+        </div>
+        <div class="patrol-line vor">
+          <span class="patrol-source">Capitão Vor</span>
+          <span class="patrol-msg">"Recebido, Equipe Três. Não persigam. Estabeleçam perímetro de observação a cinquenta metros da borda. Se o vampiro sair novamente, sinalizem mas NÃO engajem."</span>
+        </div>
+        <div class="patrol-line mestra">
+          <span class="patrol-source">Capitão Vor</span>
+          <span class="patrol-msg">"A Mestra já sabe que eles chegaram. O ritual continua conforme planejado. A estaca permanece intacta?"</span>
+        </div>
+        <div class="patrol-line equipe-3">
+          <span class="patrol-source">Equipe Três</span>
+          <span class="patrol-msg">"Afirmativo. Ponto Alfa intacto."</span>
+        </div>
+        <div class="patrol-line vor">
+          <span class="patrol-source">Capitão Vor</span>
+          <span class="patrol-msg">"Excelente. Mantenham posição. Reforços chegam em dezoito minutos."</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="patrol-block">
+      <div class="patrol-header">
+        <span class="patrol-icon">📻</span>
+        <span class="patrol-title">Outras Equipes — Confirmação dos Três Pontos</span>
+      </div>
+      <div class="patrol-body">
+        <div class="patrol-line equipe-1">
+          <span class="patrol-source">Equipe Um — Sudeste</span>
+          <span class="patrol-msg">"Ponto Beta intacto. Sem movimentação hostil."</span>
+        </div>
+        <div class="patrol-line equipe-2">
+          <span class="patrol-source">Equipe Dois — Sudoeste</span>
+          <span class="patrol-msg">"Ponto Gama seguro. Barreira não foi testada deste lado."</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue conjurador">
+      <div class="dialogue-speaker">Conjurador — Para o Guerreiro que Ficou</div>
+      <div class="dialogue-text">"Você ouviu. Cinquenta metros de distância. Não deixe nada sair ou entrar sem avisar."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>O guerreiro assente e se posiciona, claramente desconfortável. Você ouve o conjurador murmurar para si mesmo, baixo — não sabendo que você ouve perfeitamente:</p>
+      </div>
+    </div>
+
+    <div class="dialogue conjurador">
+      <div class="dialogue-speaker">Conjurador — Murmúrio para Si Mesmo</div>
+      <div class="dialogue-text">"Dezoito minutos até os Construtos chegarem. Malditos vampiros escolheram o pior momento para acordar... a Mestra vai querer saber QUEM entrou. Se é o Primordial ou apenas uma prole..."</div>
+    </div>
+
+    <div class="dialogue conjurador">
+      <div class="dialogue-speaker">Conjurador</div>
+      <div class="dialogue-text">"Bem... seja quem for, está preso agora. A Noite Eterna os protege, mas também os aprisiona. Não podem sair sem sermos alertados. A Mestra sempre tem razão."</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~06h32</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Pedra que Foi para a Esquerda</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>A ideia é simples: arremessar a Pedra de Detecção para fora da Noite Eterna, direto nos olhos do conjurador. O brilho súbito deve cegá-lo por tempo suficiente para você agir.</p>
+      </div>
+    </div>
+
+    <div class="roll-block crit-fail">
+      <div class="roll-header">
+        <span class="roll-name">Ataque à Distância Improvisado (Destreza)</span>
+        <span class="roll-formula">1d20 + 2</span>
+      </div>
+      <div class="roll-result-line">
+        <span class="roll-dice">1 + 2 = 3</span>
+        <span class="roll-verdict">Falha Crítica Absoluta</span>
+      </div>
+      <div class="roll-note">Você percebe o erro imediatamente — ângulo baixo demais, força excessiva, timing horrível. Mas já é tarde.</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>A Pedra de Detecção voa para cima e para a <strong>esquerda</strong> ao invés de frente. Passa raspando na árvore atrás da qual você está — TOCK na casca — ricocheia, gira no ar como moeda, e cai no chão a três metros dos seus pés.</p>
+      <p>Ainda dentro da Noite Eterna. Ainda brilhando. Fazendo barulho de pedra em folhas secas que ecoa como sino em catedral.</p>
+      </div>
+    </div>
+
+    <div class="dialogue guerreiro">
+      <div class="dialogue-speaker">Guerreiro — Apontando</div>
+      <div class="dialogue-text">"ALI! Dez metros para dentro! Algo se mexeu!"</div>
+    </div>
+
+    <div class="dialogue conjurador">
+      <div class="dialogue-speaker">Conjurador — Magia Roxa Acumulando no Cajado</div>
+      <div class="dialogue-text">"Prepare-se. Vou forçar revelação—"</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~06h35</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO XI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Sussurro que Racha</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Mas você age primeiro. Você sussurra. Não alto — mas o suficiente. A Noite Eterna carrega sua voz de forma estranha, amplificando-a levemente, dando-lhe ressonância que não deveria ter. Como se a própria Vila estivesse ajudando.</p>
+      </div>
+    </div>
+
+    <div class="dialogue whisper">
+      <div class="dialogue-speaker">Leyn Sepet — Voz da Escuridão</div>
+      <div class="dialogue-text">"Vocês estão lidando com forças que não conhecem. Vão se arrepender amargamente disso. De se deixarem ser controlados pelo Culto da Verdade Profunda. E por esses nobres asquerosos."</div>
+    </div>
+
+    <div class="roll-block success">
+      <div class="roll-header">
+        <span class="roll-name">Persuasão (Carisma)</span>
+        <span class="roll-formula">1d20 − 1</span>
+      </div>
+      <div class="roll-result-line">
+        <span class="roll-dice">19 − 1 = 18</span>
+        <span class="roll-verdict">Sucesso Sólido</span>
+      </div>
+      <div class="roll-note">Calma absoluta. Não grita. Não ameaça com emoção. Apenas afirma — como quem diz que o sol nasce no leste.</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Silêncio absoluto. O conjurador está imóvel, cajado levantado mas a magia dissipada. O guerreiro está olhando para a escuridão com expressão que não é mais apenas medo. É <strong>dúvida</strong>.</p>
+      <p>Então o conjurador fala — e há algo na voz dele. Rachadura. Pequena, mas presente.</p>
+      </div>
+    </div>
+
+    <div class="dialogue conjurador">
+      <div class="dialogue-speaker">Conjurador — Com Rachadura na Voz</div>
+      <div class="dialogue-text">"Você... você é um deles. Um vampiro. Um morto-vivo. Por que eu ouviria..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Mas ele não termina a frase com convicção.</p>
+      </div>
+    </div>
+
+    <div class="dialogue guerreiro">
+      <div class="dialogue-speaker">Guerreiro — Baixo</div>
+      <div class="dialogue-text">"Meu irmão... ele estava no grupo que atacou a Vila há três dias... ele não voltou..."</div>
+    </div>
+
+    <div class="dialogue conjurador">
+      <div class="dialogue-speaker">Conjurador — Agressivo</div>
+      <div class="dialogue-text">"Seu irmão MORREU cumprindo seu dever! Servindo os Mestres Antigos! Não—"</div>
+    </div>
+
+    <div class="dialogue guerreiro">
+      <div class="dialogue-speaker">Guerreiro — Explodindo</div>
+      <div class="dialogue-text">"Servindo os NOBRES! Os nobres que prometeram ouro e nos deram ordens de morte! Os nobres que ficam seguros na Fortaleza enquanto NÓS morremos aqui fora!"</div>
+    </div>
+
+    <div class="dialogue guerreiro">
+      <div class="dialogue-speaker">Guerreiro</div>
+      <div class="dialogue-text">"E agora estamos vigiando uma VILA VAMPÍRICA! Você sabe o que acontece com humanos que ficam perto de vampiros primordiais?! A gente MORRE!"</div>
+    </div>
+
+    <div class="dialogue conjurador">
+      <div class="dialogue-speaker">Conjurador — Tentando</div>
+      <div class="dialogue-text">"A Mestra disse—"</div>
+    </div>
+
+    <div class="dialogue guerreiro">
+      <div class="dialogue-speaker">Guerreiro — Rindo, Som Amargo</div>
+      <div class="dialogue-text">"A MESTRA! A Mestra que usa máscara e nunca mostra o rosto! A Mestra que fala com vozes que não são dela! Você REALMENTE acha que ela se importa se a gente sobrevive ou não?!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>O conjurador não responde. Porque ele sabe a resposta.</p>
+      </div>
+    </div>
+
+    <div class="crystal-comm">
+      <div class="crystal-source">Capitão Vor — Irritado</div>
+      <div class="crystal-msg">"Equipe Três! Reportem! O que está acontecendo aí?!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>O conjurador olha para o cristal. Para o guerreiro. Para a escuridão onde você está. Seus dedos tremem levemente no cajado.</p>
+      </div>
+    </div>
+
+    <div class="crystal-comm">
+      <div class="crystal-source">Conjurador — Voz Controlada, Esforço Audível</div>
+      <div class="crystal-msg">"Alarme falso, Capitão. Animal na floresta. Situação controlada."</div>
+    </div>
+
+    <div class="crystal-comm">
+      <div class="crystal-source">Capitão Vor</div>
+      <div class="crystal-msg">"...confirmado. Mantenham vigilância. Reforços em quinze minutos."</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~06h36</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Confissão — Seis Anos de Mentira</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>O conjurador abaixa o braço. Fica em silêncio por longos segundos. Então fala — não para o guerreiro, não para você especificamente. Para o ar.</p>
+      </div>
+    </div>
+
+    <div class="crack-block">
+      <div class="crack-label">A Rachadura — O Conjurador Fala</div>
+      <div class="crack-text">"Eu tinha dezessete anos quando o Culto me recrutou. Disseram que eu seria poderoso. Que aprenderia magia verdadeira. Que os Mestres Antigos me dariam propósito."</div>
+    </div>
+
+    <div class="dialogue conjurador">
+      <div class="dialogue-speaker">Conjurador — Som Vazio</div>
+      <div class="dialogue-text">"Seis anos depois, estou vigiando uma estaca no meio da floresta esperando que um vampiro primordial não me mate. E meu melhor amigo morreu há dois meses em um ritual que 'não deu certo'."</div>
+    </div>
+
+    <div class="dialogue guerreiro">
+      <div class="dialogue-speaker">Guerreiro — Surpreso</div>
+      <div class="dialogue-text">"Maven? Você disse que ele tinha sido promovido—"</div>
+    </div>
+
+    <div class="dialogue conjurador">
+      <div class="dialogue-speaker">Conjurador</div>
+      <div class="dialogue-text">"Eu menti. Porque se eu dissesse a verdade, você teria desertado. E eles teriam nos matado a ambos."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>O conjurador se senta no chão — movimento súbito, como se as pernas tivessem simplesmente desistido.</p>
+      </div>
+    </div>
+
+    <div class="dialogue conjurador">
+      <div class="dialogue-speaker">Conjurador</div>
+      <div class="dialogue-text">"Estou tão cansado."</div>
+    </div>
+
+    <div class="dialogue guerreiro">
+      <div class="dialogue-speaker">Guerreiro — Para a Escuridão</div>
+      <div class="dialogue-text">"Vampiro. Você ainda está aí? Se a gente... se a gente sair. Se a gente largar isso e correr. Você nos mata?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>É pergunta genuína. Não armadilha. Apenas desespero procurando saída.</p>
+      <p>O conjurador levanta a cabeça — não discorda.</p>
+      <p>Ambos esperam sua resposta.</p>
+      </div>
+    </div>
+
+    <div class="patrol-block">
+      <div class="patrol-header">
+        <span class="patrol-icon">📻</span>
+        <span class="patrol-title">Comunicação ao Fundo — Reforços se Aproximam</span>
+      </div>
+      <div class="patrol-body">
+        <div class="patrol-line equipe-1">
+          <span class="patrol-source">Equipe Um</span>
+          <span class="patrol-msg">"Ponto Beta seguro."</span>
+        </div>
+        <div class="patrol-line equipe-2">
+          <span class="patrol-source">Equipe Dois</span>
+          <span class="patrol-msg">"Ponto Gama sem incidentes."</span>
+        </div>
+        <div class="patrol-line vor">
+          <span class="patrol-source">Capitão Vor</span>
+          <span class="patrol-msg">"Reforços confirmados. Dois Construtos e esquadrão de elite chegam em doze minutos. Preparem-se para troca de turno."</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="revelation-block">
+      <div class="revelation-label">Estado ao Final da Saga XVIII</div>
+      <ul class="revelation-list">
+        <li>Ponto Alfa (estaca ritual) localizado — borda norte da Vila Sepet. Íntegra, mas localizada. Frágil quando acessada.</li>
+        <li>Três equipes de patrulha confirmadas — uma por ponto do triângulo: Equipe Um (Sudeste / Ponto Beta), Equipe Dois (Sudoeste / Ponto Gama), Equipe Três (Norte / Ponto Alfa). Reforços com 2 Construtos e esquadrão de elite a 12 minutos do Ponto Alfa.</li>
+        <li>A "Mestra" — identidade desconhecida, usa máscara, fala com múltiplas vozes. Mais perigosa que o Capitão Vor.</li>
+        <li>Dois cultistas na borda da escuridão — conjurador e guerreiro — com a fé rachada. Perguntaram se serão mortos se desertarem.</li>
+        <li>Aldric: Pedra de Detecção entregue, informação sobre purificação do núcleo fornecida — requer uma memória ou emoção como custo.</li>
+        <li>Tobias na oficina da Vila com Elise — primeiro sorriso genuíno. A forja de 100 anos desperta.</li>
+      </ul>
+    </div>
+
+    <div class="warning-block">
+      <div class="warning-label">⚠ Ameaças em Aberto — Pós-Saga XVIII</div>
+      <ul class="warning-list">
+        <li data-num="▸">O cristal de comunicação que Rory (então guerreiro do Culto) portava foi usado para contatar o Capitão Vor nesta saga. A Mestra tem acesso a essa linha e pode rastrear a localização do grupo através dela — o grupo recuou para dentro da Vila sem saber que foi localizado via cristal.</li>
+        <li data-num="▸">Os 2 Construtos e o esquadrão de elite convocados chegam ao Ponto Alfa em 12 minutos. O grupo recuou para a Vila antes dessa chegada — mas os reforços agora patrulham ativamente o perímetro externo ao redor do Ponto Alfa destruído.</li>
+      </ul>
+    </div>
+    <div class="tracker-row">
+      <div class="tracker hp-tracker">
+        <div class="tracker-label">PV — Final da Saga</div>
+        <div class="tracker-values">
+          <span class="tracker-current">29</span>
+          <span class="tracker-slash">/</span>
+          <span class="tracker-max">43</span>
+        </div>
+        <div class="tracker-bar"><div class="tracker-fill" style="width: 67%"></div></div>
+        <div class="tracker-delta">Sangue de Mara herdado da S17 &nbsp;·&nbsp; sem dano nesta saga</div>
+      </div>
+      <div class="tracker sanity-tracker">
+        <div class="tracker-label">SAN — Final da Saga</div>
+        <div class="tracker-values">
+          <span class="tracker-current">42</span>
+          <span class="tracker-slash">/</span>
+          <span class="tracker-max">42</span>
+        </div>
+        <div class="tracker-bar"><div class="tracker-fill" style="width: 100%"></div></div>
+        <div class="tracker-delta">Mythos 18% (S8) &nbsp;·&nbsp; teto 50→42 &nbsp;·&nbsp; sem perdas</div>
+      </div>
+    </div>
+
+    </div>
+
+  </section>
+
+  <!-- ── FINALE ── -->
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <span class="scene-divider-glyph chain-flicker">✦</span>
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time highlight">fim da saga xviii &nbsp;·&nbsp; ~06h38</span>
+      <span class="scene-divider-glyph chain-flicker">✦</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <div class="finale-block">
+    <p class="finale-quote">
+      A estaca ritual está enterrada na beira da floresta,<br>
+      runas roxas pulsando para ninguém ver.<br>
+      E na escuridão que a Vila criou para se proteger,<br>
+      dois homens cansados perguntam a um vampiro<br>
+      se podem simplesmente <em>ir embora</em>.<br><br>
+      A rachadura não estava na pedra.<br>
+      Estava neles.
+    </p>
+    <div class="finale-divider"></div>
+    <div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+  </div>
+
+</div><!-- /page-wrapper -->
+<div id="saga-end-sentinel" style="height:1px;width:100%;position:relative;margin-top:-1px;"></div>
+
+<script>
+  (function () {
+    var tracker = document.querySelector('.floating-stats');
+    if (!tracker) return;
+
+    function checkScroll() {
+      var scrolled  = window.scrollY || window.pageYOffset;
+      var winH      = window.innerHeight;
+      var docH      = document.documentElement.scrollHeight;
+      if (docH - scrolled - winH < 120) {
+        tracker.classList.add('visible');
+      }
+    }
+
+    window.addEventListener('scroll', checkScroll, { passive: true });
+    // Verifica imediatamente caso a página seja curta
+    setTimeout(checkScroll, 400);
+  })();
+</script>
+</body>
+</html>

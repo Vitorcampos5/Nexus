@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vraene — A que Forja Sonhos</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --brasa:        #e8640a;
+  --brasa-bright: #f5a040;
+  --bronze-dim:   #7a5018;
+  --runa:         #d4a020;
+  --runa-dim:     #8a6010;
+  --ember:        #f0c060;
+  --ember-dark:   #a07830;
+  --ink-forge:    #0c0804;
+  --cobre-light:  #f0a060;
+  --gold:         #d4a020;
+  --gold-light:   #f0c840;
+  --pearl:        #f0e8d8;
+  --pearl-dark:   #c8b090;
+  --silver:       #b0a090;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--ink-forge);
+  background-image:
+    radial-gradient(ellipse at 20% 5%,  #1a0c04 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 95%, #100804 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 0%,  rgba(232,100,10,0.06) 0%, transparent 40%),
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+  font-family: 'EB Garamond', serif;
+  color: var(--pearl);
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.sheet { max-width: 900px; margin: 0 auto; }
+
+/* ── HEADER ── */
+.header { text-align: center; margin-bottom: 36px; }
+.header-line {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--brasa), var(--ember), var(--brasa), transparent);
+  margin: 12px 0;
+  transform-origin: center;
+}
+.bloodline-tag {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--brasa-bright);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.char-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 42px;
+  color: var(--ember);
+  text-shadow: 0 0 50px rgba(232,100,10,0.5), 0 0 20px rgba(245,160,64,0.3), 0 2px 4px rgba(0,0,0,0.9);
+  letter-spacing: 3px;
+  line-height: 1.1;
+}
+.char-subtitle {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: var(--pearl-dark);
+  margin-top: 8px;
+  font-style: italic;
+}
+.alignment-badge {
+  display: inline-block;
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  background: rgba(20,12,4,0.6);
+  border: 1px solid rgba(232,100,10,0.4);
+  color: var(--brasa-bright);
+  border-radius: 2px;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+/* ── SECTION TITLE ── */
+.section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--brasa-bright);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(232,100,10,0.3);
+}
+
+/* ── VITALS ── */
+.vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.vital-card {
+  background: rgba(14,8,2,0.75);
+  border: 1px solid rgba(232,100,10,0.2);
+  border-radius: 4px;
+  padding: 14px;
+}
+.vital-label {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ember-dark);
+  opacity: 0.9;
+  margin-bottom: 8px;
+}
+.vital-numbers { display: flex; align-items: baseline; gap: 4px; margin-bottom: 8px; }
+.vital-current { font-family: 'Cinzel Decorative', serif; font-size: 30px; line-height: 1; }
+.vital-current.hp    { color: var(--brasa); }
+.vital-current.runa  { color: var(--gold); }
+.vital-current.ac    { color: var(--ember); }
+.vital-current.forja { color: var(--cobre-light); }
+.vital-max { font-family: 'Cinzel', serif; font-size: 13px; color: var(--pearl-dark); }
+.bar-track { height: 5px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+.bar-fill  { height: 100%; border-radius: 2px; }
+.bar-fill.hp    { background: linear-gradient(to right, var(--bronze-dim), var(--brasa)); }
+.bar-fill.runa  { background: linear-gradient(to right, var(--runa-dim), var(--runa)); }
+.bar-fill.forja { background: linear-gradient(to right, #603010, var(--cobre-light)); }
+.vital-note {
+  font-size: 10px; color: var(--pearl-dark);
+  opacity: 0.65; margin-top: 6px;
+  font-style: italic; line-height: 1.4;
+}
+
+/* ── HERANÇA DRACÔNICA box ── */
+.nature-box {
+  background: rgba(14,8,2,0.5);
+  border: 1px solid rgba(232,100,10,0.18);
+  border-radius: 4px;
+  padding: 14px;
+  margin-bottom: 24px;
+}
+.nature-box-title {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--brasa-bright);
+  margin-bottom: 10px;
+}
+.nature-rows { display: flex; flex-wrap: wrap; gap: 7px; }
+.nature-row {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(232,100,10,0.12);
+  border-radius: 3px;
+  padding: 6px 12px;
+  flex: 1; min-width: 200px;
+}
+.nature-badge {
+  font-family: 'Cinzel', serif; font-size: 10px; font-weight: 600;
+  padding: 2px 7px; border-radius: 2px; white-space: nowrap;
+}
+.badge-draconata { background: rgba(40,10,2,0.6);   color: var(--brasa-bright); border: 1px solid rgba(232,100,10,0.5); }
+.badge-passivo   { background: rgba(30,20,5,0.5);   color: var(--gold-light);   border: 1px solid rgba(180,140,20,0.4); }
+.badge-fraqueza  { background: rgba(40,20,5,0.5);   color: var(--cobre-light);  border: 1px solid rgba(160,90,20,0.4); }
+.badge-oficio    { background: rgba(10,20,10,0.5);  color: #70c090;             border: 1px solid rgba(40,100,50,0.45); }
+.badge-doutrina  { background: rgba(10,10,30,0.6);  color: var(--ember);        border: 1px solid rgba(200,160,60,0.3); }
+.nature-text { font-size: 12px; color: var(--pearl-dark); font-style: italic; flex: 1; }
+
+/* ── STATS ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.stat-box {
+  background: rgba(14,8,2,0.75);
+  border: 1px solid rgba(232,100,10,0.18);
+  border-radius: 4px;
+  padding: 12px 8px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+.stat-box:hover { border-color: rgba(232,100,10,0.45); }
+.stat-label { font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 2px; color: var(--ember-dark); text-transform: uppercase; margin-bottom: 5px; opacity: 0.9; }
+.stat-value { font-family: 'Cinzel Decorative', serif; font-size: 27px; color: var(--ember); line-height: 1; }
+.stat-mod   { font-family: 'Cinzel', serif; font-size: 11px; color: var(--pearl-dark); margin-top: 3px; }
+
+/* ── LAYOUTS ── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.panel {
+  background: rgba(14,8,2,0.65);
+  border: 1px solid rgba(232,100,10,0.14);
+  border-radius: 4px;
+  padding: 18px;
+}
+
+/* ── ABILITIES ── */
+.ability-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.ability-item:last-child { border-bottom: none; }
+.ability-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--brasa);
+  margin-top: 6px; flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(232,100,10,0.6);
+}
+.ability-name { font-family: 'Cinzel', serif; font-size: 11px; color: var(--ember); margin-bottom: 2px; }
+.ability-desc { font-size: 12px; color: var(--pearl-dark); line-height: 1.5; font-style: italic; opacity: 0.85; }
+.ability-status {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px;
+  padding: 1px 6px; border-radius: 2px; margin-left: auto; flex-shrink: 0;
+}
+.status-ready   { background: rgba(30,20,5,0.5);  color: var(--gold-light);   border: 1px solid rgba(180,140,20,0.5); }
+.status-active  { background: rgba(40,10,2,0.6);  color: var(--brasa-bright); border: 1px solid rgba(232,100,10,0.4); }
+.status-react   { background: rgba(30,15,40,0.5); color: #c0a8e8;             border: 1px solid rgba(100,60,140,0.45); }
+.status-channel { background: rgba(40,25,5,0.6);  color: var(--cobre-light);  border: 1px solid rgba(180,120,40,0.5); }
+.status-passive { background: rgba(120,170,255,0.15); color: #9fc3ff; border: 1px solid rgba(120,170,255,0.4); }
+
+/* ── RUNAS DOMINADAS ── */
+.rune-grid {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.rune-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  border-radius: 3px;
+  flex: 1; min-width: 120px;
+}
+.rune-gem {
+  width: 10px; height: 10px; border-radius: 2px;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px currentColor;
+}
+.rune-name { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 1px; }
+.rune-desc { font-size: 11px; font-style: italic; opacity: 0.7; margin-top: 1px; }
+
+.rune-chama    { background: rgba(60,10,2,0.5);  border: 1px solid rgba(200,60,20,0.5);  color: #f08060; }
+.rune-escudo   { background: rgba(10,40,15,0.5); border: 1px solid rgba(40,130,60,0.5);  color: #70c090; }
+.rune-ancora   { background: rgba(10,20,50,0.5); border: 1px solid rgba(60,100,200,0.4); color: #8098d8; }
+.rune-passagem { background: rgba(30,25,5,0.5);  border: 1px solid rgba(180,140,20,0.4); color: var(--gold-light); }
+
+/* ── ATTACKS ── */
+.attack-item { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.attack-item:last-child { border-bottom: none; }
+.attack-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.attack-icon { font-size: 15px; }
+.attack-bonus { margin-left: auto; font-family: 'Cinzel', serif; font-size: 13px; color: var(--ember); }
+.attack-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.attack-note { font-size: 12px; color: var(--pearl-dark); font-style: italic; opacity: 0.8; margin-top: 3px; }
+
+/* ── SAVES & SKILLS ── */
+.saves-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.save-item {
+  display: flex; align-items: center; gap: 7px;
+  padding: 5px 7px;
+  background: rgba(8,4,2,0.55);
+  border: 1px solid rgba(232,100,10,0.08);
+  border-radius: 3px;
+}
+.save-dot { width: 7px; height: 7px; border-radius: 50%; border: 1px solid rgba(232,100,10,0.4); flex-shrink: 0; }
+.save-dot.prof { background: var(--brasa); border-color: var(--brasa); }
+.save-name { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; color: var(--pearl-dark); text-transform: uppercase; flex: 1; }
+.save-val  { font-family: 'Cinzel', serif; font-size: 12px; color: var(--ember); }
+
+.skill-row { display: flex; align-items: center; gap: 7px; padding: 4px 5px; }
+.skill-dot { width: 6px; height: 6px; border-radius: 50%; border: 1px solid rgba(232,100,10,0.4); flex-shrink: 0; }
+.skill-dot.prof { background: var(--brasa); border-color: var(--brasa); }
+.skill-dot.exp  { background: var(--ember); border-color: var(--ember); }
+.skill-name { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px; color: var(--pearl-dark); text-transform: uppercase; flex: 1; }
+.skill-val  { font-family: 'Cinzel', serif; font-size: 11px; color: var(--ember); }
+.skill-legend { margin-top: 6px; font-size: 10px; color: var(--pearl-dark); opacity: 0.5; font-style: italic; }
+
+/* ── EQUIPMENT ── */
+.equip-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 13px; }
+.equip-item:last-child { border-bottom: none; }
+.equip-icon { font-size: 15px; width: 22px; text-align: center; }
+.equip-name { color: var(--pearl); flex: 1; }
+.equip-name em { font-style: italic; font-size: 11px; color: var(--pearl-dark); opacity: 0.72; display: block; margin-top: 1px; }
+.equip-count { font-family: 'Cinzel', serif; font-size: 10px; color: var(--silver); opacity: 0.8; }
+.equip-note {
+  margin-top: 10px; padding: 7px 10px;
+  background: rgba(20,12,4,0.4);
+  border: 1px solid rgba(232,100,10,0.15);
+  border-radius: 3px;
+  font-size: 11px; color: var(--pearl-dark); font-style: italic;
+}
+
+/* ── TAGS ── */
+.tag {
+  display: inline-block; font-family: 'Cinzel', serif;
+  font-size: 9px; letter-spacing: 1px;
+  padding: 2px 7px; border-radius: 2px; margin: 2px 2px 0 0;
+}
+.tag-brasa  { background: rgba(40,10,2,0.5);   color: var(--brasa-bright); border: 1px solid rgba(232,100,10,0.4); }
+.tag-ember  { background: rgba(30,20,5,0.5);   color: var(--ember);        border: 1px solid rgba(200,160,60,0.35); }
+.tag-bronze { background: rgba(30,18,5,0.45);  color: var(--cobre-light);  border: 1px solid rgba(180,110,40,0.35); }
+.tag-runa   { background: rgba(15,25,50,0.45); color: #8098d8;             border: 1px solid rgba(60,100,200,0.3); }
+.tag-verde  { background: rgba(10,30,15,0.45); color: #70c090;             border: 1px solid rgba(40,130,60,0.35); }
+.tag-prata  { background: rgba(20,18,15,0.45); color: var(--silver);       border: 1px solid rgba(130,110,90,0.3); }
+
+/* ── LORE ── */
+.lore-panel {
+  background: rgba(14,8,2,0.65);
+  border: 1px solid rgba(232,100,10,0.12);
+  border-radius: 4px;
+  padding: 18px;
+  margin-bottom: 24px;
+}
+.lore-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.lore-item:last-child { border-bottom: none; }
+.lore-icon { font-size: 17px; flex-shrink: 0; width: 24px; text-align: center; margin-top: 1px; }
+.lore-key  { font-family: 'Cinzel', serif; font-size: 11px; color: var(--runa); margin-bottom: 3px; letter-spacing: 1px; }
+.lore-val  { font-size: 13px; color: var(--pearl-dark); line-height: 1.5; }
+.lore-val strong { color: var(--pearl); font-weight: 500; }
+
+/* ── APPEARANCE & PERSONALITY — usa .lore-item/.lore-key/.lore-val (padrão da campanha) ──*/
+
+/* ── COUNTDOWN / SITUAÇÃO ATUAL ── */
+.countdown {
+  background: rgba(14,8,2,0.55);
+  border: 1px solid rgba(232,100,10,0.22);
+  border-radius: 4px;
+  padding: 18px 20px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.countdown::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--brasa), var(--ember), var(--brasa));
+  opacity: 0.7;
+}
+.countdown-location {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ember-dark);
+  margin-bottom: 6px;
+  opacity: 0.8;
+}
+.countdown-urgency {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--brasa-bright);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.countdown-resources {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.countdown-desc {
+  font-size: 13px;
+  color: var(--pearl-dark);
+  line-height: 1.65;
+  font-style: italic;
+}
+
+/* ── RUNE-BREAKDOWN (equiv. hp-breakdown de Leyn) ── */
+.rune-breakdown {
+  background: rgba(14,8,2,0.5);
+  border: 1px solid rgba(212,160,32,0.22);
+  border-radius: 4px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+}
+.rune-breakdown-title {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--runa);
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(212,160,32,0.2);
+}
+.rune-breakdown-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.rune-breakdown-item {
+  background: rgba(8,4,2,0.5);
+  border: 1px solid rgba(212,160,32,0.12);
+  border-radius: 3px;
+  padding: 8px 12px;
+}
+.rune-breakdown-label {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ember-dark);
+  margin-bottom: 4px;
+}
+.rune-breakdown-val {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 22px;
+  color: var(--runa);
+  line-height: 1;
+  margin-bottom: 2px;
+}
+.rune-breakdown-note {
+  font-size: 11px;
+  color: var(--pearl-dark);
+  font-style: italic;
+  opacity: 0.75;
+}
+.rune-breakdown-desc {
+  font-size: 12px;
+  color: var(--pearl-dark);
+  line-height: 1.55;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(212,160,32,0.1);
+}
+
+/* ── SPELL DETAIL MODAL ── */
+.spell-detail-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.spell-detail-overlay.open { display: flex; }
+.spell-detail-panel {
+  background: linear-gradient(135deg, #160e06, #0e0804);
+  border: 1px solid rgba(232,100,10,0.4);
+  border-radius: 6px;
+  padding: 24px;
+  max-width: 460px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 0 60px rgba(232,100,10,0.2), 0 0 120px rgba(0,0,0,0.9);
+}
+.spell-detail-close {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: none;
+  border: 1px solid rgba(232,100,10,0.35);
+  color: var(--brasa-bright);
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 2px;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+.spell-detail-close:hover { background: rgba(232,100,10,0.1); }
+.spell-detail-level {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--brasa-bright);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.spell-detail-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 20px;
+  color: var(--ember);
+  margin-bottom: 14px;
+  line-height: 1.2;
+}
+.spell-detail-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.spell-detail-desc {
+  font-size: 13px;
+  color: var(--pearl-dark);
+  line-height: 1.65;
+  border-top: 1px solid rgba(232,100,10,0.15);
+  padding-top: 12px;
+}
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center; margin-top: 36px; padding-top: 18px;
+  border-top: 1px solid rgba(232,100,10,0.12);
+}
+.footer-quote { font-style: italic; font-size: 15px; color: var(--pearl-dark); opacity: 0.6; line-height: 1.7; }
+.footer-attr  { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 3px; color: var(--brasa-bright); opacity: 0.4; margin-top: 8px; }
+
+/* ── REDUCED MOTION fallback — barras estáticas ── */
+@media (prefers-reduced-motion: reduce) {
+  .bar-fill.hp    { width: 80%; animation: none; }
+  .bar-fill.runa  { width: 60%; animation: none; }
+  .bar-fill.forja { width: 95%; animation: none; }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+  body { padding: 20px 12px; }
+  .char-name { font-size: 28px; }
+  .vitals-grid { grid-template-columns: 1fr 1fr; }
+  .stats-row { grid-template-columns: repeat(3, 1fr); }
+  .two-col { grid-template-columns: 1fr; }
+}
+
+/* ── SPELLS ── */
+.spell-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+  position: relative;
+}
+.spell-item:last-child { border-bottom: none; }
+.spell-level-badge {
+  font-family: 'Cinzel', serif; font-size: 9px;
+  padding: 2px 6px; background: rgba(20,8,2,0.6);
+  border: 1px solid rgba(232,100,10,0.4); color: var(--brasa-bright);
+  border-radius: 2px; white-space: nowrap; flex-shrink: 0;
+}
+.spell-item-name {
+  font-family: 'Cinzel', serif; font-size: 12px; color: var(--ember);
+  flex: 1; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.spell-item-desc {
+  font-size: 11px; color: var(--pearl-dark); opacity: 0.7; font-style: italic;
+}
+.spell-info-btn {
+  background: rgba(20,8,2,0.7); border: 1px solid rgba(232,100,10,0.5);
+  color: var(--brasa-bright); border-radius: 50%; width: 16px; height: 16px;
+  font-size: 9px; cursor: pointer; display: inline-flex; align-items: center;
+  justify-content: center; flex-shrink: 0; line-height: 1;
+  font-family: 'Cinzel', serif; letter-spacing: 0; padding: 0;
+  transition: background 0.2s, border-color 0.2s; vertical-align: middle;
+}
+.spell-info-btn:hover { background: rgba(80,30,5,0.8); border-color: rgba(245,160,64,0.7); }
+.spell-section-label {
+  font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 3px;
+  color: var(--brasa-bright); opacity: 0.65; text-transform: uppercase;
+  margin-bottom: 6px; padding-bottom: 4px;
+  border-bottom: 1px solid rgba(232,100,10,0.2);
+}
+.spell-slots-row {
+  display: flex; gap: 8px; align-items: center;
+  padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.spell-slots-row:last-child { border-bottom: none; }
+.slot-level {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--brasa-bright); opacity: 0.8;
+  width: 60px; flex-shrink: 0;
+}
+.slot-dots { display: flex; gap: 5px; }
+.slot-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 1px solid rgba(232,100,10,0.5);
+}
+.slot-dot.filled { background: var(--brasa); box-shadow: 0 0 5px rgba(232,100,10,0.6); }
+.slot-dot.used   { background: rgba(20,8,2,0.5); border-color: rgba(100,40,10,0.3); }
+
+/* ── KEYFRAMES ── */
+@keyframes fadeIn      { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeInDown  { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInUp    { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInLeft { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: translateX(0); } }
+
+@keyframes nameReveal {
+  0%   { opacity: 0; letter-spacing: 26px; text-shadow: none; }
+  60%  { opacity: 1; letter-spacing: 5px; }
+  100% { opacity: 1; letter-spacing: 3px;
+         text-shadow: 0 0 50px rgba(232,100,10,.5), 0 0 20px rgba(245,160,64,.3), 0 2px 4px rgba(0,0,0,.9); }
+}
+@keyframes emberGlow {
+  0%, 100% { text-shadow: 0 0 50px rgba(232,100,10,.4), 0 0 20px rgba(245,160,64,.2), 0 2px 4px rgba(0,0,0,.9); }
+  50%       { text-shadow: 0 0 80px rgba(232,100,10,.7), 0 0 35px rgba(245,160,64,.4), 0 0 15px rgba(232,100,10,.25), 0 2px 4px rgba(0,0,0,.9); }
+}
+@keyframes lineDraw    { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes dotBreathe  {
+  0%, 100% { box-shadow: 0 0 6px rgba(232,100,10,.55); transform: scale(1); }
+  50%       { box-shadow: 0 0 16px rgba(232,100,10,.95), 0 0 6px rgba(232,100,10,.4); transform: scale(1.3); }
+}
+@keyframes runePulse   {
+  0%, 100% { box-shadow: 0 0 8px currentColor; transform: scale(1); }
+  50%       { box-shadow: 0 0 20px currentColor, 0 0 8px currentColor; transform: scale(1.15); }
+}
+@keyframes barGrow     { from { width: 0; } to { width: var(--bar-target); } }
+@keyframes numPop      {
+  0%   { opacity: 0; transform: scale(.7); }
+  70%  { transform: scale(1.06); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes readyPulse  { 0%, 100% { opacity: 1; } 50% { opacity: .65; } }
+@keyframes badgePulse  { 0%, 100% { opacity: .9; } 50% { opacity: 1; box-shadow: 0 0 10px rgba(232,100,10,.3); } }
+@keyframes quoteFade   { 0%, 100% { opacity: .55; } 50% { opacity: .85; } }
+
+/* ── Apply animations ── */
+.bloodline-tag  { animation: fadeInDown 0.7s ease 0.1s both; }
+.header-line    { animation: lineDraw 0.9s cubic-bezier(.22,.68,0,1.2) 0.5s both; }
+.char-name      { animation: nameReveal 1.4s cubic-bezier(.22,.68,0,1.15) 0.4s both, emberGlow 5s ease-in-out 1.9s infinite; }
+.char-subtitle  { animation: fadeInDown 0.7s ease 1.2s both; }
+.bar-fill       { animation: barGrow 1.1s cubic-bezier(.4,0,.2,1) 1.4s both; }
+.bar-fill.hp    { --bar-target: 80%; }
+.bar-fill.runa  { --bar-target: 60%; }
+.bar-fill.forja { --bar-target: 95%; }
+.vital-current  { animation: numPop 0.6s cubic-bezier(.34,1.56,.64,1) 1.0s both; }
+.rune-gem       { animation: runePulse 2.5s ease-in-out infinite; }
+.rune-pill:nth-child(2) .rune-gem { animation-delay: 0.4s; }
+.rune-pill:nth-child(3) .rune-gem { animation-delay: 0.8s; }
+.rune-pill:nth-child(4) .rune-gem { animation-delay: 1.2s; }
+.ability-dot    { animation: dotBreathe 2.8s ease-in-out infinite; }
+.save-dot.prof  { animation: dotBreathe 3.2s ease-in-out infinite; }
+.status-ready   { animation: readyPulse 3.5s ease-in-out infinite; }
+.status-active  { animation: readyPulse 2.8s ease-in-out 0.5s infinite; }
+.alignment-badge{ animation: badgePulse 4s ease-in-out 2s infinite; }
+.footer         { animation: fadeIn 1.2s ease 0.8s both; }
+.footer-quote   { animation: quoteFade 8s ease-in-out 2s infinite; }
+
+.stats-row .stat-box {
+  animation: fadeInUp 0.5s ease both;
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+}
+.stats-row .stat-box:nth-child(1) { animation-delay: 0.05s; }
+.stats-row .stat-box:nth-child(2) { animation-delay: 0.12s; }
+.stats-row .stat-box:nth-child(3) { animation-delay: 0.19s; }
+.stats-row .stat-box:nth-child(4) { animation-delay: 0.26s; }
+.stats-row .stat-box:nth-child(5) { animation-delay: 0.33s; }
+.stats-row .stat-box:nth-child(6) { animation-delay: 0.40s; }
+.stats-row .stat-box:hover { border-color: rgba(232,100,10,.55); box-shadow: 0 0 14px rgba(232,100,10,.14); transform: translateY(-2px); }
+
+.nature-row { animation: slideInLeft 0.45s ease both; transition: border-color 0.25s, background 0.25s; }
+.nature-row:nth-child(1) { animation-delay: 0.05s; }
+.nature-row:nth-child(2) { animation-delay: 0.14s; }
+.nature-row:nth-child(3) { animation-delay: 0.23s; }
+.nature-row:nth-child(4) { animation-delay: 0.32s; }
+.nature-row:nth-child(5) { animation-delay: 0.41s; }
+.nature-row:nth-child(6) { animation-delay: 0.50s; }
+.nature-row:hover { border-color: rgba(232,100,10,.35); background: rgba(232,100,10,.04); }
+
+.panel { transition: border-color 0.3s, box-shadow 0.3s; }
+.panel:hover { border-color: rgba(232,100,10,.28); box-shadow: 0 0 22px rgba(232,100,10,.06); }
+
+.ability-item { transition: background 0.2s; }
+.ability-item:hover { background: rgba(232,100,10,.035); }
+.ability-item:hover .ability-dot { transform: scale(1.4) translateX(2px); box-shadow: 0 0 18px rgba(232,100,10,.9); }
+
+.attack-item { transition: background 0.2s, padding-left 0.2s; }
+.attack-item:hover { background: rgba(232,100,10,.04); padding-left: 4px; }
+
+.rune-pill { transition: filter 0.25s, transform 0.2s; }
+.rune-pill:hover { filter: brightness(1.2); transform: translateY(-1px); }
+
+.equip-item { transition: background 0.2s, padding-left 0.2s; }
+.equip-item:hover { background: rgba(232,100,10,.03); padding-left: 4px; }
+
+.lore-item { transition: background 0.2s; border-radius: 3px; }
+.lore-item:hover { background: rgba(232,100,10,.04); }
+
+.save-item { transition: border-color 0.2s, background 0.2s; }
+.save-item:hover { border-color: rgba(232,100,10,.3); background: rgba(232,100,10,.04); }
+
+.tag { transition: transform 0.2s ease, filter 0.2s ease; }
+.tag:hover { transform: translateY(-1px); filter: brightness(1.2); }
+
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.55s ease, transform 0.55s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-left { opacity: 0; transform: translateX(-18px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-line"></div>
+    <div class="bloodline-tag">✦ Draconata · Inscritora · Clérigo da Forja · Ancestral Dragão de Fogo ✦</div>
+    <h1 class="char-name">Vraene</h1>
+    <div class="char-subtitle">
+      Draconata — Chama do Sangue · Classe: Clérigo / Domínio da Forja · Nível 5
+      <span class="alignment-badge">Neutro Verdadeiro</span>
+    </div>
+
+<main>
+    <div class="header-line"></div>
+  </div>
+
+  <!-- PORTRAIT -->
+  <div style="display:flex;justify-content:center;margin-bottom:32px;">
+    <div style="position:relative;width:240px;">
+	<img src="Perfil - A que Forja Sonhos.png"
+           alt="Vraene — A que Forja Sonhos"
+           style="width:240px;height:300px;object-fit:cover;object-position:top center;border-radius:4px;border:1px solid rgba(232,100,10,.4);box-shadow:0 0 50px rgba(232,100,10,.25), 0 0 90px rgba(0,0,0,.85);display:block;filter:saturate(0.9) contrast(1.05);">
+      <div style="position:absolute;bottom:0;left:0;right:0;height:70px;background:linear-gradient(to top,rgba(10,6,2,1),transparent);border-radius:0 0 4px 4px;"></div>
+    </div>
+  </div>
+
+  <!-- PONTOS VITAIS -->
+  <div class="vitals-grid">
+    <div class="vital-card">
+      <div class="vital-label">Pontos de Vida</div>
+      <div class="vital-numbers">
+        <div class="vital-current hp">34</div>
+        <div class="vital-max">/ 38</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill hp"></div></div>
+      <div class="vital-note">Clérigo Nível 5 · d8 (média 5) + CON +2 por nível · nível 1: 10 / níveis 2–5: 7×4=28 · total: 38 · Resistência a fogo — não queima; apenas esquenta</div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-label">Sanidade</div>
+      <div class="vital-numbers">
+        <div class="vital-current runa">85</div>
+        <div class="vital-max">/ 85</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill san" style="--bar-target:100%; background: linear-gradient(to right, var(--runa-dim), var(--runa));"></div></div>
+      <div class="vital-note">Sabedoria 17 × 5 = 85 − Mythos 0% = 85 · Sintonização com o Domínio intacta</div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-label">Classe de Armadura</div>
+      <div class="vital-numbers">
+        <div class="vital-current ac">16</div>
+      </div>
+      <div class="vital-note">Escamas Inscritas 14 + Escudo +2 · Velocidade 30 pés · Iniciativa +0</div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-label">Carga Rúnica</div>
+      <div class="vital-numbers">
+        <div class="vital-current forja">3</div>
+        <div class="vital-max">/ 2</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill forja"></div></div>
+      <div class="vital-note">Channel Divinity + Sopro Flamejante · Recarrega no descanso curto</div>
+    </div>
+  </div>
+
+  <!-- CARGA RÚNICA — SISTEMA DE RECURSO -->
+  <div class="rune-breakdown">
+    <div class="rune-breakdown-title">✦ Carga Rúnica — Sistema de Recurso da Forjadora · Recarrega no Descanso Curto</div>
+    <div class="rune-breakdown-grid">
+      <div class="rune-breakdown-item">
+        <div class="rune-breakdown-label">Carga Atual</div>
+        <div class="rune-breakdown-val" style="color:var(--runa)">2 / 2</div>
+        <div class="rune-breakdown-note">Canal + Sopro · ambos disponíveis</div>
+      </div>
+      <div class="rune-breakdown-item">
+        <div class="rune-breakdown-label">Usos de Canal</div>
+        <div class="rune-breakdown-val" style="color:var(--cobre-light)">1</div>
+        <div class="rune-breakdown-note">Channel Divinity · descanso curto</div>
+      </div>
+      <div class="rune-breakdown-item">
+        <div class="rune-breakdown-label">Sopro Flamejante</div>
+        <div class="rune-breakdown-val" style="color:var(--brasa)">1</div>
+        <div class="rune-breakdown-note">Recarrega no descanso curto</div>
+      </div>
+      <div class="rune-breakdown-item">
+        <div class="rune-breakdown-label">Runas Gravadas</div>
+        <div class="rune-breakdown-val" style="color:var(--ember)">4</div>
+        <div class="rune-breakdown-note">Dominadas · todas ativas</div>
+      </div>
+    </div>
+    <div class="rune-breakdown-desc">
+      A Carga Rúnica não é um reservatório mágico convencional — é a sintonização viva entre o sangue de dragão e o Domínio da Forja. Cada vez que Vraene usa Channel Divinity ou o Sopro, drena parte desse equilíbrio. Quando a forja resfria demais, o sangue precisa de tempo para reaquecer. Um descanso curto restaura tudo. Um descanso longo restaura também os usos de Canal.
+    </div>
+  </div>
+
+  <!-- HERANÇA DRACÔNICA -->
+  <div class="section-title">✦ Herança Dracônica & Natureza</div>
+  <div class="nature-box">
+    <div class="nature-box-title">✦ Herança Dracônica — Ancestral: Dragão de Chamas · O fogo no sangue ressoou com a arte da Forja · a técnica é consequência, não origem</div>
+    <div class="nature-rows">
+      <div class="nature-row">
+        <span class="nature-badge badge-draconata">Racial</span>
+        <span class="nature-text">Sopro Flamejante — cone de 15 pés, 2d6 fogo, CD 13 DES para metade. Recarrega no descanso curto. Não é feitiço — é corpo</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-passivo">Passivo</span>
+        <span class="nature-text">Resistência a Fogo — dano de fogo sofre metade (Resistência). Ao nível 17: imunidade completa e resistência a dano não-mágico</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-oficio">Ofício</span>
+        <span class="nature-text">Bênção da Forja — Channel Divinity: cria objeto de metal em 1h, ou imbuí +1 numa arma ou armadura até o próximo descanso longo</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-oficio">Ofício</span>
+        <span class="nature-text">Marca Rúnica — Channel Divinity: grava uma das quatro Runas Dominadas em pele ou metal (10 min). Efeito dura até descanso longo</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-doutrina">Doutrina</span>
+        <span class="nature-text">Olho de Brasa — sente quando o metal está pronto, quando uma liga vai ceder, quando uma inscrição está errada antes de terminar</span>
+      </div>
+      <div class="nature-row">
+        <span class="nature-badge badge-fraqueza">Custo</span>
+        <span class="nature-text">Frio extremo impõe desvantagem em testes de SAB para canalizar o Domínio. O sangue de dragão não foi feito para o gelo</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATRIBUTOS -->
+  <div class="section-title">✦ Atributos — Bônus de Proficiência +3</div>
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-label">Força</div><div class="stat-value">14</div><div class="stat-mod">+2</div></div>
+    <div class="stat-box"><div class="stat-label">Destreza</div><div class="stat-value">10</div><div class="stat-mod">+0</div></div>
+    <div class="stat-box"><div class="stat-label">Constituição</div><div class="stat-value">14</div><div class="stat-mod">+2</div></div>
+    <div class="stat-box"><div class="stat-label">Inteligência</div><div class="stat-value">13</div><div class="stat-mod">+1</div></div>
+    <div class="stat-box"><div class="stat-label">Sabedoria</div><div class="stat-value">17</div><div class="stat-mod">+3</div></div>
+    <div class="stat-box"><div class="stat-label">Carisma</div><div class="stat-value">12</div><div class="stat-mod">+1</div></div>
+  </div>
+
+  <!-- HABILIDADES — DOIS PAINÉIS (padrão da campanha) -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="section-title">✦ Habilidades Especiais</div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--ember)"></div>
+        <div style="flex:1">
+          <div class="ability-name">A que Forja Sonhos — Runa de Intenção Verdadeira</div>
+          <div class="ability-desc">Quando usa Marca Rúnica perguntando ao receptor o que ele <em>realmente</em> quer antes de gravar, o efeito da runa concede também vantagem no primeiro teste de habilidade diretamente ligado à intenção declarada. Fenômeno sem documentação em Valtheris — a runa carrega a intenção junto. Origem da alcunha.</div>
+        </div>
+        <div class="ability-status status-passive">Passivo</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--gold)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Forjadora de Precedentes — Dezesseis Ligas</div>
+          <div class="ability-desc">Desenvolveu a matriz de contenção do Fragmento Solar sem referência, testando dezesseis ligas até encontrar a que não fraturava. Quando trabalha em um material novo ou em um problema sem solução documentada, pode rolar duas vezes testes de Ferramentas de Ferreiro e ficar com o maior resultado.</div>
+        </div>
+        <div class="ability-status status-passive">Passivo</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--cobre-light)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Laboratório Vivo — Runas no Próprio Corpo</div>
+          <div class="ability-desc">Gravou runas funcionais em si mesma — algumas compreendidas, algumas ainda não. Ganha +2 em salvaguardas de CON contra efeitos mágicos que alterem o corpo (venenos, transmutações, corrupção). O custo: qualquer falha crítica nessas salvaguardas ativa uma runa experimental imprevisível.</div>
+        </div>
+        <div class="ability-status status-passive">Passivo</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--silver-dim)"></div>
+        <div style="flex:1">
+          <div class="ability-name">A Runa Inacabada — Peso que Carrega</div>
+          <div class="ability-desc">Carrega um fragmento de metal com uma inscrição que não consegue completar. Enquanto não encontrar as palavras certas: desvantagem em testes de SAB para canalizar o Domínio quando forçada a agir contra alguém de quem não consegue ser honesta. A runa sente a distância entre intenção e ação.</div>
+        </div>
+        <div class="ability-status status-react">Pendente</div>
+      </div>
+    </div>
+
+    <!-- HABILIDADES DE CLASSE -->
+    <div class="panel">
+      <div class="section-title">✦ Habilidades de Classe — Clérigo / Domínio da Forja</div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--gold)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Bênção da Forja</div>
+          <div class="ability-desc">Channel Divinity: em 1 hora de trabalho, cria um objeto não-mágico de metal ou madeira avaliado em até 100 po. Ou toca uma arma ou armadura e concede +1 até o próximo descanso longo. Recarrega no descanso curto.</div>
+        </div>
+        <div class="ability-status status-channel">Canal</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--ember)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Marca Rúnica</div>
+          <div class="ability-desc">Channel Divinity: grava uma das quatro Runas Dominadas em pele, metal ou pedra (10 min). O receptor carrega o efeito até descanso longo. Apenas uma Marca ativa por pessoa por vez. Requer as tintas rúnicas como componente. Recarrega no descanso curto.</div>
+        </div>
+        <div class="ability-status status-channel">Canal</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--pearl-dark)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Maestria em Armadura Pesada</div>
+          <div class="ability-desc">Proficiência em armaduras pesadas e escudos concedida pelo Domínio da Forja — acima do que seria habitual para um clérigo. A forja cria; a forja também protege. Vraene entende isso como dois lados da mesma arte.</div>
+        </div>
+        <div class="ability-status status-passive">Passivo</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--silver)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Proficiências de Ferreiro</div>
+          <div class="ability-desc">Ferramentas de ferreiro como proficiência de classe. Acrescida ao que a herança dracônica já havia dado — a combinação produz uma forjadora que opera no limite do que é possível sem magia adicional.</div>
+        </div>
+        <div class="ability-status status-passive">Classe</div>
+      </div>
+
+      <div class="ability-item">
+        <div class="ability-dot" style="background:var(--runa)"></div>
+        <div style="flex:1">
+          <div class="ability-name">Alma da Forja <em style="font-size:10px;opacity:0.65">(nível 6 — em breve)</em></div>
+          <div class="ability-desc">Ainda não manifestado. Quando atingir: +1 CA ao usar armadura pesada e resistência a dano não-mágico. O fogo no sangue completa o que a forja começou.</div>
+        </div>
+        <div class="ability-status status-ready">Em breve</div>
+      </div>
+
+      <!-- Runas Dominadas -->
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(232,100,10,0.18)">
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:var(--runa);opacity:0.75;text-transform:uppercase;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid rgba(212,160,32,0.18)">Runas Dominadas · Sentença em linguagem dracônica</div>
+        <div class="rune-grid">
+          <div class="rune-pill rune-chama">
+            <div class="rune-gem" style="background:#e04020;color:#e04020"></div>
+            <div><div class="rune-name">Runa de Chama</div><div class="rune-desc">+1d6 fogo no próximo acerto</div></div>
+          </div>
+          <div class="rune-pill rune-escudo">
+            <div class="rune-gem" style="background:#308050;color:#308050"></div>
+            <div><div class="rune-name">Runa de Escudo</div><div class="rune-desc">+2 CA contra o primeiro ataque</div></div>
+          </div>
+        </div>
+        <div class="rune-grid" style="margin-top:6px;margin-bottom:0">
+          <div class="rune-pill rune-ancora">
+            <div class="rune-gem" style="background:#4060c0;color:#4060c0"></div>
+            <div><div class="rune-name">Runa de Âncora</div><div class="rune-desc">Vantagem no próximo teste de CON</div></div>
+          </div>
+          <div class="rune-pill rune-passagem">
+            <div class="rune-gem" style="background:#b08020;color:#b08020"></div>
+            <div><div class="rune-name">Runa de Passagem</div><div class="rune-desc">Sem ataques de oportunidade por 1 rodada</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Magias Conhecidas -->
+      <div style="margin-top:16px">
+        <div class="section-title">✦ Magias Conhecidas</div>
+
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:var(--brasa-bright);opacity:0.65;text-transform:uppercase;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid rgba(232,100,10,0.2)">Truques · ilimitados</div>
+
+        <div class="spell-item">
+          <span class="spell-level-badge">Truque</span>
+          <div style="flex:1">
+            <div class="spell-item-name">Chama Sagrada <button class="spell-info-btn" title="Ver detalhes" onclick="openSpellDetail('sacredFlame')">i</button></div>
+            <div class="spell-item-desc">CD 14 DES · 1d8 fogo/radiante · ignora cobertura · age contra incorporais</div>
+          </div>
+        </div>
+
+        <div class="spell-item">
+          <span class="spell-level-badge">Truque</span>
+          <div style="flex:1">
+            <div class="spell-item-name">Taumaturgia <button class="spell-info-btn" title="Ver detalhes" onclick="openSpellDetail('thaumaturgy')">i</button></div>
+            <div class="spell-item-desc">Presença divina e forja viva — voz amplificada, chamas tremulam</div>
+          </div>
+        </div>
+
+        <div class="spell-item">
+          <span class="spell-level-badge">Truque</span>
+          <div style="flex:1">
+            <div class="spell-item-name">Orientação <button class="spell-info-btn" title="Ver detalhes" onclick="openSpellDetail('guidance')">i</button></div>
+            <div class="spell-item-desc">+1d4 num teste de habilidade antes de completar a jogada · concentração 1 min</div>
+          </div>
+        </div>
+
+        <div class="spell-item">
+          <span class="spell-level-badge">Truque</span>
+          <div style="flex:1">
+            <div class="spell-item-name">Reparo <button class="spell-info-btn" title="Ver detalhes" onclick="openSpellDetail('mending')">i</button></div>
+            <div class="spell-item-desc">Conserta um objeto partido ou danificado · toque · 1 min de conjuração</div>
+          </div>
+        </div>
+
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:var(--brasa-bright);opacity:0.65;text-transform:uppercase;margin:10px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(232,100,10,0.2)">Nível 1 · Domínio da Forja — Sempre Preparados</div>
+
+        <div class="spell-item">
+          <span class="spell-level-badge">Nível 1</span>
+          <div style="flex:1">
+            <div class="spell-item-name">Golpe Flamejante <button class="spell-info-btn" title="Ver detalhes" onclick="openSpellDetail('flamingSmite')">i</button></div>
+            <div class="spell-item-desc">Próximo acerto: +1d6 fogo · alvo pega fogo 1d6/rodada · concentração 1 min</div>
+          </div>
+        </div>
+
+        <div class="spell-item">
+          <span class="spell-level-badge">Nível 1</span>
+          <div style="flex:1">
+            <div class="spell-item-name">Palavra de Cura <button class="spell-info-btn" title="Ver detalhes" onclick="openSpellDetail('healingWord')">i</button></div>
+            <div class="spell-item-desc">Ação bônus · 1d4+3 PV · alcance 60 pés</div>
+          </div>
+        </div>
+
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:var(--brasa-bright);opacity:0.65;text-transform:uppercase;margin:10px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(232,100,10,0.2)">Nível 2 · Domínio da Forja — Sempre Preparados</div>
+
+        <div class="spell-item">
+          <span class="spell-level-badge">Nível 2</span>
+          <div style="flex:1">
+            <div class="spell-item-name">Metal Incandescente <button class="spell-info-btn" title="Ver detalhes" onclick="openSpellDetail('heatMetal')">i</button></div>
+            <div class="spell-item-desc">2d8 fogo/rodada como ação bônus · largar ou sofrer desvantagem</div>
+          </div>
+        </div>
+
+        <div class="spell-item">
+          <span class="spell-level-badge">Nível 2</span>
+          <div style="flex:1">
+            <div class="spell-item-name">Arma Mágica <button class="spell-info-btn" title="Ver detalhes" onclick="openSpellDetail('magicWeapon')">i</button></div>
+            <div class="spell-item-desc">Torna uma arma +1 mágica por 1 hora · concentração</div>
+          </div>
+        </div>
+
+        <div style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;color:var(--brasa-bright);opacity:0.65;text-transform:uppercase;margin:10px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(232,100,10,0.2)">Nível 3 · Domínio da Forja — Sempre Preparados</div>
+
+        <div class="spell-item">
+          <span class="spell-level-badge">Nível 3</span>
+          <div style="flex:1">
+            <div class="spell-item-name">Arma Elemental <button class="spell-info-btn" title="Ver detalhes" onclick="openSpellDetail('elementalWeapon')">i</button></div>
+            <div class="spell-item-desc">+1 ataque, +1d4 fogo por 1 hora · concentração</div>
+          </div>
+        </div>
+
+        <div class="spell-item">
+          <span class="spell-level-badge">Nível 3</span>
+          <div style="flex:1">
+            <div class="spell-item-name">Proteção de Energia <button class="spell-info-btn" title="Ver detalhes" onclick="openSpellDetail('protectionFromEnergy')">i</button></div>
+            <div class="spell-item-desc">Resistência a elemento à escolha · 1 hora · concentração</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Espaços de Magia -->
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(232,100,10,0.2)">
+        <div class="section-title">✦ Espaços de Magia</div>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+          <div style="background:rgba(20,8,2,0.6);border:1px solid rgba(232,100,10,0.4);border-radius:3px;padding:6px 14px;text-align:center">
+            <div style="font-family:'Cinzel',serif;font-size:8px;color:var(--brasa-bright);letter-spacing:2px;margin-bottom:3px">NÍVEL 1</div>
+            <div style="font-family:'Cinzel Decorative',serif;font-size:20px;color:var(--ember)">4</div>
+            <div style="font-size:10px;color:var(--pearl-dark);opacity:0.7">/ 4 espaços</div>
+          </div>
+          <div style="background:rgba(20,8,2,0.6);border:1px solid rgba(232,100,10,0.4);border-radius:3px;padding:6px 14px;text-align:center">
+            <div style="font-family:'Cinzel',serif;font-size:8px;color:var(--brasa-bright);letter-spacing:2px;margin-bottom:3px">NÍVEL 2</div>
+            <div style="font-family:'Cinzel Decorative',serif;font-size:20px;color:var(--ember)">3</div>
+            <div style="font-size:10px;color:var(--pearl-dark);opacity:0.7">/ 3 espaços</div>
+          </div>
+          <div style="background:rgba(20,8,2,0.6);border:1px solid rgba(232,100,10,0.4);border-radius:3px;padding:6px 14px;text-align:center">
+            <div style="font-family:'Cinzel',serif;font-size:8px;color:var(--brasa-bright);letter-spacing:2px;margin-bottom:3px">NÍVEL 3</div>
+            <div style="font-family:'Cinzel Decorative',serif;font-size:20px;color:var(--ember)">2</div>
+            <div style="font-size:10px;color:var(--pearl-dark);opacity:0.7">/ 2 espaços</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span class="tag tag-brasa">Atributo: Sabedoria +3</span>
+          <span class="tag tag-ember">CD de Magia: 14</span>
+          <span class="tag tag-ember">Ataque Mágico: +6</span>
+          <span class="tag tag-bronze">Prepara 8 magias/dia</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATAQUES -->
+  <div class="lore-panel" style="margin-bottom:24px">
+    <div class="section-title">✦ Ataques — Martelo e Chama</div>
+
+    <div class="attack-item">
+      <div class="attack-header">
+        <span class="attack-icon">🔨</span>
+        <span class="ability-name">Martelo da Forja — Inscrito</span>
+        <span class="attack-bonus">+6 atq</span>
+      </div>
+      <div class="attack-tags">
+        <span class="tag tag-brasa">1d8+3 contundente</span>
+        <span class="tag tag-ember">versátil 1d10+3 com duas mãos</span>
+        <span class="tag tag-prata">corpo a corpo · 5 pés</span>
+      </div>
+      <div class="attack-note">O mesmo martelo que usa na oficina. Ela nunca precisou de outro — uma peça que serve bem pra um fim serve bem pra todos.</div>
+    </div>
+
+    <div class="attack-item">
+      <div class="attack-header">
+        <span class="attack-icon">🔥</span>
+        <span class="ability-name">Chama Sagrada — Truque</span>
+        <span class="attack-bonus">CD 14</span>
+      </div>
+      <div class="attack-tags">
+        <span class="tag tag-brasa">1d8 fogo / radiante</span>
+        <span class="tag tag-ember">DES para metade · ignora cobertura</span>
+        <span class="tag tag-prata">distância · 60 pés</span>
+      </div>
+      <div class="attack-note">Chama rúnica condensada num ponto. Age sobre o espectral — funciona contra incorporais onde o martelo não funcionaria.</div>
+    </div>
+
+    <div class="attack-item">
+      <div class="attack-header">
+        <span class="attack-icon">🌬️</span>
+        <span class="ability-name">Sopro Flamejante — Draconata</span>
+        <span class="attack-bonus">CD 13</span>
+      </div>
+      <div class="attack-tags">
+        <span class="tag tag-brasa">2d6 fogo · cone 15 pés</span>
+        <span class="tag tag-ember">DES para metade</span>
+        <span class="tag tag-prata">recarga · descanso curto</span>
+      </div>
+      <div class="attack-note">Não é magia — é corpo. Usada com economia, mas sem hesitação quando a situação exige.</div>
+    </div>
+
+  <!-- SALVAGUARDAS -->
+  <div style="margin-top:18px">
+    <div class="section-title">✦ Salvaguardas</div>
+    <div class="saves-grid">
+      <div class="save-item"><div class="save-dot"></div><span class="save-name">Força</span><span class="save-val">+2</span></div>
+      <div class="save-item"><div class="save-dot"></div><span class="save-name">Destreza</span><span class="save-val">+0</span></div>
+      <div class="save-item"><div class="save-dot"></div><span class="save-name">Constituição</span><span class="save-val">+2</span></div>
+      <div class="save-item"><div class="save-dot"></div><span class="save-name">Inteligência</span><span class="save-val">+1</span></div>
+      <div class="save-item"><div class="save-dot prof"></div><span class="save-name">Sabedoria</span><span class="save-val">+6</span></div>
+      <div class="save-item"><div class="save-dot prof"></div><span class="save-name">Carisma</span><span class="save-val">+4</span></div>
+    </div>
+    <div style="margin-top:8px;font-size:10px;color:var(--pearl-dark);opacity:0.55;font-style:italic">● Proficiente · ○ Sem prof. · Bônus de Proficiência: +3</div>
+  </div>
+  </div>
+
+  <!-- EQUIPAMENTO + PERÍCIAS -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="section-title">✦ Equipamento</div>
+
+      <div class="equip-item">
+        <div class="equip-icon">🔨</div>
+        <div class="equip-name">Martelo da Forja — Inscrito<em>Ferramenta e arma · runa de +1 gravada pelo próprio punho</em></div>
+        <div class="equip-count"><span class="tag tag-ember">+1</span></div>
+      </div>
+      <div class="equip-item">
+        <div class="equip-icon">🛡️</div>
+        <div class="equip-name">Escudo de Ferro — Sem Inscrição<em>Ela ainda não decidiu o que gravar nele</em></div>
+        <div class="equip-count"><span class="tag tag-prata">Equip.</span></div>
+      </div>
+      <div class="equip-item">
+        <div class="equip-icon">⚙️</div>
+        <div class="equip-name">Armadura de Escamas Inscritas<em>CA 14 · cada escama carrega um fragmento de runa de proteção</em></div>
+        <div class="equip-count"><span class="tag tag-bronze">Equip.</span></div>
+      </div>
+      <div class="equip-item">
+        <div class="equip-icon">🖊️</div>
+        <div class="equip-name">Máquina Inscritora — Peça Única<em>Desenvolvida por ela · sem similar documentado em Valtheris</em></div>
+        <div class="equip-count"><span class="tag tag-ember">Única</span></div>
+      </div>
+      <div class="equip-item">
+        <div class="equip-icon">🧪</div>
+        <div class="equip-name">Tintas Rúnicas — Quatro Compostos<em>Vermelho · Verde · Azul · Âmbar · cada cor corresponde a uma runa dominada</em></div>
+        <div class="equip-count"><span class="tag tag-brasa">×4</span></div>
+      </div>
+      <div class="equip-item">
+        <div class="equip-icon">📜</div>
+        <div class="equip-name">Caderno de Fórmulas — Encadernado em Couro<em>Cada inscrição registrada com destinatário e intenção declarada</em></div>
+        <div class="equip-count"><span class="tag tag-prata">×1</span></div>
+      </div>
+
+      <div class="equip-note">A Máquina Inscritora não é uma arma — é o instrumento mais valioso que ela possui. Ela sabe disso. Qualquer cliente também aprende quando tenta tocá-la sem permissão.</div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">✦ Perícias D&D</div>
+      <div class="skill-row"><div class="skill-dot exp"></div><span class="skill-name">Ferramentas de Ferreiro</span><span class="skill-val">+8</span></div>
+      <div class="skill-row"><div class="skill-dot exp"></div><span class="skill-name">Religião / Domínio da Forja</span><span class="skill-val">+7</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">História</span><span class="skill-val">+4</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Intuição</span><span class="skill-val">+6</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Medicina</span><span class="skill-val">+6</span></div>
+      <div class="skill-row"><div class="skill-dot"></div><span class="skill-name">Demais perícias</span><span class="skill-val">+0 / +1 / +2</span></div>
+      <div class="skill-legend">◈◈ Especialista · ◈ Proficiente · ◯ Sem proficiência</div>
+
+      <div class="section-title" style="margin-top:18px">✦ Perícias CoC</div>
+      <div class="skill-row"><div class="skill-dot exp"></div><span class="skill-name">Artesanato / Metalurgia</span><span class="skill-val">85%</span></div>
+      <div class="skill-row"><div class="skill-dot exp"></div><span class="skill-name">Ocultismo / Runas</span><span class="skill-val">70%</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Armas Brancas</span><span class="skill-val">55%</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Percepção</span><span class="skill-val">60%</span></div>
+      <div class="skill-row"><div class="skill-dot prof"></div><span class="skill-name">Psicologia</span><span class="skill-val">50%</span></div>
+      <div class="skill-row"><div class="skill-dot"></div><span class="skill-name">Persuasão</span><span class="skill-val">25%</span></div>
+      <div class="skill-row" style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(90,155,186,.18);">
+        <div class="skill-dot" style="background:var(--sanity,#3a6b8a); opacity:.4;"></div>
+        <span class="skill-name" style="color:var(--sanity-light,#5a9bba); font-style:italic;">Mythos de Cthulhu</span>
+        <span class="skill-val" style="color:var(--sanity-light,#5a9bba);">0%</span>
+      </div>
+      <div style="font-size:.72rem; color:var(--text-dim,#7a7090); font-style:italic; margin-top:3px; padding-left:20px; line-height:1.4;">
+        Nenhum contato com os Seres Antigos ou o Mythos · SAN máx intacta · Poder arcano de origem dracônica — escala diferente
+      </div>
+      <div class="skill-legend" style="margin-top:10px;">Rola 1d100 ≤ valor = sucesso · ≤ ½ = difícil · ≤ 1/5 = extremo</div>
+    </div>
+  </div>
+
+  <!-- SITUAÇÃO ATUAL -->
+  <div class="countdown">
+    <div class="countdown-location">✦ Situação Atual — Valtheris, oficina própria · reino dos humanos</div>
+    <div class="countdown-urgency">
+      <span>⚒️ Forja ativa</span>
+      <span style="opacity:0.4">·</span>
+      <span>Davren no horizonte — ainda como Davren, não como arcebispo</span>
+    </div>
+    <div class="countdown-resources">
+      <span class="tag tag-brasa">HP 34 / 38</span>
+      <span class="tag tag-ember">SAN 85 / 85</span>
+      <span class="tag tag-runa">Carga Rúnica 2 / 2</span>
+      <span class="tag tag-bronze">Canal ×1 disponível</span>
+    </div>
+    <div class="countdown-desc">A runa inacabada ainda carregada. Davren no horizonte — mas ainda como Davren, não como arcebispo. Martelo à cintura. Quatro tintas. O caderno de fórmulas com cada inscrição registrada. A Máquina Inscritora intacta.</div>
+  </div>
+
+  <!-- LORE & IDENTIDADE -->
+  <div class="section-title">✦ Lore &amp; Identidade</div>
+  <div class="lore-panel">
+    <div class="lore-item">
+      <div class="lore-icon">🔥</div>
+      <div>
+        <div class="lore-key">Origem — O Olho de Brasa</div>
+        <div class="lore-val">Nasceu numa comunidade draconata onde forja era trabalho, não magia. O fogo apareceu cedo — não como arma, como <strong>sensibilidade</strong>. Ela sentia quando o metal estava pronto. Quando uma lâmina ia aguentar e quando ia partir. A comunidade chamava de <em>olho de brasa</em>: não um dom, uma sintonização com o que já existia no sangue. Ela nunca discordou do nome.</div>
+      </div>
+    </div>
+    <div class="lore-item">
+      <div class="lore-icon">🌙</div>
+      <div>
+        <div class="lore-key">Davren Solharte — O Amigo que Está Ficando Longe</div>
+        <div class="lore-val">A amizade começou antes de qualquer um dos dois saber o que ia se tornar. Ela ensinou ele a segurar metal sem medo do calor. Ele mostrou que palavras podem ser tão precisas quanto a borda de uma lâmina. <strong>Essa troca foi real.</strong> O distanciamento é real também — e o problema é que não há um momento exato de ruptura. Só conversas que foram ficando mais curtas, um registro que ela não reconhece mais, e a pergunta que ela não formulou em voz alta.<div style="margin-top:5px"><span class="tag tag-ember">Amizade de infância · erosão sem ruptura</span></div></div>
+      </div>
+    </div>
+    <div class="lore-item">
+      <div class="lore-icon">☀️</div>
+      <div>
+        <div class="lore-key">O Fragmento Solar — O Presente que Ficou</div>
+        <div class="lore-val">Passou meses desenvolvendo uma matriz física capaz de conter energia solar concentrada de forma estável — sem documentação de referência, sem precedente conhecido. Testou dezesseis ligas antes de encontrar a que não fraturava com o calor. Deu de presente sem contrato, sem pedido. Uma declaração: <em>eu acredito no que você está se tornando.</em> O gesto não foi ingênuo — foi deliberado. Para Vraene, dar de graça significava que o vínculo de amizade ainda sobrepunha qualquer autoridade institucional que Davren pudesse acumular. Ela sabia disso quando entregou. O fragmento é central no poder de Davren hoje. <strong>Ela não se arrepende de ter dado. Continua perguntando em silêncio se a peça ajudou a criar a grilheta.</strong> <span style="color:var(--brasa-bright);font-size:11px;opacity:0.8">— No Codex de Valtheris, o artefato resultante é registrado como <em>A Lança do Amanhecer</em>: fragmento de luz solar aprisionada em cristal que queima mortos-vivos em raio considerável apenas por estar presente. O Codex registra Davren como <strong>Arcebispo Davren Solharte</strong>, líder da ala militar da Igreja do Sol Agonizante. Vraene criou a matriz que tornou isso possível. Ela não usa o título.</span><div style="margin-top:5px"><span class="tag tag-brasa">Trabalho mais longo da vida · entregue de graça</span></div></div>
+      </div>
+    </div>
+    <div class="lore-item">
+      <div class="lore-icon">⚒️</div>
+      <div>
+        <div class="lore-key">A Oficina — Onde os Clientes Esperam</div>
+        <div class="lore-val">Tem endereço fixo no reino dos humanos — não está vinculada à Vila Sepet nem a qualquer comunidade draconata. Clientes esperam semanas. A alcunha <em>A que Forja Sonhos</em> existe porque as inscrições dela não encantam apenas o objeto — fazem o portador se sentir capaz do que mais teme. Ela não sabe exatamente como isso funciona. Sabe que quando inscreve com intenção verdadeira, a runa carrega a intenção junto. Isso não está documentado em nenhum manual de magia de Valtheris.<div style="margin-top:5px"><span class="tag tag-bronze">Reputação estabelecida · fenômeno sem explicação formal</span></div></div>
+      </div>
+    </div>
+    <div class="lore-item">
+      <div class="lore-icon">📛</div>
+      <div>
+        <div class="lore-key">A Runa Inacabada</div>
+        <div class="lore-val">Há uma inscrição que ela começou e não terminou. Não está em peça de cliente. Está num fragmento de metal que ela carrega consigo. A runa precisaria de um nome para ser completada — e ela ainda não encontrou as palavras certas. <strong>A runa diz: o que você precisaria aceitar para chegar perto o suficiente para dizer a verdade.</strong> Ela não sabe a resposta. Ainda.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APARÊNCIA + PERSONALIDADE -->
+  <div class="two-col" style="margin-bottom:28px">
+    <div class="panel">
+      <div class="section-title">✦ Aparência</div>
+      <div class="lore-item">
+        <div class="lore-icon">🔥</div>
+        <div><div class="lore-key">Herança Dracônica Visível</div><div class="lore-val">Escamas sutis cor de cobre ao longo dos braços e pescoço — não cobertura completa, sinais. Olhos cor de brasa viva que não refletem luz da forma comum: parecem ter fonte própria.</div></div>
+      </div>
+      <div class="lore-item">
+        <div class="lore-icon">🖊️</div>
+        <div><div class="lore-key">As Inscrições no Próprio Corpo</div><div class="lore-val">Os braços cobertos de runas são trabalho dela mesma — algumas funcionais, algumas experimentais, algumas que ela ainda não entendeu completamente. Nenhum cliente viu o braço esquerdo inteiro. Ela não esconde ativamente, mas também não explica.</div></div>
+      </div>
+      <div class="lore-item">
+        <div class="lore-icon">⚙️</div>
+        <div><div class="lore-key">O Avental da Forja</div><div class="lore-val">Couro pesado com correias e alças para as garrafinhas de tinta. Não é afetação — é o uniforme de quem trabalha com fogo e precisão ao mesmo tempo. As manchas de tinta nunca saem completamente.</div></div>
+      </div>
+      <div class="lore-item">
+        <div class="lore-icon">🔨</div>
+        <div><div class="lore-key">O Martelo</div><div class="lore-val">Nunca está longe. Carregado à cintura com naturalidade — não como arma exibida, como ferramenta disponível. A inscrição no cabo é a primeira runa que ela dominou. Não conta qual é.</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">✦ Personalidade</div>
+      <div class="lore-item">
+        <div class="lore-icon">🔇</div>
+        <div><div class="lore-key">Silêncio de Quem Está Pensando</div><div class="lore-val">Fala pouco porque está processando. Quando fala, é exato — escolhe palavras como escolhe liga metálica: pela função, não pelo efeito. Quem espera resposta rápida aprende a esperar.</div></div>
+      </div>
+      <div class="lore-item">
+        <div class="lore-icon">⚖️</div>
+        <div><div class="lore-key">Padrão Inflexível com Ela Mesma</div><div class="lore-val">Não aceita trabalho que não vai durar. Não assina peça que não está satisfeita. Aplicou esse padrão a si mesma antes de aplicar a qualquer cliente — a perfeição técnica não é exibição, é o mínimo aceitável.</div></div>
+      </div>
+      <div class="lore-item">
+        <div class="lore-icon">🌡️</div>
+        <div><div class="lore-key">Calor Real, Não Performático</div><div class="lore-val">Ri pouco, mas quando ri é com o corpo todo. Se algo é engraçado pra ela, ela deixa que seja. Não calibra a reação para impressionar — e isso torna os momentos em que ela se importa visivelmente mais pesados de carregar.</div></div>
+      </div>
+      <div class="lore-item">
+        <div class="lore-icon">🔗</div>
+        <div><div class="lore-key">Davren — A Questão Aberta</div><div class="lore-val">Não fala do arcebispo a menos que seja necessário. Quando fala, usa o nome — não o título. A distinção é deliberada e ela sabe que quem conhece os dois percebe. É a única concessão emocional que aparece na superfície.</div></div>
+      </div>
+      <div class="lore-item">
+        <div class="lore-icon">🌀</div>
+        <div><div class="lore-key">A Intenção por Trás da Runa</div><div class="lore-val">Acredita que a qualidade de uma inscrição depende da clareza da intenção de quem a grava. Por isso pergunta ao cliente o que ele <em>realmente</em> quer antes de aceitar o trabalho. <strong>"Uma runa gravada por encomenda dura. Uma gravada por intenção verdadeira transforma."</strong></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  </main>
+
+<div class="footer">
+    <div class="footer-quote">"Metal não mente. A forma que ele assume sob o martelo diz o que era antes de ser tocado.
+Ela aprendeu a ouvir isso. Depois aprendeu que pessoas funcionam da mesma maneira."</div>
+    <div class="footer-attr">— A que Forja Sonhos · Inscritora de Valtheris · Ficha v2.0</div>
+  </div>
+
+</div>
+
+<!-- SPELL DETAIL OVERLAY -->
+<div class="spell-detail-overlay" id="spellDetailOverlay" onclick="closeSpellDetail(event)">
+  <div class="spell-detail-panel" id="spellDetailPanel">
+    <button class="spell-detail-close" onclick="closeSpellDetail()">✕ Fechar</button>
+    <div class="spell-detail-level" id="sdLevel"></div>
+    <div class="spell-detail-name" id="sdName"></div>
+    <div class="spell-detail-stats" id="sdStats"></div>
+    <div class="spell-detail-desc" id="sdDesc"></div>
+  </div>
+</div>
+
+<script>
+/* ── SPELL DATA ── */
+const SPELL_DATA = {
+  sacredFlame: {
+    level: 'Truque · Evocação',
+    name: 'Chama Sagrada',
+    stats: ['Ação', 'CD 14 DES', '60 pés', 'Ilimitado'],
+    desc: 'Uma chama rúnica condensada num ponto. O alvo deve ter sucesso em um teste de resistência de Destreza CD 14 ou sofrer 1d8 de dano de fogo + radiante. O alvo não recebe benefício de cobertura. Ignora proteção física — funciona contra incorporais e espectros onde o martelo de ferro não chegaria.'
+  },
+  thaumaturgy: {
+    level: 'Truque · Transmutação',
+    name: 'Taumaturgia',
+    stats: ['Ação', '30 pés', '1 minuto', 'Ilimitado'],
+    desc: 'Manifesta um sinal menor do poder divino. A voz de Vraene pode soar amplificada, as chamas da forja tremulam na direção que ela indica, o chão vibra levemente, olhos se tornam brasa viva. Ela usa com parcimônia — a presença da Forja deve ser sentida, não performada.'
+  },
+  guidance: {
+    level: 'Truque · Adivinhação',
+    name: 'Orientação',
+    stats: ['Ação', 'Toque', 'Concentração · 1 min', 'Ilimitado'],
+    desc: 'Toca uma criatura disposta. Uma vez durante a duração, ela pode rolar 1d4 e adicionar o número rolado a um teste de habilidade. Vraene usa principalmente em si mesma antes de inscrições delicadas — a orientação divina confirma quando o momento está certo.'
+  },
+  mending: {
+    level: 'Truque · Transmutação',
+    name: 'Reparo',
+    stats: ['1 Minuto', 'Toque', 'Objeto partido', 'Ilimitado'],
+    desc: 'Conserta um único objeto partido ou danificado. A rotura ou ruptura não pode ser maior que 1 pé em qualquer dimensão. Ela usa no caderno de fórmulas quando páginas rasgam, em ferramentas, e nunca em armas de clientes — esses precisam de trabalho real, não de conserto rápido.'
+  },
+  flamingSmite: {
+    level: '1º Nível · Domínio · Evocação',
+    name: 'Golpe Flamejante',
+    stats: ['Ação bônus', 'Concentração · 1 min', 'Slot Nível 1', 'Sempre preparado'],
+    desc: 'No próximo acerto com arma, o alvo sofre 1d6 de dano de fogo adicional e pega fogo — sofrendo 1d6 de fogo no início de cada turno. Uma criatura ou objeto pode usar uma ação para apagar as chamas. Golpe combinado com Marca Rúnica de Chama: 2d6 extra em um único acerto.'
+  },
+  healingWord: {
+    level: '1º Nível · Evocação',
+    name: 'Palavra de Cura',
+    stats: ['Ação bônus', '60 pés', 'Slot Nível 1+', 'Preparada'],
+    desc: 'Uma criatura à escolha recupera 1d4 + modificador de Sabedoria (atualmente +3) = 1d4+3 PV. Para cada nível de magia acima do 1º, cura adicional de 1d4. Ela não usa com efusão — palavras de cura são ditas uma vez, com intenção, sem repetição.'
+  },
+  heatMetal: {
+    level: '2º Nível · Domínio · Transmutação',
+    name: 'Metal Incandescente',
+    stats: ['Ação', 'Concentração · 1 min', 'Slot Nível 2', 'Sempre preparado'],
+    desc: 'Faz um objeto de metal fabricado — armadura, escudo, arma — incandescer. A criatura em contato sofre 2d8 de dano de fogo imediatamente e de novo como ação bônus em cada turno. Se não largar o objeto, sofre desvantagem em jogadas de ataque e testes de habilidade. Metal reconhece fogo — essa magia é quase pessoal pra Vraene.'
+  },
+  magicWeapon: {
+    level: '2º Nível · Transmutação',
+    name: 'Arma Mágica',
+    stats: ['Ação bônus', 'Concentração · 1h', 'Slot Nível 2', 'Preparada'],
+    desc: 'Toca uma arma não-mágica e ela se torna +1 até o fim da duração. Em nível 4 de slot: +2. Ela aplica no próprio martelo quando sabe que enfrenta algo com resistência a dano não-mágico. O +1 já estava no cabo — ela só ativa o que a inscrição já sabia.'
+  },
+  elementalWeapon: {
+    level: '3º Nível · Domínio · Transmutação',
+    name: 'Arma Elemental',
+    stats: ['Ação', 'Concentração · 1h', 'Slot Nível 3', 'Sempre preparado'],
+    desc: 'Uma arma não-mágica tocada recebe +1 nos ataques e +1d4 de dano elemental (ácido, fogo, gelo, raio ou trovão) por 1 hora. No nível 5-6 de slot: +2 ataque, +2d4 dano. Vraene sempre escolhe fogo. Sempre. O elemento não é uma escolha — é uma confirmação.'
+  },
+  protectionFromEnergy: {
+    level: '3º Nível · Domínio · Abjuração',
+    name: 'Proteção de Energia',
+    stats: ['Ação', 'Toque', 'Concentração · 1h', 'Sempre preparado'],
+    desc: 'A criatura tocada ganha resistência a um tipo de dano elemental (ácido, fogo, gelo, raio ou trovão). Ela usa em aliados que precisam entrar onde ela poderia ir sozinha sem problema. O fogo não a toca — mas às vezes o trabalho exige que outros entrem no fogo com ela.'
+  }
+};
+
+const spellOverlay = document.getElementById('spellDetailOverlay');
+
+function openSpellDetail(id) {
+  const s = SPELL_DATA[id];
+  if (!s) return;
+  document.getElementById('sdLevel').textContent = s.level;
+  document.getElementById('sdName').textContent = s.name;
+  const statsEl = document.getElementById('sdStats');
+  statsEl.innerHTML = s.stats.map(t => `<span class="tag tag-brasa">${t}</span>`).join('');
+  document.getElementById('sdDesc').textContent = s.desc;
+  spellOverlay.classList.add('open');
+}
+
+function closeSpellDetail(e) {
+  if (!e || e.target === spellOverlay) {
+    spellOverlay.classList.remove('open');
+  }
+}
+
+/* ── INTERSECTION OBSERVER — reveal ── */
+(function () {
+  const targets = [
+    '.nature-box', '.vitals-grid', '.stats-row', '.rune-breakdown',
+    '.two-col', '.panel', '.lore-panel',
+    '.lore-item', '.ability-item', '.rune-grid',
+  ];
+  targets.forEach(sel => {
+    document.querySelectorAll(sel).forEach((el, i) => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.88) return;
+      el.classList.add('reveal');
+      el.style.transitionDelay = (i * 0.055) + 's';
+    });
+  });
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal, .reveal-left').forEach(el => io.observe(el));
+})();
+
+/* ── COUNTER ANIMATION ── */
+(function () {
+  function animateCounter(el) {
+    const target = parseInt(el.textContent, 10);
+    if (isNaN(target)) return;
+    const steps = Math.floor(900 / 16);
+    let current = 0; const inc = target / steps;
+    const timer = setInterval(() => {
+      current += inc;
+      if (current >= target) { el.textContent = target; clearInterval(timer); return; }
+      el.textContent = Math.floor(current);
+    }, 16);
+  }
+  const io2 = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { animateCounter(e.target); io2.unobserve(e.target); } });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.stat-value').forEach(el => io2.observe(el));
+})();
+
+/* ── STAGGER DELAYS ── */
+(function () {
+  ['lore-item','ability-item','attack-item','equip-item','save-item'].forEach(cls => {
+    document.querySelectorAll('.' + cls).forEach((el, i) => { el.style.transitionDelay = (i * 0.04) + 's'; });
+  });
+})();
+</script>
+</body>
+</html>

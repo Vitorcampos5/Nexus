@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sob o Luar dos Que Não Descansam — Documento de Campanha</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:        #06090f;
+    --moon-bright: #e8f0f8;
+    --silver:      #9ab0c4;
+    --silver-dim:  #5a7888;
+    --specter:     #4ec4c4;
+    --specter-dim: #1a6a6a;
+    --lune:        #b0c8e0;
+    --pearl:       #dde8f0;
+    --pearl-dark:  #8aa0b0;
+    --gold:        #c9a84c;
+    --gold-light:  #e8c97a;
+    --red-soft:    #e07070;
+    --ode-light:   #c0a8e8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--void);
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(14,30,60,0.6) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(10,20,40,0.5) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(78,196,196,0.02) 0%, transparent 60%);
+    font-family: 'EB Garamond', serif;
+    color: var(--pearl);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── STARS ── */
+  .stars {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--moon-bright);
+    animation: twinkle ease-in-out infinite alternate;
+  }
+  @keyframes twinkle {
+    0%   { opacity: 0.1; transform: scale(1); }
+    100% { opacity: 0.7; transform: scale(1.3); }
+  }
+
+  /* ── NAV ── */
+  #nav-toggle { display: none; }
+  .nav-btn {
+    position: fixed; top: 1.2rem; right: 1.2rem; z-index: 1000;
+    width: 44px; height: 44px;
+    background: rgba(6,9,15,0.9);
+    border: 1px solid rgba(78,196,196,0.3);
+    border-radius: 4px; cursor: pointer;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 5px; padding: 10px;
+    transition: background 0.3s;
+    backdrop-filter: blur(4px);
+  }
+  .nav-btn:hover { background: rgba(14,30,50,0.95); }
+  .nav-btn span {
+    display: block; width: 20px; height: 1.5px;
+    background: var(--specter);
+    transition: all 0.3s; transform-origin: center;
+  }
+  #nav-toggle:checked ~ .nav-btn span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  #nav-toggle:checked ~ .nav-btn span:nth-child(2) { opacity: 0; }
+  #nav-toggle:checked ~ .nav-btn span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  .nav-overlay {
+    position: fixed; top: 0; right: -300px;
+    width: 280px; height: 100vh;
+    background: rgba(6,9,15,0.97);
+    border-left: 1px solid rgba(78,196,196,0.2);
+    z-index: 999; transition: right 0.4s cubic-bezier(0.4,0,0.2,1), visibility 0.4s;
+    padding: 5rem 2rem 2rem; overflow-y: auto;
+    backdrop-filter: blur(8px);
+    visibility: hidden;
+  }
+  #nav-toggle:checked ~ .nav-overlay { right: 0; visibility: visible; }
+  .nav-overlay h2 {
+    font-family: 'Cinzel', serif; font-size: 0.65rem;
+    letter-spacing: 0.3em; color: var(--specter);
+    text-transform: uppercase; margin-bottom: 1.5rem; opacity: 0.7;
+  }
+  .nav-overlay ul { list-style: none; }
+  .nav-overlay ul li { margin-bottom: 0.2rem; }
+  .nav-overlay ul li a {
+    font-family: 'Cinzel', serif; font-size: 0.8rem;
+    color: var(--pearl-dark); text-decoration: none;
+    display: block; padding: 0.4rem 0.5rem;
+    border-left: 2px solid transparent;
+    transition: all 0.2s; letter-spacing: 0.05em;
+  }
+  .nav-overlay ul li a:hover { color: var(--specter); border-left-color: var(--specter); padding-left: 1rem; }
+  .nav-divider { height:1px; background: linear-gradient(90deg,transparent,rgba(78,196,196,0.3),transparent); margin:1rem 0; list-style:none; }
+
+  /* ── LAYOUT ── */
+  .page { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 2rem 4rem; }
+
+  /* ── HERO ── */
+  .hero {
+    text-align: center;
+    padding: 5rem 0 4rem;
+    border-bottom: 1px solid rgba(78,196,196,0.1);
+    margin-bottom: 4rem;
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%);
+    width: 200px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--specter), transparent);
+  }
+  .hero-overtitle {
+    font-family: 'Cinzel', serif; font-size: 0.65rem;
+    letter-spacing: 0.4em; color: var(--specter);
+    text-transform: uppercase; margin-bottom: 1.5rem; opacity: 0.8;
+  }
+  .hero-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    color: var(--moon-bright);
+    text-shadow: 0 0 60px rgba(78,196,196,0.2), 0 0 120px rgba(200,216,232,0.1);
+    letter-spacing: 0.06em; line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+  .hero-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.1rem; color: var(--pearl-dark);
+    letter-spacing: 0.1em; margin-bottom: 2rem;
+  }
+  .hero-divider {
+    display: flex; align-items: center; justify-content: center; gap: 1rem;
+    color: var(--specter-dim); font-family: 'Cinzel', serif; font-size: 0.7rem;
+    letter-spacing: 0.3em;
+  }
+  .hero-divider::before, .hero-divider::after {
+    content: ''; flex: 1; max-width: 120px; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(78,196,196,0.4));
+  }
+  .hero-divider::after { background: linear-gradient(270deg, transparent, rgba(78,196,196,0.4)); }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 4rem; }
+  .section-header {
+    display: flex; align-items: baseline; gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(78,196,196,0.15);
+    position: relative;
+  }
+  .section-header::after {
+    content: ''; position: absolute; bottom: -1px; left: 0;
+    width: 60px; height: 1px; background: var(--specter);
+  }
+  .section-num {
+    font-family: 'Cinzel', serif; font-size: 0.7rem;
+    color: var(--specter); letter-spacing: 0.2em; opacity: 0.7;
+  }
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1rem, 3vw, 1.3rem); font-weight: 700;
+    color: var(--moon-bright); letter-spacing: 0.08em;
+  }
+
+  /* ── PANELS ── */
+  .panel {
+    background: rgba(10,14,24,0.7);
+    border: 1px solid rgba(78,196,196,0.12);
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    backdrop-filter: blur(2px);
+  }
+  .panel-title {
+    font-family: 'Cinzel', serif; font-size: 0.65rem;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--specter); margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(78,196,196,0.12);
+  }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
+
+  /* ── NPC HEADER ── */
+  .npc-header {
+    border-bottom: 1px solid rgba(78,196,196,0.15);
+    padding-bottom: 1.2rem; margin-bottom: 1.5rem;
+  }
+  .npc-overtitle {
+    font-family: 'Cinzel', serif; font-size: 0.6rem;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--specter); opacity: 0.7; margin-bottom: 0.5rem;
+  }
+  .npc-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    color: var(--moon-bright);
+    text-shadow: 0 0 30px rgba(78,196,196,0.15);
+    margin-bottom: 0.4rem;
+  }
+  .npc-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 0.95rem; color: var(--pearl-dark);
+  }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.8rem; }
+  .tag {
+    font-family: 'Cinzel', serif; font-size: 0.55rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 0.2em 0.7em; border-radius: 2px; border: 1px solid;
+  }
+  .tag-spec   { background: rgba(13,40,40,0.7); color: var(--specter); border-color: rgba(78,196,196,0.3); }
+  .tag-gray   { background: rgba(20,30,45,0.7); color: var(--pearl-dark); border-color: rgba(100,140,180,0.2); }
+  .tag-warn   { background: rgba(42,26,8,0.7); color: var(--gold); border-color: rgba(120,80,20,0.4); }
+  .tag-red    { background: rgba(40,8,8,0.7); color: var(--red-soft); border-color: rgba(120,40,40,0.4); }
+  .tag-ode    { background: rgba(40,20,70,0.7); color: var(--ode-light); border-color: rgba(120,80,180,0.3); }
+  .tag-church { background: rgba(30,20,5,0.7); color: var(--gold-light); border-color: rgba(100,70,20,0.3); }
+  .tag-void2  { background: rgba(10,10,20,0.7); color: #7070a0; border-color: rgba(60,60,100,0.4); }
+
+  /* ── TRAIT ITEMS ── */
+  .trait-item {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .trait-item:last-child { border-bottom: none; }
+  .trait-key {
+    font-family: 'Cinzel', serif; font-size: 0.7rem;
+    font-weight: 600; color: var(--silver);
+    letter-spacing: 0.05em; margin-bottom: 0.3rem;
+  }
+  .trait-val {
+    font-family: 'EB Garamond', serif; font-size: 1rem;
+    color: var(--pearl-dark); line-height: 1.7; font-style: italic;
+  }
+
+  /* ── ANOMALY ── */
+  .anomaly {
+    background: rgba(8,12,28,0.8);
+    border: 1px solid rgba(40,60,100,0.4);
+    border-left: 2px solid var(--specter);
+    padding: 1.3rem 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+  .anomaly-title {
+    font-family: 'Cinzel', serif; font-size: 0.6rem;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--specter); margin-bottom: 0.8rem;
+  }
+  .anomaly p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--lune);
+    line-height: 1.8; margin-bottom: 0.6rem;
+  }
+  .anomaly p:last-child { margin-bottom: 0; }
+
+  /* ── WARNING ── */
+  .warning-block {
+    background: rgba(20,8,8,0.8);
+    border: 1px solid rgba(100,30,30,0.3);
+    border-left: 2px solid var(--red-soft);
+    padding: 1.3rem 1.5rem; margin-bottom: 1.2rem;
+  }
+  .warning-title {
+    font-family: 'Cinzel', serif; font-size: 0.6rem;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--red-soft); margin-bottom: 0.8rem;
+  }
+  .warning-block p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: #c8a8a8;
+    line-height: 1.8; margin-bottom: 0.6rem;
+  }
+  .warning-block p:last-child { margin-bottom: 0; }
+
+  /* ── QUOTE ── */
+  .quote-block {
+    border-left: 2px solid rgba(78,196,196,0.3);
+    padding: 0.6rem 1rem; margin-top: 0.8rem;
+  }
+  .quote-block p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--silver-dim); line-height: 1.7; margin: 0;
+  }
+
+  /* ── THEME GRID ── */
+  .theme-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1rem; margin-bottom: 1.2rem;
+  }
+  .theme-card {
+    background: rgba(10,14,24,0.7);
+    border: 1px solid rgba(78,196,196,0.1);
+    border-radius: 4px; padding: 1.1rem;
+  }
+  .theme-word {
+    font-family: 'Cinzel', serif; font-size: 0.85rem;
+    font-weight: 600; color: var(--moon-bright);
+    margin-bottom: 0.3rem;
+  }
+  .theme-pair {
+    font-family: 'Cinzel', serif; font-size: 0.55rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--specter); opacity: 0.7; margin-bottom: 0.6rem;
+  }
+  .theme-desc {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 0.95rem; color: var(--pearl-dark); line-height: 1.6;
+  }
+
+  /* ── TENSION ── */
+  .tension-list { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1.2rem; }
+  .tension-item {
+    display: grid; grid-template-columns: 1fr 40px 1fr;
+    align-items: center; gap: 0.8rem;
+    background: rgba(10,14,24,0.7);
+    border: 1px solid rgba(78,196,196,0.1);
+    border-radius: 4px; padding: 0.9rem 1.2rem;
+  }
+  .tension-side { font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--moon-bright); }
+  .tension-side.right { text-align: right; }
+  .tension-sub { font-family: 'EB Garamond', serif; font-style: italic; font-size: 0.85rem; color: var(--pearl-dark); margin-top: 0.2rem; }
+  .tension-vs {
+    font-family: 'Cinzel', serif; font-size: 0.55rem;
+    letter-spacing: 0.2em; color: var(--specter); text-align: center;
+  }
+
+  /* ── FILTER ── */
+  .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .filter-card { border-radius: 4px; padding: 1.2rem; }
+  .filter-in  { background: rgba(8,20,12,0.7); border: 1px solid rgba(40,100,60,0.3); border-left: 2px solid #3a9060; }
+  .filter-out { background: rgba(20,8,8,0.7);  border: 1px solid rgba(100,40,40,0.3); border-left: 2px solid #903040; }
+  .filter-title {
+    font-family: 'Cinzel', serif; font-size: 0.6rem;
+    letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 0.8rem;
+  }
+  .filter-in .filter-title  { color: #3a9060; }
+  .filter-out .filter-title { color: #903040; }
+  .filter-item {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 0.95rem; color: var(--pearl-dark);
+    padding: 0.35rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+    line-height: 1.5;
+  }
+  .filter-item:last-child { border-bottom: none; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center; margin-top: 5rem; padding-top: 2rem;
+    border-top: 1px solid rgba(78,196,196,0.1);
+    position: relative;
+  }
+  .footer::before {
+    content: ''; position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--specter), transparent);
+  }
+  .footer-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.15rem; color: var(--pearl-dark);
+    line-height: 1.9; max-width: 600px; margin: 0 auto 1rem;
+  }
+  .footer-attr {
+    font-family: 'Cinzel', serif; font-size: 0.6rem;
+    letter-spacing: 0.3em; color: var(--specter); opacity: 0.5;
+  }
+
+  /* ── RUNE DIVIDER ── */
+  .rune-divider {
+    text-align: center; margin: 2.5rem 0;
+    font-family: 'Cinzel', serif; font-size: 0.7rem;
+    letter-spacing: 0.3em; color: var(--specter); opacity: 0.4;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    .page { padding: 0 1rem 3rem; }
+    .two-col { grid-template-columns: 1fr; }
+    .theme-grid { grid-template-columns: 1fr 1fr; }
+    .filter-grid { grid-template-columns: 1fr; }
+    .tension-item { grid-template-columns: 1fr 30px 1fr; }
+  }
+  @media (max-width: 480px) {
+    .theme-grid { grid-template-columns: 1fr; }
+    .hero-title { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- STARS -->
+<div class="stars" id="stars"></div>
+
+<!-- NAV -->
+<input type="checkbox" id="nav-toggle">
+<label class="nav-btn" for="nav-toggle" aria-label="Abrir menu de navegação">
+  <span></span><span></span><span></span>
+</label>
+<nav class="nav-overlay" id="mainNav" aria-label="Menu principal">
+  <h2>Navegação</h2>
+  <ul>
+    <li><a href="#soren">I — Soren</a></li>
+    <li><a href="#arin">II — Arin</a></li>
+    <li><a href="#colecionador">III — O Colecionador</a></li>
+    <li class="nav-divider"></li>
+    <li><a href="#bussola">IV — Bússola Temática</a></li>
+    <li><a href="#epigrafe">V — Epígrafe</a></li>
+  </ul>
+</nav>
+
+<main>
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-overtitle">✦ Documento de Campanha · Valtheris ✦</div>
+    <h1 class="hero-title">Sob o Luar dos Que Não Descansam</h1>
+    <div class="hero-subtitle">Personagens · Entidades · Bússola Temática · Epígrafe</div>
+    <div class="hero-divider">— ✦ —</div>
+  </div>
+
+  <!-- ══ I — SOREN ══ -->
+  <section class="section" id="soren">
+    <div class="section-header">
+      <span class="section-num">I</span>
+      <h2 class="section-title">Soren — Catalogador de Residuais Espectrais</h2>
+    </div>
+
+    <div class="panel">
+      <div class="npc-header">
+        <div class="npc-overtitle">✦ Personagem notável · NPC recorrente</div>
+        <div class="npc-name">Soren</div>
+        <div class="npc-subtitle">Sem sobrenome registrado · Sem filiação confirmada · Sem endereço fixo</div>
+        <div class="tag-row">
+          <span class="tag tag-gray">Humano</span>
+          <span class="tag tag-gray">Neutro</span>
+          <span class="tag tag-spec">Catalogador Espectral</span>
+          <span class="tag tag-warn">Comerciante de Residuais</span>
+          <span class="tag tag-warn">Motivos não confirmados</span>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="panel-title">✦ Aparência</div>
+          <div class="trait-item">
+            <div class="trait-key">Estrutura</div>
+            <div class="trait-val">Homem de meia-idade difícil de datar — pode ter quarenta anos ou sessenta. Constituição comum, nada que o destaque num corredor. O tipo de pessoa que você esquece imediatamente depois de se afastar.</div>
+          </div>
+          <div class="trait-item">
+            <div class="trait-key">Os olhos</div>
+            <div class="trait-val">Cinza-claro com tonalidade que muda dependendo da luz — às vezes quase branco, às vezes com reflexo avermelhado em ambientes escuros. Não é sobrenatural. É descoloração progressiva. Começa assim em quem passa décadas catalogando artefatos espectrais sem proteção adequada. Ele sabe disso. Parou de usar óculos escuros faz tempo.</div>
+          </div>
+          <div class="trait-item">
+            <div class="trait-key">O detalhe</div>
+            <div class="trait-val">Carrega sempre um caderno de capa grossa com bordas metálicas. Não o abre na frente de ninguém. Quando alguém pergunta o que tem dentro, ele responde: "O que os mortos deixaram de dizer."</div>
+          </div>
+        </div>
+        <div>
+          <div class="panel-title">✦ Personalidade</div>
+          <div class="trait-item">
+            <div class="trait-key">Direto de um modo perturbador</div>
+            <div class="trait-val">Não é misterioso no sentido evasivo. Fala claramente, estabelece preço e termos sem rodeios. O que perturba é não encontrar a mentira. Quem está acostumado com negociantes de informação aprende a procurar o que está sendo escondido. Com Soren, nada parece escondido — e isso é mais desorientante que segredo.</div>
+          </div>
+          <div class="trait-item">
+            <div class="trait-key">O código pessoal</div>
+            <div class="trait-val">Nunca vende a mesma informação para lados que se opõem diretamente. Não por ética — por metodologia. "Informação que vai para os dois lados perde valor. Prefiro cobrar mais de um."</div>
+          </div>
+          <div class="trait-item">
+            <div class="trait-key">Sobre lealdade</div>
+            <div class="trait-val">Não tem. Não finge ter. Se você contratar Soren, ele entregará o que prometeu. Se outra pessoa pagar mais por algo diferente, ele entregará aquilo também — desde que não conflite com o que você já pagou.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-title">✦ O que ele faz — Catalogador de Residuais Espectrais</div>
+      <div class="trait-item">
+        <div class="trait-key">A especialidade</div>
+        <div class="trait-val">Soren não caça espectros. Não os dispersa nem os molda. O que ele faz é chegar depois — coletar o que sobra quando um espectro colapsa ou é dispersado, catalogar o residual, e vender para quem sabe o que fazer com ele. Décadas nesse ofício produziram o maior arquivo privado de dados espectrais que existe em Valtheris.</div>
+      </div>
+      <div class="trait-item">
+        <div class="trait-key">A visão — inversão central</div>
+        <div class="trait-val">Paradoxalmente, ele não consegue ver espectros pela periferia — só diretamente. O oposto exato da Caçadora. Quando olha para o lado, eles somem. Quando foca, aparecem com clareza. Isso o torna péssimo em campo e excelente em análise. Nunca admitiu isso em voz alta.</div>
+      </div>
+      <div class="trait-item">
+        <div class="trait-key">Os Cristalizados</div>
+        <div class="trait-val">Ele sabe o que são. Provavelmente sabe mais sobre o assunto do que qualquer pessoa viva. Quando viu os cinco que a Caçadora carrega, reconheceu a instalação de onde vieram antes de ela dizer uma palavra. Não disse isso imediatamente.</div>
+      </div>
+    </div>
+
+    <div class="anomaly">
+      <div class="anomaly-title">✦ A relação com a Caçadora</div>
+      <p>Soren sabia da existência dela antes de ela saber da dele. Tem um dossiê — sem nome, porque não conseguiu — mas com tudo mais: padrão de movimento, tipo de espectros resolvidos, marcas de arma, datas e regiões. Quando finalmente se aproximou, foi ele quem iniciou.</p>
+      <p>O que ele quer dela não é trabalho. É acesso. A Caçadora opera no plano espectral de um modo que ele nunca conseguiu documentar diretamente. Os residuais que ela deixa têm uma composição que ele não sabe nomear ainda. Ela é um dado que ele não tem.</p>
+      <div class="quote-block">
+        <p>"Você não precisa me dizer seu nome. Eu precisaria dele para te encontrar — e já te encontrei."</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">✦ Ganchos narrativos</div>
+      <div class="trait-item">
+        <div class="trait-key">O caderno</div>
+        <div class="trait-val">Contém registros de Cristalizados documentados ao longo de décadas — incluindo o conjunto de cinco que ela carrega, e o nome da instalação onde foram encontrados pela primeira vez, muito antes dela chegar lá.</div>
+      </div>
+      <div class="trait-item">
+        <div class="trait-key">O cliente que ele nunca nomeia</div>
+        <div class="trait-val">Alguém está comprando todo residual espectral de uma categoria específica. Pagando acima do valor. Sem fazer perguntas. Soren aceita o dinheiro e não investiga — por enquanto. Esse é o maior sinal de alerta que ele já ignorou conscientemente.</div>
+      </div>
+      <div class="trait-item">
+        <div class="trait-key">Os olhos piorando</div>
+        <div class="trait-val">A descoloração está avançando. Nos últimos meses, a tonalidade avermelhada aparece mesmo com luz normal. Ele sabe o que isso significa — e ainda não parou.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rune-divider">— ✦ —</div>
+
+  <!-- ══ II — ARIN ══ -->
+  <section class="section" id="arin">
+    <div class="section-header">
+      <span class="section-num">II</span>
+      <h2 class="section-title">Arin — Operadora do Limiar</h2>
+    </div>
+
+    <div class="panel">
+      <div class="npc-header">
+        <div class="npc-overtitle">✦ Personagem notável · Aliada principal</div>
+        <div class="npc-name">Arin</div>
+        <div class="npc-subtitle">Sobrenome desconhecido · Condição: Limiar · Sem filiação ativa</div>
+        <div class="tag-row">
+          <span class="tag tag-gray">Humana</span>
+          <span class="tag tag-spec">Limiar — Entre Planos</span>
+          <span class="tag tag-church">Ex-prisioneira da Igreja</span>
+          <span class="tag tag-gray">Aliada</span>
+          <span class="tag tag-warn">Condição irreversível</span>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="panel-title">✦ Aparência</div>
+          <div class="trait-item">
+            <div class="trait-key">Estrutura</div>
+            <div class="trait-val">Mulher jovem, vinte e poucos anos, altura mediana. Constituição que sugere movimento constante — não força, mas presença habitual em espaços onde ficar parada é risco.</div>
+          </div>
+          <div class="trait-item">
+            <div class="trait-key">A sombra</div>
+            <div class="trait-val">A sombra de Arin não se comporta corretamente. Em luz direta, aparece levemente maior que deveria. Em ambientes com múltiplas fontes de luz, projeta apenas uma sombra — quando deveria projetar várias. Quem nota fica sem saber se realmente viu.</div>
+          </div>
+          <div class="trait-item">
+            <div class="trait-key">O detalhe</div>
+            <div class="trait-val">Às vezes, por uma fração de segundo, parece que há duas dela no mesmo espaço — uma ligeiramente deslocada, como eco visual. Dura menos de um piscar. Ela nunca menciona.</div>
+          </div>
+        </div>
+        <div>
+          <div class="panel-title">✦ Personalidade</div>
+          <div class="trait-item">
+            <div class="trait-key">Presença que a Caçadora não pediu</div>
+            <div class="trait-val">A Caçadora opera sem testemunhas. Arin insiste em estar presente — não por teimosia, mas porque entende que certas coisas precisam ser vistas por alguém. Não para relatar. Apenas para que existam na memória de uma pessoa além de quem as fez.</div>
+          </div>
+          <div class="trait-item">
+            <div class="trait-key">Lealdade sem condição negociada</div>
+            <div class="trait-val">Não é cega. Arin discorda quando discorda, e diz claramente. Mas a lealdade em si não está em negociação. Isso desconcerta a Caçadora — ela sabe lidar com pessoas que querem algo. Não sabe lidar com alguém que simplesmente ficou.</div>
+          </div>
+          <div class="trait-item">
+            <div class="trait-key">Sobre o que a Igreja fez</div>
+            <div class="trait-val">Não fala sobre o período de cativeiro. Não porque seja trauma não processado — ela processou. É porque as palavras certas não existem ainda. Um dia vai encontrá-las.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-title">✦ A condição — Limiar</div>
+      <div class="trait-item">
+        <div class="trait-key">O que a Igreja fez</div>
+        <div class="trait-val">Os inquisidores da Igreja do Sol Agonizante conduziram experimentos tentando compreender o Plano da Morte sem morrer para acessá-lo. Arin foi forçada parcialmente através da fronteira entre planos e puxada de volta — incompleta. Ela sobreviveu. A fronteira não voltou ao lugar.</div>
+      </div>
+      <div class="trait-item">
+        <div class="trait-key">O que ela pode fazer</div>
+        <div class="trait-val">Arin consegue criar zonas de sobreposição planar — bolsões onde o limite entre o plano dos vivos e o plano espectral se torna permeável o suficiente para que presenças dentro delas sejam difíceis de perceber por qualquer dos dois lados. Não é invisibilidade. É existir na fresta.</div>
+      </div>
+      <div class="trait-item">
+        <div class="trait-key">O custo</div>
+        <div class="trait-val">Cada uso aproxima um pouco mais a fronteira interna dela da superfície. Ela não sabe o que acontece quando não houver mais distância entre o que é vivo e o que é espectral dentro de si. Está contando.</div>
+      </div>
+      <div class="trait-item">
+        <div class="trait-key">Os Cristalizados respondem a ela</div>
+        <div class="trait-val">Quando Arin está próxima, os Cristalizados da Caçadora ficam levemente mais ativos — especialmente Paz. Arin existe parcialmente no mesmo plano onde os Cristalizados operam. Ainda não foi investigado por nenhuma das duas.</div>
+      </div>
+    </div>
+
+    <div class="anomaly">
+      <div class="anomaly-title">✦ O silêncio entre elas</div>
+      <p>Arin esteve presente no momento em que a Caçadora tomou a decisão de abandonar o próprio nome. Não por acidente — foi a primeira missão que fizeram juntas. A Caçadora não sabia que havia alguém observando. Arin viu. Ouviu. Entendeu o que estava acontecendo.</p>
+      <p>Desde então, Arin carrega o nome. Nunca o usou. Nem como demonstração de confiança, nem como leverage, nem em momento de raiva. O nome simplesmente existe dentro dela como algo que não lhe pertence e que ela não vai devolver nem entregar.</p>
+      <p>A Caçadora sabe que Arin sabe. Nunca perguntou como. O acordo não foi negociado — apenas existe, sustentado pelo silêncio de ambas.</p>
+      <div class="quote-block">
+        <p>"Eu não preciso que você confie em mim. Só precisa saber que eu estou aqui."</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">✦ Ganchos narrativos</div>
+      <div class="trait-item">
+        <div class="trait-key">A contagem</div>
+        <div class="trait-val">Arin mantém mentalmente um registro de quantas vezes usou a condição. Não compartilhou o número com ninguém. Em algum momento da campanha, a Caçadora vai perceber que Arin está hesitando antes de usar — e vai entender o que isso significa.</div>
+      </div>
+      <div class="trait-item">
+        <div class="trait-key">O inquisidor que conduziu o experimento</div>
+        <div class="trait-val">Ainda está vivo. Ainda trabalha para a Igreja. E a Igreja tem alcance continental em Valtheris.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rune-divider">— ✦ —</div>
+
+  <!-- ══ III — O COLECIONADOR ══ -->
+  <section class="section" id="colecionador">
+    <div class="section-header">
+      <span class="section-num">III</span>
+      <h2 class="section-title">O Colecionador — Entidade Não Catalogada</h2>
+    </div>
+
+    <div class="panel">
+      <div class="npc-header">
+        <div class="npc-overtitle">✦ Entidade · Antagonista de arco</div>
+        <div class="npc-name">O Colecionador</div>
+        <div class="npc-subtitle">Designação de campo · Nome real desconhecido · Forma desconhecida</div>
+        <div class="tag-row">
+          <span class="tag tag-void2">Natureza indefinida</span>
+          <span class="tag tag-red">Drenagem de Sanidade</span>
+          <span class="tag tag-spec">Opera no plano dos vivos</span>
+          <span class="tag tag-warn">Vítimas conscientes</span>
+          <span class="tag tag-gray">Forma não confirmada</span>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="panel-title">✦ A cidade</div>
+          <div class="trait-item">
+            <div class="trait-key">Aparência normal</div>
+            <div class="trait-val">A cidade onde o Colecionador opera parece funcional. Movimento nas ruas, comércio, rotina. A cor está presente. Quem chega não sente imediatamente que algo está errado — sente depois, quando tenta recordar rostos e não consegue.</div>
+          </div>
+          <div class="trait-item">
+            <div class="trait-key">O registro de desaparecidos</div>
+            <div class="trait-val">Não há registro. As pessoas não desaparecem oficialmente. Elas simplesmente deixam de ser mencionadas. Como se o espaço onde existiam na memória coletiva fosse sendo suavemente preenchido por outra coisa.</div>
+          </div>
+          <div class="trait-item">
+            <div class="trait-key">O gatilho</div>
+            <div class="trait-val">Em algum canto, você nota um amontoado de bonecas. Não é assustador de imediato. Mas quando você vê, a cor some. Não gradualmente. De uma vez.</div>
+          </div>
+        </div>
+        <div>
+          <div class="panel-title">✦ As bonecas</div>
+          <div class="trait-item">
+            <div class="trait-key">Aparência</div>
+            <div class="trait-val">Roupas e cabelos escuros. Feições sem expressão fixa — quem olha por tempo suficiente jura que a expressão mudou, mas nunca consegue provar.</div>
+          </div>
+          <div class="trait-item">
+            <div class="trait-key">O riso</div>
+            <div class="trait-val">Começam a rir quando a vítima para de conseguir se mover. Riso comum, de criança, vindo de objetos que não têm boca funcional. O som é o que quebra a maioria das pessoas antes mesmo da drenagem começar.</div>
+          </div>
+          <div class="trait-item">
+            <div class="trait-key">O que elas são</div>
+            <div class="trait-val">Cada boneca é uma vítima anterior. A pessoa não está dentro da boneca — está em algum lugar que a boneca ancora. Consciente. Capaz de perceber o que acontece ao redor. Incapaz de agir.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-title">✦ A mecânica — drenagem de sanidade</div>
+      <div class="trait-item">
+        <div class="trait-key">O imobilismo</div>
+        <div class="trait-val">Não é paralisação física. O corpo pode se mover — a pessoa simplesmente não consegue formar a intenção de fazê-lo. A distância entre querer mover e mover tornou-se infinita. Quem já passou por dissociação reconhece o estado.</div>
+      </div>
+      <div class="trait-item">
+        <div class="trait-key">A extração</div>
+        <div class="trait-val">Sanidade não é retirada de uma vez. É drenada continuamente — devagar o suficiente para que o processo dure anos. O Colecionador não precisa de vítimas mortas. Precisa de vítimas funcionando no limite mínimo de consciência, produzindo indefinidamente. É um sistema de colheita, não de consumo.</div>
+      </div>
+      <div class="trait-item">
+        <div class="trait-key">O que ele faz com a sanidade</div>
+        <div class="trait-val">Ainda não documentado. Hipótese de Soren — não compartilhada com ninguém: sanidade em quantidade suficiente pode ser usada para alterar percepção de realidade em escala. A cidade que parece normal pode ser o produto, não o ambiente.</div>
+      </div>
+    </div>
+
+    <div class="warning-block">
+      <div class="warning-title">✦ A vulnerabilidade central — e o problema para a Caçadora</div>
+      <p>O gatilho de imobilização é o olhar direto para as bonecas. A Caçadora nunca olha diretamente para o que persegue — sua Visão Lateral é proteção natural contra esse mecanismo. Ela pode ver as bonecas pela periferia sem ativar o gatilho.</p>
+      <p>O problema: Arin não tem essa proteção. E a condição de Limiar de Arin pode torná-la um alvo de interesse especial — uma pessoa que já está meio dentro do estado que ele produz nas vítimas.</p>
+      <p>A missão nessa cidade vai exigir que a Caçadora opere como guia para Arin de um modo que contradiz toda a sua metodologia de trabalho solitário.</p>
+    </div>
+
+    <div class="anomaly">
+      <div class="anomaly-title">✦ A forma — o que ninguém sabe</div>
+      <p>Nenhuma vítima que passou pelo processo completo voltou com memória de ter visto o Colecionador diretamente. Isso pode significar que ele não tem forma física discernível. Pode significar que a memória da forma é parte do que é extraído primeiro.</p>
+      <p>O que existe são relatos fragmentados de sobreviventes que escaparam antes do processo completar — uma sensação de direção, de origem, como pressão sem fonte visível. Nenhum concordou sobre de onde vinha.</p>
+      <div class="quote-block">
+        <p>"Eu sabia que estava lá. Sabia de onde estava olhando para mim. Só não sei dizer o que estava olhando."</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">✦ Ganchos narrativos</div>
+      <div class="trait-item">
+        <div class="trait-key">As bonecas falam</div>
+        <div class="trait-val">Para a Caçadora — e apenas para ela, pela periferia — as bonecas às vezes formam palavras. As vítimas dentro ainda têm consciência suficiente para tentar se comunicar com quem consegue vê-las sem ser capturado.</div>
+      </div>
+      <div class="trait-item">
+        <div class="trait-key">Uma boneca específica</div>
+        <div class="trait-val">Entre o acervo do Colecionador há uma boneca que Soren reconhece. Não vai dizer de quem era imediatamente. Mas quando a Caçadora notar que ele parou, ela vai saber que aquilo importa para ele de um modo que vai além do profissional.</div>
+      </div>
+      <div class="trait-item">
+        <div class="trait-key">Libertar uma vítima</div>
+        <div class="trait-val">Não está claro se é possível. A boneca é o âncora — destruí-la pode libertar ou pode apenas eliminar o recipiente enquanto a pessoa se dissolve sem ter para onde ir. A Caçadora vai precisar descobrir isso antes de agir.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rune-divider">— ✦ —</div>
+
+  <!-- ══ IV — BÚSSOLA TEMÁTICA ══ -->
+  <section class="section" id="bussola">
+    <div class="section-header">
+      <span class="section-num">IV</span>
+      <h2 class="section-title">Bússola Temática da Campanha</h2>
+    </div>
+
+    <div class="panel" style="margin-bottom:1.2rem;">
+      <div class="panel-title">✦ IV · i — Temas narrativos · o que a campanha quer dizer</div>
+      <div class="theme-grid">
+        <div class="theme-card">
+          <div class="theme-word">Eterno vs. Temporário</div>
+          <div class="theme-pair">Gelo · Inverno · Escolha</div>
+          <div class="theme-desc">O que persiste não é o que foi feito para durar — é o que não foi liberado. Espectros existem porque algo ficou inacabado. A campanha pergunta: o que merece durar e o que precisa ir embora?</div>
+        </div>
+        <div class="theme-card">
+          <div class="theme-word">Força verdadeira</div>
+          <div class="theme-pair">Luta verdadeira · Significado de força · Verdadeiro valor</div>
+          <div class="theme-desc">Força não é o que vence — é o que permanece depois que vencer não é mais possível. A campanha define força como continuidade, não como poder.</div>
+        </div>
+        <div class="theme-card">
+          <div class="theme-word">Não ser nada demais</div>
+          <div class="theme-pair">Diferente de todos · Respeito · Ser aquilo que se espera</div>
+          <div class="theme-desc">A invisibilidade da Caçadora não é humildade nem medo — é metodologia. A campanha explora o custo de existir sem ser visto, e o momento em que isso deixa de ser escolha e vira prisão.</div>
+        </div>
+        <div class="theme-card">
+          <div class="theme-word">Caminho e mestre</div>
+          <div class="theme-pair">Mestre · Caminho · Reverências</div>
+          <div class="theme-desc">Quem ensinou a Caçadora o que ela sabe? O ofício foi herdado, descoberto, ou construído sozinha? A campanha pode revelar que há uma tradição por trás dela — com custos que ela ainda não pagou.</div>
+        </div>
+        <div class="theme-card">
+          <div class="theme-word">Gentileza como instinto</div>
+          <div class="theme-pair">Gentileza · Instinto · Homem com um coração</div>
+          <div class="theme-desc">Por baixo da metodologia há algo que ainda responde ao sofrimento dos outros. A campanha testa se esse instinto sobrevive ao ofício.</div>
+        </div>
+        <div class="theme-card">
+          <div class="theme-word">Palavra e fidelidade</div>
+          <div class="theme-pair">Palavra · Fidelidade</div>
+          <div class="theme-desc">O que a Caçadora prometeu, para quem prometeu, e se ainda está cumprindo — mesmo que a pessoa para quem prometeu não saiba mais que a promessa existe.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-bottom:1.2rem;">
+      <div class="panel-title">✦ IV · ii — Tensões internas da Caçadora</div>
+      <div class="tension-list">
+        <div class="tension-item">
+          <div class="tension-side">Instinto<div class="tension-sub">age antes de decidir</div></div>
+          <div class="tension-vs">vs</div>
+          <div class="tension-side right">Caminho<div class="tension-sub">o ofício tem regras</div></div>
+        </div>
+        <div class="tension-item">
+          <div class="tension-side">Diferente de todos<div class="tension-sub">isolamento como proteção</div></div>
+          <div class="tension-vs">vs</div>
+          <div class="tension-side right">Fidelidade<div class="tension-sub">Arin ficou</div></div>
+        </div>
+        <div class="tension-item">
+          <div class="tension-side">Não ser nada demais<div class="tension-sub">não deixar rastro</div></div>
+          <div class="tension-vs">vs</div>
+          <div class="tension-side right">Ser aquilo que se espera<div class="tension-sub">as vítimas precisam dela</div></div>
+        </div>
+        <div class="tension-item">
+          <div class="tension-side">Temporário<div class="tension-sub">tudo passa, inclusive ela</div></div>
+          <div class="tension-vs">vs</div>
+          <div class="tension-side right">Palavra<div class="tension-sub">o que prometeu não passa</div></div>
+        </div>
+        <div class="tension-item">
+          <div class="tension-side">Gentileza<div class="tension-sub">o impulso original</div></div>
+          <div class="tension-vs">vs</div>
+          <div class="tension-side right">Luta verdadeira<div class="tension-sub">o que o ofício exige</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">✦ IV · iii — Critério de design · o que pertence a esta campanha</div>
+      <div class="filter-grid">
+        <div class="filter-card filter-in">
+          <div class="filter-title">Pertence</div>
+          <div class="filter-item">Personagens com um código interno que não negociam — mesmo quando deveriam</div>
+          <div class="filter-item">Entidades que existem porque algo ficou inacabado, não porque são malignas por natureza</div>
+          <div class="filter-item">Conflitos onde a resposta certa e a resposta gentil não são a mesma coisa</div>
+          <div class="filter-item">Objetos com história de uso — o que importa é quem os carregou</div>
+          <div class="filter-item">Silêncio como comunicação — o que não é dito pesa tanto quanto o que é</div>
+          <div class="filter-item">Força que se manifesta como continuidade, não como impacto</div>
+        </div>
+        <div class="filter-card filter-out">
+          <div class="filter-title">Não pertence</div>
+          <div class="filter-item">Poder que cresce com uso — a campanha é sobre custo, não sobre progressão</div>
+          <div class="filter-item">Vilões sem lógica interna coerente — até o Colecionador tem método</div>
+          <div class="filter-item">Revelações que resolvem tensão em vez de aprofundá-la</div>
+          <div class="filter-item">Lealdade incondicional que nunca é testada</div>
+          <div class="filter-item">Vitórias sem perda — cada resolução deve custar algo real</div>
+          <div class="filter-item">Personagens que existem apenas para informar ou ser salvos</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rune-divider">— ✦ —</div>
+
+  <!-- ══ V — EPÍGRAFE ══ -->
+  <section class="section" id="epigrafe">
+    <div class="section-header">
+      <span class="section-num">V</span>
+      <h2 class="section-title">Epígrafe — Rodapé da Ficha da Caçadora</h2>
+    </div>
+
+    <div class="anomaly">
+      <div class="anomaly-title">✦ Texto — rodapé da ficha</div>
+      <p style="font-size:1.15rem; text-align:center; line-height:2;">
+        "Sentimentos não estagnam, eles vêm, às vezes permanecem por algum tempo mas sempre se vão.<br>
+        Memórias sim, elas ficam lá do jeito que são, marcas e cicatrizes."
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">✦ Nota de uso</div>
+      <div class="trait-item">
+        <div class="trait-key">Na ficha</div>
+        <div class="trait-val">Substitui a citação anônima atual no rodapé da Ficha da Caçadora do Luar. A atribuição de autoria dentro do mundo de Valtheris será definida quando a ficha for atualizada.</div>
+      </div>
+      <div class="trait-item">
+        <div class="trait-key">Em saga futura</div>
+        <div class="trait-val">A frase encontrará seu momento narrativo correto durante a escrita das sagas. Não forçar — esperar o momento onde o peso da distinção entre sentimento e memória apareça organicamente na história.</div>
+      </div>
+      <div class="trait-item">
+        <div class="trait-key">A relação com os Cristalizados</div>
+        <div class="trait-val">A frase descreve exatamente o que os Cristalizados não são — eles são sentimentos que não foram embora, que colapsaram em forma ao invés de se dissolverem. Funciona como o avesso da mecânica central da Caçadora.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-quote">
+      "Os que tentaram perguntar o nome receberam silêncio ou um sorriso sem explicação."
+    </div>
+    <div class="footer-attr">— Registros de campo não atribuídos · Valtheris · Sob o Luar dos Que Não Descansam</div>
+  </div>
+
+</div>
+</main>
+
+<script>
+  /* ── stars ── */
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = Math.random() * 2 + 0.5;
+    s.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      animation-duration:${2+Math.random()*4}s;
+      animation-delay:${Math.random()*4}s;
+    `;
+    starsEl.appendChild(s);
+  }
+
+  /* ── nav: aria-expanded ── */
+  const navToggle = document.getElementById('nav-toggle');
+  const navBtn    = document.querySelector('.nav-btn');
+  if (navToggle && navBtn) {
+    navBtn.setAttribute('aria-expanded', 'false');
+    navToggle.addEventListener('change', function () {
+      navBtn.setAttribute('aria-expanded', this.checked ? 'true' : 'false');
+    });
+  }
+</script>
+
+</body>
+</html>

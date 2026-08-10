@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luz nas Trevas — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">IV</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Luz nas Trevas</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet, Mara Vell e Elise</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Dizem que quem sobrevive ao fogo carrega, para sempre, o cheiro da fumaça — e que alguns escolhem apagar o incêndio dos outros só para provar a si mesmos que aquele cheiro não precisa ser destino. Esta é a lenda de uma aldeia salva por quem, um século antes, viu a sua própria arder.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Renascido</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Enquanto os três se aproximavam da saída do túnel, Leyn sentiu algo mudando dentro de si. Não era apenas recuperação física. Era evolução.</p>
+
+    <p>As experiências recentes — morrer, ressuscitar, criar família através de compaixão, encarar o Devorador e sobreviver — haviam cristalizado algo nele que nem cem anos de disciplina tinham conseguido.</p>
+
+    <p>Ele não era mais apenas o guerreiro que treinava sozinho. Não era mais apenas o vampiro que perdera tudo. Era o Renascido. E seu próprio estilo de luta evoluíra com ele. Os movimentos vinham mais precisos agora, mais eficientes — a Estocada de Uma Polegada, que antes exigia meditação e foco absoluto, agora fluía como respiração. E havia algo mais: um potencial ainda contido, um reservatório de força trancado esperando para ser aberto. Vida emprestada, guardada para o momento em que ele realmente a merecesse.</p>
+
+    <p>"Leyn…" disse Mara, estudando-o. "Você está diferente. Mais forte. Mas ainda frágil. É estranho."</p>
+
+    <p>"É como…" completou Elise, "como se ele estivesse guardando força para quando realmente merecer usá-la."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Floresta Devastada</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Chegaram à saída do túnel. Ar fresco. Luz de lua — não de sol, e graças aos deuses por isso; a luz solar o mataria. Diante deles: a floresta de Valtheris, devastada. Árvores retorcidas em ângulos que a natureza nunca pretendera. Névoa estranha rastejando pelo chão.</p>
+
+    <p>E ao longe, luzes de uma aldeia. Pequena. Fumegante. Gritos abafados chegavam pelo vento.</p>
+
+    <p>Mara e Elise olharam para ele.</p>
+
+    <p>"Líder…" perguntou Mara, "para onde vamos?"</p>
+
+    <p>"Vamos investigar a aldeia," disse Leyn. "Mas mantenham a cautela — não seremos imprudentes, a não ser que não tenhamos escolha."</p>
+
+    <p>Avançaram pela floresta retorcida, as duas o flanqueando. Três vampiros se movendo como sombras sob a lua. Mara usava os múltiplos braços para se equilibrar silenciosamente entre os troncos distorcidos; Elise, ainda com resquícios de sua antiga forma aberrante, se fundia com as próprias sombras. Leyn liderava — espada em punho, sentidos abertos ao máximo.</p>
+
+    <p>Nenhum dos três fez o menor som. Duzentos metros antes da aldeia, ele parou e fez sinal para as duas pararem também. Eram fantasmas naquela noite. Ninguém os detectaria.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Pira e o Padre</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>A visão no escuro de Leyn revelou a cena por completo.</p>
+
+    <p>Não era um ataque total — era seletivo. Algumas casas queimavam; outras permaneciam intactas. Oito Inquisidores da Igreja do Sol Agonizante, em armadura branca e dourada, cercavam a praça central. Cerca de quinze aldeões ajoelhados, mãos amarradas. Uma pira sendo erguida — madeira empilhada, estacas fincadas no centro. E um padre em vestes ornamentadas, lendo em voz alta de um livro sagrado.</p>
+
+    <p>"…e assim, pelo decreto do Arcebispo Davren," proclamava ele, "estes HEREGES que abrigaram criaturas profanas serão PURIFICADOS pelo fogo sagrado!"</p>
+
+    <p>"NÓS APENAS DEMOS ÁGUA A UMA CRIANÇA FERIDA!" gritou um aldeão. "NÃO SABÍAMOS QUE ELA ERA VAMPIRA!"</p>
+
+    <p>"EXATAMENTE!" retrucou o padre. "Sua ignorância é seu pecado! Vocês permitiram que a IMPUREZA entrasse em suas casas! A punição é CLARA!"</p>
+
+    <p>"Eles vão queimar famílias inteiras…" sussurrou Mara, "por compaixão a uma criança…"</p>
+
+    <p>"É… como era…" murmurou Elise, "cem anos atrás… quando queimaram… o vilarejo dele…"</p>
+
+    <p>Mesmo em horror, ela continuava estratégica.</p>
+
+    <p>"Se atacarmos," sussurrou, "o padre pode usar símbolos sagrados… isso nos repele…"</p>
+
+    <p>"Mas se não fizermos nada," respondeu Mara, "quinze pessoas morrem queimadas… incluindo crianças…" Virou-se para Leyn. "O que fazemos?"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Uma Criança da Linhagem</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn congelou ao ouvir.</p>
+
+    <p><em>"…abrigaram uma criança vampira…"</em></p>
+
+    <p>Impossível. Seu coração morto — que não batia, mas ainda sentia — se apertou.</p>
+
+    <p><em>Eu não fui o último que sobrou de cem anos atrás?</em></p>
+
+    <p>As memórias o inundaram: o massacre, as cinzas. Ele sempre acreditara que sua linhagem morrera por completo naquela noite. Mas uma criança sobrevivera? Por um século inteiro. Sozinha. Escondida. E agora, sem querer, sem saber, ela causara isso tudo — só por pedir água.</p>
+
+    <p>Em algum lugar naquela floresta, uma criança vampira da sua própria linhagem estava escondida, aterrorizada, sozinha, sem entender o que era. Por cem anos, a chama da linhagem primordial sobrevivera no escuro, sem saber que havia outro.</p>
+
+    <p>"Leyn…" disse Mara, gentil. "Você não está sozinho. Nunca esteve."</p>
+
+    <p>Ele voltou à realidade. Focou. Olhou para as duas, voz baixa, mas firme.</p>
+
+    <p>"Aqueles soldados — parte deles deve pensar o mesmo que vocês pensaram há cem anos. Estão seguindo ordens. Talvez com dúvidas." Seus olhos vermelhos se fixaram no padre. "Mas aquele padre… quero olhar mais de perto nele. Ele parece FELIZ em cometer essas atrocidades." Uma pausa. "Não acho que tenhamos que nos preocupar com os cavaleiros. Para mim, tem mais de quinze seres inocentes aqui."</p>
+
+    <p>Elise sorriu — um sorriso sombrio, mas com propósito.</p>
+
+    <p>"Você quer… salvar os soldados também…" disse ela, "aqueles que ainda têm consciência…"</p>
+
+    <p>"E eliminar apenas…" completou Mara, assentindo, "os verdadeiros monstros… como aquele padre…"</p>
+
+    <p>Aproximaram-se mais. Leyn focou no padre, todos os sentidos alerta. Mara partiu em silêncio em direção a uma casa de caçador. Elise permaneceu nas sombras, pronta.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Plano — e o que Escapa ao Olhar</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn tentou ler além da superfície do padre, buscando a verdade sob a encenação. Mas o homem era mais complexo do que parecia à primeira vista, e a intuição não alcançou tudo. Só uma certeza restou clara: aquele homem era corrupto.</p>
+
+    <p>"E onde está a CRIATURA que vocês abrigaram?!" berrava o padre. "FALEM! Ou TODOS queimam, incluindo suas crianças!"</p>
+
+    <p>"Ela fugiu!" gritou uma mulher aldeã. "Para a floresta! Por favor, temos crianças aqui que nada fizeram!"</p>
+
+    <p>"SILÊNCIO, HEREGE!"</p>
+
+    <p>O padre a golpeou com o próprio livro sagrado. Ela desmoronou, sangrando. Um dos inquisidores — mais jovem, hesitante — deu um passo à frente.</p>
+
+    <p>"Padre Cornelius…" disse ele, "com todo respeito… estas pessoas não sabiam o que a criança era. Talvez… misericórdia—"</p>
+
+    <p>"MISERICÓRDIA?!" A voz de Cornelius explodiu. "Você QUESTIONA a vontade da Igreja?! Talvez VOCÊ precise de purificação também!"</p>
+
+    <p>O jovem recuou. Mas Leyn viu — havia dúvida em vários rostos ao redor.</p>
+
+    <p>"Procurem um arco e flechas," sussurrou ele para as duas, "ou algo que possa ser atirado. Acertem o padre se as coisas saírem do controle."</p>
+
+    <p>"Tem uma casa de caçador ali," disse Mara. "Vou pegar."</p>
+
+    <p>"Eu posso…" ofereceu Elise, "cuspir ácido… da minha boca… se necessário…"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Três Palmas na Noite</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn agiu. Saiu da floresta sozinho, caminhando calmamente em direção à praça iluminada por tochas.</p>
+
+    <p>Batendo palmas.</p>
+
+    <p><strong>Clap. Clap. Clap.</strong></p>
+
+    <p>Todos congelaram. Inquisidores sacaram espadas. O padre se virou. Aldeões olharam com terror e confusão.</p>
+
+    <p>"Há tempos não vejo um ser tão corrompido quanto você," disse Leyn.</p>
+
+    <p>Continuou andando. Sem pressa. Um predador que já sabia que tinha vencido.</p>
+
+    <p>"Nem mesmo a Seraphine tinha uma alma tão podre como a sua," acrescentou. "E olha que nem alma ela tinha."</p>
+
+    <p>Parou a vinte pés do padre, olhos vermelhos brilhando na luz das tochas.</p>
+
+    <p>"Você é mesmo um padre?" perguntou. "Não tem a luz de um."</p>
+
+    <p>Os inquisidores formaram uma linha defensiva, mas Leyn via o medo por trás da postura — um vampiro, olhos vermelhos, andando sozinho com confiança absoluta, mencionando Lady Seraphine pelo nome, uma herege recém-declarada, conhecida tanto pelos cultistas quanto pela própria Igreja.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Anomalia</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"HAHAHAHA!" o padre explodiu em riso. "Um VAMPIRO! Aqui! Falando de CORRUPÇÃO! Olhem, fiéis! A criatura das trevas vem defender seus SEMELHANTES! Prova de que estes aldeões REALMENTE abrigaram impureza!"</p>
+
+    <p>Mas então ele estudou Leyn mais de perto. Os olhos se estreitaram. E, ao invés de recuar, deu um passo à frente.</p>
+
+    <p>"Espere…" murmurou. "Você… você tem o cheiro de… primordial? E algo mais… você MORREU recentemente… mas está vivo…"</p>
+
+    <p>Sorriu, quase deslumbrado.</p>
+
+    <p>"Fascinante. Você é uma ANOMALIA. Os textos profanos mencionam… vampiros que transcendem a morte…"</p>
+
+    <p>A ganância e a obsessão sobrepujaram qualquer instinto de sobrevivência — ele via Leyn não como ameaça, mas como espécime, e revelava sua verdadeira natureza no processo.</p>
+
+    <p>"Você acha que sou corrupto?" continuou o padre. "EU? Eu sirvo a LUZ, vampiro. A luz que QUEIMA impurezas. A luz que não tolera ANOMALIAS como você!"</p>
+
+    <p>Ergueu o livro sagrado. Símbolos na capa brilharam.</p>
+
+    <p>"Padre…" murmurou o jovem inquisidor hesitante, "ele mencionou Lady Seraphine… ela foi declarada herege pela Igreja no mês passado… como ele sabe?"</p>
+
+    <p>"E…" acrescentou outro soldado, "vampiros não falam assim… não argumentam… apenas atacam…"</p>
+
+    <p>"SOLDADOS!" berrou Cornelius. "CAPTUREM O VAMPIRO! VIVO SE POSSÍVEL! A Igreja pagará MUITO por espécime primordial!"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Símbolos Falsos — A Verdade que Queima</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Luz divina se projetou do livro do padre, tentando repelir Leyn — queimar sua carne morta, forçá-lo a recuar.</p>
+
+    <p>Ele não recuou.</p>
+
+    <p>Não porque fosse forte o bastante para resistir à luz sagrada de verdade. Mas porque aqueles símbolos não eram sagrados — sua intuição, mais afiada desde o renascimento, percebeu algo errado na própria luz. Amarelada. Doentia. Não divina. Falsificada. Profana disfarçada de sagrada.</p>
+
+    <p>Ele caminhou através dela como se não estivesse ali.</p>
+
+    <p>O padre congelou. Choque absoluto.</p>
+
+    <p>"I-impossível…" gaguejou. "Os símbolos deveriam…"</p>
+
+    <p>Leyn se virou para o jovem inquisidor que questionara antes, ignorando o padre por um instante.</p>
+
+    <p>"Como sei da Lady Seraphine, você questiona?" disse. "Sei, pois ela e muitos outros nobres estão juntos com o Culto da Verdade Profunda." Os soldados se entreolharam, murmurando. "Eu venho do esconderijo deles. Vi muitos que eram soldados como vocês serem transformados em seres deformados pelos experimentos daquela mulher, apoiada por nobres." Apontou na direção geral da fortaleza distante, um sorriso sombrio nos lábios. "…a própria ambição dela a levou desse plano."</p>
+
+    <p>A revelação atingiu os soldados como um golpe físico. Espadas hesitaram.</p>
+
+    <p>"Lady Seraphine…" perguntou o jovem inquisidor, "morta? Por você?"</p>
+
+    <p>"Ele está mentindo!" gritou outro soldado. "Vampiros mentem!"</p>
+
+    <p>"Ele…" disse um soldado veterano, cicatrizes cruzando o rosto, "atravessou os símbolos sagrados. Como se não fossem nada. Símbolos GENUÍNOS nunca permitiriam isso."</p>
+
+    <p>Todos olharam para o padre. Ele recuou um passo. Suor escorria por sua testa. A máscara de controle começava a rachar.</p>
+
+    <p>"E-ele está usando MAGIA PROFANA para resistir!" gaguejou. "Obviamente!"</p>
+
+    <p>Mas sua voz tremia.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Acusador Acusado</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>As palavras de Leyn eram verdadeiras, lógicas, poderosas. Mas não bastaram para quebrar o controle do padre sobre os mais fanáticos. Ele pressionou por outro ângulo.</p>
+
+    <p>Através do vínculo silencioso que agora o ligava a Mara e Elise, sentiu as duas se comunicarem sem palavras audíveis.</p>
+
+    <p><em>Tenho o arco,</em> veio de Mara. <em>Flecha apontada para o padre. Diga a palavra.</em></p>
+
+    <p><em>Posso atacar pelas costas,</em> respondeu Elise. <em>Ele está distraído.</em></p>
+
+    <p>"EU utilizando magia profana?" disse Leyn em voz alta, dando mais um passo em direção ao padre. "Você, aparentemente, conhece os vampiros primordiais, visto que me reconheceu como um. Acha que nós, sangue puro, utilizamos a magia desses seres que rastejam na escuridão?"</p>
+
+    <p>Outro passo.</p>
+
+    <p>"Você me faz ter náusea," continuou. "Está mais do que óbvio que esses símbolos que você chama de divino são FALSOS." Apontou, acusador. "Você anda por aí chamando de herege todos que vão contra sua palavra, ou discordam minimamente dela. Mas no fim, não passa de um."</p>
+
+    <p>Uma pausa dramática.</p>
+
+    <p>"Até mesmo EU teria mais afinidade com a magia da luz verdadeira do que você."</p>
+
+    <p>Os soldados hesitaram. Dúvida clara em cada rosto. Espadas ainda erguidas, mas ninguém avançava.</p>
+
+    <p>"Ele tem razão…" murmurou o veterano. "os símbolos não funcionaram nele…"</p>
+
+    <p>"E vampiros não falam de 'magia da luz verdadeira'…" acrescentou o jovem inquisidor. "eles odeiam luz em todas as formas…"</p>
+
+    <p>Mas o padre não estava quebrado. Riu — histérico agora, mas ainda no controle.</p>
+
+    <p>"PALAVRAS BONITAS, CRIATURA!" berrou. "Mas vocês, SOLDADOS, têm ORDENS! Do ARCEBISPO! Questionar é HERESIA!"</p>
+
+    <p>Apontou para os aldeões amarrados. Dois inquisidores — os mais fanáticos — moveram-se para acender a pira. Os outros seis permaneceram parados, conflitados.</p>
+
+    <p>O padre percebeu que estava perdendo.</p>
+
+    <p>E fez algo desesperado.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Refém</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Puxou uma adaga de dentro das vestes e correu até uma criança aldeã — menina de talvez oito anos. Agarrou-a pelos cabelos, lâmina no pescoço dela.</p>
+
+    <p>"SE NÃO OBEDECEM, ENTÃO ESTA CRIANÇA MORRE PRIMEIRO!" berrou. "RECUEM! VAMPIRO E SOLDADOS TRAIDORES! OU ELA SANGRA!"</p>
+
+    <p>"NÃO!" gritou a mãe da menina. "POR FAVOR! ELA NÃO FEZ NADA!"</p>
+
+    <p>Na pira, o fogo começava a subir.</p>
+
+    <p><em>Tenho tiro limpo,</em> veio Mara pelo vínculo, <em>mas ele pode cortar reflexivamente se eu errar…</em></p>
+
+    <p><em>Posso tentar engolir ele,</em> respondeu Elise, <em>mas preciso estar perto… dez pés…</em></p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Gambit da Rendição</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn levantou as mãos, soltando a espada. Ela caiu no chão com um clang metálico.</p>
+
+    <p>"Pare," disse. "Eu me entrego. Solte a criança. Me leve para o Arcebispo. Um vampiro primordial vale mais que quinze aldeões, não?"</p>
+
+    <p>Deu um passo à frente, mãos ainda erguidas.</p>
+
+    <p>"Você ganha. Eu perco. Apenas… solte a menina."</p>
+
+    <p>Através do vínculo, ordenou em silêncio:</p>
+
+    <p><em>Elise — apague as tochas dos soldados fanáticos com seu ácido. Crie confusão. Mara — fique preparada. Se ele soltar a criança, flecha nele. Tiro certeiro. Não erre. E vocês duas: ninguém além do padre deve morrer. Entendem?</em></p>
+
+    <p><em>Entendido,</em> respondeu Mara, a voz firme mesmo através do vínculo.</p>
+
+    <p><em>Sim…</em> respondeu Elise. <em>Só o monstro real…</em></p>
+
+    <p>O padre hesitou. Leyn via os olhos dele calculando — ganância contra suspeita.</p>
+
+    <p>"Você… se entrega… voluntariamente?" perguntou Cornelius. "Por quê? Vampiros não fazem sacrifícios por humanos!"</p>
+
+    <p>Mais um passo. Dez pés de distância agora.</p>
+
+    <p>"Porque diferente de você, eu tenho honra," disse Leyn. "E essa criança não merece morrer pelo medo de homens fracos." Uma pausa fria. "Então? Aceita ou não? Vampiro primordial vivo… ou criança morta que não vale nada?"</p>
+
+    <p>Elise já agia. A boca se abriu levemente, e jatos de ácido voaram silenciosos pelas sombras.</p>
+
+    <p><strong>Splash. Splash.</strong></p>
+
+    <p>As tochas dos dois inquisidores fanáticos que tentavam acender a pira se apagaram, corroídas instantaneamente.</p>
+
+    <p>"QUE DIABOS?!" "QUEM ESTÁ AÍ?!"</p>
+
+    <p>Confusão. Os soldados olharam ao redor, nervosos. Mara já estava posicionada, arco esticado, flecha apontada para a cabeça do padre.</p>
+
+    <p><em>Pronta,</em> veio dela pelo vínculo. <em>Diga a palavra.</em></p>
+
+    <p>O padre olhou para Leyn. Depois para a escuridão ao redor, percebendo, tarde demais, que ele não estava sozinho.</p>
+
+    <p>"Você… trouxe aliados…" disse. "isso não é entrega genuína…"</p>
+
+    <p>Mas a ganância venceu.</p>
+
+    <p>"Tudo bem," cedeu. "EU ACEITO! VENHA, VAMPIRO! SE TENTAR ALGO, MEUS SOLDADOS TE DESTROEM!"</p>
+
+    <p>Empurrou a criança brutalmente para longe. Ela caiu, chorando, mas viva.</p>
+
+    <p><em>Elise,</em> ordenou Leyn em silêncio. <em>Atire nele. Ele soltou a criança.</em></p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Ácido e a Máscara Caindo</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>A condição fora cumprida. A ordem chegou a Elise através do vínculo — e ela executou sem hesitar.</p>
+
+    <p>Das sombras, sua boca vertical se abriu por completo. Não para engolir — para disparar. Um jato de ácido concentrado, denso e corrosivo, bem diferente do spray fino que apagara as tochas.</p>
+
+    <p><strong>Whoosh.</strong></p>
+
+    <p>O padre se virou na direção do som—</p>
+
+    <p><strong>Splash.</strong></p>
+
+    <p>O ácido o atingiu direto no rosto. Não apenas pele — olhos, boca, nariz. A carne derreteu. O livro "sagrado" caiu de suas mãos, páginas fumegando onde o líquido respingara.</p>
+
+    <p>"MEUS OLHOS! MEUS OLHOS! AAAAHHHHH!"</p>
+
+    <p>Cambaleou, cego, em agonia. Os soldados congelaram.</p>
+
+    <p>"Por todos os deuses…" murmurou o jovem inquisidor.</p>
+
+    <p>O padre caiu de joelhos, ainda gritando, carne escorrendo do rosto. Mas algo errado se revelou onde o ácido queimara mais fundo: não havia músculos ali. Não havia ossos normais.</p>
+
+    <p>Símbolos profanos, gravados dentro da própria estrutura óssea, brilhavam com luz negra.</p>
+
+    <p>Não era um padre de verdade. Era possuído. Transformado. Construído.</p>
+
+    <p>"Runas… profanas… DENTRO DELE?!" o veterano recuou, incrédulo. "Ele não era padre de verdade… ele era… POSSUÍDO? TRANSFORMADO?"</p>
+
+    <p>O que sobrara do padre murmurou através da carne derretida — um sussurro gorgolejante.</p>
+
+    <p>"…não… importa… já cumpri… minha missão… os Mestres… já sabem… sobre vocês… vampiro primordial… eles virão…"</p>
+
+    <p>Uma pausa horrível.</p>
+
+    <p>"…você não salvou… ninguém… apenas atrasou… o inevitável…"</p>
+
+    <p>Riu — um som gorgolejante, medonho.</p>
+
+    <p>E então explodiu. Não em sangue e carne, mas em energia profana pura. Luz negra irradiou dele. Símbolos ganharam forma no próprio ar.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Explosão Profana</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Três soldados caíram atordoados. Cinco resistiram — entre eles o veterano e o jovem inquisidor, cujo nome, Leyn logo saberia, era Marcus.</p>
+
+    <p>Os aldeões gritaram de dor, mas ninguém morreu; estavam longe o bastante.</p>
+
+    <p>Mara resistiu — o vínculo com Leyn a protegia, ainda que parcialmente. Elise lutou contra a corrupção, mas aguentou.</p>
+
+    <p>E Leyn — Leyn não apenas resistiu. Purificou a energia ao seu redor, num raio de cinco pés. Sua linhagem primordial, transformada pela ressurreição através da compaixão, queimava a corrupção antes mesmo que ela o tocasse.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XIV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Rugido do Líder</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn não pediu. Não sugeriu timidamente. Rugiu — não como vampiro, mas como líder.</p>
+
+    <p>"VOCÊS SÃO CAVALEIROS QUE JURARAM LUTAR PELA HONRA E PAZ NO MUNDO!"</p>
+
+    <p>Sua voz cortou através do caos, da dor, do medo.</p>
+
+    <p>"ENTÃO FIQUEM FORTES PARA ISSO!"</p>
+
+    <p>Apontou para os aldeões amarrados, para a pira ainda acesa, para a criança chorando no chão.</p>
+
+    <p>"AGORA USEM SUAS FORÇAS PARA PROTEGER OS INOCENTES!"</p>
+
+    <p>Silêncio. Apenas o crepitar do fogo. O choro abafado.</p>
+
+    <p>O jovem inquisidor foi o primeiro a se mover.</p>
+
+    <p>"Ele…" disse, "ele está certo. Isto não é o que juramos fazer."</p>
+
+    <p>Cortou as cordas de um aldeão. O veterano o seguiu, voz rouca.</p>
+
+    <p>"Fui soldado por vinte anos," disse. "Vi muita coisa. Mas nunca… nunca vi vampiro defender humanos." Uma pausa. "E nunca vi padre com runas profanas dentro da cabeça. Algo está muito errado. E acho que não é você, criatura."</p>
+
+    <p>Os outros soldados seguiram o exemplo — cortando cordas, apagando o fogo da pira, ajudando os feridos. Os dois fanáticos que tentavam acender a pira recuaram, confusos, mas não atacaram mais.</p>
+
+    <p>Mara e Elise emergiram das sombras, juntando-se a Leyn. Os soldados as viram — aberrações parciais, olhos vermelhos — e alcançaram as espadas por instinto.</p>
+
+    <p>O veterano ergueu a mão.</p>
+
+    <p>"Calma," disse. "Se fossem inimigas, já estaríamos mortos."</p>
+
+    <p>A criança que fora refém olhou para Leyn, hesitante.</p>
+
+    <p>"Você… você tem olhos vermelhos…" disse, "mas salvou a gente…"</p>
+
+    <p>Correu para os braços da mãe. Depois, virando-se de novo:</p>
+
+    <p>"Obrigada, senhor vampiro."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Menina dos Olhos Dourados</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>O jovem inquisidor se aproximou de Leyn. Cauteloso, mas respeitoso.</p>
+
+    <p>"Eu sou… era… Inquisidor Marcus," disse. "E acho que devo desculpas. A você. E a estas pessoas. Fomos enganados. O padre… seja lá o que ele era… nos manipulou."</p>
+
+    <p>"A pergunta agora é o que fazemos," disse o veterano. "Voltamos para a Igreja e contamos o que vimos? Eles podem não acreditar. Podem nos julgar como traidores."</p>
+
+    <p>A mãe da criança se aproximou, mãos apertadas contra o peito.</p>
+
+    <p>"Vocês… vocês três… nos salvaram," disse. "Como podemos agradecer? Nossa aldeia é pobre. Não temos ouro. Mas… temos abrigo. Comida. E agora… uma dívida de gratidão."</p>
+
+    <p>Do horizonte, Leyn sentiu — através da corrupção residual ainda no ar — olhos observando. Os Mestres haviam sido alertados. Algo viria. Mas não era noite eterna. E ainda havia tempo.</p>
+
+    <p>Virou-se para a aldeã que arriscara a segurança da própria família ao ajudar uma criança desconhecida.</p>
+
+    <p>"Aldeã, foi dito que vocês ajudaram uma criança vampira," disse. "Isso é verdade? Dê-me informações sobre ela."</p>
+
+    <p>"Sim… senhor vampiro," respondeu ela. "Há três dias, encontramos uma menina — talvez dez anos — perto da floresta. Estava ferida. Sangrando. Pediu água." Lágrimas se formaram em seus olhos. "Nós não sabíamos o que ela era. Parecia apenas uma criança assustada. Demos água, enfaixamos os ferimentos. Ela dormiu no celeiro por uma noite." Apertou as mãos. "Mas então, à noite, meu marido a viu bebendo sangue de uma das galinhas. Ele gritou. Ela fugiu, aterrorizada, de volta para a floresta." Uma pausa pesada. "No dia seguinte, os inquisidores chegaram. Disseram que 'sentiram presença profana'. Encontraram penas com sangue. Nos acusaram de heresia."</p>
+
+    <p>"A menina…" continuou, a voz baixa, quase reverente, "ela tinha cabelo preto. Olhos… olhos dourados, não vermelhos como os seus. E tinha marcas estranhas no pescoço. Como… correntes fantasmas."</p>
+
+    <p>Leyn processou cada palavra. Olhos dourados. Não vermelhos. Marcas de correntes no pescoço. Uma criança vampira, sozinha havia — quanto tempo? Um século inteiro, talvez, sem saber de nada além do próprio medo.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XVI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XVI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Comandante — e a Resposta</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn não pediu. Não sugeriu. Instruiu — e, para sua própria surpresa, eles ouviram.</p>
+
+    <p>"Veterano," disse, "aconselho que não volte à Igreja. Não sabemos até onde vai a corrupção desses seres, e dos próprios humanos." O soldado assentiu, sério. "Recomendo que se estabeleçam aqui durante alguns dias e montem um cerco para proteger a vila com magia da luz. Devem deixar a casa onde eu ficar FORA dessa barreira. E façam vigias com turnos de quatro em quatro horas, para que fiquem sempre atentos e descansados."</p>
+
+    <p>"Você tem razão," disse o veterano. "Se o padre era corrupto… quantos outros são?" Bateu continência — de respeito genuíno, não de protocolo. "Entendido. Comandante vampiro." Virou-se para os outros soldados. "Ouviram?! Marcus, você era escriba antes de inquisidor — conhece runas de proteção? Comece a desenhar o perímetro! Vocês três — patrulha ao redor da aldeia, quatro horas cada turno! Restante — ajudem os aldeões a apagar o resto do fogo e estabilizar os feridos!"</p>
+
+    <p>Os soldados obedeceram sem questionar. Leyn acabara de ganhar o comando tático de oito inquisidores da Igreja do Sol Agonizante.</p>
+
+    <p>"E me leve a uma casa abandonada," disse, "para que eu e minha família possamos ficar."</p>
+
+    <p>"Sim!" disse a aldeã. "Há uma casa na borda da vila. O velho ferreiro morava lá, mas morreu no inverno passado. Está vazia. Vocês podem usar. Sua… família… é bem-vinda também."</p>
+
+    <p>Marcus se aproximou, hesitante mas firme.</p>
+
+    <p>"Senhor… vampiro…" disse, "posso fazer uma pergunta? Por que nos ajuda? Por que organiza nossa defesa? Nós… nós somos inimigos naturais. Igreja contra vampiros. Por gerações."</p>
+
+    <p>Mara e Elise também olhavam para ele, curiosas sobre a resposta. Leyn encarou Marcus — não com superioridade, não com condescendência. Como igual.</p>
+
+    <p>"Só não quero que pessoas boas sofram nesse mundo podre," disse. "Apenas isso, Marcus."</p>
+
+    <p>Silêncio. Marcus processou. Depois assentiu, devagar.</p>
+
+    <p>"Isso…" disse, "é mais nobre do que muitos padres que conheci." Bateu continência — genuína, desta vez. "Obrigado. Por nos mostrar que… que talvez tenhamos estado errados. Sobre muitas coisas."</p>
+
+    <p>"Um vampiro com mais honra que a Igreja," murmurou o veterano, mais para si mesmo do que para os outros. "Que tempos estranhos."</p>
+
+    <p>Não era crítica. Era reflexão.</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    Cem anos atrás, um vampiro perdeu a aldeia inteira nas chamas dos que se diziam justos. Esta noite, esse mesmo vampiro impediu que outra aldeia ardesse pela mesma mentira. E em algum lugar na floresta ferida de Valtheris, uma menina de olhos dourados e marcas de correntes que mais ninguém enxerga ainda não sabe de uma coisa: que a solidão que carrega já tem um fim marcado.
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Lenda Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+</div>
+
+</body>
+</html>

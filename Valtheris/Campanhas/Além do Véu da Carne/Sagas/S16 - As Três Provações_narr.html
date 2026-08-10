@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>As Três Provações — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Trial dividers (Câmara da Provação) ── */
+  .crystal-zone {
+    position: relative;
+    padding: .5rem 0;
+  }
+  .provacao-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 1rem 2rem 4.5rem;
+  }
+  .provacao-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(232,184,75,.3), transparent);
+  }
+  .provacao-divider-glyph {
+    font-family: 'Cinzel', serif; font-size: .56rem;
+    letter-spacing: .28em; text-transform: uppercase;
+    color: var(--gold-bright); flex-shrink: 0;
+    text-shadow: 0 0 14px rgba(232,184,75,.45);
+  }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider, .provacao-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">XVI</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">As Três<br>Provações</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet, Mara Vell, Elise e Kaira</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Toda transformação verdadeira exige três coisas: enfrentar o que se teme, aceitar o que se é, e escolher o que se será. Esta é a lenda de uma provação que não podia ser vencida por espada — só por uma menina disposta a se encontrar, e por uma família disposta a aprender, junto com ela, os limites do próprio amor.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Salão Comunal Desperta</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Kaira entrou primeiro. Os outros três a seguiram — Leyn, Mara, Elise.</p>
+
+    <p>A câmara era circular, vinte metros de diâmetro. O teto abobadado, oito metros de altura, pintado com constelações douradas — um mapa estelar vampírico antigo que não existia em nenhum atlas humano. O chão de mosaico em pedras vermelhas e brancas formava a lua carmesim Sepet em escala monumental.</p>
+
+    <p>As paredes eram revestidas de tapeçarias preservadas pela magia — cenas de caçadas vampíricas, rituais ancestrais, a fundação da Vila trezentos anos atrás, e a última: o Grande Massacre, cem anos atrás, com sangue ainda vermelho nas fibras como se fosse ontem.</p>
+
+    <p>No centro, uma mesa longa de pedra, onde o conselho se reunia, cercada por doze cadeiras de obsidiana para os anciãos. Ao fundo, uma escadaria espiral de pedra negra descendo. E uma fogueira central com chamas douradas — que nunca apagara em cem anos. Tochas douradas iluminavam as paredes; luz emanava do próprio chão, o mosaico vivo com magia.</p>
+
+    <p>Assim que Kaira entrou completamente, o salão inteiro pulsou. As constelações no teto acenderam como se estrelas verdadeiras estivessem ali. O mosaico brilhou sob seus pés.</p>
+
+    <p class="echo">Kaira Sepet… sangue de Kael… sangue de Selene… sangue de doze gerações de guerreiros… Você carrega peso de linhagem… e dor de abandono… Aqui, você confrontará ambos…</p>
+
+    <p>As tapeçarias nas paredes animaram — figuras começaram a se mover levemente, como se fossem memórias com vida emprestada.</p>
+
+    <p>"Isso é... incrível... e aterrorizante..." Kaira estava maravilhada e assustada.</p>
+
+    <p>"A magia aqui é..." sussurrou Mara, "mais antiga que qualquer coisa que já senti..."</p>
+
+    <p>"Sinto como se..." disse Elise. "Vila inteira... estivesse DENTRO... desta sala..."</p>
+
+    <p>Leyn reconhecia tudo. Cem anos atrás, ele descera aquelas escadas. Enfrentara seus medos. Saíra transformado.</p>
+
+    <p>A placa de prata acima da escadaria brilhava com a inscrição que não mudava: <em>CÂMARA DA PROVAÇÃO — APENAS DIGNOS DESCEM.</em> A escadaria brilhou intensamente quando Kaira se aproximou. Reconhecendo sangue Sepet primordial.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Tapeçaria que se Escreve</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Kaira se aproximou da escadaria e parou no primeiro degrau. Olhou para trás — para os outros três. Última confirmação.</p>
+
+    <p>"Vocês... vocês vão MESMO descer comigo?" perguntou, para todos.</p>
+
+    <p>"Até o fim," disse Mara.</p>
+
+    <p>"Sempre..." disse Elise.</p>
+
+    <p>"Tio?"</p>
+
+    <p>Antes que ele respondesse, a última tapeçaria — a do Grande Massacre — mudou. As figuras que eram estáticas começaram a se reorganizar, adicionando cenas que não existiam antes: Kaira criança sendo protegida por Selene no dia do massacre; o padre misterioso selando Kaira com correntes espectrais; Selene morrendo para proteger a filha, luz dourada emanando dela enquanto caía; e então Leyn, aparecendo cem anos depois, quebrando as correntes, salvando Kaira. E sendo tecida naquele exato momento: Kaira transformada, família ao redor dela — Leyn, Mara, Elise —, a Câmara da Provação aguardando abaixo.</p>
+
+    <p class="echo">A história continua… e VOCÊ escreve o próximo capítulo…</p>
+
+    <p>"Minha mãe..." Kaira via a tapeçaria, chorando. "Está lá... e eu... e vocês..."</p>
+
+    <p>Limpou as lágrimas rapidamente. Endireitou a postura.</p>
+
+    <p>"Não vou desperdiçar isso," disse, determinada. "Vou ser digna desta história."</p>
+
+    <p>Colocou o pé no primeiro degrau.</p>
+
+    <p>A descida começou.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Descida — 30 Metros</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ordem de descida: Kaira na frente — a Provação era dela —, Leyn logo atrás, Mara terceira, Elise na retaguarda. A escadaria era estreita, um metro de largura, apenas uma pessoa de cada vez. Paredes de pedra negra dos dois lados. Tochas douradas acendiam automaticamente conforme desciam.</p>
+
+    <p>Aos cinco metros, Kaira tropeçou levemente por nervosismo. Leyn colocou a mão no ombro dela, estabilizando.</p>
+
+    <p>"Calma," disse. "Um passo de cada vez."</p>
+
+    <p>Aos dez metros, o ar ficou mais denso. Não era difícil respirar — vampiros não precisam — mas havia peso espiritual. Como caminhar através de emoções condensadas em matéria.</p>
+
+    <p>Aos quinze metros, sussurros começaram — não audíveis, mas sentidos. Medo. Culpa. Raiva. Tristeza. Emoções puras flutuando ao redor.</p>
+
+    <p>"Estou ouvindo... coisas..." Kaira tremia. "Sentindo coisas..."</p>
+
+    <p>Aos vinte metros, as paredes mostraram reflexos — não deles. Eram memórias. Kaira se viu criança brincando na Vila, Selene sorrindo, e então o dia do massacre. Ela parou e encostou a mão na parede, respirando pesado.</p>
+
+    <p>"Não... não posso ver isso de novo..."</p>
+
+    <p>Leyn colocou a mão no ombro dela de novo.</p>
+
+    <p>"Continue," disse. "Não pare. Se parar, as memórias te consomem."</p>
+
+    <p>Sua voz era firme — âncora em meio ao caos das memórias vivas. Kaira assentiu e continuou descendo.</p>
+
+    <p>Aos trinta metros, a escadaria terminou. Uma porta de obsidiana pura bloqueava a passagem, o símbolo Sepet gravado no centro. E em runas antigas: <em>AQUI, VOCÊ ENFRENTA A VERDADE. APENAS VERDADE LIBERTA. APENAS CORAGEM TRANSFORMA.</em></p>
+
+    <p>Kaira tocou a porta. Ela aqueceu sob seus dedos.</p>
+
+    <p class="echo">Kaira Sepet… você deseja entrar?</p>
+
+    <p>"Sim," disse ela, a voz tremendo, mas firme.</p>
+
+    <p class="echo">Você entende que enfrentará seus medos mais profundos? Suas falhas? Suas dores?</p>
+
+    <p>"Sim."</p>
+
+    <p class="echo">E você aceita que pode FALHAR? Que pode sair quebrada?</p>
+
+    <p>Kaira hesitou. Olhou para Leyn. Ele assentiu — encorajador.</p>
+
+    <p>"Eu aceito," disse, a resposta perfeita. "Porque... porque mesmo se quebrar... minha família vai me ajudar a reconstruir."</p>
+
+    <p class="echo">Então… ENTRE.</p>
+
+    <p>A porta se abriu. Luz dourada explodiu.</p>
+
+    <p>Era uma esfera perfeita de quinze metros de diâmetro. Paredes, teto e chão de cristal negro translúcido — dava para ver através delas, mas o que estava do outro lado era apenas mais escuridão. No centro, um pedestal de prata com uma esfera de luz dourada flutuando — o núcleo da Câmara, batendo como um coração.</p>
+
+    <p>A Câmara não gerava ilusões visuais simples. Gerava realidades construídas. Leyn, Mara e Elise viam o cristal ao redor, Kaira no centro, a esfera de luz. Kaira via algo completamente diferente.</p>
+  </section>
+
+  <div class="provacao-divider">
+    <span class="provacao-divider-line"></span>
+    <span class="provacao-divider-glyph">as três provações</span>
+    <span class="provacao-divider-line"></span>
+  </div>
+
+  <div class="crystal-zone">
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Primeira Provação — Medo do Abandono</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Para Kaira, a Câmara se tornou floresta escura — a mesma onde sobrevivera por cem anos. Chuva caindo. Frio penetrante. Fome antiga voltando. E ao longe: passos pesados, metálicos. O Padre Traidor se aproximando — figura encapuzada, olhos que alternavam entre azul e dourado, correntes de prata nas mãos.</p>
+
+    <p>"ONDE VOCÊS ESTÃO?!" gritou ela, em pânico absoluto. "TIO! MARA! ELISE!"</p>
+
+    <p>"Kaira..." disse o Padre, na ilusão. "Minha ferramenta... minha filha que nunca amei... venha... aceite seu destino..."</p>
+
+    <p>Para os três do lado de fora, Kaira estava no centro da Câmara, ajoelhada, tremendo, olhando para o nada com terror absoluto nos olhos. Ali — mas inalcançável.</p>
+
+    <p>"Kaira!" gritou Leyn.</p>
+
+    <p>"Leyn!" Mara estava em pânico. "O que está acontecendo?! Por que ela não responde?!"</p>
+
+    <p>"A Câmara..." disse Elise. "Criou... ilusão... só ela... pode ver..."</p>
+
+    <p class="echo">Companheiros de Kaira Sepet… vocês podem OBSERVAR… mas não INTERFERIR… Ela deve vencer… ou falhar… sozinha… Mas sua PRESENÇA… pode fortalecer ela… se conseguirem se comunicar através do vínculo familiar…</p>
+
+    <p>Leyn tentou. A magia da Provação era antiga, poderosa, absoluta. Suas palavras não chegavam até ela — como gritar através de uma parede de vidro grosso. Ela estava ali, a cinco metros, e era inalcançável.</p>
+
+    <p>Mas ele não desistiu. Colocou a mão sobre o peito. Forçou o coração morto a bater mais forte.</p>
+
+    <p><strong>THUMP. THUMP. THUMP.</strong></p>
+
+    <p>Não era natural para vampiros. Doía. Mas ele fez.</p>
+
+    <p><em>Você pode sim ter seus medos,</em> projetou pelo vínculo, <em>mas isso não é a única coisa que te define... Você também tem coragem... Por favor, encontre isso dentro de você...</em></p>
+
+    <p>Ela não ouviu as palavras. Mas sentiu algo. Um batimento cardíaco que não era o dela — mais forte que o de um vampiro primordial, forçado com esforço deliberado. Familiar. Reconfortante. Como o batimento que ela ouvia quando encostava a cabeça no peito do tio.</p>
+
+    <p>"Tio...?"</p>
+
+    <p>"Ele não está aqui, criança tola," disse o Padre, na ilusão. "Você está SOZINHA. Como sempre esteve. Como sempre estará."</p>
+
+    <p>Mas o batimento não parou. E ela lembrou as palavras que ele dissera antes — não como voz, mas como memória viva.</p>
+
+    <p>"Você..." disse Kaira, na ilusão, a determinação nascendo, "você não é real... Isso é teste... da Câmara... e EU vou passar!"</p>
+
+    <p>Se levantou. As pernas tremendo. Mas se movendo. O Padre avançou com correntes de prata. Kaira rolou para o lado — movimento de cem anos de fuga de predadores na floresta. As correntes erraram.</p>
+
+    <p>"Você..." disse ela, "você NÃO me possui!"</p>
+
+    <p>Pegou uma pedra do chão da ilusão e arremessou no Padre. Acertou o rosto. Ele tropeçou. Ela correu — não fugindo, atacando. Sem arma, a lança desaparecera na ilusão, usou as mãos. Socou o Padre com toda a força primordial recém-despertada.</p>
+
+    <p><strong>CRACK.</strong></p>
+
+    <p>O Padre rachou como porcelana. E desmoronou.</p>
+
+    <p class="echo">Primeira provação completa. Medo do Abandono e do Criador: SUPERADO. Mas há mais… muito mais…</p>
+
+    <p>Do lado de fora, os três viram Kaira de pé, respirando pesado, mas viva.</p>
+
+    <p>Leyn abriu os olhos — estivera concentrado no vínculo.</p>
+
+    <p>"Leyn!" Mara segurou a mão dele. "Ela se mexeu! Ela está lutando!"</p>
+
+    <p>"Ela superou..." disse Elise. "A primeira... sozinha... mas há... mais vindo..."</p>
+
+    <p>O esforço custara a Leyn — forçar o próprio coração vampírico daquela forma não natural doía de verdade, mas ele sabia: valera a pena.</p>
+  </section>
+
+  <div class="provacao-divider">
+    <span class="provacao-divider-line"></span>
+    <span class="provacao-divider-glyph">segunda provação</span>
+    <span class="provacao-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Segunda Provação — O Espelho Interior</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>A Câmara mudou novamente.</p>
+
+    <p>"NÃO!" Kaira resistia, exausta. "JÁ NÃO BASTA?!"</p>
+
+    <p class="echo">Você enfrentou medo EXTERNO. Agora enfrenta medo INTERNO. A Provação verdadeira… é enfrentar VOCÊ MESMA.</p>
+
+    <p>Um espelho gigante apareceu na frente dela. No reflexo: não a adolescente de agora — ela criança, dez anos de aparência, suja, faminta, tremendo. A versão que sobrevivera cem anos na floresta.</p>
+
+    <p>"Por que você me abandonou?" perguntou a criança no espelho.</p>
+
+    <p>"O quê?!" Kaira recuou. "Eu... eu SOU você!"</p>
+
+    <p>"Você cresceu," acusou a criança. "Ficou forte. Tem família agora. E EU? EU fiquei sozinha. Comendo ratos. Com medo. Por CEM ANOS. Você me ESQUECEU. Me deixou para trás. Você tem vergonha de mim! Vergonha da criança fraca que foi! Por isso quer ser FORTE agora! Para esquecer!"</p>
+
+    <p>Chorando, continuou: "Eu sofri... sofri tanto... e você só quer ESQUECER disso... me apagar..."</p>
+
+    <p>Kaira caiu de joelhos, destruída.</p>
+
+    <p>"Não... não é verdade... eu não te esqueci... você é PARTE de mim! Me desculpa... me desculpa por ter sofrido... me desculpa por querer ser forte..."</p>
+
+    <p>"Leyn!" Mara observava, urgente. "Ela está... se destruindo! Precisamos fazer algo!"</p>
+
+    <p>Leyn tentou forçar o vínculo de novo — com força demais desta vez. A Câmara rejeitou violentamente. Dor explodiu no peito, como se o coração morto estivesse sendo esmagado de dentro.</p>
+
+    <p>"ARGH!"</p>
+
+    <p>"LEYN!" Mara o segurou. "NÃO! Você está se MACHUCANDO! Para! PARA! Deixa-me tentar!"</p>
+
+    <p>"Você não pode..." disse Elise, "forçar... Câmara rejeita... interferência direta..."</p>
+
+    <p class="echo">Leyn Sepet… sua devoção é ADMIRÁVEL… mas você PREJUDICA a Provação… Kaira deve encontrar respostas DENTRO DELA… não ATRAVÉS de você… Continue interferindo… e a Câmara o expulsará… ou pior… CONSUMIRÁ você…</p>
+
+    <p>"Mara... Elise..." disse Leyn, rouco, exausto. "Por favor... Minhas palavras... não a alcançam... tentem vocês..."</p>
+
+    <p>Mara tentou — não forçando, oferecendo.</p>
+
+    <p>"Kaira..." transmitiu pelo vínculo. "Eu também fui monstro... aberração sem nome... sem humanidade... Passei décadas assim... e quando Leyn me libertou... eu tinha VERGONHA do que fui... Queria ESQUECER... apagar... fingir que nunca aconteceu... Mas Leyn me ensinou... que passado não é VERGONHA... é PROVA de que SOBREVIVEMOS... A criança que você foi... sofreu... sim... mas ELA TE TROUXE ATÉ AQUI..."</p>
+
+    <p>Elise também tentou, fragmentos chegando através do vínculo.</p>
+
+    <p>"Eu... caçava vampiros... matava... sem piedade... Tenho vergonha... daquilo... mas... sem aquele passado... nunca teria... encontrado vocês... minha família... Abraçar fraqueza... não é... se destruir... é... ACEITAR... que somos... INTEIRAS... com tudo... de bom... e ruim..."</p>
+
+    <p>Kaira sentiu o calor de Mara. Os fragmentos de Elise. E lembrou do tio Leyn — mesmo que as palavras dele não tivessem chegado, a intenção chegara. "Eles... todos eles... estão tentando me dizer algo..." Olhou para a criança no espelho. Parou de chorar.</p>
+
+    <p>"Você..." disse, a voz firme agora, "você não é meu inimigo... Você é... PARTE de mim... a parte que SOBREVIVEU quando tudo era impossível..."</p>
+
+    <p>Se levantou. Olhou para a criança no espelho.</p>
+
+    <p>"Tenho ORGULHO," disse. "Você aguentou cem anos sozinha. Comeu ratos. Fugiu de predadores. Sobreviveu quando qualquer outro teria morrido. Sem você... eu não estaria aqui. Não teria família. Não seria forte."</p>
+
+    <p>Estendeu a mão para o espelho.</p>
+
+    <p>"Então obrigada. Por me trazer até aqui. E agora... vamos JUNTAS para frente."</p>
+
+    <p>"Você..." perguntou a criança no espelho, "você realmente me aceita?"</p>
+
+    <p>"Aceito. Completamente."</p>
+
+    <p>O espelho se quebrou — mas não era destruição. Era integração. Os fragmentos voaram em direção a Kaira, entraram em seu corpo sem machucar. Criança e adolescente se tornando uma. Passado e presente unidos.</p>
+
+    <p class="echo">Segunda Provação completa. Auto-aceitação: CONQUISTADA. Kaira Sepet… você abraçou sua sombra… e se tornou INTEIRA…</p>
+
+    <p>"Eu..." disse Kaira, exausta, mas vitoriosa. "Eu consegui... de novo..."</p>
+
+    <p>Olhou ao redor — ainda na Câmara de cristal. E agora, pela primeira vez desde que entraram, ela via os três. As barreiras estavam caindo.</p>
+
+    <p>"TIO! MARA! ELISE!" A alegria era pura. "Vocês estão aqui! EU SINTO VOCÊS!"</p>
+
+    <p>"Ela..." disse Mara, alívio e orgulho. "Ela conseguiu... e EU consegui alcançá-la!"</p>
+
+    <p>"Juntas..." disse Elise, a lição aprendida. "Funcionou... quando Leyn... tentou sozinho... não deu... mas juntas... conseguimos..."</p>
+
+    <p>Ambas olharam para Leyn — ainda sentado, encostado na parede de cristal, segurando o peito.</p>
+
+    <p>"Leyn..." Mara já mordia o próprio pulso. "Você está PÁLIDO até para vampiro... deixa eu... Bebe. Recupera."</p>
+
+    <p>"Por favor..." disse Elise. "Não queremos... te perder... de novo..."</p>
+
+    <p class="echo">Duas Provações completas. Resta… A TERCEIRA. A FINAL. A VERDADEIRA.</p>
+
+    <p>"JÁ NÃO FOI SUFICIENTE?!" Kaira ainda estava exausta.</p>
+
+    <p class="echo">As duas primeiras foram PREPARAÇÃO. A terceira é… TRANSFORMAÇÃO. Aqui, você escolhe… QUEM VOCÊ SERÁ.</p>
+  </section>
+
+  <div class="provacao-divider">
+    <span class="provacao-divider-line"></span>
+    <span class="provacao-divider-glyph">sabedoria da câmara</span>
+    <span class="provacao-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Câmara Fala com Leyn</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Me desculpe por forçar o vínculo," disse Leyn a Mara e Elise. "Me desculpe também, Elise. Obrigado por terem dado a ela o suporte que eu não consegui."</p>
+
+    <p>"Leyn, você NÃO falhou," disse Mara, firme. "Você TENTOU. E seu esforço — mesmo falhando — mostrou a Kaira que NÃO está sozinha. Às vezes, tentar e falhar é mais poderoso que não tentar."</p>
+
+    <p>"E você..." disse Elise, "nos ensinou... trabalhar juntos... se tivesse conseguido... sozinho... nós não teríamos... aprendido isso... Família... é sobre... TODOS ajudarem... não apenas... um carregando... tudo..."</p>
+
+    <p>"Já tivemos dias melhores, hein," disse Leyn, sarcástico, exausto.</p>
+
+    <p>"Verdade," riu Mara. "Mas também já tivemos PIORES. Pelo menos você não está MORTO desta vez. Isso já é melhoria."</p>
+
+    <p>"E Kaira..." disse Elise, sorrindo levemente. "Está VIVA... lutando... progredindo... isso é... vitória..."</p>
+
+    <p>"Não irei mais tentar interferir," disse Leyn, firme. "Ela já passou pela parte mais difícil."</p>
+
+    <p>Olhou para Kaira — ainda indecisa entre as portas.</p>
+
+    <p><em>Eu já confiava nela antes,</em> pensou, a frustração controlada. <em>Mas não consegui olhar para ela daquela forma. Ela estava em desespero...</em></p>
+
+    <p>"Leyn," disse Mara, reconhecendo, "é DIFÍCIL ver família sofrer e não poder agir. Mas você está aprendendo. A lição da Câmara não é só para Kaira. É para TODOS nós."</p>
+
+    <p>Então ele olhou para cima — para a esfera de luz dourada flutuando no centro. Para a Câmara em si.</p>
+
+    <p>E algo dentro dele quebrou. Não raiva explosiva. Questionamento profundo.</p>
+
+    <p>"Entendo que seja um ritual sagrado..." disse, questionando a própria Câmara. "Mas que tipo de ser deixaria sua família sofrer sem nem tentar fazer nada para ajudar?"</p>
+
+    <p>Silêncio. As paredes de cristal pulsaram — não com raiva, mas com consideração. Então a voz ecoou, diferente desta vez: não autoritária e distante. Antiga. Cansada. Sábia.</p>
+
+    <p class="echo">Leyn Sepet… sua pergunta é válida. E revela por que a Câmara PERMITIU que Mara e Elise alcançassem Kaira… mas BLOQUEOU você… Você pergunta: "Que tipo de ser deixaria família sofrer?" Eu respondo: que tipo de FAMÍLIA impede crescimento por medo de sofrimento temporário? Leyn Sepet… você morreu DUAS VEZES protegendo os que ama… Você FORÇOU vínculos até se machucar… porque não suporta vê-los sofrer… Isso é AMOR… mas também é MEDO… Medo de que, se não PROTEGER constantemente, você perderá tudo de novo… como perdeu há cem anos… Mara e Elise conseguiram alcançar Kaira porque OFERECERAM suporte… não IMPUSERAM proteção… Elas compartilharam FRAQUEZAS… não apenas força… Você tentou SALVAR Kaira… quando ela precisava APRENDER a salvar a si mesma… A Câmara não é cruel. É SÁBIA. Sofrimento temporário na Provação… evita sofrimento ETERNO no mundo real… Se Kaira não aprender a enfrentar medos AQUI, em segurança relativa… morrerá lá FORA, onde perigos são REAIS e MORTAIS…</p>
+
+    <p>"Leyn..." Mara segurou a mão dele, apoio silencioso. "A Câmara tem razão... você SEMPRE se joga na frente... SEMPRE se sacrifica primeiro... E nós amamos isso em você... mas... se você morrer DE VERDADE protegendo, o que acontece com nós?"</p>
+
+    <p>"Precisamos..." disse Elise, "aprender... a lutar... nossas próprias... batalhas... para quando... você não estiver... lá... Não porquê... não te amamos... mas porquê... AMAMOS... e queremos... SOBREVIVER... se algo... acontecer com você..."</p>
+
+    <p>As barreiras estavam quase completamente caídas agora. Kaira ouvira tudo.</p>
+
+    <p>"Tio..." disse ela, suave. "A Câmara está certa. Você sempre me protegeu... mas agora EU preciso aprender a me proteger também... E acho que... acho que SEI qual escolher agora..."</p>
+  </section>
+
+  <div class="provacao-divider">
+    <span class="provacao-divider-line"></span>
+    <span class="provacao-divider-glyph">terceira provação</span>
+    <span class="provacao-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Terceira Provação — As Três Portas</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p class="echo">Aqui, você escolhe… QUEM VOCÊ SERÁ. Escolha UMA porta… e ela definirá QUEM você será… para sempre… Escolha errada… e se perderá… Escolha certa… e emergirá TRANSFORMADA… Não há "certa". Há apenas… VERDADEIRA PARA VOCÊ.</p>
+
+    <p>Três portas se materializaram diante dela. A primeira, negra, marcada com uma espada: Poder e Vingança — uma lança quebrada gravada em seu centro, poder absoluto, destruição de inimigos, nunca mais ser fraca. A segunda, branca, marcada com correntes partidas: Liberdade Total — sem vínculos, sem responsabilidade, sem medo de perder. A terceira, dourada, marcada com duas mãos entrelaçadas: Proteção e Amor — família unida, proteção, sacrifício pelos amados.</p>
+
+    <p>"As portas..." disse Mara, observando, "representam caminhos... poder, liberdade, amor..."</p>
+
+    <p>"Kaira deve..." disse Elise, olhando para Leyn, "escolher... sozinha... mas... Leyn... qual você... escolheria... para ela?"</p>
+
+    <p>Ele olhou para Mara — ela ainda segurava o pulso mordido, sangue escorrendo. Assentiu lentamente.</p>
+
+    <p>"Obrigado, Mara," disse.</p>
+
+    <p>Pegou o pulso dela e bebeu. O sangue dela era diferente do sangue comum — mais doce, ela era sua prole, carregado de gratidão e lealdade, reconfortante como um abraço líquido. A cor voltou ao rosto dele aos poucos.</p>
+
+    <p>"Sempre que precisar," disse Mara, sorrindo. "Você me deu vida verdadeira. O mínimo que posso fazer é manter VOCÊ vivo também."</p>
+
+    <p>Kaira olhou para a porta negra.</p>
+
+    <p>"Parte de mim QUER isso..." disse. "Quer poder para NUNCA mais ser fraca... para destruir quem me machucou..."</p>
+
+    <p>Olhou para a porta branca.</p>
+
+    <p>"E parte de mim quer FUGIR... ser livre... sem responsabilidades... sem medo de perder ninguém..."</p>
+
+    <p>Voltou à porta dourada, com lágrimas.</p>
+
+    <p>"Mas a maior parte... a VERDADEIRA parte... quer PROTEGER. Quer AMAR. Quer FAMÍLIA. Mesmo que doa. Mesmo que seja assustador. Mesmo que eu possa perder tudo de novo..."</p>
+
+    <p>Colocou a mão na porta dourada.</p>
+
+    <p>"Porque cem anos sozinha me ensinaram... que segurança sem amor NÃO é vida... é apenas... SOBREVIVÊNCIA... E eu não quero apenas SOBREVIVER mais. Quero VIVER."</p>
+
+    <p>Empurrou a porta.</p>
+
+    <p>Explosão de luz dourada.</p>
+  </section>
+
+  </div><!-- /crystal-zone -->
+
+  <div class="provacao-divider">
+    <span class="provacao-divider-line"></span>
+    <span class="provacao-divider-glyph">transformação completa</span>
+    <span class="provacao-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Luz que Faz de Dentro para Fora</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>O corpo de Kaira brilhou — não com fogo, mas com luz interna. A transformação não vinha de fora para dentro. Vinha de dentro para fora.</p>
+
+    <p class="echo">Kaira Sepet… você escolheu… AMOR sobre PODER… CONEXÃO sobre LIBERDADE… Esta escolha te DEFINE… Você é agora… PROTETORA… assim como seu tio… mas também PRÓPRIA… capaz de lutar suas batalhas… TRANSFORMAÇÃO COMPLETA.</p>
+
+    <p>A luz se dissipou. Kaira estava de pé — transformada, a altura permanecendo a mesma, mas tudo mais maduro: os músculos refinados, definidos sem volume; o rosto com traços mais determinados, menos infantis; os olhos dourados brilhando com poder primordial completo; o cabelo crescendo até a cintura, negro como ônix; uma aura de energia dourada visível quando emocional. Abriu os olhos.</p>
+
+    <p>"Eu..." disse, olhando para as próprias mãos. "Eu me sinto... COMPLETA..."</p>
+
+    <p>Pegou a lança de prata — que reaparecera em suas mãos. O movimento foi perfeito. Não havia hesitação, não havia desajeitamento. Ela dominara completamente o corpo transformado.</p>
+
+    <p>"Não tenho mais medo do padre," declarou. "Não tenho mais vergonha do passado. Não tenho mais dúvida de quem sou."</p>
+
+    <p>"Sou Kaira Sepet," disse, o nome completo. "Filha de Selene. Sobrinha de Leyn. Família de Mara e Elise. E vou PROTEGER os que amo. Assim como eles me protegeram."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Abraço de Família — De Volta ao Salão</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>As paredes de cristal negro se dissolveram completamente. Os quatro estavam de volta no Salão Comunal Central. A Câmara os retornara — não desceram nem subiram. Simplesmente voltaram.</p>
+
+    <p>Kaira correu e abraçou Leyn com força primordial completa — a linhagem Sepet, inteira pela primeira vez em cem anos.</p>
+
+    <p>"TIO!" Eufórica. "Eu consegui! EU CONSEGUI! E eu ouvi! Ouvi você tentando me alcançar! Mesmo não conseguindo, EU SENTI você lá!"</p>
+
+    <p>"Obrigada por não desistir de mim," disse. "Mesmo quando a Câmara disse pra parar."</p>
+
+    <p>"Você foi INCRÍVEL, Kaira!" Mara se juntou ao abraço grupal.</p>
+
+    <p>"Tão orgulhosa..." disse Elise. "De você..."</p>
+
+    <p>As tochas douradas em toda a Vila explodiram em luz brilhante. Todos sentiram, através do sangue:</p>
+
+    <p class="echo">KAIRA SEPET COMPLETOU A PROVAÇÃO… PELA PRIMEIRA VEZ EM 100 ANOS… JOVEM VAMPIRO SEPET ALCANÇA MAIORIDADE… A LINHAGEM… CONTINUA…</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Aldric se Aproxima</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Então Leyn sentiu algo diferente. Uma presença familiar se aproximando — rápido — de fora da Vila. Dois quilômetros ao sul. Velocidade vampírica máxima.</p>
+
+    <p>Aldric Voss.</p>
+
+    <p>Ele devia ter sentido a explosão mágica da conclusão da Provação. Chegaria em cinco a dez minutos.</p>
+
+    <p>E junto com ele, Leyn sentiu — através da magia da Vila — outra presença. Menor. Humana. Correndo junto.</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    Três provações para uma criança que sobreviveu cem anos sozinha.<br>
+    O medo do abandono — enfrentado.<br>
+    A vergonha do passado — abraçada.<br>
+    A escolha de quem ser — feita.<br><br>
+    Ela escolheu a porta dourada<br>
+    mesmo sabendo que amor dói.<br>
+    Especialmente porque sabia.<br><br>
+    <em>E quando as paredes de cristal se dissolverem<br>
+    e ela correr até o tio que tentou alcançá-la<br>
+    mesmo quando não conseguia —<br>
+    ela já sabia a resposta antes da pergunta.<br>
+    Família não é quem nunca falha.<br>
+    É quem tenta mesmo assim.</em>
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+</div>
+
+</body>
+</html>

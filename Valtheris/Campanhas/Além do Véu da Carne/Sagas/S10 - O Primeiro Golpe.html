@@ -1,0 +1,2815 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saga X — O Primeiro Golpe | Além do Véu da Carne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #060408;
+    --bg-deep:        #0d0910;
+    --bg-chamber:     #120d16;
+    --bg-card:        #1a1220;
+    --bg-card-alt:    #160e1c;
+
+    --ink:            #e2c9a8;
+    --ink-dim:        #9e8a72;
+    --ink-faint:      #5a4e42;
+
+    --blood:          #8b1a1a;
+    --blood-bright:   #c0392b;
+    --blood-glow:     #ff4040;
+
+    --gold:           #c9963c;
+    --gold-bright:    #e8b84b;
+    --gold-dim:       #7a5818;
+    --gold-glow:      #f0cc70;
+
+    --silver:         #b8c4d0;
+    --silver-dim:     #697580;
+
+    --amber:          #c89030;
+    --amber-bright:   #e8b040;
+    --amber-dim:      #7a5820;
+
+    --kaira-gold:     #d4a020;
+    --kaira-bright:   #f0c840;
+    --kaira-dim:      #806010;
+
+    --chain-on:       #a8c0d8;
+    --chain-dim:      #506070;
+
+    --training-green: #287848;
+    --training-bright:#48b870;
+    --training-glow:  #80d8a8;
+
+    --victory:        #d8a020;
+    --victory-glow:   #f8d060;
+
+    --map-bg:         #0a0c08;
+    --map-border:     rgba(160,144,80,0.3);
+    --map-accent:     #a09050;
+    --map-danger:     rgba(184,48,48,0.5);
+    --map-safe:       rgba(72,168,112,0.4);
+    --map-special:    rgba(120,80,160,0.4);
+
+    --mara-color:     #e8943a;
+    --elise-color:    #3ab8c9;
+    --kaira-color:    #c89030;
+    --leyn-color:     #c0b0a0;
+    --aldric-color:   #3070a0;
+
+    --rune-blue:      #4a9ebe;
+    --rune-glow:      #7ec8e3;
+
+    --sanity-color:   #9b59b6;
+    --sanity-dim:     #6c3483;
+    --sanity-glow:    #d7bde2;
+
+    --success:        #2e7d52;
+    --success-bright: #4caf80;
+    --fail:           #7d2e2e;
+    --fail-bright:    #c0392b;
+
+    --border-subtle:  rgba(255,255,255,0.04);
+    --border-dim:     rgba(255,255,255,0.08);
+    --border-gold:    rgba(201,150,60,0.3);
+    --border-blood:   rgba(139,26,26,0.4);
+    --border-amber:   rgba(200,144,48,0.26);
+    --border-blood:   rgba(122,24,24,0.32);
+    --border-kaira:   rgba(212,160,32,0.32);
+    --border-map:     rgba(160,144,80,0.25);
+    --border-train:   rgba(40,120,72,0.30);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.88;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.030'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.5;
+  }
+
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 860px; margin: 0 auto;
+    padding: 0 2rem 8rem;
+  }
+
+  /* ══════════════════════════════════════════
+     COVER
+  ══════════════════════════════════════════ */
+  .cover {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+    position: relative; overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 38%, rgba(212,160,32,0.11) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 30% at 50% 95%, rgba(40,120,72,0.07) 0%, transparent 60%);
+  }
+
+  .cover::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 200px;
+    background: linear-gradient(0deg, var(--bg-void) 0%, transparent 100%);
+  }
+
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem; letter-spacing: 0.45em; text-transform: uppercase;
+    color: var(--chain-dim); margin-bottom: 2.5rem;
+    opacity: 0; animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(4rem, 15vw, 9rem);
+    font-weight: 900; line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(212,160,32,0.42);
+    background: linear-gradient(180deg, rgba(212,160,32,0.24) 0%, rgba(40,120,72,0.08) 80%, transparent 100%);
+    -webkit-background-clip: text; background-clip: text;
+    margin-bottom: -0.05em;
+    opacity: 0; animation: fadeUp 1s 0.5s forwards;
+    user-select: none;
+  }
+
+  .cover-sword-deco {
+    display: flex; align-items: center; gap: 1rem; justify-content: center;
+    margin: 1.2rem 0;
+    opacity: 0; animation: fadeIn 1.2s 0.85s forwards;
+  }
+
+  .cover-sword-line {
+    flex: 1; max-width: 120px; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,160,32,0.4), transparent);
+  }
+
+  .cover-sword-glyph {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem; color: rgba(212,160,32,0.4);
+  }
+
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 3.8vw, 2.4rem);
+    font-weight: 700; color: var(--ink);
+    letter-spacing: 0.06em; line-height: 1.25;
+    margin: 0.6rem 0 0.4rem;
+    opacity: 0; animation: fadeUp 1s 0.7s forwards;
+    text-shadow: 0 0 40px rgba(212,160,32,0.28);
+  }
+
+  .cover-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem; letter-spacing: 0.28em;
+    color: var(--chain-dim); text-transform: uppercase;
+    margin-top: 0.4rem;
+    opacity: 0; animation: fadeUp 1s 1s forwards;
+  }
+
+  .cover-tag-row {
+    margin-top: 1.8rem;
+    display: flex; align-items: center; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    opacity: 0; animation: fadeIn 1.2s 1.3s forwards;
+  }
+
+  .cover-tag {
+    font-family: 'Cinzel', serif;
+    font-size: 0.63rem; letter-spacing: 0.25em; text-transform: uppercase;
+    padding: 0.25em 0.7em; border-radius: 2px; border: 1px solid;
+  }
+
+  .cover-tag.leyn  { color: var(--leyn-color);  border-color: rgba(192,176,160,0.25); }
+  .cover-tag.mara  { color: var(--mara-color);  border-color: rgba(232,148,58,0.25); }
+  .cover-tag.elise { color: var(--elise-color); border-color: rgba(58,184,201,0.25); }
+  .cover-tag.kaira { color: var(--kaira-color); border-color: rgba(200,144,48,0.38); }
+
+  .cover-scroll-hint {
+    position: absolute; bottom: 3rem; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    opacity: 0; animation: fadeIn 1.5s 2s forwards; z-index: 1;
+  }
+
+  .cover-scroll-hint span {
+    font-family: 'Cinzel', serif;
+    font-size: 0.62rem; letter-spacing: 0.3em;
+    color: var(--ink-faint); text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 1px; height: 48px;
+    background: linear-gradient(180deg, var(--ink-faint), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ══════════════════════════════════════════
+     CHAPTERS
+  ══════════════════════════════════════════ */
+  .chapter { margin-top: 5.5rem; padding-top: 1.5rem; }
+
+  .chapter-header { display: flex; align-items: center; gap: 1.2rem; margin-bottom: 2rem; }
+
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2.5rem; font-weight: 900;
+    color: var(--blood); line-height: 1;
+    min-width: 2.2ch; text-align: right;
+    text-shadow: 0 0 20px rgba(139,26,26,0.4);
+    flex-shrink: 0;
+  }
+
+  .chapter-title-block { flex: 1; }
+
+  .chapter-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.9rem, 2.2vw, 1.25rem);
+    font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--gold);
+  }
+
+  .chapter-rule {
+    height: 1px;
+    background: linear-gradient(90deg, var(--blood) 0%, rgba(139,26,26,0.10) 100%);
+    margin-top: 0.45rem;
+  }
+
+  /* ══════════════════════════════════════════
+     PROSE
+  ══════════════════════════════════════════ */
+  .prose { color: var(--ink); font-size: 1.05rem; line-height: 1.9; margin-bottom: 1.8rem; }
+  .prose p { margin-bottom: 1.2em; }
+  .prose p:last-child { margin-bottom: 0; }
+  .prose strong { font-weight: 600; color: #f0ddb8; }
+  .prose em { font-style: italic; color: var(--ink-dim); }
+
+  .prose.with-dropcap p:first-child::first-letter {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 4em; font-weight: 900; float: left;
+    line-height: 0.75; margin: 0.12em 0.12em -0.05em 0;
+    color: var(--blood); text-shadow: 0 0 20px rgba(139,26,26,0.5);
+  }
+
+  /* ══════════════════════════════════════════
+     DIALOGUES
+  ══════════════════════════════════════════ */
+  .dialogue {
+    margin: 1.4rem 0; padding: 1.05rem 1.45rem;
+    background: rgba(255,255,255,0.018);
+    border-left: 2px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+  }
+
+  .dialogue.leyn   { border-left-color: var(--leyn-color);  background: rgba(192,176,160,0.032); }
+  .dialogue.mara   { border-left-color: var(--mara-color);  background: rgba(232,148,58,0.042); }
+  .dialogue.elise  { border-left-color: var(--elise-color); background: rgba(58,184,201,0.038); }
+  .dialogue.kaira  { border-left-color: var(--kaira-color); background: rgba(200,144,48,0.048); }
+  .dialogue.aldric { border-left-color: #5090c0;            background: rgba(48,112,160,0.038); }
+  .dialogue.gm {
+    border-left-color: var(--amber);
+    background: linear-gradient(135deg, rgba(200,144,48,0.05) 0%, rgba(8,6,16,0.35) 100%);
+    padding: 1.3rem 1.6rem;
+  }
+
+  .dialogue.gm .dialogue-speaker {
+    color: var(--amber);
+    letter-spacing: 0.4em;
+  }
+
+  .dialogue.gm .dialogue-text {
+    font-style: normal;
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.9;
+  }
+
+  .dialogue.gm .dialogue-text p {
+    margin-bottom: 1.1em;
+  }
+
+  .dialogue.gm .dialogue-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .dialogue.gm .dialogue-text strong {
+    font-weight: 600;
+    color: #f0ddb8;
+  }
+
+  .dialogue.gm .dialogue-text em {
+    font-style: italic;
+    color: var(--ink-dim);
+  }
+
+  .dialogue.gm.with-dropcap .dialogue-text p:first-child::first-letter {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 4em;
+    font-weight: 900;
+    float: left;
+    line-height: 0.75;
+    margin: 0.12em 0.12em -0.05em 0;
+    color: var(--blood);
+    text-shadow: 0 0 20px rgba(139,26,26,0.5);
+  }
+
+
+  .dialogue-speaker {
+    font-family: 'Cinzel', serif;
+    font-size: 0.63rem; letter-spacing: 0.28em;
+    text-transform: uppercase; margin-bottom: 0.32rem;
+  }
+
+  .dialogue.leyn   .dialogue-speaker { color: var(--leyn-color); }
+  .dialogue.mara   .dialogue-speaker { color: var(--mara-color); }
+  .dialogue.elise  .dialogue-speaker { color: var(--elise-color); }
+  .dialogue.kaira  .dialogue-speaker { color: var(--kaira-color); }
+  .dialogue.aldric .dialogue-speaker { color: #5090c0; }
+
+  .dialogue-text {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink); line-height: 1.72;
+  }
+
+  /* ══════════════════════════════════════════
+     COMBAT ROUND BLOCK
+  ══════════════════════════════════════════ */
+  .combat-round-block {
+    margin: 2.2rem 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-train);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .combat-round-block::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--training-bright), transparent);
+  }
+
+  .combat-round-header {
+    padding: 0.8rem 1.5rem;
+    background: rgba(40,120,72,0.08);
+    border-bottom: 1px solid var(--border-train);
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem;
+  }
+
+  .combat-round-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--training-bright);
+  }
+
+  .chain-state {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+  }
+
+  .chain-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    border: 1.5px solid var(--kaira-gold);
+    background: transparent;
+    flex-shrink: 0;
+  }
+
+  .chain-dot.fast   { background: var(--blood-bright); border-color: var(--blood-bright); box-shadow: 0 0 5px rgba(184,48,48,0.6); animation: urgentPulse 0.8s ease-in-out infinite; }
+  .chain-dot.medium { background: var(--kaira-gold);   border-color: var(--kaira-gold);   box-shadow: 0 0 5px rgba(212,160,32,0.5); animation: chainBlink 1.5s ease-in-out infinite; }
+  .chain-dot.slow   { background: var(--training-bright); border-color: var(--training-bright); box-shadow: 0 0 5px rgba(72,184,112,0.4); }
+  .chain-dot.paused { background: var(--rune-glow); border-color: var(--rune-glow); box-shadow: 0 0 8px rgba(88,184,216,0.6); animation: none; }
+
+  .chain-state-text { color: var(--kaira-gold); }
+  .chain-state-text.fast   { color: var(--blood-bright); animation: urgentPulse 0.8s ease-in-out infinite; }
+  .chain-state-text.slow   { color: var(--training-bright); }
+  .chain-state-text.paused { color: var(--rune-glow); }
+
+  .combat-round-body { padding: 1.2rem 1.5rem; }
+
+  .combat-round-roll {
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    margin-bottom: 0.7rem;
+  }
+
+  .round-roll-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--chain-dim);
+  }
+
+  .round-roll-dice {
+    font-family: 'Cinzel', serif;
+    font-size: 1.35rem; font-weight: 700;
+  }
+
+  .round-roll-dice.miss    { color: var(--fail-bright); }
+  .round-roll-dice.close   { color: var(--amber-bright); }
+  .round-roll-dice.hit     { color: var(--training-bright); text-shadow: 0 0 10px rgba(72,184,112,0.5); }
+
+  .round-roll-vs {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem; color: var(--ink-faint);
+    letter-spacing: 0.15em;
+  }
+
+  .round-verdict {
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    padding: 0.22em 0.75em; border-radius: 2px;
+  }
+
+  .round-verdict.miss  { background: rgba(176,48,48,0.15); color: var(--fail-bright);       border: 1px solid rgba(176,48,48,0.25); }
+  .round-verdict.close { background: rgba(200,144,48,0.15); color: var(--amber-bright);     border: 1px solid rgba(200,144,48,0.3); }
+  .round-verdict.hit   { background: rgba(40,120,72,0.2);  color: var(--training-bright);   border: 1px solid rgba(72,184,112,0.3); }
+
+  .combat-round-note {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink); line-height: 1.72;
+  }
+
+  /* learning progress bar */
+  .learning-bar-wrap { margin-top: 0.8rem; }
+
+  .learning-bar-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.58rem; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--training-bright); margin-bottom: 0.3rem;
+  }
+
+  .learning-bar-track {
+    height: 4px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 2px; overflow: hidden;
+  }
+
+  .learning-bar-fill {
+    height: 100%; border-radius: 2px;
+    background: linear-gradient(90deg, var(--training-green), var(--training-bright));
+    transition: width 0.6s ease;
+  }
+
+  /* ══════════════════════════════════════════
+     VICTORY BLOCK
+  ══════════════════════════════════════════ */
+  .victory-block {
+    margin: 2.5rem 0; padding: 2.2rem 2.4rem;
+    background: linear-gradient(160deg, rgba(212,160,32,0.10) 0%, rgba(40,120,72,0.07) 60%, rgba(8,6,16,0.85) 100%);
+    border: 1px solid rgba(212,160,32,0.40);
+    border-radius: 8px;
+    position: relative; overflow: hidden;
+  }
+
+  .victory-block::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--victory), var(--training-bright), var(--victory), transparent);
+    box-shadow: 0 0 14px rgba(212,160,32,0.4);
+    animation: victoryPulse 3s ease-in-out infinite;
+  }
+
+  .victory-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.63rem; letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--victory); margin-bottom: 0.8rem;
+  }
+
+  .victory-text {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.1rem; line-height: 1.9; color: var(--ink);
+  }
+
+  .victory-text p { margin-bottom: 1em; }
+  .victory-text p:last-child { margin-bottom: 0; }
+  .victory-text strong { color: var(--victory-glow); }
+
+  /* ══════════════════════════════════════════
+     CHAIN REVELATION BLOCK
+  ══════════════════════════════════════════ */
+  .chain-revelation {
+    margin: 2rem 0; padding: 1.4rem 1.8rem;
+    background: linear-gradient(135deg, rgba(212,160,32,0.08) 0%, rgba(40,120,72,0.06) 60%, rgba(8,6,16,0.7) 100%);
+    border: 1px solid var(--border-kaira);
+    border-radius: 6px; position: relative;
+  }
+
+  .chain-revelation::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--kaira-gold), var(--training-bright), var(--kaira-gold), transparent);
+    animation: chainReveal 4s ease-in-out infinite;
+  }
+
+  .chain-revelation-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.62rem; letter-spacing: 0.38em; text-transform: uppercase;
+    color: var(--kaira-gold); margin-bottom: 0.6rem;
+  }
+
+  .chain-revelation-text {
+    font-family: 'EB Garamond', serif; font-size: 1rem; line-height: 1.78; color: var(--ink);
+  }
+
+  /* ══════════════════════════════════════════
+     TRAINING SUMMARY BLOCK
+  ══════════════════════════════════════════ */
+  .training-summary {
+    margin: 2.5rem 0; padding: 1.8rem 2rem;
+    background: linear-gradient(160deg, rgba(40,120,72,0.07) 0%, rgba(8,6,16,0.7) 100%);
+    border: 1px solid var(--border-train);
+    border-radius: 8px; position: relative;
+  }
+
+  .training-summary::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--training-bright), transparent);
+  }
+
+  .training-summary-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.63rem; letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--training-bright); margin-bottom: 0.8rem;
+  }
+
+  .training-skills {
+    list-style: none; display: flex; flex-direction: column; gap: 0.5rem;
+  }
+
+  .training-skills li {
+    font-family: 'EB Garamond', serif;
+    font-size: 1rem; color: var(--ink);
+    padding-left: 1.5rem; position: relative; line-height: 1.6;
+  }
+
+  .training-skills li::before {
+    content: '✓';
+    position: absolute; left: 0;
+    color: var(--training-bright);
+    font-size: 0.85rem; font-weight: 700;
+  }
+
+  /* ══════════════════════════════════════════
+     MAP BLOCK
+  ══════════════════════════════════════════ */
+  .map-block {
+    margin: 2.5rem 0;
+    background: var(--map-bg);
+    border: 1px solid var(--border-map);
+    border-radius: 8px; overflow: hidden;
+    position: relative;
+  }
+
+  .map-block::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--map-accent), transparent);
+  }
+
+  .map-header {
+    padding: 0.85rem 1.5rem;
+    background: rgba(160,144,80,0.07);
+    border-bottom: 1px solid var(--border-map);
+    display: flex; align-items: center; gap: 0.7rem;
+  }
+
+  .map-header-icon { font-size: 1rem; color: var(--map-accent); }
+
+  .map-header-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--map-accent);
+  }
+
+  .map-body { padding: 1.3rem 1.5rem; }
+
+  .map-section { margin-bottom: 1.2rem; }
+  .map-section:last-child { margin-bottom: 0; }
+
+  .map-section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .map-section-title.zone-main    { color: var(--map-accent); }
+  .map-section-title.zone-danger  { color: var(--blood-bright); }
+  .map-section-title.zone-special { color: #a060e0; }
+  .map-section-title.zone-hidden  { color: var(--rune-blue); }
+
+  .map-list { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .map-list li {
+    font-family: 'EB Garamond', serif; font-size: 0.98rem;
+    color: var(--ink); padding-left: 1.4rem; position: relative; line-height: 1.6;
+  }
+
+  .map-list li::before {
+    content: '▸';
+    position: absolute; left: 0;
+    font-size: 0.68rem; top: 0.38em;
+  }
+
+  .map-list li.safe     ::before,
+  .map-list.safe li     ::before { color: var(--training-bright); }
+  .map-list.main li     ::before { color: var(--map-accent); }
+  .map-list.danger li   ::before { color: var(--blood-bright); }
+  .map-list.special li  ::before { color: #a060e0; }
+  .map-list.hidden li   ::before { color: var(--rune-blue); }
+
+  .map-list.main   li::before { color: var(--map-accent); }
+  .map-list.danger li::before { color: var(--blood-bright); }
+  .map-list.special li::before { color: #a060e0; }
+  .map-list.hidden li::before { color: var(--rune-blue); }
+
+  .map-note {
+    margin-top: 1rem; padding: 0.8rem 1rem;
+    background: rgba(160,144,80,0.06);
+    border: 1px solid rgba(160,144,80,0.18);
+    border-radius: 4px;
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 0.9rem; color: rgba(200,184,120,0.8); line-height: 1.65;
+  }
+
+  /* ══════════════════════════════════════════
+     CATACOMB ROUTE BLOCK
+  ══════════════════════════════════════════ */
+  .catacomb-block {
+    margin: 2.5rem 0;
+    background: rgba(8,6,16,0.9);
+    border: 1px solid rgba(120,80,160,0.3);
+    border-radius: 8px; overflow: hidden;
+    position: relative;
+  }
+
+  .catacomb-block::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, #a060e0, transparent);
+    box-shadow: 0 0 10px rgba(120,80,160,0.4);
+  }
+
+  .catacomb-header {
+    padding: 0.85rem 1.5rem;
+    background: rgba(120,80,160,0.07);
+    border-bottom: 1px solid rgba(120,80,160,0.2);
+    display: flex; align-items: center; gap: 0.7rem;
+  }
+
+  .catacomb-header-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: #a060e0;
+  }
+
+  .catacomb-body { padding: 1.3rem 1.5rem; }
+
+  .catacomb-route {
+    display: flex; flex-direction: column; gap: 0.4rem;
+    position: relative; padding-left: 1.6rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .catacomb-route::before {
+    content: '';
+    position: absolute; left: 0.4rem; top: 0.5rem; bottom: 0.5rem;
+    width: 1px;
+    background: linear-gradient(180deg, #a060e0, rgba(120,80,160,0.1));
+  }
+
+  .catacomb-step {
+    position: relative;
+    font-family: 'EB Garamond', serif; font-size: 1rem; line-height: 1.65; color: var(--ink);
+  }
+
+  .catacomb-step::before {
+    content: '';
+    position: absolute; left: -1.15rem; top: 0.6em;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #a060e0; box-shadow: 0 0 5px rgba(120,80,160,0.5);
+  }
+
+  .catacomb-step.trap { color: rgba(220,180,160,0.85); }
+  .catacomb-step.trap::before { background: var(--blood-bright); box-shadow: 0 0 5px rgba(184,48,48,0.5); }
+  .catacomb-step.goal::before { background: var(--victory); box-shadow: 0 0 8px rgba(212,160,32,0.5); width: 8px; height: 8px; left: -1.25rem; }
+
+  .trap-tag {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 0.1em 0.5em; border-radius: 2px;
+    background: rgba(184,48,48,0.15); color: var(--blood-bright);
+    border: 1px solid rgba(184,48,48,0.25);
+    margin-left: 0.4rem; vertical-align: middle;
+  }
+
+  .safe-tag {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 0.1em 0.5em; border-radius: 2px;
+    background: rgba(40,120,72,0.15); color: var(--training-bright);
+    border: 1px solid rgba(72,184,112,0.25);
+    margin-left: 0.4rem; vertical-align: middle;
+  }
+
+  /* ══════════════════════════════════════════
+     INVENTORY GRID
+  ══════════════════════════════════════════ */
+  .inventory-grid {
+    margin: 2.5rem 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 640px) { .inventory-grid { grid-template-columns: 1fr; } }
+
+  .inventory-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 7px; overflow: hidden;
+    position: relative;
+  }
+
+  .inventory-card.leyn  { border-color: rgba(192,176,160,0.22); }
+  .inventory-card.mara  { border-color: rgba(232,148,58,0.22); }
+  .inventory-card.elise { border-color: rgba(58,184,201,0.22); }
+  .inventory-card.kaira { border-color: rgba(200,144,48,0.28); }
+
+  .inventory-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .inventory-card.leyn::before  { background: linear-gradient(90deg, transparent, var(--leyn-color), transparent); }
+  .inventory-card.mara::before  { background: linear-gradient(90deg, transparent, var(--mara-color), transparent); }
+  .inventory-card.elise::before { background: linear-gradient(90deg, transparent, var(--elise-color), transparent); }
+  .inventory-card.kaira::before { background: linear-gradient(90deg, transparent, var(--kaira-color), transparent); }
+
+  .inventory-header {
+    padding: 0.65rem 1.1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.015);
+  }
+
+  .inventory-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase;
+  }
+
+  .inventory-card.leyn  .inventory-name { color: var(--leyn-color); }
+  .inventory-card.mara  .inventory-name { color: var(--mara-color); }
+  .inventory-card.elise .inventory-name { color: var(--elise-color); }
+  .inventory-card.kaira .inventory-name { color: var(--kaira-color); }
+
+  .inventory-body { padding: 0.8rem 1.1rem; }
+
+  .inventory-item {
+    display: flex; align-items: flex-start; gap: 0.5rem;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.025);
+    font-family: 'EB Garamond', serif; font-size: 0.95rem;
+    color: var(--ink); line-height: 1.55;
+  }
+
+  .inventory-item:last-child { border-bottom: none; }
+
+  .inventory-item-bullet {
+    color: var(--amber-dim); font-size: 0.7rem; margin-top: 0.38em; flex-shrink: 0;
+  }
+
+  .inventory-item-stat {
+    font-family: 'Cinzel', serif;
+    font-size: 0.62rem; letter-spacing: 0.12em;
+    color: var(--rune-blue); margin-left: 0.3rem;
+  }
+
+  /* ══════════════════════════════════════════
+     WAR CRY / DEPARTURE BLOCK
+  ══════════════════════════════════════════ */
+  .departure-block {
+    margin: 3rem 0; padding: 2.5rem 2.2rem;
+    background: linear-gradient(160deg, rgba(232,148,58,0.08) 0%, rgba(212,160,32,0.07) 50%, rgba(40,120,72,0.06) 100%);
+    border: 1px solid var(--border-amber);
+    border-radius: 8px; position: relative; overflow: hidden;
+    text-align: center;
+  }
+
+  .departure-block::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--blood-bright), var(--victory), var(--training-bright), var(--victory), var(--blood-bright), transparent);
+    box-shadow: 0 0 14px rgba(212,160,32,0.3);
+    animation: departurePulse 4s ease-in-out infinite;
+  }
+
+  .departure-block::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(212,160,32,0.04), transparent);
+  }
+
+  .departure-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.62rem; letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 1.5rem;
+    position: relative; z-index: 1;
+  }
+
+  .war-cry {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; gap: 1rem;
+    align-items: center;
+  }
+
+  .war-cry-line {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1rem, 3vw, 1.6rem);
+    font-weight: 700; letter-spacing: 0.08em;
+    line-height: 1.3;
+  }
+
+  .war-cry-line.mara-cry  { color: var(--mara-color); text-shadow: 0 0 15px rgba(232,148,58,0.4); }
+  .war-cry-line.elise-cry { color: var(--elise-color); text-shadow: 0 0 15px rgba(58,184,201,0.4); }
+  .war-cry-line.kaira-cry { color: var(--kaira-color); text-shadow: 0 0 15px rgba(200,144,48,0.4); }
+
+  .war-cry-who {
+    font-family: 'Cinzel', serif;
+    font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase;
+    opacity: 0.6; margin-top: 0.1rem;
+  }
+
+  .war-cry-who.mara-who  { color: var(--mara-color); }
+  .war-cry-who.elise-who { color: var(--elise-color); }
+  .war-cry-who.kaira-who { color: var(--kaira-color); }
+
+  .war-cry-separator {
+    width: 60px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    margin: 0.2rem 0;
+  }
+
+  .chain-final-note {
+    margin-top: 1.5rem;
+    position: relative; z-index: 1;
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 0.95rem; color: var(--kaira-gold);
+    line-height: 1.65;
+  }
+
+  /* ══════════════════════════════════════════
+     STRATEGY / PLAN BLOCK
+  ══════════════════════════════════════════ */
+  .strategy-block {
+    margin: 2.5rem 0;
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border-amber);
+    border-radius: 8px; overflow: hidden; position: relative;
+  }
+
+  .strategy-block::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amber-bright), transparent);
+  }
+
+  .strategy-header {
+    padding: 0.85rem 1.5rem;
+    background: rgba(200,144,48,0.08);
+    border-bottom: 1px solid var(--border-amber);
+    display: flex; align-items: center; gap: 0.7rem;
+  }
+
+  .strategy-icon { font-size: 1rem; color: var(--amber-bright); }
+
+  .strategy-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--amber);
+  }
+
+  .strategy-body { padding: 1.3rem 1.5rem; }
+
+  .strategy-list {
+    list-style: none; counter-reset: strat;
+    display: flex; flex-direction: column; gap: 0.7rem;
+  }
+
+  .strategy-list li {
+    counter-increment: strat;
+    padding-left: 2.4rem; position: relative;
+    font-family: 'EB Garamond', serif; font-size: 1rem; line-height: 1.7; color: var(--ink);
+  }
+
+  .strategy-list li::before {
+    content: counter(strat);
+    position: absolute; left: 0;
+    font-family: 'Cinzel', serif; font-size: 0.68rem; font-weight: 700;
+    color: var(--amber);
+    background: rgba(200,144,48,0.12);
+    border: 1px solid rgba(200,144,48,0.22);
+    border-radius: 2px;
+    width: 1.6rem; height: 1.6rem;
+    display: flex; align-items: center; justify-content: center;
+    top: 0.15em;
+  }
+
+  /* ══════════════════════════════════════════
+     SCHEDULE BLOCK
+  ══════════════════════════════════════════ */
+  .schedule-block {
+    margin: 2rem 0; padding: 1.4rem 1.7rem;
+    background: rgba(56,136,168,0.06);
+    border: 1px solid rgba(56,136,168,0.25);
+    border-radius: 6px; position: relative;
+  }
+
+  .schedule-block::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--rune-blue), transparent);
+  }
+
+  .schedule-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.62rem; letter-spacing: 0.36em; text-transform: uppercase;
+    color: var(--rune-blue); margin-bottom: 0.7rem;
+  }
+
+  .schedule-items { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .schedule-item { display: flex; align-items: flex-start; gap: 0.8rem; }
+
+  .schedule-time {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+    color: var(--rune-glow); min-width: 80px; flex-shrink: 0;
+    padding-top: 0.1em;
+  }
+
+  .schedule-desc {
+    font-family: 'EB Garamond', serif; font-size: 0.97rem;
+    color: var(--ink); line-height: 1.6;
+  }
+
+  /* ══════════════════════════════════════════
+     LORE / CALLOUT
+  ══════════════════════════════════════════ */
+  .lore-callout {
+    margin: 2rem 0; padding: 1.25rem 1.75rem;
+    background: linear-gradient(135deg, rgba(200,144,48,0.05) 0%, transparent 80%);
+    border: 1px solid var(--border-amber); border-radius: 6px; position: relative;
+  }
+
+  .lore-callout::before { content: '✦'; position: absolute; top: -0.5em; left: 1.5rem; background: var(--bg-void); padding: 0 0.4em; color: var(--amber); font-size: 0.67rem; }
+
+  .lore-title { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--amber); margin-bottom: 0.5rem; }
+
+  .lore-text { font-family: 'EB Garamond', serif; font-style: italic; color: var(--ink-dim); font-size: 0.96rem; line-height: 1.75; }
+
+  /* ══════════════════════════════════════════
+     EMOTIONAL BLOCK
+  ══════════════════════════════════════════ */
+  .emotional-block {
+    margin: 2.5rem 0; padding: 2rem 2.2rem;
+    background: linear-gradient(160deg, rgba(200,144,48,0.08) 0%, rgba(122,24,24,0.06) 60%, rgba(8,6,16,0.85) 100%);
+    border: 1px solid rgba(200,144,48,0.35); border-radius: 8px;
+    position: relative; overflow: hidden;
+  }
+
+  .emotional-block::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amber-bright), var(--kaira-bright), var(--amber-bright), transparent);
+    box-shadow: 0 0 10px rgba(200,144,48,0.3);
+  }
+
+  .emotional-label { font-family: 'Cinzel', serif; font-size: 0.63rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--kaira-gold); margin-bottom: 0.8rem; }
+
+  .emotional-text { font-family: 'EB Garamond', serif; font-size: 1.08rem; line-height: 1.9; color: var(--ink); }
+  .emotional-text p { margin-bottom: 1em; }
+  .emotional-text p:last-child { margin-bottom: 0; }
+  .emotional-text strong { color: var(--kaira-bright); }
+  .emotional-text em { font-style: italic; color: var(--ink-dim); }
+
+  /* SCENE DIVIDER */
+  .scene-divider { display: flex; align-items: center; gap: 1rem; margin: 3rem 0 2.5rem; }
+  .scene-divider-line { flex: 1; height: 1px; }
+  .scene-divider-line:first-child { background: linear-gradient(90deg, transparent, var(--ink-faint)); }
+  .scene-divider-line:last-child  { background: linear-gradient(90deg, var(--ink-faint), transparent); }
+  .scene-divider-glyph { font-family: 'Cinzel', serif; font-size: 0.66rem; color: var(--ink-faint); letter-spacing: 0.28em; text-transform: uppercase; }
+
+  /* FLOATING STATS */
+  .floating-stats { position: fixed; right: 1.5rem; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 0.45rem; z-index: 10; opacity: 0; pointer-events: none; transition: opacity 0.8s ease; }
+  .floating-stats.visible { opacity: 1; pointer-events: auto; }
+  .stat-pip { width: 44px; background: var(--bg-card); border: 1px solid var(--border-dim); border-radius: 4px; padding: 0.45rem 0.35rem; text-align: center; }
+  .stat-pip-label { font-family: 'Cinzel', serif; font-size: 0.42rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-faint); display: block; margin-bottom: 0.18rem; }
+  .stat-pip-value { font-family: 'Cinzel Decorative', serif; font-size: 0.85rem; font-weight: 900; display: block; }
+  .stat-pip-sub   { font-family: 'Cinzel', serif; font-size: 0.5rem; color: var(--ink-faint); display: block; letter-spacing: 0.1em; margin-top: 0.1rem; }
+  .stat-pip.hp    .stat-pip-value { color: var(--blood-bright); }
+  .stat-pip.chain .stat-pip-value { color: var(--kaira-gold); animation: chainBlink 1.5s ease-in-out infinite; }
+  .stat-pip.san   .stat-pip-value { color: var(--sanity-color); }
+
+  @media (max-width: 1100px) { .floating-stats { display: none; } }
+
+  /* ══════════════════════════════════════════
+     STAT TRACKERS
+  ══════════════════════════════════════════ */
+  .tracker-row { display: flex; gap: 1rem; flex-wrap: wrap; margin: 2rem 0; }
+
+  .tracker {
+    flex: 1; min-width: 180px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 6px; padding: 1rem 1.2rem;
+    position: relative; overflow: hidden;
+  }
+
+  .tracker.hp-tracker      { border-color: var(--border-blood); }
+  .tracker.sanity-tracker  { border-color: rgba(155,89,182,0.25); }
+  .tracker.gold-tracker    { border-color: var(--border-gold); }
+
+  .tracker-label { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.4rem; }
+  .tracker-values { display: flex; align-items: baseline; gap: 0.3rem; }
+  .tracker-current { font-family: 'Cinzel Decorative', serif; font-size: 2rem; font-weight: 900; line-height: 1; }
+  .tracker-slash   { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--ink-faint); }
+  .tracker-max     { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--ink-dim); }
+  .tracker-bar     { margin-top: 0.7rem; height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+  .tracker-fill    { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+  .tracker-delta   { font-family: 'EB Garamond', serif; font-style: italic; font-size: 0.85rem; color: var(--ink-faint); margin-top: 0.3rem; }
+
+  .hp-tracker     .tracker-current { color: var(--blood-bright); text-shadow: 0 0 12px rgba(192,57,43,0.3); }
+  .sanity-tracker .tracker-current { color: var(--sanity-color); text-shadow: 0 0 12px rgba(155,89,182,0.3); }
+  .gold-tracker   .tracker-current { color: var(--gold-bright);  text-shadow: 0 0 10px rgba(200,146,42,0.3); }
+
+  .hp-tracker     .tracker-fill { background: linear-gradient(90deg, var(--blood), var(--blood-bright)); }
+  .sanity-tracker .tracker-fill { background: linear-gradient(90deg, var(--sanity-dim), var(--sanity-color)); }
+  .gold-tracker   .tracker-fill { background: linear-gradient(90deg, var(--gold-dim), var(--gold-bright)); }
+
+  /* VISION LIST */
+  .vision-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+  .vision-list li { font-family: 'EB Garamond', serif; font-style: italic; color: rgba(220,180,160,0.75); font-size: 0.98rem; padding-left: 1.2rem; position: relative; line-height: 1.65; }
+  .vision-list li::before { content: '◆'; position: absolute; left: 0; font-size: 0.45rem; color: var(--blood-bright); top: 0.55em; }
+
+  /* FINALE */
+  .finale-block { margin: 3rem 0 0; text-align: center; padding: 3rem 2rem; position: relative; overflow: hidden; }
+  .finale-block::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 50% at 50% 50%, rgba(200,144,48,0.05), transparent); }
+
+  .finale-quote { font-family: 'EB Garamond', serif; font-style: italic; font-size: 1.22rem; color: var(--ink-dim); line-height: 1.88; position: relative; max-width: 580px; margin: 0 auto 2rem; }
+  .finale-quote em { color: var(--kaira-bright); font-style: normal; }
+
+  .finale-divider { width: 100px; height: 1px; background: linear-gradient(90deg, transparent, var(--amber), transparent); margin: 0 auto 2rem; }
+  .finale-coda { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--ink-faint); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes scrollPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+  @keyframes chainBlink { 0%, 88%, 100% { opacity: 1; } 90%, 95% { opacity: 0.25; } 92% { opacity: 0.8; } }
+  @keyframes urgentPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+  @keyframes chainReveal { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; box-shadow: 0 0 12px rgba(212,160,32,0.35); } }
+  @keyframes victoryPulse { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; box-shadow: 0 0 18px rgba(212,160,32,0.5); } }
+  @keyframes departurePulse { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; box-shadow: 0 0 16px rgba(212,160,32,0.3); } }
+
+  .chain-flicker { animation: chainBlink 2s ease-in-out infinite; }
+
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .cover { min-height: 85vh; padding: 4rem 1.2rem; }
+    .chapter-number { font-size: 2rem; }
+    .inventory-grid { grid-template-columns: 1fr; }
+    .prose.with-dropcap p:first-child::first-letter { font-size: 3.2em; }
+  }
+
+  @keyframes hourglass-turn {
+    0%   { transform: rotate(0deg); }
+    40%  { transform: rotate(0deg); }
+    50%  { transform: rotate(180deg); }
+    90%  { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .scene-divider-hourglass { display: flex; align-items: center; gap: 9px; flex-shrink: 0; }
+  .hourglass-svg { animation: hourglass-turn 5s ease-in-out infinite; transform-origin: 12px 14px; display: block; flex-shrink: 0; }
+  .scene-divider-time { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.35em; color: var(--ink-faint); text-transform: uppercase; white-space: nowrap; }
+  .scene-divider-time.highlight { color: var(--amber-bright); opacity: 0.65; }
+</style>
+</head>
+<body>
+
+<div class="floating-stats" title="Estatísticas finais da Saga X">
+  <div class="stat-pip" style="border-color:rgba(201,150,60,0.25);padding:0.3rem 0.4rem;">
+    <span class="stat-pip-label" style="color:var(--amber-bright);letter-spacing:0.15em;">FIM DA SAGA</span>
+  </div>
+  <div class="stat-pip hp">
+    <span class="stat-pip-label">PV</span>
+    <span class="stat-pip-value">35</span>
+    <span class="stat-pip-sub">/ 39</span>
+  </div>
+  <div class="stat-pip chain">
+    <span class="stat-pip-label">CORR</span>
+    <span class="stat-pip-value">⛓</span>
+  </div>
+  <div class="stat-pip san">
+    <span class="stat-pip-label">SAN</span>
+    <span class="stat-pip-value">42</span>
+    <span class="stat-pip-sub">/ 42</span>
+  </div>
+</div>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">X</div>
+  <div class="cover-sword-deco">
+    <div class="cover-sword-line"></div>
+    <div class="cover-sword-glyph">⚔</div>
+    <div class="cover-sword-line"></div>
+  </div>
+  <h1 class="cover-title">O Primeiro Golpe</h1>
+  <p class="cover-subtitle">Saga Dez &nbsp;·&nbsp; Leyn Sepet &nbsp;·&nbsp; ~12h10–18h00</p>
+
+  <div class="cover-scroll-hint">
+    <span>Role para baixo</span>
+    <div class="scroll-line"></div>
+  </div>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- I -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Decisão — Treinar Kaira</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Leyn… ela está pronta. Não fisicamente — é criança. Mas mentalmente… ela está PRONTA. Devemos ensinar o básico de combate? Ou deixá-la descansar? Quando chegarmos à Vila Sepet e as correntes caírem, ela pode despertar poderes primordiais completos. Mas sem treino…"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Tio… você pode me ensinar? Só o básico? Como segurar arma? Como… como não congelar de medo?"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Ela tem o espírito da mãe. Rebelde, mas corajosa quando importa. Se você ensinar, ela aprende rápido."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Mas… ela é criança… corpo pequeno… não vai… ganhar força… em horas… Mas… técnica… sobrevivência… isso… podemos ensinar…"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+      <p>Kaira está te olhando com aqueles olhos dourados cheios de determinação — a mesma que Selene tinha.</p>
+    </div>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~12h15</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- II -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Treino Começa — Acorde o Predador</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+      <p>Você olha para Kaira com seriedade absoluta. Pega a espada curta e a entrega para ela. A espada é pesada para mãos pequenas, mas Kaira a segura. Tremendo, mas <strong>SEGURANDO</strong>.</p>
+    </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — voz firme, não cruel</div>
+      <div class="dialogue-text">"A partir de agora, deixe seu instinto de sobrevivência te guiar. Nesse treino, você vai lutar comigo diretamente."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Lutar… com VOCÊ? Mas… você quer que eu… te ataque?"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — alarmada</div>
+      <div class="dialogue-text">"Leyn, ela é criança! E você está com armadura élfica, se ela errar e você não desviar—"</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Isso é… muito arriscado… para primeira lição…"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+      <p>Mas então Mara para. Entende.</p>
+    </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — entendendo</div>
+      <div class="dialogue-text">"…você quer acordar o PREDADOR nela. Não o soldado. O vampiro primordial. Kaira sobreviveu 100 anos na floresta. Caçando. Fugindo. Matando ratos com as mãos. Ela TEM instinto. Só está… adormecido."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — algo muda nos olhos dourados</div>
+      <div class="dialogue-text">"Cem anos… eu fugi. Escondi. Sobrevivi. Mas nunca… LUTEI. Nunca enfrentei. Tio… você quer… que eu pare de fugir?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Você apenas assente.</p></div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+      <p>Kaira assume postura — desajeitada, mas instintiva. Pés afastados. Espada à frente. Como animal acuado prestes a atacar. As correntes no pescoço dela piscam mais rápido. A cada 5 segundos agora. O estresse emocional está acelerando o colapso.</p>
+    </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Eu… eu vou tentar… me desculpa se… se eu machucar você…"</div>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~12h20</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- III -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Primeiro Ataque — Desespero Puro</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+      <p>Você <strong>EXPLODE</strong> em movimento. Velocidade vampírica pura. Direto em direção a Kaira.</p>
+    </div>
+    </div>
+
+    <div class="combat-round-block">
+      <div class="combat-round-header">
+        <span class="combat-round-title">Ataque 1 — Desespero Selvagem</span>
+        <div class="chain-state">
+          <div class="chain-dot fast"></div>
+          <span class="chain-state-text fast">Correntes: 5s — Acelerando</span>
+        </div>
+      </div>
+      <div class="combat-round-body">
+        <div class="combat-round-roll">
+          <span class="round-roll-label">Kaira (sem treino, puro instinto)</span>
+          <span class="round-roll-dice miss">1d20 − 1 = 8</span>
+          <span class="round-roll-vs">vs CA 17</span>
+          <span class="round-verdict miss">Erra por 9</span>
+        </div>
+        <div class="combat-round-note">
+          <p>Kaira ergue a espada curta — desajeitada, tremendo — e ataca. Não é técnica. É desespero. Um corte horizontal selvagem visando seu tronco.</p>
+          <p>Sua esquiva é automática. Você gira ao redor da lâmina como dançarino. A espada corta apenas ar. Kaira tropeça no próprio impulso, desequilibrada.</p>
+          <p>Você já está atrás dela. Não ataca. Apenas toca suas costas levemente.</p>
+        </div>
+        <div class="learning-bar-wrap">
+          <div class="learning-bar-label">Progresso de Aprendizado</div>
+          <div class="learning-bar-track"><div class="learning-bar-fill" style="width:15%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Você estaria morta."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — ainda segurando a espada</div>
+      <div class="dialogue-text">"De novo! Por favor! Eu… eu consigo melhor!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+      <p>As correntes estão colapsando <strong>RÁPIDO DEMAIS</strong>. Você pode não ter 6–18h. Pode ter 2–8h.</p>
+    </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Leyn! As correntes!"</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Ela está… muito estressada… pode cair… antes de chegarmos… à Vila!"</div>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~12h25</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- IV -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Mudança de Abordagem — Controle Emocional</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+      <p>Você não se move. Apenas observa Kaira tremendo, respiração acelerada, correntes piscando descontroladamente.</p>
+    </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — voz firme, mas calma</div>
+      <div class="dialogue-text">"Certo, vamos continuar. Mas acalme seus sentimentos e use mais os seus sentidos."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Você aponta para as correntes no pescoço dela.</p></div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Só teremos 1 hora até eles saberem nossa localização nesse ritmo. E ainda não estamos muito longe da vila, o que pode fazê-los passarem por lá. Você entende, Kaira?"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — parando de tremer</div>
+      <div class="dialogue-text">"Eu… eu estou… fazendo elas caírem mais rápido? Por estar com medo? Com raiva? Os aldeões… Marcus, Tobias, as crianças… se eles vierem para a vila por minha culpa…"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+      <p>Ela fecha os olhos. Respira fundo (hábito humano). Então abre os olhos. As correntes desaceleram levemente — piscam a cada 5 segundos agora.</p>
+    </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — revelação</div>
+      <div class="dialogue-text">"Tio… quando eu caçava ratos… na floresta… eu não pensava. Não sentia. Apenas… existia. E me movia. É isso? É assim que guerreiros lutam?"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Não exatamente. Guerreiros SENTEM. Mas não deixam sentimentos controlarem movimentos. Leyn, quando você usa aquela técnica… a Estocada… você não PENSA, certo? Você SENTE a fraqueza. Observa. E então age."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Como… quando eu cuspo ácido… não penso 'mira, calcule, atire'… apenas… sinto… onde deve ir… e vai…"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — assumindo postura novamente, mais calma</div>
+      <div class="dialogue-text">"Então… eu não devo pensar 'corte ele'. Devo… sentir onde está a abertura? Tio… de novo. Mas dessa vez… eu não vou ter medo. Vou só… ver."</div>
+    </div>
+
+    <div class="chain-revelation">
+      <div class="chain-revelation-label">⛓ Correntes Estabilizam</div>
+      <div class="chain-revelation-text">Há algo diferente agora. Menos pânico. Mais… predador. As correntes estabilizam — piscam a cada 7 segundos.</div>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~12h30</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- V -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Segundo Ataque — Observação e Parry</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — postura defensiva</div>
+      <div class="dialogue-text">"Me ataque. Sentindo essa abertura. Não pense. Veja."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+      <p>Kaira respira fundo. Olhos dourados fixos em você. Não na sua cabeça. Não no tronco. Em <strong>VOCÊ</strong> como um todo. Ela observa. Como você ensinou. Seus pés. Seu peso. Seus ombros. Procurando a fraqueza.</p>
+      <p>E então ela <strong>VÊ</strong> algo. Seu ombro esquerdo está levemente mais baixo. Abertura mínima, mas existe.</p>
+    </div>
+    </div>
+
+    <div class="combat-round-block">
+      <div class="combat-round-header">
+        <span class="combat-round-title">Ataque 2 — Foco Nascente</span>
+        <div class="chain-state">
+          <div class="chain-dot medium"></div>
+          <span class="chain-state-text">Correntes: 8s — Estabilizando</span>
+        </div>
+      </div>
+      <div class="combat-round-body">
+        <div class="combat-round-roll">
+          <span class="round-roll-label">Kaira (técnica melhorando)</span>
+          <span class="round-roll-dice close">1d20 − 1 = 12</span>
+          <span class="round-roll-vs">vs CA 17</span>
+          <span class="round-verdict miss">Erra — técnica melhor</span>
+        </div>
+        <div class="combat-round-note">
+          <p>Kaira ataca — não selvagem desta vez, mas focado. Estocada direcionada ao seu ombro exposto. Você usa parry: sua mão direita se move — suave, precisa — e desvia a lâmina dela para o lado com o mínimo de força.</p>
+          <p><em>Tink.</em> A espada dela desliza pela sua palma aberta, redirecionada. Você não moveu os pés. Apenas a mão.</p>
+        </div>
+        <div class="learning-bar-wrap">
+          <div class="learning-bar-label">Progresso de Aprendizado</div>
+          <div class="learning-bar-track"><div class="learning-bar-fill" style="width:40%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Melhor. Você VIU a abertura. Você ATACOU a abertura. Mas… você atacou ONDE ela estava. Não onde ela ESTARIA quando sua lâmina chegasse."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Porque… porque você ia se mover?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Exatamente. Então você não ataca onde o inimigo está. Você ataca onde ele VAI estar."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"É por isso que arqueiros miram à frente de alvos em movimento. Mesmo princípio."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Posso… tentar de novo?"</div>
+    </div>
+
+    <div class="combat-round-block">
+      <div class="combat-round-header">
+        <span class="combat-round-title">Ataque 2 — Técnica Aprimorada</span>
+        <div class="chain-state">
+          <div class="chain-dot medium"></div>
+          <span class="chain-state-text">Correntes: 8s — Estáveis</span>
+        </div>
+      </div>
+      <div class="combat-round-body">
+        <div class="combat-round-roll">
+          <span class="round-roll-label">Kaira (bônus +2 por aprendizado)</span>
+          <span class="round-roll-dice close">1d20 − 1 + 2 = 14</span>
+          <span class="round-roll-vs">vs CA 17</span>
+          <span class="round-verdict close">Erra — Muito Melhor</span>
+        </div>
+        <div class="combat-round-note">
+          <p>Desta vez ela forçou você a mover o <strong>pulso</strong> — não apenas os dedos. A lâmina dela desliza por um ângulo diferente, mais calculado. A técnica está visivelmente aprimorando.</p>
+        </div>
+        <div class="learning-bar-wrap">
+          <div class="learning-bar-label">Progresso de Aprendizado</div>
+          <div class="learning-bar-track"><div class="learning-bar-fill" style="width:50%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Muito melhor. Continue."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — sussurrando para Mara</div>
+      <div class="dialogue-text">"Ela tem… talento natural… como Selene… devia ter…"</div>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~12h38</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- VI -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Terceiro Ataque — O Olhar Predatório</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+      <p>Kaira assume posição pela terceira vez. Seus olhos dourados agora têm aquele <strong>foco predatório</strong> que você reconhece — é o mesmo que Selene tinha. Ela não está apenas olhando para você. Está <strong>LENDO</strong> seus movimentos.</p>
+      <p>Observa como você distribui peso. Como seus ombros se movem quando respira. Como seus olhos telegrafam intenção.</p>
+    </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — murmurando</div>
+      <div class="dialogue-text">"Eu vejo agora… Não onde você está… onde você VAI estar…"</div>
+    </div>
+
+    <div class="combat-round-block">
+      <div class="combat-round-header">
+        <span class="combat-round-title">Ataque 3 — Quase Acerta</span>
+        <div class="chain-state">
+          <div class="chain-dot medium"></div>
+          <span class="chain-state-text">Correntes: 8s — Estáveis</span>
+        </div>
+      </div>
+      <div class="combat-round-body">
+        <div class="combat-round-roll">
+          <span class="round-roll-label">Kaira (bônus crescente por aprendizado)</span>
+          <span class="round-roll-dice close">1d20 − 1 + 3 = 15</span>
+          <span class="round-roll-vs">vs CA 17</span>
+          <span class="round-verdict close">Por Pouco</span>
+        </div>
+        <div class="combat-round-note">
+          <p>Desta vez ela te forçou a mover o <strong>corpo inteiro</strong> — não apenas mão ou pulso, mas dar um passo lateral pequeno. A espada dela passa a <em>centímetros</em> do seu tronco.</p>
+        </div>
+        <div class="learning-bar-wrap">
+          <div class="learning-bar-label">Progresso de Aprendizado</div>
+          <div class="learning-bar-track"><div class="learning-bar-fill" style="width:65%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — se levantando, impressionada</div>
+      <div class="dialogue-text">"Três ataques. Ela foi de 'selvagem desesperado' para 'quase acerta vampiro primordial'…"</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Ela tem… dom natural… ou… 100 anos sobrevivendo… ensinaram… corpo…"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — ofegante, mas com sorriso</div>
+      <div class="dialogue-text">"Eu QUASE! Eu senti! Eu VI onde você ia!"</div>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~12h42</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- VII -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Ensinamento Final — Velocidade e Precisão</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Você está fazendo um ótimo trabalho. Só precisa aprender mais uma coisa: como usar sua velocidade."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Minha… velocidade? Mas eu sou pequena… fraca…"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Exatamente. Você é pequena. Tem vantagem quando se trata de mover o corpo todo. Por motivos fisiológicos, seus movimentos são mais rápidos do que um corpo adulto."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"É verdade! Quando eu era humana, vi crianças correrem entre soldados adultos como fantasmas. Somos maiores, mais fortes, mas ELAS são mais ágeis."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Menor área… para mover… menos peso… mais explosão…"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Então use essa arma com a precisão que tem tido até agora."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — processando, entendendo</div>
+      <div class="dialogue-text">"Eu não preciso ser forte como você… preciso ser RÁPIDA como eu… E pequeno… significa difícil de acertar…"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+      <p>Ela assume postura novamente — mas desta vez, <strong>MAIS BAIXA</strong>. Joelhos flexionados. Corpo compacto.</p>
+    </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — determinação absoluta</div>
+      <div class="dialogue-text">"Tio… posso tentar uma última vez? Usando tudo que aprendi?"</div>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~12h45</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- VIII -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Primeiro Golpe — ACERTO</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+      <p>As correntes piscam a cada 9 segundos agora — mais estáveis. Ela está calma. Focada. Mara e Elise se afastam mais, dando espaço máximo. Kaira respira fundo. Olhos dourados fixos em você.</p>
+      <p>E então…</p>
+      <p><strong>ELA EXPLODE.</strong></p>
+      <p>Não como nos ataques anteriores. Isto é <strong>DIFERENTE</strong>. Corpo pequeno se lança <strong>BAIXO</strong> — quase rastejando — velocidade que você não esperava dela.</p>
+    </div>
+    </div>
+
+    <div class="combat-round-block">
+      <div class="combat-round-header">
+        <span class="combat-round-title">Ataque Final — Velocidade Pura + Foco Total</span>
+        <div class="chain-state">
+          <div class="chain-dot slow"></div>
+          <span class="chain-state-text slow">Correntes: 9s — Estáveis</span>
+        </div>
+      </div>
+      <div class="combat-round-body">
+        <div class="combat-round-roll">
+          <span class="round-roll-label">Kaira (aprendizado + velocidade + foco total)</span>
+          <span class="round-roll-dice hit">1d20 − 1 + 4 = 18</span>
+          <span class="round-roll-vs">vs CA 17</span>
+          <span class="round-verdict hit">ACERTO!</span>
+        </div>
+        <div class="combat-round-note">
+          <p>A espada curta <strong>toca seu tronco</strong>. Não penetra a armadura élfica — ela não tem força para isso. Mas <strong>TOCOU</strong>.</p>
+        </div>
+        <div class="learning-bar-wrap">
+          <div class="learning-bar-label">Progresso de Aprendizado — Completo</div>
+          <div class="learning-bar-track"><div class="learning-bar-fill" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="victory-block">
+      <div class="victory-label">⚔ Primeiro Golpe — Kaira Sepet</div>
+      <div class="victory-text">
+        <p>Kaira usou a velocidade. Viu onde você ia estar e chegou lá primeiro. Baixo, compacto, explosivo — como só um corpo pequeno e 100 anos de sobrevivência podem fazer.</p>
+        <p><strong>Ela não é inútil. Ela CONSEGUE lutar.</strong></p>
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — explode em comemoração</div>
+      <div class="dialogue-text">"ELA ACERTOU! PRIMEIRA LIÇÃO E ELA ACERTOU UM PRIMORDIAL!"</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — bate palmas (movimento estranho com cota de malha)</div>
+      <div class="dialogue-text">"Incrível! Kaira… você… incrível!"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — tremendo de euforia, não de medo</div>
+      <div class="dialogue-text">"Eu acertei você! Eu usei a velocidade! Eu VI onde você ia estar e cheguei LÁ primeiro! Eu não sou inútil! Eu CONSIGO lutar!"</div>
+    </div>
+
+    <div class="chain-revelation">
+      <div class="chain-revelation-label">⛓ As Correntes Param — Revelação</div>
+      <div class="chain-revelation-text">As correntes no pescoço dela… param de piscar por 3 segundos completos. Como se a confiança dela as enfraquecesse ainda mais. Então voltam — piscando a cada 10 segundos. Mais devagar que antes. Mara percebe: <strong>confiança e controle emocional as enfraquecem. Medo e pânico as aceleram.</strong></div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Leyn… as correntes… confiança e controle emocional as ENFRAQUECEM. Medo e pânico as ACELERAM. Se ela se mantiver calma e confiante… podemos ter mais tempo."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — abraçando você, ainda com a espada</div>
+      <div class="dialogue-text">"Obrigada, tio! Por me ensinar! Por acreditar que eu posso! Quando o padre vier… quando as correntes caírem… eu vou lutar. De verdade. Com vocês."</div>
+    </div>
+
+    <div class="training-summary">
+      <div class="training-summary-label">Treino de Combate — Concluído</div>
+      <ul class="training-skills">
+        <li><strong>Observação tática</strong> — ler o inimigo como um todo, não a arma</li>
+        <li><strong>Prever movimentos</strong> — atacar onde o inimigo VAI estar</li>
+        <li><strong>Usar velocidade natural</strong> — corpo pequeno como vantagem explosiva</li>
+        <li><strong>Controle emocional em combate</strong> — sentir sem ser controlada pelo sentimento</li>
+      </ul>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~12h50</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- IX -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Planejamento — O Mapa da Vila Sepet</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Muito bem. Você foi além do que qualquer outro Sepet com a sua idade. Bom, apesar de já ter 110 anos."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — rindo</div>
+      <div class="dialogue-text">"110 anos… mas ainda criança… é estranho…"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Vamos estudar sobre o mapa da Vila Sepet."</div>
+    </div>
+
+    <div class="map-block">
+      <div class="map-header">
+        <span class="map-header-icon">⬡</span>
+        <span class="map-header-title">Vila Sepet — Mapa Detalhado (Baú de Gareth Voss)</span>
+      </div>
+      <div class="map-body">
+
+        <div class="map-section">
+          <div class="map-section-title zone-main">Estrutura Geral</div>
+          <ul class="map-list main">
+            <li>Vila circular — muros de pedra de 4 metros de altura</li>
+            <li>47 edifícios marcados (casas, armazéns, oficinas)</li>
+            <li>Centro: Grande casa comunal — salão de reuniões</li>
+            <li>Norte: Cemitério familiar</li>
+            <li>Sul: Forjas e oficinas</li>
+          </ul>
+        </div>
+
+        <div class="map-section">
+          <div class="map-section-title zone-special">Locais Especiais</div>
+          <ul class="map-list special">
+            <li>Leste: <strong>Câmara da Provação</strong> — marcada com símbolo de lua crescente</li>
+            <li>Oeste: 3 entradas secretas — túneis subterrâneos</li>
+          </ul>
+        </div>
+
+        <div class="map-section">
+          <div class="map-section-title zone-hidden">Subsolo — Catacumbas</div>
+          <ul class="map-list hidden">
+            <li>Rede de catacumbas — rota até o <strong>Cofre Principal</strong></li>
+            <li>2 câmaras laterais — Tumbas de Anciãos (NÃO PERTURBAR)</li>
+            <li>Sala de Provações — Teste de dignidade</li>
+            <li>Cofre Principal — câmara circular, 10m de diâmetro</li>
+          </ul>
+        </div>
+
+        <div class="map-section">
+          <div class="map-section-title zone-danger">Armadilhas Conhecidas</div>
+          <ul class="map-list danger">
+            <li>Placas de pressão — corredor 20–30m</li>
+            <li>Runas de fogo — parede leste, sala de provações</li>
+            <li>Sentinela Espectral — ativa se túmulos perturbados</li>
+            <li>Fechadura Tripla — porta do Cofre (senha em Idioma Antigo Vampírico)</li>
+          </ul>
+        </div>
+
+        <div class="map-note">
+          Nota no mapa: "Cofre contém — Arsenal de Emergência + Relíquias Familiares + Grimório de Técnicas Sepet"
+        </div>
+
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — tom de comandante</div>
+      <div class="dialogue-text">"Estaremos em constante movimento quando chegarmos lá. Está ESTRITAMENTE PROIBIDO que o grupo se divida, a não ser em caso de emergência."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Entendido. Mantemos formação cerrada. Se alguém cai, todos param."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Nunca… separar… família…"</div>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~13h10</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- X -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Câmara da Provação — O que Ela Faz</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Chegando na Vila, deveremos ir para o local onde os mais velhos faziam o ritual da maioridade. Aquele lugar… ele vai te mostrar todas as suas inseguranças e te fazer lutar contra elas."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Você toca seu próprio rosto.</p></div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Lembro de quando passei por lá. Até hoje não sei se aquela experiência foi real ou ilusória. E quando saí de lá, consegui a aparência que tenho hoje. Foi a aparência que meu corpo julgou ser necessária para lidar com todos meus medos naquela época."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — preocupada</div>
+      <div class="dialogue-text">"Espera… você quer dizer que… a Câmara MUDA os vampiros? Fisicamente? Kaira é criança. Se ela entrar e o corpo dela decidir mudar para 'lidar com medos'… ela pode virar adulta? Ou… ou algo pior?"</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"E se… ela não sobreviver… às visões? Crianças… têm muitos medos… 100 anos sozinha… traumas…"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — pequena, mas determinando-se</div>
+      <div class="dialogue-text">"Tio… eu tenho que ir? Mesmo… mesmo se puder me mudar? Me machucar? Eu… eu tenho muito medo ainda… medo do padre… medo de estar sozinha de novo… medo de vocês morrerem… Se a Câmara mostrar TODOS esses medos… eu… eu não sei se aguento…"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+      <p>Mas então ela para. Respira. Controla.</p>
+    </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Mas… mas você passou. E saiu mais forte. Então… então eu vou também. Porque… porque quero ser forte como você."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — para Mara</div>
+      <div class="dialogue-text">"Sim, a Câmara muda a aparência dos vampiros. É assim que os que são vampiros desde o nascimento 'amadurecem'. Não existe outra forma."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — processando, chocada</div>
+      <div class="dialogue-text">"Espera… você quer dizer que… TODOS os primordiais… sem exceção… passaram por isso?"</div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Revelação — Câmara da Provação e Primordiais</div>
+      <div class="lore-text"><strong>"Vampiros primordiais todos se pareceriam com crianças sem a Câmara. Por algum motivo, o crescimento para na idade de 16 anos. As correntes devem ter atrasado ainda mais o desenvolvimento da Kaira."</strong> Sem a Câmara, Kaira deveria ter passado pelo rito há 94 anos. Ela carrega quase um século de desenvolvimento suprimido.</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — tocando o próprio rosto</div>
+      <div class="dialogue-text">"Então… então eu deveria ter… amadurecido há 94 anos… mas as correntes me mantiveram… criança?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Processando a perda de quase um século de desenvolvimento.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Particularmente, não acredito que ela vai virar algo pior. Assim como eu, aquele lugar também enxerga a ALMA de quem entra lá."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Alma dela… é pura… sobreviveu 100 anos… sem se corromper… então Câmara… deve reconhecer…"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — para Kaira</div>
+      <div class="dialogue-text">"Kaira, não se preocupe. Você não vai estar sozinha. Estaremos com você."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — esperançosa</div>
+      <div class="dialogue-text">"Vocês… vocês vão entrar comigo? Ou… ou ficar do lado de fora?"</div>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~13h30</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- XI -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Revelação Crítica — As Correntes e a Câmara</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"E sim, é possível que as correntes se quebrem SÓ de a Kaira entrar na Câmara. Pois ela não permite que impurezas toquem a alma de um primordial."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p><strong>TODOS PARAM. ISSO MUDA TUDO.</strong></p></div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Então… a Câmara pode FORÇAR as correntes a caírem imediatamente… não importa quanto tempo resta… Isso significa que assim que Kaira entrar, o padre SABERÁ. Imediatamente."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Então… precisamos estar… PRONTOS… para combate… ANTES… de entrarmos na Câmara… Não podemos ir para o Cofre DEPOIS. Só ANTES. Ou nunca."</div>
+    </div>
+
+    <div class="emotional-block">
+      <div class="emotional-label">Preparação Mental de Kaira</div>
+      <div class="emotional-text">
+        <p>Você se ajoelha na frente dela, olhos nos olhos.</p>
+        <p><em>"Quando as correntes quebrarem, você vai sentir o peso que carrega sobre os ombros desaparecer. Você vai se sentir mais leve. Mais forte. E também vai sentir fome."</em></p>
+        <p>Kaira toca o estômago instintivamente.</p>
+        <p><em>"Não deixe que ela te defina. Você agora é uma Guerreira. Uma Sepet. Lembre dos nossos momentos quando algum mal tentar se mostrar para você. Lembre que você pode lutar. Lembre que <strong>VOCÊ</strong> é quem controla seu corpo."</em></p>
+      </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — chorando, mas são lágrimas de determinação</div>
+      <div class="dialogue-text">"Eu… eu sou Guerreira. Eu sou Sepet. EU controlo meu corpo. EU escolho quem sou."</div>
+    </div>
+
+    <div class="chain-revelation">
+      <div class="chain-revelation-label">⛓ Correntes — Mais Devagar que Nunca</div>
+      <div class="chain-revelation-text">As correntes voltam a piscar — a cada <strong>12 segundos</strong>. Confiança está literalmente <strong>enfraquecendo</strong> o selo. A fé nela mesma é mais poderosa que qualquer magia supressora.</div>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~13h45</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- XII -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Decisão Tática — Cofre Primeiro</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — apontando o mapa</div>
+      <div class="dialogue-text">"1. Chegamos à Vila Sepet ao anoitecer. 2. DECISÃO CRÍTICA: Cofre Principal (armadilhas + equipamento) OU direto para Câmara da Provação? 3. Assim que Kaira entrar na Câmara, correntes PODEM cair imediatamente. 4. Padre saberá localização exata. Virá com tudo. 5. Defendemos Kaira enquanto ela passa pela Provação."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"E… Aldric… chegará em 3 dias… então não teremos… reforço… na primeira noite… Somos nós quatro… contra o que vier…"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — pedindo opinião</div>
+      <div class="dialogue-text">"Tio… você é quem decide. Eu vou fazer o que você mandar. Mas… posso dar opinião? Se eu virar adulta ANTES da luta… posso ajudar a lutar de verdade. Agora sou só… criança com espada."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"E eu prefiro ter Leyn em PLENA capacidade durante o Cofre. Se houver armadilhas mágicas, só você com Detectar Magia pode identificar."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Mas… Câmara primeiro… significa Kaira vulnerável… em transe… quando padre chegar…"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — para Elise</div>
+      <div class="dialogue-text">"Elise, concordo com você. O Cofre Principal nas catacumbas seria um bom lugar para ir antes de visitar a Câmara. Mas aquele lugar é cheio de armadilhas. Desativar elas enquanto possivelmente estamos lutando com o Culto seria quase impossível."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — decisão</div>
+      <div class="dialogue-text">"Certo. Eu ouvi todas vocês. Ponderando tudo que ouvi, devemos ir ao Cofre. Mas tenham em mente que cada passo em falso lá pode ser FATAL."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Entretanto, com alto risco vem altas recompensas. Se conseguirmos algum equipamento, devemos ir IMEDIATAMENTE para a Câmara."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — tom militar</div>
+      <div class="dialogue-text">"Sem pausas. Sem exploração extra. Pegamos o que precisa, saímos, Câmara. Entendido. Formação nas catacumbas: Leyn na frente (Detectar Magia), eu e Elise flanqueando, Kaira no centro, mais protegida."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — para Kaira</div>
+      <div class="dialogue-text">"Você não toca em NADA. Não pisa em NADA. Só segue exatamente onde Leyn pisar. Entendido?"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Sim! Eu… eu fui silenciosa na floresta por 100 anos. Consigo ser silenciosa aqui também."</div>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~14h15</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- XIII -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Estudo das Catacumbas — A Rota Escolhida</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="catacomb-block">
+      <div class="catacomb-header">
+        <span class="catacomb-header-title">Catacumbas — Rota para o Cofre Principal</span>
+      </div>
+      <div class="catacomb-body">
+
+        <div style="margin-bottom:1rem">
+          <div style="font-family:'Cinzel',serif;font-size:0.63rem;letter-spacing:0.32em;text-transform:uppercase;color:#a060e0;margin-bottom:0.6rem">Entradas Disponíveis</div>
+          <div style="display:flex;flex-direction:column;gap:0.5rem">
+            <div style="font-family:'EB Garamond',serif;font-size:0.98rem;color:var(--ink);padding-left:1rem;border-left:2px solid rgba(72,184,112,0.4)">
+              <strong>Entrada Norte</strong> — Caminho longo, <strong>menos armadilhas</strong>. <span class="safe-tag">Escolhida</span>
+            </div>
+            <div style="font-family:'EB Garamond',serif;font-size:0.98rem;color:var(--ink-dim);padding-left:1rem;border-left:2px solid rgba(184,48,48,0.35)">
+              Entrada Sul — Mais próxima do Cofre, mas <strong>travada por porta rúnica</strong>. <span class="trap-tag">Rúnica</span>
+            </div>
+            <div style="font-family:'EB Garamond',serif;font-size:0.98rem;color:var(--ink-dim);padding-left:1rem;border-left:2px solid rgba(184,48,48,0.2)">
+              Entrada Leste — Túnel de emergência, estreito, claustrofóbico.
+            </div>
+          </div>
+        </div>
+
+        <div style="font-family:'Cinzel',serif;font-size:0.63rem;letter-spacing:0.32em;text-transform:uppercase;color:#a060e0;margin-bottom:0.6rem">Rota — Entrada Norte → Cofre</div>
+        <div class="catacomb-route">
+          <div class="catacomb-step">Corredor Norte (50 metros) — 2 zonas de placas de pressão marcadas. <span class="trap-tag">Pressão 20–30m</span></div>
+          <div class="catacomb-step">Câmaras laterais — Tumbas de Anciãos (evitar completamente). <span class="trap-tag">Sentinela Espectral</span></div>
+          <div class="catacomb-step">Sala de Provações — Entrar apenas DEPOIS da Câmara da Provação. <span class="trap-tag">Armadilha Dignidade</span></div>
+          <div class="catacomb-step goal">Cofre Principal — Câmara circular, 10m de diâmetro. Arsenal + Relíquias + Grimório.</div>
+        </div>
+
+        <div style="margin-top:1rem;padding:0.9rem 1.1rem;background:rgba(120,80,160,0.07);border:1px solid rgba(120,80,160,0.18);border-radius:4px;font-family:'EB Garamond',serif;font-style:italic;font-size:0.9rem;color:rgba(200,184,200,0.8);line-height:1.65">
+          Fechadura Tripla na porta do Cofre — senha em Idioma Antigo Vampírico. Leyn é o único que pode ler. Aldric (que chegará em 3 dias) pode ter ajudado, mas não estará disponível na primeira noite.
+        </div>
+
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Entrada Norte é mais segura, mas mais longa. Você sabe abrir portas rúnicas? Ou precisamos forçar?"</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"E… Sentinela Espectral… soa perigoso… muito perigoso… Se perturbarmos túmulos… acordamos ela… e lutamos ANTES de chegar ao Cofre…"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — apontando algo no mapa</div>
+      <div class="dialogue-text">"Tio… aqui diz 'Teste de dignidade — armadilha se indigno'… Eu… eu sou digna? Como a armadilha sabe? Eu tenho medo que… que ela veja meu pai… e ache que sou… impura…"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Vamos seguir pela Entrada Norte. Quanto à Sala de Provações, não devemos ir para ela sem termos informações completas. Você pode tentar, Kaira. Mas só DEPOIS que passarmos pela Câmara da Provação."</div>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~14h30</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- XIV -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Estratégias Táticas — Sentinela, Armadilhas e Custo</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — sobre a Sentinela</div>
+      <div class="dialogue-text">"Não iremos aos túmulos dos Anciãos, a não ser que não tenhamos escolha. Se caso acabemos encurralados no Cofre e os cultistas cheguem lá… SÓ TALVEZ possamos usar a Sentinela Espectral contra eles."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Usar a Sentinela… como arma? Arriscado, mas… criativo."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Um dos Anciãos — meu avô — me disse que a Sentinela Espectral protegeria o descanso dos vampiros primordiais. Então acredito que entre cultistas e vampiros na mesma sala, ela atacaria aquilo que consideraria mais violador referente ao local."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Então… ela atacaria… cultistas profanadores… antes de… vampiros legítimos…?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Mas isso é só uma aposta. Não tenho certeza se funcionaria dessa forma após 100 anos."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"E se… e se ela nos atacar também? Porque… porque eu tenho sangue do padre…"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Você é Sepet pelo sangue da mãe. E pela escolha. Sentinela deve ver isso."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — sobre o custo do Detectar Magia</div>
+      <div class="dialogue-text">"Como eu disse antes, não há recompensa sem um custo. Vamos gastar ao todo 40 minutos no Cofre. Não poder utilizar o Escudo depois vai ser o preço para que todos fiquem seguros até conseguir entrar na sala do Cofre."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — sobre as armadilhas</div>
+      <div class="dialogue-text">"Para evitar as armadilhas, utilizarei a minha Detecção de Magia. Infelizmente não sei abrir portas rúnicas. Não devemos forçar para não acionar ainda mais armadilhas."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Detectar Magia é ritual — 10 minutos para conjurar, dura 10 minutos. Corredor até Cofre = 50 metros. Andando devagar, cuidadoso… uns 15–20 minutos. Você vai precisar conjurar Detectar Magia DUAS VEZES."</div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Custo Tático Confirmado</div>
+      <div class="lore-text">40 minutos no Cofre. Detectar Magia conjurado duas vezes. Dois espaços de magia gastos. Leyn fica <strong>sem Escudo durante o combate com o Culto</strong> — mais vulnerável, mas o equipamento recuperado pode compensar a diferença.</div>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~14h45</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- XV -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Cronograma — Meditação e Transe Compartilhado</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Eu aprovo seu cronograma, Mara."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — batendo continência (hábito militar)</div>
+      <div class="dialogue-text">"Perfeito."</div>
+    </div>
+
+    <div class="schedule-block">
+      <div class="schedule-label">Cronograma Final — Caverna → Vila Sepet</div>
+      <div class="schedule-items">
+        <div class="schedule-item">
+          <div class="schedule-time">Agora → +1h</div>
+          <div class="schedule-desc">Descanso curto — meditação vampírica compartilhada. Todos recuperam energia.</div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">+1h → +1h30</div>
+          <div class="schedule-desc">Preparação de equipamento — afiar armas, checar armaduras, organizar estacas de prata.</div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">+1h30 → +3h30</div>
+          <div class="schedule-desc">Viagem até Vila Sepet — 2 horas de corrida vampírica, 40 km restantes.</div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">Chegada</div>
+          <div class="schedule-desc">~2h após anoitecer. Tempo de sobra antes do amanhecer. Entrada Norte → Cofre → Câmara da Provação.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+      <p>Vocês se posicionam na câmara da caverna. Círculo familiar — você, Mara, Elise, Kaira.</p>
+    </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Tio… posso… meditar encostada em você? Me sinto mais segura assim…"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Família medita junta. Mais forte assim."</div>
+    </div>
+
+    <div class="emotional-block">
+      <div class="emotional-label">Transe Vampírico Compartilhado — 1 Hora</div>
+      <div class="emotional-text">
+        <p>Através dos vínculos, vocês sentem uns aos outros:</p>
+        <p><strong>Mara</strong> — Determinação férrea, mas ansiedade escondida (medo de perder Leyn de novo).<br>
+        <strong>Elise</strong> — Nervosismo, mas lealdade absoluta (pronta para morrer pela família).<br>
+        <strong>Kaira</strong> — Medo imenso, mas coragem crescente (quer fazer vocês orgulhosos).</p>
+        <p>E elas sentem de você: <em>resolução inabalável, propósito claro, proteção paternal absoluta.</em></p>
+        <p><strong>As correntes de Kaira, durante a meditação, param de piscar por 5 minutos completos.</strong> A conexão familiar está literalmente dissolvendo o selo mais rápido que qualquer outra coisa.</p>
+      </div>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~15h45</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- XVI -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XVI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Inventário Final — Preparados</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+      <p>Todos despertam. Descansados. Focados. Mara distribui as 6 estacas de prata. Elise afia as lâminas — som rítmico de pedra de amolar contra metal. Mara verifica armaduras. Kaira pratica movimentos que você ensinou — estocadas lentas, controladas, no ar.</p>
+    </div>
+    </div>
+
+    <div class="inventory-grid">
+      <div class="inventory-card leyn">
+        <div class="inventory-header"><div class="inventory-name">Leyn Sepet</div></div>
+        <div class="inventory-body">
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>Espada Longa Superior <span class="inventory-item-stat">(vinculada)</span></span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>Armadura Élfica Reforçada <span class="inventory-item-stat">CA 17</span></span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>2 Estacas de Prata</span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>2 espaços de magia nível 1</span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>Pergaminho de Velocidade <span class="inventory-item-stat">(nível 3 — futuro)</span></span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>Mapa da Vila Sepet</span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>15 moedas de ouro</span></div>
+        </div>
+      </div>
+
+      <div class="inventory-card mara">
+        <div class="inventory-header"><div class="inventory-name">Mara Vell</div></div>
+        <div class="inventory-body">
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>Escudo Médio <span class="inventory-item-stat">+2 AC</span></span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>Adaga de Prata</span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>2 Estacas de Prata</span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>HP: <span class="inventory-item-stat">28/28</span></span></div>
+        </div>
+      </div>
+
+      <div class="inventory-card elise">
+        <div class="inventory-header"><div class="inventory-name">Elise</div></div>
+        <div class="inventory-body">
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>Cota de Malha <span class="inventory-item-stat">CA 14</span></span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>Boca vertical <span class="inventory-item-stat">(ácido)</span></span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>2 Estacas de Prata</span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>HP: <span class="inventory-item-stat">19/19</span></span></div>
+        </div>
+      </div>
+
+      <div class="inventory-card kaira">
+        <div class="inventory-header"><div class="inventory-name">Kaira Sepet</div></div>
+        <div class="inventory-body">
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>Espada Curta <span class="inventory-item-stat">(1d6 — primeira arma)</span></span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>Anel de Proteção <span class="inventory-item-stat">CA 12, +1 salvaguardas</span></span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>Botas de Couro</span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>Roupas novas</span></div>
+          <div class="inventory-item"><span class="inventory-item-bullet">▸</span><span>HP: <span class="inventory-item-stat">8/8</span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Tio… posso ficar com esta espada? Ela foi minha primeira arma de verdade…"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Pode ficar com a espada."</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — abraçando a espada curta contra o peito</div>
+      <div class="dialogue-text">"Obrigada! Eu vou cuidar dela! E… e vou usá-la para proteger vocês também!"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — nostálgica</div>
+      <div class="dialogue-text">"Primeira arma. Sempre especial. A minha era um machado enferrujado que roubei de um bandido."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"A minha… era arco simples… de madeira barata… mas eu amava…"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Sol se pondo. Em 2 horas, podemos partir. Última chance para revisar plano. Algo que esquecemos? Algo que quer mudar?"</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"E… durante viagem… mantemos formação? Quem vai… na frente?"</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Acredito que não temos nada para mudar no plano, a não ser que ocorra alguma emergência. Vamos manter a formação. Eu irei na frente."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Flanco esquerdo coberto."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Direita… protegida…"</div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"Eu… fico no meio… mais segura…"</div>
+    </div>
+  </section>
+
+    <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~16h15</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- XVII -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XVII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Partida — "Pela Liberdade!"</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm with-dropcap">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Sol se põe completamente. Hora de partir.</p>
+      </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira — nervosa, mas determinada</div>
+      <div class="dialogue-text">"Estou pronta, tio. Vamos… vamos para casa. Para a Vila Sepet."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">
+        <p>Primeira vez que ela chama a Vila de <strong>"casa"</strong> — um lugar que mal lembra, mas que representa família e pertencimento.</p>
+      </div>
+    </div>
+
+    <div class="dialogue kaira">
+      <div class="dialogue-speaker">Kaira</div>
+      <div class="dialogue-text">"E se… houver emergência? O que fazemos?"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — treinamento militar</div>
+      <div class="dialogue-text">"Improvisamos. Adaptamos. Sobrevivemos. Juntos."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Em frente, minha família. Vamos atrás da nossa liberdade."</div>
+    </div>
+
+    <div class="departure-block">
+      <div class="departure-label">⚔ Brado de Partida</div>
+      <div class="war-cry">
+        <div>
+          <div class="war-cry-line mara-cry">"PELA LIBERDADE!"</div>
+          <div class="war-cry-who mara-who">Mara Vell — bate o escudo com a adaga, som metálico de guerra</div>
+        </div>
+        <div class="war-cry-separator"></div>
+        <div>
+          <div class="war-cry-line elise-cry">"Pela… FAMÍLIA!"</div>
+          <div class="war-cry-who elise-who">Elise</div>
+        </div>
+        <div class="war-cry-separator"></div>
+        <div>
+          <div class="war-cry-line kaira-cry">"Pela… liberdade… e família…"</div>
+          <div class="war-cry-who kaira-who">Kaira — timidamente, mas com convicção</div>
+        </div>
+      </div>
+      <div class="chain-final-note">
+        As correntes brilham intensamente por um segundo — depois voltam a piscar normalmente (a cada 10 segundos). A Vila Sepet espera. O Cofre espera. A Câmara da Provação espera.
+      </div>
+    </div>
+
+    <div class="strategy-block">
+      <div class="strategy-header">
+        <span class="strategy-icon">⬡</span>
+        <span class="strategy-title">Plano Confirmado — Vila Sepet</span>
+      </div>
+      <div class="strategy-body">
+        <ol class="strategy-list">
+          <li>Chegada à Vila Sepet — ~2h após o anoitecer. Entrada Norte das catacumbas.</li>
+          <li>Cofre Principal — 40 minutos, Detectar Magia duas vezes. Recuperar Arsenal + Relíquias + Grimório.</li>
+          <li>Imediatamente — sem pausas — para a Câmara da Provação.</li>
+          <li>Kaira entra na Câmara. Correntes podem cair imediatamente. O padre saberá.</li>
+          <li>Leyn, Mara e Elise defendem enquanto Kaira passa pela Provação.</li>
+          <li>Aldric chega em 3 dias. Sobreviver até lá.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Caso de Emergência</div>
+      <div class="lore-text"><em>"Improvisamos. Adaptamos. Sobrevivemos. Juntos."</em> — Mara Vell, treinamento militar.</div>
+    </div>
+	    
+  </section>
+
+  <div class="tracker-row">
+    <div class="tracker hp-tracker">
+      <div class="tracker-label">PV — Final da Saga</div>
+      <div class="tracker-values">
+        <span class="tracker-current">35</span>
+        <span class="tracker-slash">/</span>
+        <span class="tracker-max">39</span>
+      </div>
+      <div class="tracker-bar"><div class="tracker-fill" style="width: 90%"></div></div>
+      <div class="tracker-delta">+2 Ato Maior &nbsp;·&nbsp; Kaira — acordou o predador que dormia há 110 anos</div>
+    </div>
+    <div class="tracker sanity-tracker">
+      <div class="tracker-label">SAN — Final da Saga</div>
+      <div class="tracker-values">
+        <span class="tracker-current">42</span>
+        <span class="tracker-slash">/</span>
+        <span class="tracker-max">42</span>
+      </div>
+      <div class="tracker-bar"><div class="tracker-fill" style="width: 100%"></div></div>
+      <div class="tracker-delta">Mythos 18% (S8) &nbsp;·&nbsp; teto 50→42 &nbsp;·&nbsp; sem perdas</div>
+    </div>
+  </div>
+    </div>
+
+  <!-- FINALE -->
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <span class="scene-divider-glyph chain-flicker">✦</span>
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time highlight">fim da saga x &nbsp;·&nbsp; ~18h00</span>
+      <span class="scene-divider-glyph chain-flicker">✦</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <div class="finale-block">
+    <p class="finale-quote">
+      Uma criança que sobreviveu cem anos na floresta<br>
+      aprendeu hoje que sobreviver e <em>lutar</em> são coisas diferentes.<br>
+      Que o primeiro golpe não é o mais forte —<br>
+      é o mais <em>honesto</em>.<br>
+      E que família não é o lugar onde você nasceu,<br>
+      mas o lugar de onde você não precisará mais fugir.
+    </p>
+    <div class="finale-divider"></div>
+    <div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+  </div>
+
+</div><!-- /page-wrapper -->
+<div id="saga-end-sentinel" style="height:1px;width:100%;position:relative;margin-top:-1px;"></div>
+
+<script>
+  (function () {
+    var tracker  = document.querySelector('.floating-stats');
+    var sentinel = document.getElementById('saga-end-sentinel');
+    if (!tracker || !sentinel) return;
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) { tracker.classList.add('visible'); }
+      });
+    }, { threshold: 0 });
+    observer.observe(sentinel);
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lágrimas de Sangue — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">XIV</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Lágrimas<br>de Sangue</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet, Mara Vell, Elise e Kaira</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Vampiros primordiais choram sangue quando a dor é grande demais para as palavras. Esta é a lenda de uma despedida adiada por cem anos, de um guerreiro que finalmente permitiu que o vissem cair, e de uma mãe que nunca deixou de vigiar.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Após a Batalha — A Família Celebra</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Mara limpava sangue do próprio escudo, olhos brilhando de orgulho. Elise desceu de uma saliência com um salto suave, aterrissando sem esforço. Kaira — agora curada, corpo adolescente completo, armadura cerimonial brilhando — correu até Leyn e o abraçou sem aviso.</p>
+
+    <p>"Leyn… isso foi… PERFEITO," disse Mara. "Tática. Execução. Misericórdia ZERO para inimigos. Proteção TOTAL para família. Você é… você é o que eu QUERIA ser quando era humana. Líder de verdade."</p>
+
+    <p>"Doze mortos… dois fugiram…" disse Elise, "mas agora… eles sabem… NÃO mexam… com Sepet… E eu… ajudei… matei um… sinto… orgulho… estranho…"</p>
+
+    <p>"TIO! Você é INCRÍVEL!" Kaira ainda o abraçava. "Você é LENDÁRIO! Eu quero ser como você! Me ensina? TUDO? Como lutar? Como liderar? Como… como ter coragem de ficar quando todo instinto grita para fugir?"</p>
+
+    <p>A Sentinela flutuou até eles, reportando com a precisão de sempre.</p>
+
+    <p>"RELATÓRIO," disse. "Doze profanadores eliminados. Dois fugiram. Catacumbas Sepet defendida com sucesso. Leyn Sepet demonstrou liderança exemplar. Família Sepet lutou com honra. Vila respondeu ao chamado. Ancestrais estão… satisfeitos. E orgulhosos."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Vila Descansa — Voz dos Ancestrais</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>As tochas de fogo azul diminuíram ligeiramente — não apagaram, mas voltaram ao brilho normal. O tremor no chão parou. As armadilhas se desativaram. Podiam se mover livremente outra vez.</p>
+
+    <p class="echo">Bem feito… último Sepet… você honrou os mortos… protegeu os vivos… A Vila… descansa… novamente…</p>
+
+    <p>Faltavam cerca de oito horas até o amanhecer. Leyn ainda sentia o peso da batalha nos músculos, mas nada que o tempo não resolvesse. Mara estava intacta, como sempre parecia estar depois de uma boa luta. Elise já recompunha as próprias forças em silêncio. E Kaira — completamente curada, sem um único ferimento restante — parecia mais viva do que nunca.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Lição sobre Coragem — e a Lança Recuperada</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn se ajoelhou na frente dela, olhando diretamente nos olhos dourados — agora no mesmo nível que os seus, ela transformada em adolescente.</p>
+
+    <p>"Como lutar e liderar? Isso eu posso ensinar," disse. "Mas não posso te ensinar a ter coragem. Ela já está aí dentro de você."</p>
+
+    <p>Tocou levemente o peito dela, sobre a armadura cerimonial.</p>
+
+    <p>"Você só precisa de motivos para conseguir usá-la."</p>
+
+    <p>"Motivos… como você?" perguntou Kaira. "Como proteger família? Então… a coragem vem de… ter algo para proteger? Algo mais importante que o medo?"</p>
+
+    <p>Então, envergonhada, olhou para trás.</p>
+
+    <p>"Tio... minha lança... está lá atrás... cravada na parede onde errei o tiro..." disse. "Eu... eu fiquei com raiva e arremessei sem pensar... posso ir buscar?"</p>
+
+    <p>"Kaira, você ACABOU de aprender a lutar há algumas horas," disse Mara. "Errar é normal. E pelo menos você TENTOU. Isso já é mais que a maioria faria."</p>
+
+    <p>"Vou buscar... para você... se quiser..." ofereceu Elise, gentil.</p>
+
+    <p>"Pode ir buscar a lança," disse Leyn. "Mais tarde vou te ensinar a criar um vínculo com ela para você não a perder mais."</p>
+
+    <p>Kaira correu entusiasmada — velocidade vampírica ainda desajeitada, mas funcional, cobrindo a distância em segundos. Alcançou a lança cravada na parede e puxou. A lança resistiu por um instante, cravada fundo, mas a força primordial dela prevaleceu. Saiu da pedra com um estalo seco.</p>
+
+    <p>"CONSEGUI!" gritou, voltando correndo. "Tio! Não vou perdê-la de novo! Prometo!"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Ordens à Sentinela — Busca Forense</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Sentinela, vasculhe os corpos," disse Leyn. "Tente encontrar qualquer coisa que dê uma pista dos passos do Culto da Verdade Profunda. Mesmo que tenham sido incinerados, qualquer pista já é válida. Além disso, pegue o núcleo do construto."</p>
+
+    <p>"Ordem recebida," disse a Sentinela. "Iniciando busca forense. Núcleo mágico será recuperado e preservado para análise."</p>
+
+    <p>Ela trabalhou com eficiência sobrenatural, metodicamente, por alguns minutos.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Achados Forenses — Inteligência do Culto</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>A Sentinela reportou o que encontrara entre os corpos. Dos oito guerreiros cultistas mortos, recuperara cinco medalhões negros idênticos — símbolos profanos com um olho tentaculado gravado — e ordens escritas, a maioria queimada, mas três fragmentos ainda parcialmente legíveis. Dois dos cultistas carregavam veneno em dentes ocos, preparados para o suicídio antes de qualquer interrogatório.</p>
+
+    <p>Dos três conjuradores, dois cajados com cristais corrompidos haviam sido destruídos na batalha, mas um sobrevivera intacto. Um deles também carregava um pequeno grimório, protegido por magia própria, que sobrevivera ao fogo. E um mapa parcial de Valtheris, marcando a Vila Sepet, uma fortaleza do Culto a sudeste, e um local identificado apenas como "Ponto de Convergência" — sem indicação de onde ficava.</p>
+
+    <p>Do construto destruído, um núcleo mágico: uma esfera de cristal negro do tamanho de um punho, rachada, mas ainda funcional, runas de controle gravadas nas pedras internas.</p>
+
+    <p>Os fragmentos das ordens escritas, reconstruídos com cuidado, diziam: <em>"…capturar criança Sepet viva… essencial para [trecho queimado] Ritual de Convergência… previsto para lua nova [trecho queimado] onze dias [trecho queimado]… Devorador Menor lidera operação… padre traidor confirmou localização através de quebra de selo… eliminar todos os outros vampiros… NÃO danificar a criança…"</em></p>
+
+    <p>"Ritual de Convergência?" Mara ficou lívida. "O que diabos é isso?"</p>
+
+    <p>"Desconhecido," disse a Sentinela. "Mas o grimório pode conter informações. Contém magias profanas e anotações sobre 'Despertar dos Mestres Antigos'."</p>
+
+    <p>"E o mapa…" disse Elise, "marca 'Ponto de Convergência'… mas não diz onde…"</p>
+
+    <p>"Essa coisa…" Kaira olhava para o núcleo do construto. "Ainda está brilhando levemente… está… viva?"</p>
+
+    <p>"Núcleo contém magia residual," respondeu a Sentinela. "Pode ser estudado para entender como construtos são criados. Ou… destruído para evitar reutilização pelo Culto."</p>
+
+    <p>Ao final, a Sentinela organizou tudo o que fora recuperado: o grimório do Culto, com capa de couro negro e o mesmo símbolo profano; o mapa parcial de Valtheris; o núcleo do construto; o único cajado sobrevivente, ainda pulsando com magia corrompida de médio nível; e os cinco medalhões, junto com o veneno recolhido dos dentes ocos, guardados para análise futura.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Decisão — Tumba de Selene</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Leyn, o que fazemos agora?" perguntou Mara, pragmática. "Perseguimos os que fugiram? Interrogamos cadáveres? Exploramos mais as catacumbas? Ou… finalmente… vamos para a Câmara da Provação? Kaira está curada. Correntes quebradas. Ela está pronta."</p>
+
+    <p>"Tio… minha mãe… está aqui nas catacumbas…" disse Kaira. "A Sentinela disse… Tumba 23, setor leste… Eu… eu quero ver ela… me despedir direito… mas também tenho medo… do que vou sentir…"</p>
+
+    <p>"…Como dito antes," disse Leyn, "agora iremos visitar o túmulo da Selene."</p>
+
+    <p>"Entendido," disse Mara. "Kaira precisa disso. E você também. É momento de despedida. E de fechamento."</p>
+
+    <p>"Tio… eu… eu não sei o que vou sentir quando ver ela…" Kaira tremia de antecipação emocional. "Ela está… preservada? Como a Sentinela disse?"</p>
+
+    <p>"Selene Sepet foi embalsamada com rituais ancestrais," respondeu a Sentinela. "Corpo está em estado perfeito. Aparência como se dormisse. Túmulo vinte e três, setor leste, está a cinquenta metros daqui."</p>
+
+    <p>"Eu… posso ficar aqui… catalogando itens… se vocês quiserem… privacidade familiar…" ofereceu Elise.</p>
+
+    <p>"Vou junto," disse Mara. "Selene era importante para Leyn. Quero prestar respeitos."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Elise — Família de Verdade</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn se virou para Elise, que estava se afastando respeitosamente.</p>
+
+    <p>"Elise, você é parte da família," disse. "Não precisa ser tão tímida assim. Você e a Mara estão comigo desde o meu despertar. E se não fosse por vocês duas, eu nem estaria vivo. Eu não teria retornado, nem teria conseguido sair da prisão inicial…"</p>
+
+    <p>Elise parou. Congelou. Lágrimas começaram a se formar em seus olhos vermelhos.</p>
+
+    <p>"Leyn… eu… você realmente… me considera… família?" perguntou, a voz quebrando. "Mesmo eu sendo… ex-inquisidora… mesmo tendo caçado… vampiros como você… antes?"</p>
+
+    <p>"Elise, ele acabou de dizer," disse Mara. "VOCÊ É FAMÍLIA. Não ex-qualquer-coisa. Apenas… família."</p>
+
+    <p>"Elise…" Kaira a abraçou levemente. "Quando eu estava com medo… você ficou ao lado do tio… protegendo-o… protegendo TODOS nós… Você é minha tia também. Tia Elise."</p>
+
+    <p>Elise desmoronou em lágrimas — não soluçando alto, apenas chorando silenciosamente.</p>
+
+    <p>"Obrigada… obrigada por… me aceitar…" disse. "Eu nunca pensei… que seria parte… de algo assim… de verdade…"</p>
+
+    <p>Limpou as lágrimas, tentando se recompor.</p>
+
+    <p>"Então… vou junto… ver Selene… prestar respeitos… como família faz…"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Ordens à Sentinela — Juramento de Guarda</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Sentinela, por favor fique aqui guardando os itens," disse Leyn. "E protegendo as catacumbas."</p>
+
+    <p>"Ordem aceita com honra, Leyn Sepet," disse ela, com reverência profunda. "Nenhum intruso passará enquanto vocês estiverem nas tumbas. Juro por minha função ancestral."</p>
+
+    <p>A espada fantasmagórica dela brilhou intensamente por um segundo, selando o juramento.</p>
+
+    <p>"Vão em paz," disse a Sentinela. "Prestem respeitos aos mortos. Eles merecem."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Pedido Silencioso — As Tochas Douradas</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Enquanto começavam a caminhar em direção ao setor leste das catacumbas, Leyn fechou os olhos por um momento.</p>
+
+    <p><em>Selene… eu sei que você está comigo,</em> pensou, dirigindo o pensamento ao mundo espiritual. <em>Sinto sua presença aqui. Mostre esse calor para a Kaira. Ela precisa se despedir da mãe dela… Ela precisa saber que está sendo ouvida.</em></p>
+
+    <p>E a Vila Sepet respondeu. Não com palavras. Com sensação.</p>
+
+    <p>As tochas de fogo azul ao longo do corredor que levava às tumbas mudaram de cor sutilmente. Azul, depois dourado suave — a mesma cor dos olhos de Kaira e Selene.</p>
+
+    <p>"Tio… as tochas… estão… douradas?" Kaira estava maravilhada. "Isso é… isso é sinal?"</p>
+
+    <p>"A Vila está reconhecendo," sussurrou Mara. "Selene está… presente."</p>
+
+    <p>"Sinto… calor…" disse Elise. "Não físico… mas… espiritual… como abraço…"</p>
+
+    <p>E então, sentida no âmago da alma de todos:</p>
+
+    <p class="echo">Obrigada, irmãozinho. Por cuidar dela. Por trazer ela de volta para casa. Vou fazê-la sentir que estou aqui.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Setor Leste — A Câmara das Tumbas</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Cinquenta metros de caminhada silenciosa. Cada passo ecoava suavemente. A atmosfera era reverente. O corredor se abriu numa câmara maior.</p>
+
+    <p>Circular, vinte metros de diâmetro, teto abobadado a seis metros de altura. Trinta túmulos de pedra negra dispostos em círculos concêntricos, cada nome gravado em runas douradas. Tochas douradas iluminavam tudo suavemente. Flores de pedra esculpidas decoravam cada túmulo — arte ancestral Sepet, entalhada há gerações.</p>
+
+    <p>No centro, o túmulo mais ornamentado de todos. Uma placa de pedra: <em>Selene Sepet. Filha de Kael e Lyra. Irmã de Leyn. Mãe de Kaira. Guerreira. Rebelde. Amada. 173 a 200 D.M. — cem anos atrás.</em></p>
+
+    <p>Através da tampa, parcialmente translúcida por magia, viam-na: uma mulher vampira, vinte e sete anos na idade em que morreu. Cabelo negro, longo até a cintura, espalhado como um leque de seda. O rosto idêntico ao de Kaira adulta — os mesmos traços delicados. Os olhos fechados, mas dourados por baixo das pálpebras, como os da filha. A pele pálida, mas não cadavérica — parecia apenas dormir. Vestia a armadura cerimonial Sepet, similar à de Kaira, mas mais antiga. As mãos cruzadas sobre o peito, segurando uma espada longa de prata pura. E no rosto, paz absoluta — um pequeno sorriso nos lábios.</p>
+
+    <p>Ao redor dela: flores de pedra que nunca murchavam, velas mágicas que queimavam eternamente com chama dourada, e um pequeno boneco de pano — o brinquedo de Kaira quando era bebê.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Kaira Vê a Mãe — O Sarcófago Abre</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Kaira viu o túmulo e parou. As pernas não se moviam. A respiração acelerou.</p>
+
+    <p>"Ela… ela está… ali dentro?" perguntou.</p>
+
+    <p>Mara se posicionou atrás dela — não tocando, apenas presente. Elise ficou ao lado, silenciosa, mãos entrelaçadas respeitosamente. Leyn se aproximou do túmulo. A pedra negra era lisa. Perfeita. Preservação mágica absoluta.</p>
+
+    <p class="echo">Irmãozinho… coloque sua mão aqui. Pense em mim. O túmulo vai abrir. Deixe Kaira me ver.</p>
+
+    <p>"Tio... podemos... podemos abrir?" perguntou Kaira, medo e desejo misturados. "Ver ela? Eu... eu tenho medo de como vou reagir... mas PRECISO ver... preciso saber que ela realmente... descansou..."</p>
+
+    <p>"Leyn..." sussurrou Mara. "Seja lá o que decidir... estamos aqui. Para vocês dois."</p>
+
+    <p>"Família..." disse Elise. "Não abandona... nunca..."</p>
+
+    <p>"Tio..." Kaira segurou a mão dele com força. "Faça o que achar melhor... eu confio em você... SEMPRE confio..."</p>
+
+    <p>As tochas douradas pulsaram suavemente — um batimento cardíaco espiritual. Selene esperava.</p>
+
+    <p>Leyn se aproximou de Kaira — ela tremendo, segurando a lança de prata com uma mão, a outra apertando a dele. Levantou a mão livre. Fez carinho no cabelo dela — o mesmo gesto que fizera quando a encontrara pela primeira vez na aldeia, quando ela era apenas uma criança assustada, faminta, coberta de trapos. Agora ela estava transformada — adolescente de dezesseis anos aparentes, armadura cerimonial brilhando, guerreira em treinamento. Mas ainda precisava do mesmo conforto.</p>
+
+    <p>"Estamos todos com você," disse. "Pode abrir, Kaira. Dê os seus primeiros passos."</p>
+
+    <p>Não removeu a mão do cabelo dela.</p>
+
+    <p>"Estaremos aqui pra te apoiar," continuou. "Como a bota que agora se encaixa perfeitamente no seu pé… te protegeremos."</p>
+
+    <p>"Meus primeiros passos…" Lágrimas douradas escorriam pelo rosto de Kaira, mas havia determinação nelas. "Como quando aprendi a andar de novo… depois de tanto tempo imóvel… Tio… você sempre sabe o que dizer… Está bem. Vou abrir. Vou dar esse passo."</p>
+
+    <p>Formaram-se diante do túmulo: Kaira bem à frente, de frente para a pedra; atrás dela, Elise de um lado e Mara do outro; Leyn logo atrás, a mão ainda no cabelo dela.</p>
+
+    <p>Kaira colocou ambas as mãos na pedra negra. Tocou o nome gravado: <strong>SELENE SEPET</strong>. A pedra aqueceu sob suas mãos — não queimava, apenas pulsava com vida espiritual. As runas douradas do nome brilharam intensamente.</p>
+
+    <p>Um som de pedra deslizando ecoou pela câmara. A tampa se moveu para o lado, lentamente, reverentemente. Vapor dourado subiu do interior.</p>
+
+    <p>"Eu… eu a OUVI!" Kaira congelou. "Tio! Eu OUVI minha mãe! Ela disse que eu cresci! Que sou forte!"</p>
+
+    <p>Leyn assentiu.</p>
+
+    <p>"Ela está aqui," disse. "Sempre esteve."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Colapso de Kaira — O Pedido Impossível</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Kaira viu a mãe. Por alguns segundos, apenas olhou. Processando. Então:</p>
+
+    <p>"Mãe… Você está TÃO LINDA!" A voz dela quebrava. "Igual eu lembrava! Igual os sonhos!"</p>
+
+    <p>Caiu de joelhos ao lado do túmulo. A lança de prata caiu no chão com um clangor metálico.</p>
+
+    <p>"MÃEEEEE!" O soluço atravessava a alma. "Me desculpa! Me desculpa por não ter chegado a tempo! Por ter ficado presa! Por ter demorado 100 anos! Eu tentei! EU TENTEI voltar! Mas as correntes… e o medo… e…"</p>
+
+    <p>Não conseguiu continuar. Apenas chorou.</p>
+
+    <p class="echo">Leyn… diga a ela… NÃO É CULPA DELA… por favor… ela precisa ouvir de VOCÊ também… não só de mim…</p>
+
+    <p>"E EU CRESCI!" A dor de Kaira era pura, não raiva. "Você viu? Eu não sou mais criança pequena! Mas aconteceu sem você! Você não viu! NÃO ESTAVA LÁ! Queria que você tivesse visto! Queria que você estivesse ORGULHOSA!"</p>
+
+    <p>Tocou o rosto de Selene com dedos tremendo. Então se virou para Leyn, desesperada.</p>
+
+    <p>"TRAGA ELA DE VOLTA!" A negação era total. "POR FAVOR! EU PRECISO DELA! Tio pode trazer pessoas de volta! Ele voltou DUAS VEZES! TRAGA ELA! POR QUÊ?! Você me ama! Você disse que ia proteger! Então PROTEGE ELA TAMBÉM!"</p>
+
+    <p>"Leyn... faça algo..." Mara olhava para ele. "Ela está se destruindo de culpa..."</p>
+
+    <p>Mas então, mais baixo, quase só para ele:</p>
+
+    <p>"Leyn… não faça isso… por favor…" sussurrou. "Eu sei que você PODE… mas… isso seria egoísmo nosso. Não amor."</p>
+
+    <p>"Deixar mortos… descansarem…" disse Elise, "é presente… não crueldade…"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Lágrimas de Sangue — A Armadura Cai</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Pela primeira vez em cem anos — desde que acordara acorrentado naquela cela escura, desde que vira sua família massacrada, desde que jurara nunca mais mostrar fraqueza —</p>
+
+    <p>Leyn Sepet chorou.</p>
+
+    <p>Não eram apenas lágrimas. Era um século de dor contida finalmente encontrando saída.</p>
+
+    <p>Ele sempre fora o guerreiro. O firme. O protetor. Guiado por dever, fúria, amor, confiança, responsabilidade. Mas agora, diante do corpo preservado de Selene, diante da dor dilacerante de Kaira —</p>
+
+    <p>a armadura caiu.</p>
+
+    <p>Lágrimas vermelhas — vampiros choram sangue quando a emoção é extrema — escorreram pelo rosto dele. Olhou para Kaira destruída, desesperada, implorando o impossível. Olhou para o túmulo — Selene em paz eterna, tão linda, tão quieta, tão ausente.</p>
+
+    <p>E não tinha palavras. Nunca fora bom em lidar com perdas.</p>
+
+    <p>Tentou se aproximar de Kaira. As pernas tremiam levemente. Cada passo era esforço. Segurou levemente a mão dela.</p>
+
+    <p><em>Eu consigo entender a raiva… a frustração…</em></p>
+
+    <p><em>Mas não consigo dizer nada para ela agora.</em></p>
+
+    <p><em>Sei que voltei da morte duas vezes… mas eu realmente… talvez seja uma anomalia…</em></p>
+
+    <p><em>Sei que poderia tentar dizer palavras bonitas, e até lógicas… Mas não é disso que precisamos agora…</em></p>
+
+    <p>Sentou-se no chão frio de pedra das catacumbas. Ao lado do sarcófago de Selene. Ao lado de Kaira destruída. Não disse mais nada.</p>
+
+    <p>Apenas ficou.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XIV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Inversão — Kaira Abraça o Tio</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Kaira sentiu Leyn se sentar. Através das lágrimas, viu algo que nunca vira antes: Leyn Sepet — o Renascido, o Guerreiro Inabalável, o Protetor Absoluto — chorando. Lágrimas vermelhas descendo pelo rosto. Ombros tremendo levemente.</p>
+
+    <p>"Tio… você… está… chorando?" percebeu. "Mas você é forte… você sempre sabe o que fazer… você sempre… Você também… está com dor…"</p>
+
+    <p>Soltou a borda do sarcófago. Se virou para ele. E pela primeira vez desde que acordara transformada, agiu como protetora — não como sobrinha protegida.</p>
+
+    <p>Ela o abraçou.</p>
+
+    <p>"Me desculpa, tio…" soluçou contra o ombro dele. "Me desculpa por pedir o impossível… Você já fez TUDO por mim… me salvou… me protegeu… morreu DUAS VEZES… e eu… e eu peço MAIS… Eu sou egoísta… Mas eu só… eu só queria que ela visse… que eu cresci… que me tornei forte… como ela queria…"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Mara e Elise — O que Percebem</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Elise… ele… ele não é apenas guerreiro…" sussurrou Mara, a mão cobrindo a boca. "Ele é… PESSOA… E ele permitiu que Kaira visse isso… que TODOS nós víssemos isso…"</p>
+
+    <p>"Ele está… ensinando-a…" disse Elise, "que está tudo bem… não ter respostas… Que está tudo bem… sentir dor… e não saber… o que fazer… Isso é… mais valioso… que qualquer técnica… de combate…"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XVI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XVI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Selene Fala — Aceitação e Benção</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p class="echo">Leyn… meu irmãozinho teimoso… obrigada… Obrigada por não ter palavras perfeitas… por não ter soluções mágicas… por apenas… ESTAR COM ELA… Você está ensinando o que eu não pude ensinar… que força verdadeira… não é nunca cair… é levantar depois de cair… JUNTO com quem você ama…</p>
+
+    <p>"Tio, ela disse que você está me ensinando o que ela não pôde!" Kaira se afastou levemente, os olhos arregalados. "Que ficar com dor junto é… é força! Então… então não preciso ter TODAS as respostas… só preciso… não estar sozinha na dor?"</p>
+
+    <p>Ela se virou de volta para o túmulo de Selene. Mas desta vez, diferente. Não com desespero. Com aceitação nascente.</p>
+
+    <p>"Mãe… eu… eu entendo agora…" A voz ainda tremia, mas mais calma. "Você não pode voltar… porque você ESCOLHEU descansar… depois de me proteger até o fim… E trazer você de volta seria… seria tirar essa paz… seria egoísmo meu… não amor… Mas eu queria tanto… tanto que você visse…"</p>
+
+    <p class="echo">Eu VI, minha filha. Sempre vi. E sempre verei. E estou ORGULHOSA. Tão orgulhosa. Você se tornou tudo que eu esperava. E mais.</p>
+
+    <p>"Obrigada, mãe…" Kaira sorria através das lágrimas. "Por me proteger… por me dar o tio Leyn como família… por ainda estar aqui… de alguma forma…"</p>
+
+    <p>Se levantou. Pegou o boneco de pano que estava ao lado da mão de Selene — seu brinquedo de quando era bebê.</p>
+
+    <p>"Vou guardar isto…" disse. "Para lembrar de você… e para lembrar que… que mesmo quando pessoas vão embora… o amor fica… E tio… obrigada… por não ter palavras bonitas… por apenas… ficar comigo…"</p>
+
+    <p>Estendeu a mão para Leyn.</p>
+
+    <p>"Vamos?" perguntou. "Todos nós? Mara, Elise… vamos prestar respeitos juntos… como família?"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XVII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XVII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Juramentos de Família — A Benção de Selene</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Mara se ajoelhou ao lado do túmulo.</p>
+
+    <p>"Selene Sepet…" disse. "Eu não te conheci em vida… mas sei que você foi incrível… porque criou Kaira… e porque seu irmão te ama tanto… Prometo proteger sua filha. Como você protegeria. Até meu último suspiro."</p>
+
+    <p>Elise também se ajoelhou.</p>
+
+    <p>"Selene… eu era… inimiga dos vampiros…" disse. "Caçava eles… mas Leyn… me mostrou… que família… é escolha… Kaira é… minha família agora… e vou honrar… sua memória… sendo… tia que ela merece…"</p>
+
+    <p>"Eu… eu tenho família de verdade agora…" disse Kaira. "Não só de sangue… mas de ESCOLHA… Mãe… pode descansar em paz agora… porque eu não estou mais sozinha… nunca mais vou estar…"</p>
+
+    <p>Do peito de Selene, uma pequena esfera de luz dourada se formou. Flutuou para cima. Dividiu-se em quatro pedaços.</p>
+
+    <p>Um pedaço entrou em Kaira, aquecendo seu coração. Um pedaço entrou em Leyn, tocando a cicatriz onde Kaira o mordera. Um pedaço entrou em Mara, selando a promessa. Um pedaço entrou em Elise, fortalecendo o vínculo.</p>
+
+    <p class="echo">Vocês quatro são agora… verdadeiramente… FAMÍLIA. Não apenas por vínculos de sangue ou criação… mas por ESCOLHA MÚTUA e AMOR PROVADO. Enquanto lutarem juntos… protegerem uns aos outros… nunca estarão sozinhos.</p>
+
+    <p>A tampa do sarcófago começou a se fechar sozinha, devagar, até selar-se novamente com um som surdo. Mas agora não parecia triste. Parecia certo.</p>
+
+    <p>Os quatro ficaram ajoelhados por mais alguns minutos. Apenas presentes. Juntos.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XVIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XVIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Depois da Despedida — O que Vem a Seguir</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Kaira se levantou. Limpou as lágrimas. Pegou a lança de prata que caíra no chão.</p>
+
+    <p>"Tio… você disse que ia me ensinar a criar vínculo com a lança…" disse, a voz rouca, mas firme. "Para eu não a perder mais… Pode me ensinar? Agora? Aqui?"</p>
+
+    <p>Olhou ao redor da câmara de tumbas.</p>
+
+    <p>"Sinto que… que este é o lugar certo…" disse. "Com mãe nos observando… com a família toda junta…"</p>
+
+    <p>"E depois… precisamos decidir o que fazer em seguida…" disse Mara, pragmática, mas gentil. "O Devorador Menor fugiu. Vai voltar com reforços. E ainda temos o Grimório do Culto, o mapa, o núcleo do construto… Sem falar que… a Câmara da Provação ainda está esperando Kaira…"</p>
+
+    <p>"E precisamos… descansar…" disse Elise, "pelo menos… um pouco… antes… de próxima batalha…"</p>
+
+    <p>Leyn ainda estava sentado no chão de pedra, as lágrimas secando no rosto. Mas Kaira estava de pé. Mara e Elise, prontas. E Selene, finalmente em paz. Sua família o olhava, esperando orientação. Como sempre.</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    Um guerreiro que nunca chora<br>
+    não é mais forte — é apenas<br>
+    mais solitário em sua dor.<br>
+    Leyn Sepet descobriu hoje<br>
+    que sentar no chão frio ao lado de quem chora<br>
+    é o ato mais corajoso que um protetor pode fazer.<br>
+    E que <em>lágrimas de sangue</em><br>
+    às vezes são o único idioma<br>
+    que o amor entende completamente.
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+</div>
+
+</body>
+</html>

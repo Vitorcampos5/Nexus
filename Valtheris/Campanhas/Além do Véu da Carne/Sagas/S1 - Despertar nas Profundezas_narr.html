@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Despertar nas Profundezas — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">I</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Despertar nas<br>Profundezas</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Dizem que toda fome guarda uma memória, e que os primeiros vampiros — os que nasceram do apetite do mundo, não da doença dos homens — carregam, além da sede, algo que os outros perderam: a escolha. Esta é a lenda de como um deles despertou depois de um século de silêncio, e do que fez com a fome que sobrou.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Pedra, as Correntes e a Fome</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>A pedra era fria contra as costas de Leyn Sepet, como sempre fora nos últimos cem anos. As correntes de prata — abençoadas, gravadas, cruéis — queimavam sua carne morta noite após noite, sem que uma única lhe desse o alívio de uma cicatriz. As runas de contenção brilhavam fracas, um azul de vela quase apagada, prendendo-o entre a consciência e o nada.</p>
+
+    <p>Mas naquela noite, as runas vacilavam.</p>
+
+    <p>Uma rachadura se abrira na pedra de sua prisão — fina como um fio, mas o bastante para que uma luz não-solar, graças aos deuses que os homens já haviam esquecido, escorregasse para dentro. Suas mãos tremiam. Não de frio; vampiros não sentem frio. Tremiam de fome, e a fome, depois de um século, já não era apetite. Era um segundo coração, batendo mais alto que o primeiro.</p>
+
+    <p>Ele não era mais o guerreiro disciplinado que fora. Era fome com forma de homem.</p>
+
+    <p>Respirou — hábito, não necessidade — e alguma coisa nele resistiu ao instinto de rasgar tudo o que via. Os olhos se abriram. Vermelhos. Famintos. Mas controlados.</p>
+
+    <p>Cem anos de escuridão não haviam apagado quem ele fora. As memórias vieram em cascata, como sempre vinham: a aldeia em chamas, o cheiro do sangue de sua própria linhagem queimando sob luz sagrada dos que se diziam justos, o riso dos inquisidores, o rosto de sua mãe se desfazendo em cinza antes que ela pudesse terminar de gritar o nome dele.</p>
+
+    <p>Empurrou as memórias para baixo, como sempre fazia. Foco. Sobrevivência primeiro. A vingança podia esperar mais uma noite — já esperara trinta e seis mil.</p>
+
+    <p>Estudou as correntes com os olhos de quem as conhecia bem demais: prata alquímica, gravada com o mesmo tipo de runa que a Igreja usava para prender o que não devia existir. Suas unhas — negras, afiadas como navalha depois de um século sem um único corte — eram a única arma que lhe restava.</p>
+
+    <p>Tentou forçar um elo já enfraquecido. As garras escorregaram. A prata nem sequer estremeceu.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Coisa do Outro Lado</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Foi então que ouviu.</p>
+
+    <p>Passos, do outro lado da rachadura. Arrastados. Irregulares — o som de algo que já não lembrava como caminhar direito. E um cheiro chegou junto: sangue fresco, humano, e por baixo dele algo errado, algo podre, como carne esquecida ao sol por dias demais.</p>
+
+    <p>A sede gritou dentro dele.</p>
+
+    <p>Puxou as correntes com força desesperada, e a dor foi incandescente — a prata mordeu sua carne morta como ferro em brasa, fumaça negra subindo de seus dedos enquanto o metal raspava contra a pedra, os elos chacoalhando pela câmara inteira.</p>
+
+    <p>Os passos do outro lado pararam.</p>
+
+    <p>Silêncio.</p>
+
+    <p>Depois, uma voz. Rouca. Quebrada, como uma garganta rasgada que nunca cicatrizara direito.</p>
+
+    <p>"…ouviiiii… alguémmm… accooorrdoouuu…"</p>
+
+    <p>A rachadura explodiu. Pedra voou em estilhaços, poeira encheu o ar parado da cela — e então ele viu.</p>
+
+    <p>Uma figura cambaleou para dentro. Fora humano, um dia — talvez um guarda, talvez um prisioneiro como ele. Agora era outra coisa. O rosto escorria como cera derretida, um olho pendurado por um fio de nervo. A boca tinha dentes demais, crescendo em camadas, alguns furando as bochechas rasgadas para fora. O corpo inchava e murchava como se respirasse, mas nenhum pulmão fazia aquele som.</p>
+
+    <p>Cheirava a morte. A magia profana. A sangue fresco, escorrendo de mãos que já não eram mãos.</p>
+
+    <p>Leyn sentiu a mente vacilar diante daquilo — não fora medo, vampiros não temem a morte, mas foi como olhar para dentro de um espelho quebrado e reconhecer o próprio rosto num ângulo errado.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Ícor e Instinto</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Já vira aquilo antes. Cem anos atrás, nos campos de batalha, nas câmaras dos nobres que se diziam curiosos e eram apenas cruéis: carne torcida por magia proibida, sussurrada pelas Coisas Antigas que dormiam sob o mundo. Vira outros do próprio sangue serem transformados na mesma coisa que agora cambaleava em sua direção.</p>
+
+    <p>Mas o instinto de guerreiro falou mais alto que a memória. Com a mão ainda fumegando, ele arremessou o próprio sangue vampírico contra o único olho funcional da criatura.</p>
+
+    <p>Ela uivou — um som que nenhuma garganta deveria produzir, agudo e gutural ao mesmo tempo — e cambaleou para trás, arranhando o próprio rosto derretido.</p>
+
+    <p>"…tenhooo… tantaaa… fommmeee…" arrastou, como se cada sílaba lhe custasse um pedaço de si.</p>
+
+    <p>Um instante. Fora tudo que ele ganhara. E pela rachadura, mais sombras se moviam lá fora — mais delas.</p>
+
+    <p>As memórias voltaram, cobrando o preço da visão: o pai segurando uma lâmina já quebrada enquanto os inquisidores fechavam o cerco; a mãe gritando seu nome antes de virar cinza; o cheiro da aldeia queimando; ele mesmo, coberto do sangue de homens sagrados, rindo e chorando sem saber mais a diferença entre as duas coisas.</p>
+
+    <p>Fechou os olhos. Respirou, ainda que não precisasse — o gesto acalmava algo que já não tinha nome. Cem anos com aquelas correntes lhe haviam ensinado cada elo, cada runa, cada ponto onde a prata beijava o ferro. E suas presas eram mais afiadas que qualquer lâmina forjada por mãos humanas.</p>
+
+    <p>Mordeu o ferro. Faíscas. O metal gemeu, rachou — não cedeu. As gengivas sangravam ícor negro sobre a prata fria. Tão perto. Não o bastante.</p>
+
+    <p>Do corredor, vozes se aproximavam.</p>
+
+    <p>"Ouviu? Tem alguém acordado na cela antiga…"<br>"Talvez seja comida fresca…"</p>
+
+    <p>A criatura, sentindo sua vulnerabilidade, deu um passo. Depois outro.</p>
+
+    <p>"AGORAAA!" — e se lançou sobre ele, braços deformados abertos, o fedor de carne podre entupindo o ar como fumaça.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Sangue Podre e a Fome Vence</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>As garras rasgaram seu ombro. A dor explodiu — não como quando ele fora vivo, mas uma queimação vazia ecoando por carne que já não deveria sentir nada. Pior: onde as garras tocaram, algo mais se moveu sob a pele. Um formigamento errado, como se a carne da criatura quisesse se fundir à sua.</p>
+
+    <p>Resistiu ao chamado daquilo. Sua carne morta ainda era mais teimosa que qualquer contágio. Não seria transformado. Não ainda.</p>
+
+    <p>E então a sede explodiu.</p>
+
+    <p>O sangue da criatura — podre, corrompido, mas sangue — estava a um dedo de sua boca. Cem anos de jejum. A dor do ferimento aberto. As memórias que se recusavam a ficar enterradas. A frustração de correntes que não cediam. Tudo desabou de uma vez, como um dique que já não aguentava nada.</p>
+
+    <p><strong>A fome venceu.</strong></p>
+
+    <p>Ele não era mais Leyn Sepet, o guerreiro que jurara proteger os puros. Era um predador faminto, e nada mais. As presas encontraram a garganta da criatura com uma velocidade que nenhum dos dois esperava — e não foi mordida. Foi ruptura. A garganta se abriu num jato de sangue negro e podre; ele mordeu mais fundo, através de carne corrompida e cartilagem, até sentir o osso da coluna sob os dentes. A cabeça pendeu para o lado, quase separada do corpo. A criatura tentou gritar. Só saiu um gorgolejo úmido. Depois, nada.</p>
+
+    <p>E ele bebeu.</p>
+
+    <p>O sangue corrompido desceu como vidro derretido — êxtase e agonia na mesma golada. As feridas começaram a fechar enquanto ele bebia, mas o alívio vinha com um preço que só entenderia depois: sussurros em línguas que não deveriam existir se enroscaram em seus pensamentos.</p>
+
+    <p class="echo">vê além das estrelas … eles estão acordando … você também é deles, agora</p>
+
+    <p>Viu oceanos de escuridão líquida. Cidades impossíveis, erguidas num ângulo que a geometria não deveria permitir. Olhos — tantos olhos — observando através do véu fino que separa o mundo do que vive por baixo dele. E, mais fundo que tudo isso, algo imenso se virando em seu sono, como se tivesse sentido a atenção de Leyn e quisesse retribuí-la.</p>
+
+    <p>Afastou-se do corpo vazio, cambaleando, e por um instante não soube dizer se tremia de fome saciada ou do que acabara de ver atrás dos próprios olhos.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Livre nas Trevas</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Quando a visão focou de novo, ele estava coberto de sangue negro, e a criatura jazia morta a seus pés.</p>
+
+    <p>Foi então que as correntes cederam.</p>
+
+    <p>A prata alquímica, já enfraquecida por seus ataques e agora encharcada do sangue corrompido que escorria por seus elos, simplesmente se partiu. Ele estava livre pela primeira vez em um século — e livre bem a tempo de ver três novas aberrações entrarem pela rachadura na parede.</p>
+
+    <p>Elas viram o corpo. Depois viram ele.</p>
+
+    <p>Uma riu — um som que misturava riso de criança com vidro se estilhaçando.</p>
+
+    <p>Ele se moveu antes que o som terminasse.</p>
+
+    <p>Velocidade de sangue primordial é algo que aberrações lentas não conseguem seguir com os olhos; foi um borrão entre uma respiração e outra, as correntes ainda presas aos pulsos, pingando ícor e sangue corrompido, as runas bruxuleando fraco. Já estava atrás da criatura-criança antes que ela terminasse de rir.</p>
+
+    <p>"Ohhh… esse é diferente…" ela disse, com uma voz que ainda carregava resquícios de infância em algum lugar sob a podridão. "…esse ainda pensa…"</p>
+
+    <p>Tentou enrolar as correntes ao redor dela — as mãos escorregaram, o gesto falhou. Não importou. Não havia técnica nenhuma no que fez a seguir, só força bruta: os dedos afundaram na carne mole e podre da cabeça dela, e ele puxou. A coluna estalou, estourou. A carne rasgou como papel molhado. A cabeça se soltou do corpo — e a criatura não gritou. O som que saiu foi um suspiro. Um suspiro de alívio, como alguém que finalmente larga um peso carregado por longe demais.</p>
+
+    <p>O corpo desabou. A cabeça em suas mãos se desfez em fumaça negra, que cheirava a enxofre e a algo parecido com gratidão.</p>
+
+    <p>"Você… libertou… ela…" disse uma das outras, uma coisa de braços demais, crescendo de lugares onde braços não deveriam crescer.</p>
+
+    <p>"NÃO!" gritou a terceira — sem rosto, apenas uma boca vertical ocupando o tronco inteiro. "ELA ERA NOSSA!"</p>
+
+    <p>Leyn olhou para as próprias mãos, ainda segurando fumaça que já não era nada. A prata que o aprisionara por cem anos acabara de se tornar, nas mãos certas, um instrumento de libertação para outra coisa. Não sentiu triunfo nisso. Sentiu apenas o peso frio de ter feito, pela primeira vez em muito tempo, algo parecido com misericórdia.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">À Beira da Morte Permanente</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>A Criatura-Sem-Rosto não lhe deu tempo de sentir o peso daquilo por mais que um instante.</p>
+
+    <p>A boca se abriu de um jeito que boca nenhuma deveria se abrir, e línguas múltiplas o agarraram, dentes afundando em seu braço, arrancando, rasgando. Sentiu costelas estalarem, carne sendo triturada entre mordidas que não paravam. Ícor negro jorrou dos ferimentos. As bordas de sua visão escureceram.</p>
+
+    <p><em>É assim que termina? Cem anos selado só para morrer segundos depois de acordar?</em></p>
+
+    <p>A Criatura-Multibraços hesitou, olhando entre ele e os restos dissolvidos da criança-aberração. Não atacou. Estava confusa — ou talvez estivesse decidindo algo que ele não podia ver.</p>
+
+    <p>Restava-lhe pouco: as correntes de prata alquímica ainda presas aos pulsos; as garras; as presas; a velocidade que o sangue primordial lhe dava; e uma filosofia perigosa, recém-aprendida com a própria mão — a de que a morte, às vezes, é libertação. Nada daquilo parecia suficiente com a boca de línguas fechada em torno do seu ombro.</p>
+
+    <p>Foi a Multibraços quem agiu.</p>
+
+    <p>Um de seus muitos braços deformados se lançou — não contra ele, mas contra a criatura que o devorava — e arrancou a Sem-Rosto de cima dele com uma força que nenhuma daquelas coisas deveria ter.</p>
+
+    <p>"PARE," rugiu ela, a voz quebrando em cada sílaba. "ELE LIBERTA. ELE NÃO ESCRAVIZA."</p>
+
+    <p>A boca-no-tronco se abriu num grito silencioso enquanto era arremessada contra a parede.</p>
+
+    <p>Leyn desabou no chão, sangrando, morrendo de verdade pela primeira vez em cem anos. A Multibraços ajoelhou-se ao lado dele. Seus muitos olhos — alguns nos lugares certos, a maioria não — o observavam com uma intensidade que ele não soube nomear.</p>
+
+    <p>"Você… diferente…" ela disse. "Você mata… para salvar…"</p>
+
+    <p>Um dos braços estendeu algo: uma garrafa quebrada, cheirando a sangue velho, mas não corrompido. Humano.</p>
+
+    <p>"Beba… ou morra… escolha… é sua…"</p>
+
+    <p>A Sem-Rosto já se levantava da parede, furiosa, cambaleando de volta.</p>
+
+    <p>"Rápido… ela vem… decida… AGORA."</p>
+
+    <p>Mesmo à beira da morte de verdade — a que não se volta —, o instinto de sobrevivência falou mais alto que a inconsciência. As mãos trêmulas encontraram a garrafa. Os lábios se abriram. Ele bebeu.</p>
+
+    <p>O sangue humano — velho, mas puro — desceu como uma salvação líquida, sem sussurros, sem visões, apenas vida roubada de alguém que já morrera havia muito. As feridas se fecharam. A carne morta se recompôs. As costelas quebradas se realinharam com estalos úmidos.</p>
+
+    <p>E, contra tudo o que deveria acontecer depois de beber algo tão bem-vindo, sua mente permaneceu limpa. Bebera por necessidade, não por prazer — e a diferença, por menor que parecesse, era o que ainda o separava de virar uma daquelas coisas no chão. Os sussurros cósmicos de antes recuaram, como maré vazando de uma praia.</p>
+
+    <p>Abriu os olhos. A Multibraços ainda ao seu lado, protegendo-o. A Sem-Rosto parada a alguns metros, hesitante.</p>
+
+    <p>"Ele… não enlouqueceu…" ela murmurou, "mesmo bebendo…"</p>
+
+    <p>E então, mais baixo, quase para si mesma: "Você… lembra… quem era… antes de virar… isso?"</p>
+
+    <p>"Antes de virar?" Leyn ergueu os olhos vermelhos para ela. "Eu nasci assim. Sou o último da linhagem primordial que ainda respira. Então sim. Eu me lembro de tudo."</p>
+
+    <p>Silêncio.</p>
+
+    <p>A Multibraços congelou. Todos os seus olhos, certos e errados, se fixaram nele com uma intensidade nova.</p>
+
+    <p>"Linhagem… primordial…" ela disse, quase sem voz. "Vampiro… puro…"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Cultista e a Verdade Profunda</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Algo mudou nela. Os braços tremeram. E então, impossível para uma coisa daquele tamanho, ela se ajoelhou.</p>
+
+    <p>"Nós… éramos… soldados…" disse ela, "da Igreja… viemos caçar… seu povo… cem anos atrás…"</p>
+
+    <p>Os olhos dela se encheram de lágrimas negras.</p>
+
+    <p>"Os nobres… nos traíram… nos transformaram… em experimentos… disseram que íamos caçar monstros… mas nos fizeram… piores que monstros…"</p>
+
+    <p>Leyn não disse nada. Não havia nada gentil a dizer, e ele não fingiria que havia.</p>
+
+    <p>"Você…" continuou ela, a voz se despedaçando, "era uma das… crias… que nós massacramos…"</p>
+
+    <p>Ela não atacou. Havia medo nela agora. E vergonha — a vergonha específica de quem reconhece, tarde demais, o rosto de quem prejudicou.</p>
+
+    <p>Foi então que uma voz nova ecoou do fundo do corredor. Humana. Masculina. Carregada da autoridade de quem nunca precisou duvidar de si mesmo.</p>
+
+    <p>"BEM, BEM, BEM. O ESPÉCIME PRIMORDIAL FINALMENTE ACORDOU."</p>
+
+    <p>Passos firmes. Tochas se acendendo uma a uma. Um homem surgiu, vestindo uma túnica negra bordada com símbolos que doíam de se olhar diretamente — a marca do Culto da Verdade Profunda, os que serviam as Coisas Antigas.</p>
+
+    <p>"Agradeço às aberrações por mantê-lo… entretido," disse o cultista, "mas seu sangue pertence aos Mestres agora."</p>
+
+    <p>Leyn virou os olhos vermelhos para ele. Quando falou, sua voz saiu baixa, fria, carregada de um século de ódio que nunca tivera para onde ir.</p>
+
+    <p>"Você," disse, "seu cheiro é ainda pior do que o das criaturas que chama de monstros."</p>
+
+    <p>O cultista parou. Por um instante, a superioridade em seu rosto vacilou — e então ele riu, um riso forçado que não enganava ninguém.</p>
+
+    <p>"Ah, ainda tem espírito. Fascinante. A maioria dos vampiros primordiais que estudamos perde toda a personalidade depois de algumas décadas de contenção. Mas você…"</p>
+
+    <p>Deu mais um passo. As tochas iluminaram melhor seu rosto: jovem demais para os símbolos de posto bordados na túnica, olhos fundos, veias negras pulsando sob a pele pálida como algo vivo que não era dele.</p>
+
+    <p>"Eu cheiro pior? PIOR?!" Sua voz subiu, perdendo a compostura que tentava manter. "EU TRANSCENDI A CARNE FRACA! EU VEJO ATRAVÉS DO VÉU! EU SIRVO OS QUE EXISTIAM ANTES DAS ESTRELAS!"</p>
+
+    <p>E Leyn, que passara cem anos aprendendo a ler o silêncio antes das palavras, viu tudo o que o rapaz tentava esconder atrás do próprio grito. As veias negras não eram força — eram parasitas, consumindo-o por dentro enquanto ele as chamava de poder. Tremia, apoiado numa magia emprestada que não sabia controlar. Tinha medo — a respiração acelerara no instante em que Leyn falara, e suor escorria atrás de sua orelha. A luz das tochas não alcançava os cantos mais fundos da cela; ele precisava dela para ver. Leyn, não.</p>
+
+    <p>E as aberrações não o obedeciam por lealdade. Havia algemas ao redor delas que os olhos não enxergavam — só se sentiam, do mesmo jeito que se sente a corda de uma armadilha antes de pisar nela. Se aquele rapaz morresse, ou perdesse a concentração, as amarras invisíveis se romperiam.</p>
+
+    <p>Estava sozinho ali. Sem reforços a caminho. Aquilo era um teste pessoal — uma prova que tentava dar a "Mestres" que provavelmente nem sabiam seu nome. Jovem. Ambicioso. Tolo.</p>
+
+    <p>"Ele…" sussurrou a Multibraços, quase inaudível, "nos alimenta… com prisioneiros… nos mantém vivas… para estudar… a corrupção…"</p>
+
+    <p>O cultista ergueu uma mão. Símbolos na palma acenderam um violeta doentio.</p>
+
+    <p>"Bravatas não mudam sua situação, vampiro," disse ele. "Você está ferido. Faminto. Perdido em MEU domínio. E eu tenho ordens de te entregar aos Mestres… vivo, ou em pedaços que ainda respirem."</p>
+
+    <p>Sorriu, revelando dentes manchados de algo negro.</p>
+
+    <p>"Então me diga, espécime. Vai vir quieto, ou vou precisar quebrar seus ossos primeiro?"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Blefe e a Prata Sagrada</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn deixou o silêncio se alongar, e o cultista o leu como quisesse.</p>
+
+    <p>"Ah, percebeu sua situação, finalmente. Sábio. Venha então, e—"</p>
+
+    <p>Levantou-se devagar, trôpego, como se os ferimentos pesassem mais do que pesavam. Deixou o corpo pender para a esquerda. Vulnerável. Derrotado.</p>
+
+    <p>"Está bem…" disse, a voz quebrada, arrastada como a de alguém sem forças para fingir mais nada. "Cem anos… nas trevas… só quero ver o céu… uma última vez… antes de ser entregue."</p>
+
+    <p>O cultista hesitou. Estudou-o. Depois sorriu, vitorioso.</p>
+
+    <p>"Sábio. MUITO sábio. Sim, você pode ver o mundo antes de ser levado aos Mestres. Considere isso… generosidade minha."</p>
+
+    <p>Baixou a mão, relaxando a postura.</p>
+
+    <p>"Mas me ouça bem, criatura. Uma tentativa de fuga e eu colapso seus pulmões de dentro para fora. Entendido?"</p>
+
+    <p>Estava mentindo — Leyn percebeu isso com a mesma clareza com que sentira o cheiro de sangue na primeira noite daquele século. O rapaz não tinha poder nenhum para uma ameaça daquelas; só queria que ele acreditasse que tinha.</p>
+
+    <p>Quinze passos. Dez. O cultista relaxava mais a cada um, a vitória fácil o deixando descuidado. Cinco.</p>
+
+    <p>Foi aí que os olhos dele se estreitaram.</p>
+
+    <p>"Espere," disse, a voz endurecendo. "Você está tenso demais para alguém derrotado. Acha que sou idiota?"</p>
+
+    <p>Deu um passo atrás, a mão subindo de novo, os símbolos na palma começando a arder violeta.</p>
+
+    <p>O blefe falhara — mas antes que o cultista pudesse fazer o que quer que planejasse, a Multibraços agiu. Não esperou ordem nenhuma: viu a abertura e atacou, todos os braços deformados se lançando contra as costas dele. Três se fecharam ao redor do cultista; dois mais golpearam suas costelas. Ele gritou, tropeçou para frente — direto para o alcance de Leyn.</p>
+
+    <p>"SEU TRAIDOR MUTANTE!" berrou, debatendo-se a três passos de distância. "EU TE CRIEI!"</p>
+
+    <p>Os símbolos na palma explodiram em luz violeta nauseante.</p>
+
+    <p>"LIBERTEM-ME, MESTRES!"</p>
+
+    <p>A energia profana que liberou apertou as algemas astrais ao redor da Multibraços, forçando-a a soltá-lo — mas ela já comprara o tempo suficiente.</p>
+
+    <p>Leyn atacou com as próprias correntes.</p>
+
+    <p>Elas sibilaram no ar, e a prata alquímica gravada com runas feitas para prender vampiros, para queimar tudo que fosse profano, envolveu o pescoço do rapaz como se sempre tivesse sido feita para aquilo também. As runas explodiram num azul puro. As veias negras sob sua pele começaram a ferver, fumaça subindo onde o metal tocava.</p>
+
+    <p>Gritou — não de dor física, mas de uma agonia que parecia vir de mais fundo, de um lugar que a carne não alcança sozinha.</p>
+
+    <p>"NÃO! NÃO! OS MESTRES ME PROMETERAM PODER! EU SOU—"</p>
+
+    <p>Fumaça negra escapou de sua boca, do nariz, dos olhos. As coisas que o parasitavam estavam sendo expulsas à força. A Sem-Rosto observava de longe, paralisada entre o terror e algo que talvez fosse esperança.</p>
+
+    <p>Leyn puxou as correntes, trazendo o rosto do rapaz a centímetros do seu. Os olhos dele, dilatados de dor e desespero, encontraram os olhos vermelhos que o século não apagara.</p>
+
+    <p>"Você não deveria buscar esse tipo de poder, humano podre," disse Leyn, a voz fria como túmulo aberto.</p>
+
+    <p>As palavras o atingiram mais fundo que qualquer lâmina. Lágrimas escorreram, misturadas ao ícor negro sendo purgado de dentro dele. Tentou falar; só saiu um gorgolejo úmido, e depois, aos pedaços:</p>
+
+    <p>"Eu… só queria… ter importância… Os nobres sempre me ignoraram… A Igreja me expulsou… Os Mestres prometeram que eu seria… alguém…"</p>
+
+    <p>Tossiu.</p>
+
+    <p>"Eles mentiram, não é? Eu nunca tive controle nenhum. Eles me usaram. Como experimento. Igual a elas."</p>
+
+    <p>A Multibraços, agora livre das algemas enfraquecidas, cambaleou até eles.</p>
+
+    <p>"As correntes…" disse ela, "quebraram as amarras dele sobre nós… estamos livres…"</p>
+
+    <p>Do fundo do corredor, um som distante começou a ecoar.</p>
+
+    <p><strong>BOOM. BOOM. BOOM.</strong></p>
+
+    <p>"Os guardas…" sussurrou o cultista, a voz já sem nenhuma força para mentir. "Construtos… de pedra e carne… vigiam este nível…"</p>
+
+    <p>E Leyn, olhando aquele rapaz destroçado ajoelhado diante dele, viu a verdade inteira de uma vez: não havia vilão ali. Havia só mais uma vítima, como as aberrações, como ele mesmo. Um garoto rejeitado pelos nobres por ser plebeu demais, expulso pela Igreja, encontrado por um culto exatamente no momento em que estava mais vulnerável para acreditar em qualquer promessa de propósito. Fora tudo mentira. Sempre fora.</p>
+
+    <p>Mas aquele garoto ainda tinha o que Leyn precisava: rotas, senhas, protocolos dos níveis acima. Afrouxou as correntes o suficiente para ele respirar — sem soltar, de jeito nenhum, o controle.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Escolha Final</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Sua voz, quando falou de novo, não carregava crueldade nenhuma. Só um peso frio, de quem já decidiu algo e não vai mudar de ideia.</p>
+
+    <p>"Escute bem, humano. Você será meu guia. Vai me levar para fora como seu prisioneiro capturado. Sem suspeitas. Sem alertas." Aproximou-se ainda mais, olhos nos olhos dele. "Se cooperar, eu te deixo vivo quando chegarmos lá fora. Mas se me trair — se tentar qualquer coisa — eu não te mato rápido. Entendido?"</p>
+
+    <p>Os passos de pedra ficaram mais próximos.</p>
+
+    <p><strong>BOOM. BOOM. BOOM.</strong></p>
+
+    <p>"Você… poupa… ele?" perguntou a Multibraços, a voz cheia de uma confusão genuína — e, sob ela, algo que parecia respeito. "Mesmo depois… de tudo?"</p>
+
+    <p>Mas havia algo novo nos olhos do cultista agora. Não poder. Desespero — do tipo que torna até covardes imprevisíveis, porque já não têm nada a perder ao serem imprevisíveis.</p>
+
+    <p>"Você me subestima, vampiro," disse ele, a voz trêmula, mas carregando uma determinação suicida que não estivera ali um minuto antes.</p>
+
+    <p>Tossiu sangue negro.</p>
+
+    <p>"Se eu te ajudar a escapar e os Mestres descobrirem… minha morte vai ser pior que qualquer coisa que você possa fazer. Eles não me matam. Eles me transformam. Como transformaram elas."</p>
+
+    <p>Silêncio.</p>
+
+    <p>"Então não," ele disse. "Não vou cooperar."</p>
+
+    <p><strong>BOOM. BOOM. BOOM.</strong></p>
+
+    <p>Os passos estavam a segundos de distância.</p>
+
+    <p>"Eu te dei uma chance de sair vivo daqui," disse Leyn, e havia nele algo mais parecido a decepção genuína do que a raiva — como um professor vendo um aluno escolher, de olhos abertos, o caminho errado. "E mesmo assim… você escolhe morrer?"</p>
+
+    <p>Não esperou resposta.</p>
+
+    <p>"Multibraços, me segura," ordenou, rápido, sem hesitar. "Sem-Rosto, aproxime-se como se estivesse sob controle."</p>
+
+    <p>A Multibraços hesitou só um instante antes que seus muitos braços o envolvessem — suave o bastante para não ferir, convincente o bastante para parecer contenção de verdade. A Sem-Rosto cambaleou para perto, tremendo, obedecendo pela primeira vez sem que fosse por medo do cultista.</p>
+
+    <p>A cena estava montada: um prisioneiro capturado, aberrações obedientes, um cultista vitorioso.</p>
+
+    <p>O cultista abriu a boca para gritar.</p>
+
+    <p>Leyn viu, numa única batida de coração que já não precisava mais bater, o que aquele grito significava: tudo desmoronando antes mesmo de começar. E viu também — com a clareza fria de quem finalmente aceita o que é — que não havia prazer nenhum no que faria a seguir. Só necessidade.</p>
+
+    <p>As presas encontraram a jugular antes que o grito saísse inteiro.</p>
+
+    <p>Bebeu o suficiente para silenciá-lo para sempre — o sangue dele amargo, corrompido, carregado dos resíduos das coisas que o haviam parasitado, mas Leyn era mais velho que a corrupção que aquele sangue carregava. Era da linhagem que existira antes de as Coisas Antigas despertarem, e o veneno que mataria ou transformaria qualquer outro vampiro se desfez dentro dele, convertido em nada além de sustento.</p>
+
+    <p>O cultista se debateu, fraco. Seus olhos se arregalaram — não de dor, mas de uma compreensão final, tardia demais para servir de qualquer coisa. Com o último fôlego, murmurou:</p>
+
+    <p>"…obrigado… por acabar… com isso…"</p>
+
+    <p>E morreu.</p>
+
+    <p>Leyn ficou ali, o corpo do rapaz nos braços, os passos de pedra ecoando mais perto a cada segundo, as duas aberrações ao seu lado — uma que fora soldado e o caçara, outra sem nome nem rosto, ambas agora esperando dele algo que só ele podia decidir dar. Cem anos de escuridão, correntes e fome haviam terminado naquela noite. Restava saber quanto de si havia sobrevivido a elas — e quanto ainda tinha para perder.</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    A fome, dizem as lendas, nunca esquece de si mesma. Mas naquela noite, entre correntes partidas e sangue que não devia ter sido bebido, Leyn Sepet aprendeu que a memória mais antiga de todas — mais velha que a fome, mais velha que a sede — é a de que se pode escolher a quem poupar, e a quem oferecer, no lugar da morte, o único descanso que ainda resta: o fim.
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Lenda Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+</div>
+
+</body>
+</html>

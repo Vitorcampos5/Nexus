@@ -1,0 +1,3396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saga III — Lágrimas que Desafiam a Morte | Além do Véu da Carne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #060408;
+    --bg-deep:        #0d0910;
+    --bg-chamber:     #120d16;
+    --bg-card:        #1a1220;
+    --bg-card-alt:    #160e1c;
+
+    --ink:            #e2c9a8;
+    --ink-dim:        #9e8a72;
+    --ink-faint:      #5a4e42;
+
+    --blood:          #8b1a1a;
+    --blood-bright:   #c0392b;
+    --blood-glow:     #ff4040;
+
+    --silver:         #b8c4d0;
+    --silver-dim:     #697580;
+    --rune-blue:      #4a9ebe;
+    --rune-glow:      #7ec8e3;
+
+    --gold:           #c9963c;
+    --gold-bright:    #e8b84b;
+
+    --sanity-color:   #9b59b6;
+    --sanity-dim:     #6c3483;
+    --sanity-glow:    #d7bde2;
+
+    --cosmic:         #1a6b5a;
+    --cosmic-glow:    #52c9a8;
+    --cosmic-text:    #a8e6d6;
+
+    --mara-color:     #e8943a;
+    --mara-dim:       #a05a18;
+    --elise-color:    #3ab8c9;
+    --elise-dim:      #1a7a8a;
+    --seraphine-color:#b56ee0;
+    --seraphine-dim:  #7a35a8;
+    --void-color:     #c8c8e0;
+
+    --success:        #2e7d52;
+    --success-bright: #4caf80;
+    --fail:           #7d2e2e;
+    --fail-bright:    #c0392b;
+    --crit-success:   #1a5c7a;
+    --crit-fail:      #5c1a1a;
+
+    --border-subtle:  rgba(255,255,255,0.04);
+    --border-dim:     rgba(255,255,255,0.08);
+    --border-gold:    rgba(201,150,60,0.3);
+    --border-blood:   rgba(139,26,26,0.4);
+    --border-rune:    rgba(74,158,190,0.35);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2rem 8rem;
+  }
+
+  /* ══════════════════════════════════════════
+     COVER / MASTHEAD
+  ══════════════════════════════════════════ */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 40%, rgba(155,89,182,0.10) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 50% 100%, rgba(74,158,190,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 50% 80%, rgba(139,26,26,0.06) 0%, transparent 60%);
+  }
+
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--silver-dim);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(5rem, 18vw, 11rem);
+    font-weight: 900;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(155,89,182,0.45);
+    background: linear-gradient(180deg, rgba(155,89,182,0.28) 0%, transparent 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    margin-bottom: -0.1em;
+    opacity: 0;
+    animation: fadeUp 1s 0.5s forwards;
+    user-select: none;
+  }
+
+  .cover-divider {
+    width: 100%;
+    max-width: 500px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--sanity-dim) 30%, var(--sanity-dim) 70%, transparent);
+    margin: 1.5rem auto;
+    position: relative;
+    opacity: 0;
+    animation: fadeIn 1s 0.9s forwards;
+  }
+
+  .cover-divider::before,
+  .cover-divider::after {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--sanity-dim);
+    font-size: 0.6rem;
+  }
+  .cover-divider::before { left: calc(30% - 8px); }
+  .cover-divider::after  { right: calc(30% - 8px); }
+
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 4vw, 2.4rem);
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    line-height: 1.3;
+    margin: 1rem 0 0.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.7s forwards;
+    text-shadow: 0 0 40px rgba(155,89,182,0.35);
+  }
+
+  .cover-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.3em;
+    color: var(--silver-dim);
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 1s forwards;
+  }
+
+  .cover-scroll-hint {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeIn 1.5s 2s forwards;
+  }
+
+  .cover-scroll-hint span {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(180deg, var(--ink-faint), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ══════════════════════════════════════════
+     CHAPTER SECTIONS
+  ══════════════════════════════════════════ */
+  .chapter {
+    margin-top: 6rem;
+    padding-top: 2rem;
+  }
+
+  .chapter-header {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: var(--blood);
+    line-height: 1;
+    min-width: 2ch;
+    text-align: right;
+    text-shadow: 0 0 20px rgba(192,57,43,0.3);
+    flex-shrink: 0;
+  }
+
+  .chapter-title-block { flex: 1; }
+
+  .chapter-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    line-height: 1.2;
+  }
+
+  .chapter-rule {
+    height: 1px;
+    background: linear-gradient(90deg, var(--blood) 0%, rgba(139,26,26,0.15) 100%);
+    margin-top: 0.5rem;
+  }
+
+  /* ══════════════════════════════════════════
+     PROSE
+  ══════════════════════════════════════════ */
+  .prose {
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.9;
+    margin-bottom: 1.8rem;
+  }
+
+  .prose p { margin-bottom: 1.2em; }
+  .prose p:last-child { margin-bottom: 0; }
+
+  .prose strong { font-weight: 600; color: #f0d9bc; }
+  .prose em { font-style: italic; color: var(--ink-dim); }
+
+  .prose.with-dropcap p:first-child::first-letter {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 4.5em;
+    font-weight: 900;
+    float: left;
+    line-height: 0.75;
+    margin: 0.1em 0.1em -0.05em 0;
+    color: var(--blood);
+    text-shadow: 0 0 20px rgba(192,57,43,0.4);
+  }
+
+  /* ══════════════════════════════════════════
+     DICE ROLL BLOCKS
+  ══════════════════════════════════════════ */
+  .roll-block {
+    margin: 2rem 0;
+    border-left: 3px solid var(--rune-blue);
+    background: linear-gradient(135deg, rgba(74,158,190,0.05) 0%, rgba(10,6,13,0.6) 100%);
+    border-radius: 0 6px 6px 0;
+    padding: 1.2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .roll-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 3px;
+    background: var(--rune-blue);
+    box-shadow: 0 0 12px var(--rune-glow);
+  }
+
+  .roll-block.success {
+    border-left-color: var(--success-bright);
+    background: linear-gradient(135deg, rgba(46,125,82,0.07) 0%, rgba(10,6,13,0.6) 100%);
+  }
+  .roll-block.success::before { background: var(--success-bright); box-shadow: 0 0 12px var(--success-bright); }
+
+  .roll-block.fail {
+    border-left-color: var(--fail-bright);
+    background: linear-gradient(135deg, rgba(125,46,46,0.09) 0%, rgba(10,6,13,0.6) 100%);
+  }
+  .roll-block.fail::before { background: var(--fail-bright); box-shadow: 0 0 12px rgba(192,57,43,0.5); }
+
+  .roll-block.crit-success {
+    border-left-color: var(--rune-glow);
+    background: linear-gradient(135deg, rgba(26,92,122,0.12) 0%, rgba(10,6,13,0.6) 100%);
+  }
+  .roll-block.crit-success::before { background: var(--rune-glow); box-shadow: 0 0 18px var(--rune-glow); }
+
+  .roll-block.crit-fail {
+    border-left-color: #8b0000;
+    background: linear-gradient(135deg, rgba(92,26,26,0.15) 0%, rgba(10,6,13,0.6) 100%);
+  }
+  .roll-block.crit-fail::before { background: #8b0000; box-shadow: 0 0 18px rgba(139,0,0,0.7); }
+
+  .roll-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.6rem;
+  }
+
+  .roll-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--silver);
+  }
+
+  .roll-formula {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: var(--ink-dim);
+  }
+
+  .roll-result-line {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .roll-dice {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .roll-block.success    .roll-dice { color: var(--success-bright); }
+  .roll-block.fail       .roll-dice { color: var(--fail-bright); }
+  .roll-block.crit-success .roll-dice { color: var(--rune-glow); text-shadow: 0 0 12px var(--rune-glow); }
+  .roll-block.crit-fail  .roll-dice { color: #ff2020; text-shadow: 0 0 14px rgba(255,32,32,0.5); }
+
+  .roll-verdict {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 0.25em 0.8em;
+    border-radius: 2px;
+  }
+
+  .roll-block.success    .roll-verdict { background: rgba(46,125,82,0.2); color: var(--success-bright); border: 1px solid rgba(76,175,128,0.3); }
+  .roll-block.fail       .roll-verdict { background: rgba(125,46,46,0.2); color: var(--fail-bright);    border: 1px solid rgba(192,57,43,0.3); }
+  .roll-block.crit-success .roll-verdict { background: rgba(26,92,122,0.2); color: var(--rune-glow);   border: 1px solid rgba(126,200,227,0.4); }
+  .roll-block.crit-fail  .roll-verdict { background: rgba(92,26,26,0.3);  color: #ff4040;              border: 1px solid rgba(255,32,32,0.3); }
+
+  .roll-note {
+    margin-top: 0.5rem;
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: var(--ink-dim);
+  }
+
+  /* ══════════════════════════════════════════
+     STAT TRACKERS
+  ══════════════════════════════════════════ */
+  .tracker-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: 2rem 0;
+  }
+
+  .tracker {
+    flex: 1;
+    min-width: 180px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tracker.hp-tracker { border-color: var(--border-blood); }
+  .tracker.sanity-tracker { border-color: rgba(155,89,182,0.25); }
+
+  .tracker-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.4rem;
+  }
+
+  .tracker-values {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+  }
+
+  .tracker-current {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .hp-tracker     .tracker-current { color: var(--blood-bright); text-shadow: 0 0 12px rgba(192,57,43,0.3); }
+  .sanity-tracker .tracker-current { color: var(--sanity-color); text-shadow: 0 0 12px rgba(155,89,182,0.3); }
+
+  .tracker-slash { font-family: 'Cinzel', serif; font-size: 1.2rem; color: var(--ink-faint); }
+  .tracker-max   { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--ink-dim); }
+
+  .tracker-bar {
+    margin-top: 0.7rem;
+    height: 3px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .tracker-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  .hp-tracker     .tracker-fill { background: linear-gradient(90deg, var(--blood), var(--blood-bright)); }
+  .sanity-tracker .tracker-fill { background: linear-gradient(90deg, var(--sanity-dim), var(--sanity-color)); }
+
+  .tracker-delta {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    margin-top: 0.3rem;
+  }
+
+  /* ══════════════════════════════════════════
+     COMBAT BLOCK
+  ══════════════════════════════════════════ */
+  .combat-block {
+    margin: 2.5rem 0;
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border-blood);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .combat-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--blood-bright), transparent);
+  }
+
+  .combat-header {
+    padding: 0.9rem 1.5rem;
+    background: rgba(139,26,26,0.12);
+    border-bottom: 1px solid var(--border-blood);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .combat-icon  { font-size: 1rem; color: var(--blood-bright); }
+
+  .combat-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--silver-dim);
+  }
+
+  .combat-body { padding: 1.2rem 1.5rem; }
+
+  /* ══════════════════════════════════════════
+     WHISPERS / COSMIC HORROR
+  ══════════════════════════════════════════ */
+  .whisper-block {
+    margin: 2rem 0;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba(26,107,90,0.06) 0%, rgba(8,20,17,0.8) 100%);
+    border: 1px solid rgba(82,201,168,0.15);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .whisper-block::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 50% 50%, rgba(82,201,168,0.03), transparent 70%);
+    animation: cosmicPulse 6s ease-in-out infinite;
+  }
+
+  .whisper-block.memory {
+    background: linear-gradient(135deg, rgba(201,150,60,0.07) 0%, rgba(8,5,2,0.8) 100%);
+    border-color: rgba(201,150,60,0.2);
+  }
+  .whisper-block.memory::before {
+    background: radial-gradient(ellipse at 50% 50%, rgba(201,150,60,0.04), transparent 70%);
+  }
+  .whisper-block.memory .whisper-label { color: rgba(201,150,60,0.6); }
+  .whisper-block.memory .whisper-line  { color: #d4a85a; }
+  .whisper-block.memory .whisper-line::before { color: rgba(201,150,60,0.35); }
+
+  .whisper-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: rgba(82,201,168,0.5);
+    margin-bottom: 0.8rem;
+  }
+
+  .whisper-line {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: var(--cosmic-text);
+    font-size: 1.05rem;
+    line-height: 1.75;
+    opacity: 0.88;
+  }
+
+  .whisper-line::before {
+    content: '"';
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2rem;
+    color: rgba(82,201,168,0.3);
+    line-height: 0;
+    vertical-align: -0.5em;
+    margin-right: 0.1em;
+  }
+
+  /* ══════════════════════════════════════════
+     VISION / MEMORY BLOCK
+  ══════════════════════════════════════════ */
+  .vision-block {
+    margin: 2rem 0;
+    padding: 1.5rem 1.8rem;
+    background: rgba(18,10,22,0.7);
+    border-left: 2px solid var(--sanity-dim);
+    border-top: 1px solid rgba(155,89,182,0.15);
+    border-bottom: 1px solid rgba(155,89,182,0.15);
+    position: relative;
+  }
+
+  .vision-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--sanity-dim);
+    margin-bottom: 0.8rem;
+  }
+
+  .vision-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .vision-list li {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: rgba(215,189,226,0.75);
+    font-size: 0.98rem;
+    padding-left: 1.2rem;
+    position: relative;
+  }
+
+  .vision-list li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    font-size: 0.45rem;
+    color: var(--sanity-dim);
+    top: 0.55em;
+  }
+
+  /* ══════════════════════════════════════════
+     DIALOGUE BLOCK
+  ══════════════════════════════════════════ */
+  .dialogue {
+    margin: 1.5rem 0;
+    padding: 1.2rem 1.5rem;
+    background: rgba(255,255,255,0.02);
+    border-left: 2px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+  }
+
+  .dialogue.creature   { border-left-color: var(--blood-bright); background: rgba(139,26,26,0.06); }
+  .dialogue.cultist    { border-left-color: var(--cosmic-glow);  background: rgba(26,107,90,0.06); }
+  .dialogue.leyn       { border-left-color: var(--silver);       background: rgba(184,196,208,0.04); }
+  .dialogue.aberration { border-left-color: var(--sanity-color); background: rgba(155,89,182,0.05); }
+
+  .dialogue.mara {
+    border-left-color: var(--mara-color);
+    background: rgba(232,148,58,0.06);
+  }
+
+  .dialogue.elise {
+    border-left-color: var(--elise-color);
+    background: rgba(58,184,201,0.05);
+  }
+
+  .dialogue.seraphine {
+    border-left-color: var(--seraphine-color);
+    background: rgba(155,79,212,0.07);
+  }
+
+  .dialogue.devourer {
+    border-left-color: var(--cosmic-glow);
+    background: linear-gradient(135deg, rgba(26,107,90,0.12) 0%, rgba(8,20,17,0.75) 100%);
+    border-left-width: 3px;
+    padding: 1.4rem 1.8rem;
+  }
+
+  .dialogue.vozes {
+    border-left-color: var(--gold);
+    background: rgba(201,150,60,0.05);
+  }
+
+  .dialogue-speaker {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .dialogue.creature   .dialogue-speaker  { color: var(--blood-bright); }
+  .dialogue.cultist    .dialogue-speaker  { color: var(--cosmic-glow); }
+  .dialogue.leyn       .dialogue-speaker  { color: var(--silver); }
+  .dialogue.aberration .dialogue-speaker  { color: var(--sanity-color); }
+  .dialogue.mara       .dialogue-speaker  { color: var(--mara-color); }
+  .dialogue.elise      .dialogue-speaker  { color: var(--elise-color); }
+  .dialogue.seraphine  .dialogue-speaker  { color: var(--seraphine-color); }
+  .dialogue.devourer   .dialogue-speaker  { color: var(--cosmic-glow); letter-spacing: 0.4em; }
+  .dialogue.vozes      .dialogue-speaker  { color: var(--gold-bright); }
+
+  .dialogue-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  .dialogue.devourer .dialogue-text {
+    color: var(--cosmic-text);
+    letter-spacing: 0.02em;
+    font-size: 1.08rem;
+    line-height: 1.9;
+  }
+
+  /* ══════════════════════════════════════════
+     DEATH SAVE TRACKER
+  ══════════════════════════════════════════ */
+  .death-save {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(92,26,26,0.2) 0%, rgba(10,6,13,0.8) 100%);
+    border: 1px solid rgba(139,0,0,0.5);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .death-save::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 100%, rgba(192,57,43,0.08), transparent 70%);
+    animation: deathPulse 3s ease-in-out infinite;
+  }
+
+  .death-save-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #ff2020;
+    margin-bottom: 0.8rem;
+    position: relative;
+  }
+
+  .death-save-dots {
+    display: flex;
+    gap: 0.5rem;
+    position: relative;
+  }
+
+  .death-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(139,0,0,0.6);
+  }
+
+  .death-dot.filled { background: var(--blood-bright); border-color: var(--blood-bright); box-shadow: 0 0 8px rgba(192,57,43,0.5); }
+  .death-dot.empty  { background: transparent; }
+
+  /* ══════════════════════════════════════════
+     REVELATION BLOCK
+  ══════════════════════════════════════════ */
+  .revelation-block {
+    margin: 2rem 0;
+    padding: 1.5rem 1.8rem;
+    background: linear-gradient(160deg, rgba(74,158,190,0.08) 0%, rgba(10,6,13,0.6) 100%);
+    border: 1px solid var(--border-rune);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .revelation-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--rune-blue), transparent);
+    box-shadow: 0 0 8px var(--rune-glow);
+  }
+
+  .revelation-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--rune-blue);
+    margin-bottom: 0.8rem;
+  }
+
+  .revelation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    list-style: none;
+    counter-reset: revelation;
+  }
+
+  .revelation-list li {
+    counter-increment: revelation;
+    padding-left: 2.2rem;
+    position: relative;
+    font-size: 0.98rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  .revelation-list li::before {
+    content: counter(revelation);
+    position: absolute;
+    left: 0;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--rune-blue);
+    background: rgba(74,158,190,0.15);
+    border: 1px solid rgba(74,158,190,0.2);
+    border-radius: 2px;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0.2em;
+  }
+
+  /* ══════════════════════════════════════════
+     LORE CALLOUT
+  ══════════════════════════════════════════ */
+  .lore-callout {
+    margin: 2rem 0;
+    padding: 1.4rem 1.8rem;
+    background: linear-gradient(135deg, rgba(201,150,60,0.05) 0%, transparent 80%);
+    border: 1px solid var(--border-gold);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .lore-callout::before {
+    content: '✦';
+    position: absolute;
+    top: -0.5em;
+    left: 1.5rem;
+    background: var(--bg-void);
+    padding: 0 0.4em;
+    color: var(--gold);
+    font-size: 0.7rem;
+  }
+
+  .lore-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+  }
+
+  .lore-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: var(--ink-dim);
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+
+  /* ══════════════════════════════════════════
+     RESURRECTION BLOCK
+  ══════════════════════════════════════════ */
+  .resurrection-block {
+    margin: 2.5rem 0;
+    padding: 2rem 2rem 1.8rem;
+    background: linear-gradient(160deg, rgba(74,158,190,0.09) 0%, rgba(155,89,182,0.06) 50%, rgba(10,6,13,0.8) 100%);
+    border: 1px solid rgba(126,200,227,0.3);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .resurrection-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--rune-glow), var(--sanity-color), var(--rune-glow), transparent);
+    box-shadow: 0 0 14px var(--rune-glow);
+  }
+
+  .resurrection-block::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--rune-glow), var(--sanity-color), var(--rune-glow), transparent);
+  }
+
+  .resurrection-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--rune-glow);
+    margin-bottom: 0.8rem;
+    text-shadow: 0 0 20px rgba(126,200,227,0.5);
+  }
+
+  .resurrection-text {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--ink);
+    line-height: 1.85;
+  }
+
+  /* ══════════════════════════════════════════
+     TRANSFORMATION BLOCK
+  ══════════════════════════════════════════ */
+  .transformation-block {
+    margin: 2.5rem 0;
+    background: var(--bg-card-alt);
+    border: 1px solid rgba(155,89,182,0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .transformation-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--sanity-color), var(--blood-bright), var(--sanity-color), transparent);
+    box-shadow: 0 0 10px rgba(155,89,182,0.4);
+  }
+
+  .transformation-header {
+    padding: 0.9rem 1.5rem;
+    background: rgba(155,89,182,0.1);
+    border-bottom: 1px solid rgba(155,89,182,0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .transformation-icon { font-size: 1rem; color: var(--sanity-color); }
+
+  .transformation-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--sanity-glow);
+  }
+
+  .transformation-body { padding: 1.2rem 1.5rem; }
+
+  /* ══════════════════════════════════════════
+     SECTION DIVIDER
+  ══════════════════════════════════════════ */
+  .scene-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem 0 2.5rem;
+  }
+
+  .scene-divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ink-faint));
+  }
+
+  .scene-divider-line:last-child {
+    background: linear-gradient(90deg, var(--ink-faint), transparent);
+  }
+
+  .scene-divider-glyph {
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  /* ══════════════════════════════════════════
+     AMPULHETA — DIVISOR TEMPORAL
+  ══════════════════════════════════════════ */
+  @keyframes hourglass-turn {
+    0%   { transform: rotate(0deg); }
+    40%  { transform: rotate(0deg); }
+    50%  { transform: rotate(180deg); }
+    90%  { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .scene-divider-hourglass {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-shrink: 0;
+  }
+
+  .hourglass-svg {
+    animation: hourglass-turn 5s ease-in-out infinite;
+    transform-origin: 12px 14px;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .scene-divider-time {
+    font-family: 'Cinzel', serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.35em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .scene-divider-time.highlight {
+    color: var(--gold);
+    opacity: 0.65;
+  }
+
+  /* ══════════════════════════════════════════
+     FINALE
+  ══════════════════════════════════════════ */
+  .finale-block {
+    margin: 3rem 0 0;
+    text-align: center;
+    padding: 3rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .finale-block::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(155,89,182,0.07), transparent);
+  }
+
+  .finale-quote {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--ink-dim);
+    line-height: 1.8;
+    position: relative;
+    max-width: 580px;
+    margin: 0 auto 2rem;
+  }
+
+  .finale-quote em { color: var(--ink); font-style: normal; }
+
+  .finale-divider {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--sanity-dim), transparent);
+    margin: 0 auto 2rem;
+  }
+
+  .finale-coda {
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ══════════════════════════════════════════
+     SIDEBAR STAT STRIP
+  ══════════════════════════════════════════ */
+  .floating-stats {
+    position: fixed;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+  }
+
+  .floating-stats.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .stat-pip {
+    width: 40px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 4px;
+    padding: 0.5rem 0.4rem;
+    text-align: center;
+  }
+
+  .stat-pip-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.45rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .stat-pip-value {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.9rem;
+    font-weight: 900;
+    display: block;
+  }
+
+  .stat-pip.hp  .stat-pip-value { color: var(--blood-bright); }
+
+  .stat-pip-sub {
+    font-family: 'Cinzel', serif;
+    font-size: 0.5rem;
+    color: var(--ink-faint);
+    display: block;
+    letter-spacing: 0.1em;
+    margin-top: 0.1rem;
+  }
+
+  .stat-pip.san .stat-pip-value { color: var(--sanity-color); }
+
+  @media (max-width: 1100px) { .floating-stats { display: none; } }
+
+  /* ══════════════════════════════════════════
+     ANIMATIONS
+  ══════════════════════════════════════════ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50%       { opacity: 0.8; transform: scaleY(1.1); }
+  }
+
+  @keyframes cosmicPulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50%       { opacity: 0.7; transform: scale(1.05); }
+  }
+
+  @keyframes deathPulse {
+    0%, 100% { opacity: 0.5; }
+    50%       { opacity: 1; }
+  }
+
+  @keyframes runeFlicker {
+    0%, 95%, 100% { opacity: 1; }
+    96%, 98%       { opacity: 0.4; }
+    97%, 99%       { opacity: 0.9; }
+  }
+
+  .rune-flicker { animation: runeFlicker 8s ease-in-out infinite; }
+
+  /* ══════════════════════════════════════════
+     GM NARRATION BLOCK (padrão S1)
+  ══════════════════════════════════════════ */
+  .dialogue.gm {
+    border-left-color: var(--gold);
+    background: linear-gradient(135deg, rgba(201,150,60,0.04) 0%, rgba(10,6,13,0.3) 100%);
+    padding: 1.3rem 1.6rem;
+  }
+
+  .dialogue.gm .dialogue-speaker {
+    color: var(--gold);
+    letter-spacing: 0.4em;
+  }
+
+  .dialogue.gm .dialogue-text {
+    font-style: normal;
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.9;
+  }
+
+  .dialogue.gm .dialogue-text p {
+    margin-bottom: 1.1em;
+  }
+
+  .dialogue.gm .dialogue-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .dialogue.gm .dialogue-text strong {
+    font-weight: 600;
+    color: #f0d9bc;
+  }
+
+  .dialogue.gm .dialogue-text em {
+    font-style: italic;
+    color: var(--ink-dim);
+  }
+
+  .dialogue.gm.with-dropcap .dialogue-text p:first-child::first-letter {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 4.5em;
+    font-weight: 900;
+    float: left;
+    line-height: 0.75;
+    margin: 0.1em 0.1em -0.05em 0;
+    color: var(--blood);
+    text-shadow: 0 0 20px rgba(192,57,43,0.4);
+  }
+
+  /* ══════════════════════════════════════════
+     RESPONSIVE
+  ══════════════════════════════════════════ */
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .cover { min-height: 85vh; padding: 4rem 1.2rem; }
+    .chapter-header { gap: 0.8rem; }
+    .chapter-number { font-size: 2rem; }
+    .roll-block { padding: 1rem 1.1rem; }
+    .tracker-row { flex-direction: column; }
+    .revelation-block, .lore-callout, .combat-block, .resurrection-block { margin: 1.5rem 0; }
+    .prose.with-dropcap p:first-child::first-letter { font-size: 3.5em; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     FLOATING STAT TRACKER
+═══════════════════════════════════════ -->
+<div class="floating-stats" title="Estatísticas finais da Saga III">
+  <div class="stat-pip" style="border-color:rgba(201,150,60,0.25);padding:0.3rem 0.4rem;">
+    <span class="stat-pip-label" style="color:var(--gold);letter-spacing:0.15em;">FIM DA SAGA</span>
+  </div>
+  <div class="stat-pip hp">
+    <span class="stat-pip-label">PV</span>
+    <span class="stat-pip-value">1</span>
+    <span class="stat-pip-sub">/ 23</span>
+  </div>
+  <div class="stat-pip san">
+    <span class="stat-pip-label">SAN</span>
+    <span class="stat-pip-value">47</span>
+    <span class="stat-pip-sub">/ 50</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     COVER
+═══════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">III</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Lágrimas que<br>Desafiam a Morte</h1>
+  <p class="cover-subtitle">Saga Três &nbsp;·&nbsp; Leyn Sepet &nbsp;·&nbsp; ~22h55–23h38</p>
+
+  <div class="cover-scroll-hint">
+    <span>Role para baixo</span>
+    <div class="scroll-line"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════ -->
+<div class="page-wrapper">
+
+  <!-- ── CAPÍTULO I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Fronteira entre os Mundos</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>A escuridão não é vazia.</p>
+      <p>Enquanto o Construto te carrega de volta pelos túneis, seu corpo balançando inerte, sua consciência deriva. Não para as profundezas onde as Coisas Antigas sussurram. Não para o vazio onde os mortos descansam.</p>
+      <p>Para um lugar mais antigo. Mais íntimo.</p>
+      </div>
+    </div>
+
+    <div class="death-save">
+      <div class="death-save-title">Salvaguarda contra Morte #1 — Falha</div>
+      <div style="display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap; position:relative;">
+        <div class="death-save-dots">
+          <div class="death-dot filled"></div>
+          <div class="death-dot empty"></div>
+          <div class="death-dot empty"></div>
+        </div>
+        <div style="font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.25em; color:rgba(255,32,32,0.6); text-transform:uppercase;">1 / 3 falhas até morte permanente</div>
+      </div>
+      <div class="roll-block fail" style="margin: 1rem 0 0; border-radius:4px;">
+        <div class="roll-header">
+          <span class="roll-name">Salvaguarda contra Morte</span>
+          <span class="roll-formula">1d20 &nbsp;·&nbsp; CD 10</span>
+        </div>
+        <div class="roll-result-line">
+          <span class="roll-dice">9</span>
+          <span class="roll-verdict">Falha</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Vozes. Distantes. Ecoando através de um século.</p>
+      </div>
+    </div>
+
+    <div class="whisper-block memory">
+      <div class="whisper-label">Vozes da Memória — A Família</div>
+      <div class="whisper-line">"Leyn... meu filho..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>A voz de sua mãe. Suave. Calorosa. Como era antes do fogo.</p>
+      </div>
+    </div>
+
+    <div class="dialogue vozes">
+      <div class="dialogue-speaker">A Voz de Sua Mãe — Suave, Calorosa</div>
+      <div class="dialogue-text">"Você treinou tanto... ficou tão forte... mas esqueceu algo importante..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>A voz de seu pai. Firme. Orgulhosa, mas preocupada.</p>
+      </div>
+    </div>
+
+    <div class="dialogue vozes">
+      <div class="dialogue-speaker">A Voz de Seu Pai — Firme, Preocupada</div>
+      <div class="dialogue-text">"Força não é apenas golpes, filho. É saber quando recuar. Quando pedir ajuda. Quando confiar."</div>
+    </div>
+
+    <div class="vision-block">
+      <div class="vision-label">Memória — O Vilarejo Antes da Destruição</div>
+      <ul class="vision-list">
+        <li>Seu vilarejo. As casas simples. Os campos onde treinava. Sua família reunida à mesa.</li>
+        <li>Seu pai polindo a espada que te deu.</li>
+        <li>Sua mãe tecendo sob a luz da lua.</li>
+        <li>Seus irmãos rindo. Paz. Que nunca mais existiu.</li>
+      </ul>
+    </div>
+
+    <div class="dialogue vozes">
+      <div class="dialogue-speaker">Mãe — Sussurro</div>
+      <div class="dialogue-text">"Você jurou proteger os puros... mas esqueceu que você também merece proteção. Que confiar não é fraqueza."</div>
+    </div>
+
+    <div class="dialogue vozes">
+      <div class="dialogue-speaker">Pai</div>
+      <div class="dialogue-text">"Aqueles guardas... você os chamou de 'servos' quase sem pensar... Você se tornou predador solitário. Mas nossa linhagem sempre sobreviveu porque éramos CLÃ. Família. Juntos."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>As vozes começam a desvanecer.</p>
+      </div>
+    </div>
+
+    <div class="dialogue vozes">
+      <div class="dialogue-speaker">Mãe — Desvanecendo</div>
+      <div class="dialogue-text">"Leyn... você tem uma escolha... mesmo agora... mesmo morrendo..."</div>
+    </div>
+
+    <div class="dialogue vozes">
+      <div class="dialogue-speaker">Pai — Desvanecendo</div>
+      <div class="dialogue-text">"Pode desistir... pode deixar a vingança te consumir completamente... ou pode lembrar... quem você ERA... quem você ESCOLHE ser..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p><strong>BOOM. BOOM.</strong></p>
+      <p>O Construto sobe as escadas. Você sente o movimento, mesmo inconsciente.</p>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Vozes do mundo real voltam:</p>
+      </div>
+    </div>
+
+    <div class="dialogue guard">
+      <div class="dialogue-speaker">Voz do Mundo Real — Guarda</div>
+      <div class="dialogue-text">"O Primordial foi recuperado, Lady Seraphine."</div>
+    </div>
+
+    <div class="dialogue seraphine">
+      <div class="dialogue-speaker">Lady Seraphine</div>
+      <div class="dialogue-text">"PERFEITO! Ainda está vivo? Excelente. Preparem a mesa de extração. O ritual começa em 10 minutos."</div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">A Âncora</div>
+      <div class="lore-text">As vozes de sua família deixaram algo: uma âncora. Um lembrete de humanidade. Você tem <strong>VANTAGEM</strong> na próxima salvaguarda — não por poder, mas por propósito recuperado.</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~23h05</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Segundo Limiar</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Você está de volta à escuridão. Mas desta vez ela responde.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — no Vazio</div>
+      <div class="dialogue-text">"Mãe... Pai... me desculpem... Sempre fui um fraco que não conseguiu proteger ninguém... Me desculpem. Achei que com todo meu treinamento, minha lâmina seria aquela que protegeria vocês, mas... nem eu mesmo..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Silêncio absoluto. E então — uma resposta. Não com raiva. Com tristeza.</p>
+      </div>
+    </div>
+
+    <div class="death-save">
+      <div class="death-save-title">Salvaguarda contra Morte #2 — Falha</div>
+      <div style="display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap; position:relative;">
+        <div class="death-save-dots">
+          <div class="death-dot filled"></div>
+          <div class="death-dot filled"></div>
+          <div class="death-dot empty"></div>
+        </div>
+        <div style="font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.25em; color:rgba(255,32,32,0.7); text-transform:uppercase;">2 / 3 falhas — uma última chance</div>
+      </div>
+      <div class="roll-block fail" style="margin: 1rem 0 0; border-radius:4px;">
+        <div class="roll-header">
+          <span class="roll-name">Salvaguarda contra Morte (Vantagem)</span>
+          <span class="roll-formula">maior de 2d20 &nbsp;·&nbsp; CD 10</span>
+        </div>
+        <div class="roll-result-line">
+          <span class="roll-dice">maior de 2d20 = 9</span>
+          <span class="roll-verdict">Falha</span>
+        </div>
+        <div class="roll-note">A vantagem não foi suficiente. O vazio avança.</div>
+      </div>
+    </div>
+
+    <div class="dialogue vozes">
+      <div class="dialogue-speaker">Mãe — Quebrando</div>
+      <div class="dialogue-text">"Leyn... nosso filho teimoso... Você acha que falhamos porque você não era forte o suficiente?"</div>
+    </div>
+
+    <div class="dialogue vozes">
+      <div class="dialogue-speaker">Pai — Com Dor</div>
+      <div class="dialogue-text">"Cem anos... e você ainda não entendeu... Nós NÃO queríamos que você virasse uma lâmina. Queríamos que você vivesse. Que encontrasse propósito além de vingança."</div>
+    </div>
+
+    <div class="dialogue vozes">
+      <div class="dialogue-speaker">Mãe — Sussurro</div>
+      <div class="dialogue-text">"Aqueles dois guardas escaparam... Você deu a eles uma chance. Mesmo ferido. Mesmo traído. Você ainda protegeu alguém."</div>
+    </div>
+
+    <div class="dialogue vozes">
+      <div class="dialogue-speaker">Pai</div>
+      <div class="dialogue-text">"ISSO é força, Leyn. Não a espada. Não o treinamento. A escolha de salvar ao invés de destruir."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Mas as vozes estão ficando mais fracas. Distantes como chama ao vento.</p>
+      </div>
+    </div>
+
+    <div class="dialogue vozes">
+      <div class="dialogue-speaker">Pai — Desaparecendo</div>
+      <div class="dialogue-text">"Você tem... uma última chance... filho... Não... para nós... já fomos... Mas para VOCÊ... para quem você... ainda pode... se tornar..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>O mundo real retorna em flashes. Você está na câmara de extração. Amarrado novamente — mas desta vez com <strong>MAIS</strong> correntes. Runas reforçadas.</p>
+      </div>
+    </div>
+
+    <div class="dialogue seraphine">
+      <div class="dialogue-speaker">Lady Seraphine</div>
+      <div class="dialogue-text">"Bem-vindo de volta, Primordial. Você deu trabalho. Mas agora... ah, agora você vai cumprir seu VERDADEIRO propósito."</div>
+    </div>
+
+    <div class="dialogue seraphine">
+      <div class="dialogue-speaker">Lady Seraphine</div>
+      <div class="dialogue-text">"Seu sangue despertará o Devorador. E então... uma nova era começa."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Ela ergue uma adaga ritual. A lâmina brilha com símbolos profanos. Ao fundo, a Multibraços está presa em correntes na parede, seus muitos olhos estão... chorando? E na jaula central — <strong>a COISA</strong> se mexe violentamente. Tentáculos batem nas barras. Olhos se abrem em cascata. Ela <em>sente</em> seu sangue próximo.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~23h06</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Morte</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>A terceira queda. A definitiva.</p>
+      </div>
+    </div>
+
+    <div class="death-save">
+      <div class="death-save-title">Salvaguarda contra Morte #3 — Morte</div>
+      <div style="display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap; position:relative;">
+        <div class="death-save-dots">
+          <div class="death-dot filled"></div>
+          <div class="death-dot filled"></div>
+          <div class="death-dot filled"></div>
+        </div>
+        <div style="font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.25em; color:#ff2020; text-transform:uppercase; text-shadow: 0 0 8px rgba(255,0,0,0.4);">3 / 3 falhas — morte permanente</div>
+      </div>
+      <div class="roll-block crit-fail" style="margin: 1rem 0 0; border-radius:4px;">
+        <div class="roll-header">
+          <span class="roll-name">Salvaguarda contra Morte Final</span>
+          <span class="roll-formula">1d20 &nbsp;·&nbsp; CD 10</span>
+        </div>
+        <div class="roll-result-line">
+          <span class="roll-dice">2</span>
+          <span class="roll-verdict">Morte</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="whisper-block">
+      <div class="whisper-label">Últimos Pensamentos no Vazio</div>
+      <div class="whisper-line">"...não adianta mais pensar em vingança..." &nbsp;·&nbsp; "...eu sou só um fraco sem escolha..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>E então — nada.</p>
+      <p>Lady Seraphine inclina a adaga sobre seu peito. Ela vai começar a extração, drenar seu sangue primordial gota por gota até não sobrar nada.</p>
+      </div>
+    </div>
+
+    <div class="dialogue seraphine">
+      <div class="dialogue-speaker">Lady Seraphine</div>
+      <div class="dialogue-text">"Que pena. Você nem está consciente para ver a grandeza que seu sacrifício trará."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>A lâmina desce—</p>
+      <p>E <strong>PARA</strong>.</p>
+      <p>Não por sua vontade. Por outra.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~23h07</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <div class="death-save" style="background: linear-gradient(135deg, rgba(74,158,190,0.10) 0%, rgba(155,89,182,0.08) 50%, rgba(10,6,13,0.85) 100%); border-color: rgba(126,200,227,0.45); text-align:center;">
+    <div class="death-save-title" style="color: var(--rune-glow); font-size:0.85rem; letter-spacing:0.35em; text-shadow: 0 0 14px rgba(126,200,227,0.4);">Teste Final — Não É Salvaguarda contra Morte</div>
+    <div style="font-family:'EB Garamond',serif; font-style:italic; color:var(--sanity-glow); font-size:1.1rem; margin-top:0.6rem; line-height:1.7; position:relative;">
+      É <strong style="color:var(--rune-glow); font-style:normal;">Escolha</strong>.
+    </div>
+    <div style="margin-top:0.9rem; font-family:'EB Garamond',serif; font-style:italic; font-size:0.92rem; color:var(--ink-dim); line-height:1.8; position:relative;">
+      As lágrimas oferecem um caminho de volta.<br>
+      Mas não sem custo. Não sem mudança.
+    </div>
+  </div>
+
+  <!-- ── CAPÍTULO IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Sacrifício</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Um grito. Múltiplas vozes sobrepostas.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">A Multibraços — Grito de Guerra</div>
+      <div class="dialogue-text">"NÃO!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Suas correntes <strong>EXPLODEM</strong>. Não quebraram — ela arrancou pedaços da <strong>PAREDE</strong> inteira, carne e músculos se rasgando, mas ela não se importa. Ela se joga contra Lady Seraphine com força suicida.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços</div>
+      <div class="dialogue-text">"ELE... ME LIBERTOU... ME DEU... ESCOLHA... EU... RETRIBUO!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Seraphine é pega de surpresa. A Multibraços a derruba, braços múltiplos esmagando, sufocando.</p>
+      </div>
+    </div>
+
+    <div class="dialogue seraphine">
+      <div class="dialogue-speaker">Lady Seraphine</div>
+      <div class="dialogue-text">"GUARDAS! CONSTRUTOS! MATEM ESSA ABERRAÇÃO!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Caos explode no salão. Cultistas correm. Construtos avançam.</p>
+      <p>E em meio ao caos... algo toca seu rosto. Uma mão deformada da Multibraços.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços — Sussurro</div>
+      <div class="dialogue-text">"Vampiro... por favor... não... morra... você... diferente... você... importa..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Lágrimas negras caem em seu rosto. E há algo nessas lágrimas — não apenas sal e desespero.</p>
+      <p>Gratidão. Humanidade. Sacrifício.</p>
+      </div>
+    </div>
+
+    <div class="resurrection-block">
+      <div class="resurrection-title">Algo Impossível Acontece</div>
+      <div class="resurrection-text">
+        As lágrimas de uma criatura que recuperou sua humanidade através de <em>você</em>.<br>
+        Que escolheu morrer para te salvar.<br><br>
+        Elas brilham.<br>
+        Não com magia profana. Não com corrupção.<br>
+        Com algo mais antigo que isso.<br><br>
+        <strong>Compaixão pura.</strong>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços — ao Fundo, Lutando</div>
+      <div class="dialogue-text">"POR FAVOR... NÃO... DESPERDICE... SEGUNDA CHANCE... EU... NUNCA TIVE... UMA..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Na escuridão absoluta, aceitando a morte... você sente.</p>
+      <p>Não o vazio. Não o fim. Algo ressoa. Como quando tocou a porta e sentiu o ferro, a madeira, a fraqueza. Mas agora é diferente.</p>
+      <p>É vida. Mas não a sua.</p>
+      <p>Gotas. Gotas de chuva caindo dentro de você. Cada lágrima da Multibraços carrega memórias dela — fragmentos de quem ela era antes de virar monstro. Uma soldada. Uma mulher que tinha família. Que ria. Que chorava.</p>
+      <p>Humanidade pura.</p>
+      <p>E essas gotas enchem o vazio onde sua vida estava.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~23h10</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Renascimento</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p><strong>SEUS OLHOS ABREM.</strong></p>
+      <p>Vermelhos ainda. Mas algo mudou. Há dor neles agora. Vulnerabilidade. Humanidade. Você não é mais apenas o predador primordial. Você é algo novo. Algo transformado.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços — Ainda Lutando contra Três Construtos</div>
+      <div class="dialogue-text">"ELE... ACORDOU!"</div>
+    </div>
+
+    <div class="dialogue seraphine">
+      <div class="dialogue-speaker">Lady Seraphine — Chocada</div>
+      <div class="dialogue-text">"IMPOSSÍVEL! Ele estava MORTO! Eu senti!"</div>
+    </div>
+
+    <div class="tracker-row">
+      <div class="tracker hp-tracker">
+        <div class="tracker-label">Pontos de Vida — Ao Renascer</div>
+        <div class="tracker-values">
+          <span class="tracker-current">1</span>
+          <span class="tracker-slash">/</span>
+          <span class="tracker-max">23</span>
+        </div>
+        <div class="tracker-bar">
+          <div class="tracker-fill" style="width: 4%"></div>
+        </div>
+        <div class="tracker-delta">0 → 1 &nbsp;·&nbsp; Ressurrecto pelas lágrimas da Multibraços</div>
+      </div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">O Renascido — Nova Linhagem</div>
+      <div class="lore-text">Você se levanta da mesa. As correntes não te prendem mais — a Multibraços as quebrou ao te salvar. Seu corpo está frágil agora. Um golpe sério e você morre de novo. Não há mais regeneração abundante. Não há mais a resistência primordial. Você tem <strong>1 PV</strong>. Mas também sente propósito. Conexão. Você não está mais sozinho. Você não é mais vampiro primordial comum — é o <em>Renascido</em>. E sua linhagem agora carrega compaixão.</div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Purificação pelo Renascimento</div>
+      <div class="lore-text">A corrupção implantada pelo contato com Seraphine — que penalizava testes de Sabedoria em −1 — foi dissolvida pelo renascimento. As lágrimas da Multibraços, carregadas de humanidade pura, purificaram o que a corrupção havia manchado. <strong>Penalizador de Sabedoria −1: removido.</strong> Testes de Sabedoria voltam ao modificador base: Sab +1.</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Você pega a espada curta do chão. <strong>Sem hesitação.</strong></p>
+      <p>Você corre. Não para Seraphine. Não para vingança. Para quem te salvou.</p>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Sua espada corta o ar. Você se joga entre a Multibraços e os três Construtos.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"CHEGA!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Sua voz ecoa — não mais apenas predador, mas protetor.</p>
+      <p>Mas algo acontece quando você age.</p>
+      </div>
+    </div>
+
+    <div class="whisper-block">
+      <div class="whisper-label">O Vínculo</div>
+      <div class="whisper-line">A Multibraços SENTE sua escolha. Sente que você voltou POR ELA.</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Seus olhos — todos eles — se arregalam. Lágrimas continuam caindo.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços — Estupefata</div>
+      <div class="dialogue-text">"Você... voltou... para MIM?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>E ela encontra força que não sabia que tinha. Seus braços quebrados ignoram a dor e <strong>ARRANCAM</strong> a cabeça de um dos Construtos.</p>
+      <p>Pedra e carne explodem. O Construto desaba.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços — Ruge como Guerreira</div>
+      <div class="dialogue-text">"NÓS LUTAMOS... JUNTOS!"</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~23h12</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Batalha dos Três Construtos</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>A Multibraços derrubou um. Restam dois. Seraphine recua, observando com raiva crescente.</p>
+      </div>
+    </div>
+
+    <div class="dialogue seraphine">
+      <div class="dialogue-speaker">Lady Seraphine</div>
+      <div class="dialogue-text">"NÃO! MATEM OS DOIS! AGORA!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Ela está com medo. Pela primeira vez. Porque você não deveria ter voltado. Mortos não ressuscitam por compaixão. Não no mundo dela. Isso não deveria ser possível.</p>
+      </div>
+    </div>
+
+    <div class="combat-block">
+      <div class="combat-header">
+        <span class="combat-icon">⚔</span>
+        <span class="combat-title">A Estocada Relâmpago — Construto #2</span>
+      </div>
+      <div class="combat-body">
+        <div class="prose" style="margin:0 0 1rem;">
+          <p>Não há tempo para o ritual da versão original. Não há tempo para sentir, para ouvir o ressoar. Mas você não precisa mais.</p>
+          <p style="margin-bottom:0;">Algo mudou quando você renasceu. Você não apenas sente o ferro e a pedra — você sente a <strong>VIDA</strong> neles. E onde há vida, há fraqueza. Sua espada se move. Instantânea. Como relâmpago que já atingiu antes do trovão soar.</p>
+        </div>
+        <div class="roll-block success" style="margin:0 0 1rem; border-radius:4px;">
+          <div class="roll-header">
+            <span class="roll-name">Ataque — Estocada Relâmpago</span>
+            <span class="roll-formula">1d20 + 2 + 2 &nbsp;·&nbsp; CA 15</span>
+          </div>
+          <div class="roll-result-line">
+            <span class="roll-dice">12 + 4 = 16</span>
+            <span class="roll-verdict">Acerto</span>
+          </div>
+        </div>
+        <div class="roll-block success" style="margin:0; border-radius:4px;">
+          <div class="roll-header">
+            <span class="roll-name">Dano</span>
+            <span class="roll-formula">1d6 + 2</span>
+          </div>
+          <div class="roll-result-line">
+            <span class="roll-dice">4 + 2 = 6</span>
+            <span class="roll-verdict">Construto Destruído</span>
+          </div>
+        </div>
+        <div class="prose" style="margin: 1rem 0 0;">
+          <p style="margin:0;">A lâmina encontra a junção exata onde carne corrompida se funde com pedra encantada no pescoço do Construto — o ponto onde magia mantém a abominação unida. Os olhos verdes brilhantes <strong>APAGAM</strong>. A cabeça de pedra-carne cai. O corpo colapsa como marionete com cordas cortadas.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Dois Construtos mortos. Um restante. A Multibraços aproveita a abertura. Com seus braços funcionais, ela <strong>ESMAGA</strong> as pernas do último Construto. Ele cai de joelhos.</p>
+      <p>Vocês se olham. Entendimento silencioso. Ela segura. Você finaliza.</p>
+      </div>
+    </div>
+
+    <div class="combat-block">
+      <div class="combat-header">
+        <span class="combat-icon">⚔</span>
+        <span class="combat-title">Ataque Coordenado — Construto #3 (Último)</span>
+      </div>
+      <div class="combat-body">
+        <div class="dialogue aberration" style="margin:0 0 1rem; border-radius:4px;">
+          <div class="dialogue-speaker">Multibraços — Segurando a Cabeça do Construto</div>
+          <div class="dialogue-text">"AGORA!"</div>
+        </div>
+        <div class="roll-block success" style="margin:0 0 1rem; border-radius:4px;">
+          <div class="roll-header">
+            <span class="roll-name">Ataque Coordenado — Estocada no Núcleo</span>
+            <span class="roll-formula">1d20 + 4 &nbsp;·&nbsp; CA 15</span>
+          </div>
+          <div class="roll-result-line">
+            <span class="roll-dice">14 + 4 = 18</span>
+            <span class="roll-verdict">Acerto Devastador</span>
+          </div>
+        </div>
+        <div class="roll-block success" style="margin:0; border-radius:4px;">
+          <div class="roll-header">
+            <span class="roll-name">Dano — Núcleo Mágico Atingido</span>
+            <span class="roll-formula">1d6 + 2</span>
+          </div>
+          <div class="roll-result-line">
+            <span class="roll-dice">3 + 2 = 5</span>
+            <span class="roll-verdict">Núcleo Estilhaçado</span>
+          </div>
+        </div>
+        <div class="prose" style="margin: 1rem 0 0;">
+          <p style="margin:0;">Você salta. A estocada relâmpago atravessa o olho verde brilhante, penetrando direto no núcleo mágico. <strong>CRACK.</strong> O núcleo se estilhaça. O Construto explode em fragmentos de pedra e carne putrefata.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p><strong>Três Construtos mortos.</strong></p>
+      <p>Lady Seraphine recua para a jaula do Devorador.</p>
+      </div>
+    </div>
+
+    <div class="dialogue seraphine">
+      <div class="dialogue-speaker">Lady Seraphine</div>
+      <div class="dialogue-text">"VOCÊS DOIS... SÃO ABOMINAÇÕES! ABERRAÇÕES DA ORDEM NATURAL!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Ela coloca a mão na jaula. Os símbolos de contenção começam a <strong>QUEBRAR</strong>.</p>
+      </div>
+    </div>
+
+    <div class="dialogue seraphine">
+      <div class="dialogue-speaker">Lady Seraphine — Quebrando os Lacres</div>
+      <div class="dialogue-text">"SE EU NÃO POSSO TER O RITUAL PERFEITO... ENTÃO TODOS MORREM!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>A COISA dentro da jaula <strong>RUGE</strong>. Um som que não deveria existir.</p>
+      <p>Você se vira para a Multibraços, respiração pesada — mesmo não precisando respirar.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"VAMOS FUGIR DESSE LOCAL! AGORA!"</div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços — Assentindo com os Olhos Funcionais</div>
+      <div class="dialogue-text">"Mas... e ela? E o Devorador?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p><strong>CRACK. CRACK. CRACK.</strong></p>
+      <p>Os símbolos de contenção na jaula quebram um por um.</p>
+      <p>Lady Seraphine ri — mas é um som de loucura completa agora.</p>
+      </div>
+    </div>
+
+    <div class="dialogue seraphine">
+      <div class="dialogue-speaker">Lady Seraphine — Rindo com Loucura</div>
+      <div class="dialogue-text">"VOCÊS VENCERAM A BATALHA! MAS PERDERAM TUDO! O DEVORADOR ESTÁ—"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>A jaula explode.</p>
+      <p>Tentáculos. Do tamanho de árvores antigas. Cobertos de olhos. Cobertos de bocas. Cobertos de coisas que não deveriam existir em três dimensões.</p>
+      <p>Um deles agarra Lady Seraphine.</p>
+      </div>
+    </div>
+
+    <div class="dialogue seraphine">
+      <div class="dialogue-speaker">Lady Seraphine — Êxtase Final</div>
+      <div class="dialogue-text">"SIM! LEVE-ME! TRANSFORME-ME! EU SOU SUA SERVA FI—"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>O tentáculo a <strong>ESMAGA</strong> como inseto. Sangue explode. Ossos se partem. Ela não era digna. Era apenas lixo.</p>
+      <p><strong>O Devorador emerge.</strong></p>
+      <p>Você não consegue olhar diretamente para ele. Sua forma machuca os olhos. Muda constantemente. É grande demais para o salão, mas de alguma forma cabe.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços — Puxando Você</div>
+      <div class="dialogue-text">"NÃO OLHE! CORRA!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Há uma porta lateral — a mesma que os guardas usaram para fugir originalmente para os esgotos. <strong>50 pés de distância.</strong></p>
+      <p>O Devorador está se expandindo. Tentáculos destroem paredes. Cultistas gritam e são esmagados.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~23h15</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Devorador</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Todos os olhos do Devorador — centenas, milhares — se fixam em <strong>VOCÊ</strong>. Enquanto todos ao redor entram em pânico, gritam, enlouquecem, você permanece firme.</p>
+      </div>
+    </div>
+
+    <div class="roll-block success">
+      <div class="roll-header">
+        <span class="roll-name">Teste de Sanidade (Sabedoria)</span>
+        <span class="roll-formula">1d20 + 0 &nbsp;·&nbsp; CD 16 &nbsp;·&nbsp; Sab +1, Corrupção −1</span>
+      </div>
+      <div class="roll-result-line">
+        <span class="roll-dice">17 + 0 = 17</span>
+        <span class="roll-verdict">Sucesso</span>
+      </div>
+      <div class="roll-note">Ressurrecto duplamente — não é um simples olhar que vai enlouquecer Leyn Sepet.</div>
+    </div>
+
+    <div class="tracker-row">
+      <div class="tracker sanity-tracker">
+        <div class="tracker-label">Sanidade — Após o Devorador</div>
+        <div class="tracker-values">
+          <span class="tracker-current">47</span>
+          <span class="tracker-slash">/</span>
+          <span class="tracker-max">50</span>
+        </div>
+        <div class="tracker-bar">
+          <div class="tracker-fill" style="width: 94%"></div>
+        </div>
+        <div class="tracker-delta">San atual mantida (teste bem-sucedido) &nbsp;·&nbsp; Mythos +10% — Devorador reconhece anomalia &nbsp;·&nbsp; teto SAN: 60→50</div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Seus olhos vermelhos encontram os milhares de olhos do Devorador. E você não desvia.</p>
+      <p>O Devorador <strong>PARA</strong>. Seus tentáculos congelam no ar. E há... reconhecimento?</p>
+      </div>
+    </div>
+
+    <div class="dialogue devourer">
+      <div class="dialogue-speaker">O Devorador — Voz Diretamente na Mente</div>
+      <div class="dialogue-text">"...TU... MORREU... E RETORNOU... NÃO ATRAVÉS DE NOSSO PODER... MAS ATRAVÉS DE... COMPAIXÃO...?"</div>
+    </div>
+
+    <div class="dialogue devourer">
+      <div class="dialogue-speaker">O Devorador</div>
+      <div class="dialogue-text">"...IMPOSSÍVEL... VIDA NÃO RETORNA... POR LÁGRIMAS... POR SACRIFÍCIO... ISTO... NÃO É NOSSA LEI..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>O Devorador se inclina — movimento que desafia física, fazendo o espaço se contorcer.</p>
+      </div>
+    </div>
+
+    <div class="dialogue devourer">
+      <div class="dialogue-speaker">O Devorador</div>
+      <div class="dialogue-text">"...TU ÉS... ANOMALIA... NÃO PERTENCES... AO CICLO... NEM AOS MESTRES... NEM AOS MORTAIS..."</div>
+    </div>
+
+    <div class="dialogue devourer">
+      <div class="dialogue-speaker">O Devorador</div>
+      <div class="dialogue-text">"...O QUE... ÉS... TU...?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>A Multibraços está congelada de terror ao seu lado. Cultistas sobreviventes estão paralisados. <strong>TODOS</strong> esperam sua resposta. Até mesmo uma entidade além da compreensão humana está... confusa com você.</p>
+      <p>O Devorador <strong>ESPERA</strong>. Pela primeira vez em eras, algo o intrigou mais do que devorar.</p>
+      <p>Sua voz ecoa — não alta, mas com peso que faz o próprio ar vibrar.</p>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Você dá um passo à <strong>FRENTE</strong>. Em direção ao Devorador. Não recua.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Eu sou aquele que nem o karma do azar pode parar."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Aquele que irá proteger quem está do meu lado, não importa as condições."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Também sou aquele que carrega a linhagem dos vampiros primordiais."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Passo à Frente</div>
+      <div class="dialogue-text">"E não me curvarei diante a nenhum ser."</div>
+    </div>
+
+    <div class="whisper-block">
+      <div class="whisper-label">Silêncio Absoluto</div>
+      <div class="whisper-line">Até os tentáculos param de se contorcer. Até as pedras param de ranger. O mundo prende a respiração.</div>
+    </div>
+
+    <div class="dialogue devourer">
+      <div class="dialogue-speaker">O Devorador — O Riso Que Racha Pedras</div>
+      <div class="dialogue-text">"...AUDÁCIA... DE FORMIGA... PERANTE OCEANO... MAS... FORMIGA... QUE MORREU... E RECUSOU... PERMANECER MORTA..."</div>
+    </div>
+
+    <div class="dialogue devourer">
+      <div class="dialogue-speaker">O Devorador</div>
+      <div class="dialogue-text">"...INTERESSANTE..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Um tentáculo se estende. Lentamente. Em sua direção. A Multibraços tenta te puxar.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços</div>
+      <div class="dialogue-text">"NÃO! ELE VAI TE—"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Mas o tentáculo não ataca. Toca seu peito. Onde as lágrimas dela te trouxeram de volta.</p>
+      </div>
+    </div>
+
+    <div class="dialogue devourer">
+      <div class="dialogue-speaker">O Devorador</div>
+      <div class="dialogue-text">"...VEJO... VÍNCULO... NÃO DE CORRUPÇÃO... MAS DE... ESCOLHA... LIVRE-ARBÍTRIO... SACRIFÍCIO MÚTUO..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>O Devorador se afasta.</p>
+      </div>
+    </div>
+
+    <div class="dialogue devourer">
+      <div class="dialogue-speaker">O Devorador</div>
+      <div class="dialogue-text">"...ISTO... NÃO É MEU ALIMENTO... ISTO É... OUTRO CAMINHO... CAMINHO QUE... NÓS... NÃO COMPREENDEMOS..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>E então, impensável:</p>
+      </div>
+    </div>
+
+    <div class="dialogue devourer">
+      <div class="dialogue-speaker">O Devorador — O Impensável</div>
+      <div class="dialogue-text">"...VAI... VAMPIRO ANOMALIA... LEVA... TUA LIGADA... VIVAM... SUA IMPOSSIBILIDADE..."</div>
+    </div>
+
+    <div class="dialogue devourer">
+      <div class="dialogue-speaker">O Devorador — Aviso</div>
+      <div class="dialogue-text">"...MAS SAIBA... OUTROS VIRÃO... OUTROS MESTRES... NÃO SERÃO... TÃO CURIOSOS... QUANTO EU... PRÓXIMO ENCONTRO... TALVEZ... NÃO TENHAS... PALAVRAS... PARA TE SALVAR..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>O Devorador começa a <strong>AFUNDAR</strong>. Não para onde veio, mas através da própria realidade.</p>
+      </div>
+    </div>
+
+    <div class="dialogue devourer">
+      <div class="dialogue-speaker">O Devorador — Partindo</div>
+      <div class="dialogue-text">"...ESTE MUNDO... AINDA NÃO ESTÁ... PRONTO... PARA DESPERTAR TOTAL... MAS LOGO... MUITO LOGO..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Ele desaparece. Deixando apenas destruição, corpos de cultistas, e um salão em ruínas.</p>
+      <p>Vocês estão sozinhos.</p>
+      </div>
+    </div>
+
+    <div class="revelation-block">
+      <div class="revelation-label">O que o Devorador Revelou</div>
+      <ul class="revelation-list">
+        <li>Mortos não ressuscitam por compaixão — isso viola as leis das Coisas Antigas. Leyn é uma <strong>anomalia</strong> fora do ciclo que elas conhecem.</li>
+        <li>O Devorador reconhece o <strong>Vínculo</strong> entre Leyn e a Multibraços — não como corrupção, mas como livre-arbítrio e sacrifício mútuo. Algo que não compreende.</li>
+        <li>Outros Mestres virão. E nem todos serão tão curiosos quanto este.</li>
+        <li>O Despertar Total do continente está próximo. Muito próximo.</li>
+      </ul>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~23h20</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Mara Vell</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>A Multibraços desmorona, exausta. Você sente através do vínculo — ela está no limite. Morrendo. Metade de seus braços quebrados. Sangue por todo lado.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços — Tossindo Sangue Negro</div>
+      <div class="dialogue-text">"Leyn... você... realmente... enfrentou AQUILO... e... viveu... Eu... não vou... conseguir sair... daqui... estou... destruída demais..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Você se ajoelha ao lado dela, seus olhos vermelhos encontrando os muitos olhos dela — alguns fechados pela dor, outros ainda te observando com admiração e exaustão.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Se torne minha serva e lute ao meu lado como uma vampira de segunda linhagem."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Você coloca a mão em um de seus braços quebrados. Gentilmente.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Claro, você manterá sua consciência e lembranças. Devo isso a você."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Ela para de tossir sangue. Te olha — realmente te olha.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços — Medo Genuíno</div>
+      <div class="dialogue-text">"Serva... não... escravo... como... fui... para... cultistas...?"</div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços — Lágrimas</div>
+      <div class="dialogue-text">"Se... eu aceitar... promete... que eu... ainda serei... EU? Não apenas... fome... e instinto...? Promete... que eu... não virarei... predador... sem alma...?"</div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">O Peso da Escolha</div>
+      <div class="lore-text">Vampiros de segunda linhagem geralmente <em>perdem</em> muito de sua humanidade. Ela não teme a morte — teme perder a si mesma novamente. Ser transformada em monstro uma vez já foi suficiente. Se virar vampira e perder a humanidade que acabou de recuperar através do sacrifício por você, seria pior que morte.</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Do corredor, você ouve passos distantes. Sobreviventes? Reforços? Não tem muito tempo.</p>
+      </div>
+    </div>
+
+    <div class="whisper-block">
+      <div class="whisper-label">Mas Enquanto Você Espera Dela Decidir</div>
+      <div class="whisper-line">Você sente algo através do vínculo que já existe entre vocês. Ela está com medo, não de MORRER, mas de perder a si mesma novamente.</div>
+    </div>
+
+    <div class="roll-block" style="border-left-color: var(--gold); background: linear-gradient(135deg, rgba(201,150,60,0.06) 0%, rgba(10,6,13,0.6) 100%);">
+      <div class="roll-header">
+        <span class="roll-name">Teste de Persuasão (Carisma)</span>
+        <span class="roll-formula">1d20 − 1 &nbsp;·&nbsp; CD 12</span>
+      </div>
+      <div class="roll-result-line">
+        <span class="roll-dice" style="color: var(--gold-bright);">REJEITADO</span>
+        <span class="roll-verdict" style="background: rgba(201,150,60,0.2); color: var(--gold-bright); border-color: rgba(201,150,60,0.4);">Dados não Rolados</span>
+      </div>
+      <div class="roll-note">Às vezes, há momentos onde mecânicas não importam. Onde o coração da escolha transcende probabilidade. Este é um desses momentos.</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Sem Hesitação</div>
+      <div class="dialogue-text">"Eu estou sendo sincero. Não a transformarei em um monstro sem consciência. Eu prometo."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Você aperta a mão dela com mais firmeza.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Eu realmente quero pagar minha dívida com você."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Você não é capaz de sentir minha intenção?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>O <strong>Vínculo</strong>. Ela fecha os olhos. E sente. Através das lágrimas que te trouxeram de volta. Através do sacrifício mútuo. Através da escolha de você voltar por ela ao invés de buscar vingança. Não há engano. Não há manipulação. Apenas verdade pura.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços — Lágrimas</div>
+      <div class="dialogue-text">"Eu... sinto... você... não mente... você... realmente... quer me salvar..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Ela ri — um som quebrado, mas feliz.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços — Um Sorriso Quebrado, mas Real</div>
+      <div class="dialogue-text">"Cem anos... como aberração... e agora... alguém... me oferece... não apenas vida... mas ESCOLHA..."</div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços — Estendendo um Braço Trêmulo</div>
+      <div class="dialogue-text">"Eu aceito. Não como serva escrava... mas como... aliada? Companheira? Família?"</div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Multibraços — Com Esperança</div>
+      <div class="dialogue-text">"Me transforme. Me salve. E eu... juro... lutarei ao seu lado... enquanto existir."</div>
+    </div>
+
+    <div class="transformation-block">
+      <div class="transformation-header">
+        <span class="transformation-icon">🩸</span>
+        <span class="transformation-title">A Transformação — Multibraços</span>
+      </div>
+      <div class="transformation-body">
+        <div class="prose" style="margin:0;">
+          <p>Você morde. Não selvagemente. Não como predador. Com reverência. Com propósito.</p>
+          <p>Seu sangue primordial flui — mas agora transformado pela ressurreição através de compaixão. Não é apenas corrupção vampírica. É <em>outra coisa</em>.</p>
+          <p>Seus muitos braços deformados começam a mudar. Não desaparecem, mas se refinam. A carne que era apenas grotesca ganha propósito. Força. Seus olhos múltiplos se tornam mais claros — alguns fecham permanentemente, mas os que permanecem ganham brilho vermelho. A pele cinza-carne se torna mais pálida. Vampírica. Mas ainda <em>dela</em>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Nova Vampira — Abrindo os Olhos Vermelhos</div>
+      <div class="dialogue-text">"Eu... estou... viva? Eu sou... EU ainda?"</div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Nova Vampira</div>
+      <div class="dialogue-text">"Leyn... você... criou algo... que não deveria existir... vampira que mantém humanidade..."</div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Nova Vampira — Primeiro Sorriso Genuíno em Décadas</div>
+      <div class="dialogue-text">"Obrigada. Por me dar... segunda vida. E permitir que eu seja... EU nela."</div>
+    </div>
+
+    <div class="lore-callout">
+      <div class="lore-title">Vínculo Fortalecido — Criador e Prole</div>
+      <div class="lore-text">Vocês agora têm conexão de criador-prole, baseada em respeito mútuo ao invés de dominação. Ela é vampira de segunda linhagem que manteve consciência, memórias e humanidade — porque o <em>Renascido</em> carrega compaixão em sua linhagem.</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Do corredor: <strong>PASSOS SE APROXIMAM.</strong></p>
+      </div>
+    </div>
+
+    <div class="dialogue cultist">
+      <div class="dialogue-speaker">Guardas — Do Corredor</div>
+      <div class="dialogue-text">"O salão ritual! Verifiquem os sobreviventes!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Guardas. Provavelmente mais cultistas.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Nova Vampira — Já se Movendo</div>
+      <div class="dialogue-text">"Leyn, precisamos ir. AGORA."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Agora que você é parte da minha família não posso só te chamar de multibraços, qual o seu verdadeiro nome?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Ela para. Por um momento, apenas silêncio. Depois lágrimas de gratidão e alívio.</p>
+      </div>
+    </div>
+
+    <div class="dialogue aberration">
+      <div class="dialogue-speaker">Nova Vampira — Buscando Memórias Enterradas</div>
+      <div class="dialogue-text">"Meu nome... eu... quase esqueci..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Ela fecha os olhos, buscando memórias enterradas sob décadas de tormento.</p>
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Buscando Memórias Enterradas</div>
+      <div class="dialogue-text">"Era... Mara. Mara Vell. Soldado da Segunda Companhia da Igreja do Sol Agonizante. Arqueira. Antes de... antes de tudo."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Ela olha para os próprios braços múltiplos — agora refinados, mas ainda presentes.</p>
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Mara. Me chame de Mara."</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~23h35</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Elise nas Trevas</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Vocês descem pelas escadarias em direção às profundezas. Mara fala enquanto caminham, voz mais clara agora que é vampira.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Qual a sua relação com a sem-rosto?"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"A Sem-Rosto... ela era minha companheira de pelotão. Seu nome era Elise. Nós... éramos amigas. Mais que isso — éramos como irmãs. Crescemos juntas no orfanato da Igreja. Treinamos juntas. Lutamos juntas."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Ela para de andar por um momento.</p>
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Com Dor</div>
+      <div class="dialogue-text">"Quando viemos caçar seu povo há cem anos... Elise questionou as ordens. Disse que massacrar famílias inteiras — mesmo vampiras — era errado. Que crianças não eram ameaças."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Eu... concordei com ela. Em silêncio. Mas fui covarde demais para falar."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Apertando os Punhos</div>
+      <div class="dialogue-text">"Quando capturaram você e seu vilarejo queimou... os nobres traíram nossa companhia inteira. Disseram que falhamos. Que precisávamos de 'aprimoramento'. Nos transformaram. Experimentos. Elise foi a primeira. Eles arrancaram o rosto dela e substituíram com... aquela boca. Disseram que era punição por 'falar demais'."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Eu fui a segunda. Me deram braços extras porque 'uma arqueira precisa de mais mãos'."</div>
+    </div>
+
+    <div class="vision-block">
+      <div class="vision-label">A História da Segunda Companhia</div>
+      <ul class="vision-list">
+        <li>Mara Vell e Elise: soldadas, amigas, irmãs — crescidas no orfanato da Igreja do Sol Agonizante.</li>
+        <li>Elise questionou o massacre de famílias vampíricas. Punição: o rosto arrancado, substituído por uma boca.</li>
+        <li>Mara concordou em silêncio mas foi covarde. Punição: braços extras por "necessidade de mais mãos".</li>
+        <li>Décadas aqui, perdendo humanidade, esquecendo seus nomes — até que Leyn Sepet os viu como mais que monstros.</li>
+      </ul>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Vocês chegam ao nível inferior. O cheiro de esgoto e morte é intenso. Tochas piscam nas paredes.</p>
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Elise e eu... passamos décadas aqui. Perdendo nossa humanidade. Esquecendo nossos nomes. Nos tornando... aquilo."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Mara olha para você.</p>
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Mas quando você apareceu... quando você NOS VIU como mais que monstros... quando libertou aquela aberração-criança com misericórdia..."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Algo despertou em nós. Memórias. Emoções. A lembrança de que já fomos... humanas."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Vocês ouvem chapinhar de água à frente. E uma voz familiar — rouca, quebrada:</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">A Sem-Rosto — Das Sombras</div>
+      <div class="dialogue-text">"...Mara...? É... você...?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>A Sem-Rosto emerge das sombras. Ela vê Mara. Vê os olhos vermelhos. Vê você. Há medo em sua voz. E... inveja?</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Você... virou... como ele... vampira...?"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Dando um Passo à Frente</div>
+      <div class="dialogue-text">"Elise. SOU EU. Ainda sou eu. Ele me deu escolha. Me deu... vida de verdade."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — Para Leyn</div>
+      <div class="dialogue-text">"Você... o Primordial... você realmente... vê aberrações... como pessoas...?"</div>
+    </div>
+
+    <div class="whisper-block">
+      <div class="whisper-label">Suas Palavras Caem como Pedras N'água</div>
+      <div class="whisper-line">Suas palavras caem como pedras n'água.</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Elise, não julgo os seres desse mundo dessa forma, quando vejo qualquer ser não olho para sua aparência ou raça, mas sim para sua alma, sua pureza, então se sua pergunta é se eu te vejo como algo puro, a resposta seria 70% Sim, e os outros 30% eu ainda não conheço."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Elise congela. Sua boca vertical para de tremer. Silêncio absoluto enquanto ela processa.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Você... não me vê... como pessoa... nem como monstro... Mas como... 70% pura...?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Confusão genuína. Ninguém nunca falou assim com ela. Ela dá um passo hesitante em sua direção.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Pessoas traem. Mentem. Ferem umas às outras."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Suas palavras ecoam pelo túnel.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Você tem razão... minha própria Igreja... me traiu... me transformou... por falar verdade..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Ela toca a própria "boca-rosto" com mãos tremendo.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"E os 30% que você não conhece...?"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Colocando a Mão no Ombro de Elise</div>
+      <div class="dialogue-text">"Elise... ele está dizendo que você PODE ser pura. Mas precisa escolher. Como eu escolhi."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Eu... ataquei você... na cela... tentei te devorar... isso... não me torna... impura...?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Há vergonha real em sua voz.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Mas... você sobreviveu... e voltou... não com raiva..., mas com... ela..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Elise aponta para Mara.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Você transformou ela... em algo que mantém humanidade... isso... é possível... para mim também...?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Então, surpreendentemente:</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — Com Esperança Tímida</div>
+      <div class="dialogue-text">"Os 30% que você não conhece... eu posso... mostrar...?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Ela se ajoelha. Não de submissão — mas de oferta.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Eu... fui arqueira também... antes... como Mara... eu sei rotas secretas... desta fortaleza... sei onde nobres escondem tesouros... armas... informação... Posso... ser útil... posso provar... os 30%... e então... talvez... você decida... se mereço... segunda chance...?"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Sussurrando a Leyn</div>
+      <div class="dialogue-text">"Leyn... ela sempre foi assim. Mesmo antes. Nunca pedia nada sem oferecer algo primeiro. Era... orgulho dela."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Passos ecoam nos níveis superiores. Guardas descendo.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Elise, antes precisamos sair daqui. E como a rota de fuga é pelos esgotos e temos que passar pela água corrente, vamos precisar que você nos ajude a atravessar aquele lago."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Você estende a mão para ela.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Após isso, eu a transformarei."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Elise olha para sua mão estendida. Olha para Mara, que assente encorajadora. E então algo quebra dentro dela.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — Ícor Negro Escorrendo</div>
+      <div class="dialogue-text">"Você... confia... que eu... não vou... trair... mesmo antes... de me transformar...? Todo mundo... sempre... me prendeu... me forçou... me controlou... ANTES... de confiar... Mas você... oferece... transformação... DEPOIS... que eu ajudar...?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Ela pega sua mão. Firme.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — Decidida</div>
+      <div class="dialogue-text">"Eu aceito. Não... vou trair... essa confiança... juro... pela memória... de quem eu era..."</div>
+    </div>
+
+    <div class="dialogue cultist">
+      <div class="dialogue-speaker">Guardas — Do Nível Superior</div>
+      <div class="dialogue-text">"ENCONTREI RASTROS DE SANGUE! ELES DESCERAM!"</div>
+    </div>
+
+    <div class="dialogue cultist">
+      <div class="dialogue-speaker">Guardas</div>
+      <div class="dialogue-text">"TRAGAM OS CÃES DE CAÇA! E MAIS CONSTRUTOS!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Elise já está se movendo.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — Já em Movimento</div>
+      <div class="dialogue-text">"Sigam... eu... conheço... atalho... para os esgotos... evita... patrulhas..."</div>
+    </div>
+
+  </section>
+
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time">~23h38</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <!-- ── CAPÍTULO X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Lago e a Promessa Cumprida</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Vocês correm através de corredores labirínticos. Elise se move com velocidade surpreendente. Após cinco minutos de fuga, chegam a uma câmara ampla. O cheiro de esgoto é opressor.</p>
+      <p>E você vê: um lago subterrâneo. Água corrente fluindo de túneis acima, formando um corpo d'água de cinquenta metros de largura. Do outro lado: a saída. Um túnel que leva para fora da fortaleza.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Este... é o lago... Água corrente... pura... vem... das montanhas... vampiros... não podem... tocar... Mas eu... posso... nadar... e... engolir vocês... como... fiz antes... com você..."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — Hesitante</div>
+      <div class="dialogue-text">"Vai... doer... para vocês... dentro da minha boca... ácido... tentáculos... mas... não vai matar... e... eu cruzo... rápido..."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Fazendo uma Careta</div>
+      <div class="dialogue-text">"Ser engolida viva... não era como eu imaginava nossa fuga... Mas se é o único jeito... eu confio nela. E em você."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>De trás de vocês: <strong>LATIDOS. CÃES DE CAÇA. GRITOS DE GUARDAS.</strong></p>
+      <p>"<em>ESTÃO PERTO! CERQUEM O LAGO!</em>"</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — Abrindo a Boca</div>
+      <div class="dialogue-text">"Decidam... rápido... eles... vêm..."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Com um Riso Baixo e Genuíno</div>
+      <div class="dialogue-text">"Vamos, Elise. Eu já estava planejando ser engolido por você mesmo, haha."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Você... está RINDO... sobre ser ENGOLIDO por uma aberração?!"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Rindo Também, Nervosa</div>
+      <div class="dialogue-text">"Você realmente é diferente de qualquer vampiro que já existiu..."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — Quase Chorando</div>
+      <div class="dialogue-text">"Você... brinca... comigo... como se... eu fosse... amiga... não... monstro..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Por um momento, ela parece querer chorar. Mas então:</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Obrigada... por... confiar..."</div>
+    </div>
+
+    <div class="combat-block">
+      <div class="combat-header">
+        <span class="combat-icon">🌊</span>
+        <span class="combat-title">Travessia do Lago — Dentro de Elise</span>
+      </div>
+      <div class="combat-body">
+        <div class="prose" style="margin:0;">
+          <p>A boca se abre completamente. O abismo vertical se expande impossível — é maior por dentro do que deveria ser. Dentes em camadas. Línguas-tentáculos se contorcendo. Ácido digestivo gotejando.</p>
+          <p>Mas você não hesita.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Mara, você primeiro."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Mara assente, engole seco, e pula para dentro da boca de Elise. A boca se fecha parcialmente, engolindo-a. Você ouve um grito abafado — de dor, mas controlado. Então a boca se abre novamente.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Sua... vez..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p><strong>VOCÊ PULA.</strong></p>
+      <p>Escuridão. Calor úmido. Tentáculos te envolvem — não apertando demais, mas segurando. Ácido queima sua pele levemente, mas ela está claramente controlando, minimizando o dano.</p>
+      <p>Você sente Mara ao seu lado, também sendo segurada pelos tentáculos internos.</p>
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Murmurando</div>
+      <div class="dialogue-text">"Isso é... absolutamente repugnante..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Mas há algo quase <em>protetor</em> na forma como os tentáculos de Elise os seguram.</p>
+      </div>
+    </div>
+
+    <div class="dialogue cultist">
+      <div class="dialogue-speaker">Guardas — Abafado, do Lado de Fora</div>
+      <div class="dialogue-text">"ALI! A ABERRAÇÃO SEM-ROSTO! CAPTUREM ELA!"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p><strong>SPLASH.</strong> Elise mergulha no lago. Você a sente se mover — rápido, determinado.</p>
+      <p>Dentro, os tentáculos te apertam mais. Não para machucar — para proteger de ser chacoalhado pela natação violenta. Você ouve o coração dela batendo rápido. Medo. Determinação.</p>
+      <p><strong>30 segundos de travessia que parecem eternidade.</strong></p>
+      </div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Então — <strong>AR</strong>. A boca se abre. Vocês são gentilmente depositados em pedra seca do outro lado.</p>
+      <p>Elise está exausta, respirando pesado. Ácido escorre de sua boca.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — Exausta</div>
+      <div class="dialogue-text">"Consegui... vocês... estão... seguros...?"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Limpando Ácido do Rosto</div>
+      <div class="dialogue-text">"Viva. Traumatizada. Mas viva."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Você está do outro lado. O túnel de saída está a vinte metros.</p>
+      <p>Do outro lado do lago, guardas gritam frustrados, mas não podem atravessar.</p>
+      <p>Elise se vira para você. Esperando. Há vulnerabilidade em sua voz. Medo de que você minta. Que a abandone.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Eu... cumpri... minha parte... você... vai... cumprir... a sua...?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Mara coloca a mão em seu ombro.</p>
+      </div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell</div>
+      <div class="dialogue-text">"Leyn... ela cumpriu. Arriscou tudo. Você prometeu."</div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet — Com um Sorriso Leve para Mara</div>
+      <div class="dialogue-text">"Não precisa me dizer isso, Mara. Eu vou cumprir com minha palavra."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Então se vira para Elise.</p>
+      </div>
+    </div>
+
+    <div class="dialogue leyn">
+      <div class="dialogue-speaker">Leyn Sepet</div>
+      <div class="dialogue-text">"Hmm, Elise... onde você quer ser mordida?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p><strong>SILÊNCIO.</strong></p>
+      <p>Elise congela. Todos os seus músculos tremem. Ninguém... ninguém jamais perguntou a ela o que ela queria. Sobre seu próprio corpo. Sua própria transformação. Quando os nobres a transformaram em aberração, não perguntaram. Apenas fizeram.</p>
+      <p>Lágrimas de ícor negro escorrem pela boca vertical.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — Voz Quebrada</div>
+      <div class="dialogue-text">"Você... pergunta... onde... EU quero...? Não... apenas... morde... onde... é conveniente... para você...?"</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Ela toca o próprio pescoço — a única parte humanamente "normal" que resta nela.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Aqui... pescoço... como... Mara... por favor... Eu... quero parecer... com ela... quero ser... parte... da mesma família..."</div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — Para Mara</div>
+      <div class="dialogue-text">"Nós éramos... irmãs... antes... podemos ser... irmãs... de novo...?"</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Lágrimas</div>
+      <div class="dialogue-text">"Elise... sempre fomos irmãs. Mesmo quando eu te esqueci. Mesmo quando você me esqueceu. Seremos irmãs de verdade agora. Para sempre."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Elise expõe o pescoço. Vulnerável. Confiante.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — Último Pedido como Aberração</div>
+      <div class="dialogue-text">"Leyn Sepet... último da linha primordial... Renascido através de compaixão... Me dê... segunda vida... como deu... para Mara... Me deixe... ser EU... de novo..."</div>
+    </div>
+
+    <div class="transformation-block">
+      <div class="transformation-header">
+        <span class="transformation-icon">🩸</span>
+        <span class="transformation-title">A Transformação — Elise</span>
+      </div>
+      <div class="transformation-body">
+        <div class="prose" style="margin:0;">
+          <p>Você morde. Com a mesma reverência que usou com Mara. Com propósito. Com compaixão.</p>
+          <p>Seu sangue primordial — transformado por sacrifício e renascimento — flui para ela.</p>
+          <p>A boca vertical não desaparece completamente. Mas se reorganiza. Fecha-se parcialmente, formando lábios pálidos onde antes era apenas abismo. Ela ainda pode abri-la quando necessário — mas agora tem controle. Tem rosto. Seus olhos aparecem — vermelhos como os seus e os de Mara. Mas cheios de vida. Cabelo negro cresce de seu couro cabeludo antes careca. Ela se torna bela. De forma estranha, vampírica, mas indubitavelmente ela mesma.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — Tocando o Próprio Rosto com Mãos Trêmulas</div>
+      <div class="dialogue-text">"Eu... tenho... rosto... de novo..."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text">      <p>Soluços. Ela desmorona nos braços de Mara.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise — Chorando</div>
+      <div class="dialogue-text">"Eu posso... sorrir... de novo... chorar... de novo... SER... de novo..."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Abraçando Elise</div>
+      <div class="dialogue-text">"Bem-vinda de volta, irmã."</div>
+    </div>
+
+    <div class="dialogue gm">
+      <div class="dialogue-speaker">Narrador</div>
+      <div class="dialogue-text"><p>Mara a segura, ambas chorando.</p>
+      <p>Do túnel de saída, você ouve... vento. Ar fresco. <strong>A superfície está próxima.</strong></p>
+      <p>Elise se levanta, limpando as lágrimas. Seu rosto — novo, bonito, mas marcado por cicatrizes da transformação anterior.</p>
+      </div>
+    </div>
+
+    <div class="dialogue elise">
+      <div class="dialogue-speaker">Elise</div>
+      <div class="dialogue-text">"Leyn... obrigada... por me dar... não apenas vida... mas ESCOLHA sobre como vivê-la."</div>
+    </div>
+
+    <div class="dialogue mara">
+      <div class="dialogue-speaker">Mara Vell — Sorrindo</div>
+      <div class="dialogue-text">"Então... líder da nossa pequena família... para onde vamos agora?"</div>
+    </div>
+
+    <div class="tracker-row">
+      <div class="tracker hp-tracker">
+        <div class="tracker-label">Pontos de Vida — Final da Saga</div>
+        <div class="tracker-values">
+          <span class="tracker-current">1</span>
+          <span class="tracker-slash">/</span>
+          <span class="tracker-max">23</span>
+        </div>
+        <div class="tracker-bar">
+          <div class="tracker-fill" style="width: 4%"></div>
+        </div>
+        <div class="tracker-delta">Ressurrecto pelas lágrimas &nbsp;·&nbsp; Frágil, mas vivo</div>
+      </div>
+      <div class="tracker sanity-tracker">
+        <div class="tracker-label">Sanidade — Final da Saga</div>
+        <div class="tracker-values">
+          <span class="tracker-current">47</span>
+          <span class="tracker-slash">/</span>
+          <span class="tracker-max">50</span>
+        </div>
+        <div class="tracker-bar">
+          <div class="tracker-fill" style="width: 94%"></div>
+        </div>
+        <div class="tracker-delta">Mythos 10% — teto SAN: 60→50 &nbsp;·&nbsp; San atual preservada (teste vs. Devorador bem-sucedido)</div>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ── PROGRESSÃO ── -->
+  <section class="chapter">
+
+    <div class="chapter-header">
+      <div class="chapter-number">✦</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Progressão — Nível 2 &amp; Atos de Compaixão</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <!-- Level up -->
+    <div class="revelation-block" style="border-color: rgba(201,150,60,0.45); background: linear-gradient(160deg, rgba(201,150,60,0.07) 0%, rgba(10,6,13,0.6) 100%); margin-bottom: 1.8rem;">
+      <div class="lore-title" style="color: var(--gold-bright); letter-spacing:0.35em;">⬆ Progressão de Nível — Leyn Sepet &amp; Prole</div>
+      <div class="lore-text" style="margin-top:0.8rem;">
+        Ao morrer e renascer pelas lágrimas da Multibraços, Leyn Sepet cruzou um limiar que nenhuma regra havia previsto.
+        A morte foi real. O retorno também. E com ele veio crescimento.<br><br>
+        <strong style="color:var(--gold); font-style:normal;">Leyn Sepet, Mara Vell e Elise atingem o Nível 2.</strong>
+        Suas fichas, habilidades e dados de vida refletem essa progressão a partir desta saga.
+      </div>
+    </div>
+
+    <!-- Mechanic: HP travado -->
+    <div style="margin-bottom:1.8rem; border-radius:8px; overflow:hidden; border:1px solid rgba(139,26,26,0.5); background: linear-gradient(160deg, rgba(139,26,26,0.1) 0%, rgba(10,6,13,0.75) 100%);">
+
+      <!-- Header -->
+      <div style="display:flex; align-items:center; gap:0.8rem; padding:1rem 1.4rem 0.8rem; border-bottom:1px solid rgba(139,26,26,0.25);">
+        <div style="font-size:1.3rem; line-height:1;">⛓</div>
+        <div>
+          <div style="font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.38em; text-transform:uppercase; color:var(--blood-bright);">Regra Especial</div>
+          <div style="font-family:'Cinzel',serif; font-size:1rem; color:var(--ink); margin-top:0.15rem;">HP Travado no Renascimento</div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div style="padding:1.1rem 1.4rem;">
+        <div style="font-family:'EB Garamond',serif; font-size:0.95rem; color:var(--ink-dim); line-height:1.75; margin-bottom:1rem;">
+          A regra original da campanha era clara: <em>se o personagem morre, não volta.</em>
+          Por ser início de campanha, a morte de Leyn foi reinterpretada — mas com um custo permanente que define toda a sua jornada daqui em diante.
+        </div>
+
+        <!-- Stat row -->
+        <div style="display:flex; gap:0.8rem; margin-bottom:1rem; flex-wrap:wrap;">
+          <div style="flex:1; min-width:140px; background:rgba(0,0,0,0.3); border:1px solid rgba(139,26,26,0.3); border-radius:5px; padding:0.8rem 1rem;">
+            <div style="font-family:'Cinzel',serif; font-size:0.55rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--blood-bright); margin-bottom:0.35rem;">HP ao renascer</div>
+            <div style="font-family:'Cinzel Decorative',serif; font-size:1.6rem; color:var(--blood-glow); line-height:1;">1<span style="font-size:0.9rem; color:var(--ink-faint);"> / 23</span></div>
+          </div>
+          <div style="flex:1; min-width:140px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.07); border-radius:5px; padding:0.8rem 1rem;">
+            <div style="font-family:'Cinzel',serif; font-size:0.55rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:0.35rem;">Cura comum tem efeito?</div>
+            <div style="font-family:'Cinzel',serif; font-size:0.85rem; color:var(--fail-bright); line-height:1.3;">Poções · Sangue · Descanso<br><span style="color:var(--ink-faint); font-size:0.75rem;">Nenhuma move o ponteiro acima de 1</span></div>
+          </div>
+          <div style="flex:1; min-width:140px; background:rgba(0,0,0,0.3); border:1px solid rgba(74,158,190,0.25); border-radius:5px; padding:0.8rem 1rem;">
+            <div style="font-family:'Cinzel',serif; font-size:0.55rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--rune-blue); margin-bottom:0.35rem;">Como desbloquear?</div>
+            <div style="font-family:'Cinzel',serif; font-size:0.85rem; color:var(--ink-dim); line-height:1.3;">Atos de Compaixão<br><span style="color:var(--ink-faint); font-size:0.75rem;">Único caminho de volta</span></div>
+          </div>
+        </div>
+
+        <div style="font-family:'EB Garamond',serif; font-size:0.88rem; font-style:italic; color:var(--ink-faint); border-left:2px solid rgba(139,26,26,0.4); padding-left:0.9rem; line-height:1.7;">
+          O HP máximo existe na ficha — os 23 pontos estão lá. Mas permanecem inacessíveis, selados pelo custo do renascimento. São desbloqueados apenas através de atos genuínos de compaixão, um de cada vez.
+        </div>
+      </div>
+    </div>
+
+    <!-- Mechanic: Atos de Compaixão -->
+    <div class="revelation-block" style="border-color: rgba(74,158,190,0.4); background: linear-gradient(160deg, rgba(74,158,190,0.07) 0%, rgba(10,6,13,0.6) 100%);">
+      <div class="lore-title" style="color:var(--rune-blue); letter-spacing:0.35em;">◈ Sistema — Atos de Compaixão</div>
+      <div class="lore-text" style="margin-top:0.8rem; margin-bottom:1.2rem;">
+        Os Atos de Compaixão são a única forma de Leyn recuperar acesso aos seus pontos de vida.
+        Cada ato genuíno de cuidado, proteção ou conexão desbloqueia uma fração do HP travado —
+        tornando esses pontos recuperáveis por meios comuns. Atos Maiores fazem isso e mais:
+        também elevam o teto máximo permanentemente, refletindo o crescimento da alma do Renascido.
+        <strong style="color:var(--ink); font-style:normal;"> Precisam ser genuínos.</strong>
+      </div>
+
+      <!-- Dois cards lado a lado -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.2rem;">
+
+        <!-- Ato Menor -->
+        <div style="background:rgba(201,150,60,0.06); border:1px solid rgba(201,150,60,0.22); border-radius:6px; padding:1.1rem;">
+          <div style="display:flex; align-items:baseline; gap:0.5rem; margin-bottom:0.7rem;">
+            <div style="font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.32em; text-transform:uppercase; color:var(--gold);">Ato Menor</div>
+            <div style="font-family:'Cinzel Decorative',serif; font-size:1rem; color:var(--gold-bright); margin-left:auto;">+1 PV</div>
+          </div>
+          <div style="font-family:'EB Garamond',serif; font-size:0.88rem; color:var(--ink-dim); line-height:1.7; margin-bottom:0.8rem;">
+            Desbloqueia <strong style="color:var(--ink);">+1 ponto</strong> do HP travado — esse ponto passa a poder ser recuperado por qualquer meio comum: sangue, descanso ou poção.
+          </div>
+          <div style="border-top:1px solid rgba(201,150,60,0.15); padding-top:0.7rem;">
+            <div style="font-family:'Cinzel',serif; font-size:0.52rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:0.45rem;">Exemplos</div>
+            <ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:0.3rem;">
+              <li style="font-family:'EB Garamond',serif; font-size:0.85rem; color:var(--ink-faint); padding-left:0.9rem; position:relative;"><span style="position:absolute;left:0;color:var(--gold);opacity:0.6;">·</span>Salvar inocente de perigo imediato</li>
+              <li style="font-family:'EB Garamond',serif; font-size:0.85rem; color:var(--ink-faint); padding-left:0.9rem; position:relative;"><span style="position:absolute;left:0;color:var(--gold);opacity:0.6;">·</span>Curar ferido gratuitamente</li>
+              <li style="font-family:'EB Garamond',serif; font-size:0.85rem; color:var(--ink-faint); padding-left:0.9rem; position:relative;"><span style="position:absolute;left:0;color:var(--gold);opacity:0.6;">·</span>Perdoar inimigo arrependido</li>
+              <li style="font-family:'EB Garamond',serif; font-size:0.85rem; color:var(--ink-faint); padding-left:0.9rem; position:relative;"><span style="position:absolute;left:0;color:var(--gold);opacity:0.6;">·</span>Proteger fraco de opressor</li>
+              <li style="font-family:'EB Garamond',serif; font-size:0.85rem; color:var(--ink-faint); padding-left:0.9rem; position:relative;"><span style="position:absolute;left:0;color:var(--gold);opacity:0.6;">·</span>Ensinar habilidade que melhora vida</li>
+              <li style="font-family:'EB Garamond',serif; font-size:0.85rem; color:var(--ink-faint); padding-left:0.9rem; position:relative;"><span style="position:absolute;left:0;color:var(--gold);opacity:0.6;">·</span>Libertar preso injustamente</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Ato Maior -->
+        <div style="background:rgba(74,158,190,0.06); border:1px solid rgba(74,158,190,0.28); border-radius:6px; padding:1.1rem;">
+          <div style="display:flex; align-items:baseline; gap:0.5rem; margin-bottom:0.7rem;">
+            <div style="font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.32em; text-transform:uppercase; color:var(--rune-blue);">Ato Maior</div>
+            <div style="font-family:'Cinzel Decorative',serif; font-size:1rem; color:var(--rune-glow); margin-left:auto;">+2 PV</div>
+          </div>
+          <div style="font-family:'EB Garamond',serif; font-size:0.88rem; color:var(--ink-dim); line-height:1.7; margin-bottom:0.8rem;">
+            Desbloqueia <strong style="color:var(--ink);">+2 pontos</strong> do HP travado — ambos passam a poder ser recuperados por qualquer meio comum — e eleva o HP máximo permanentemente. Transformação real, não apenas gesto.
+          </div>
+          <div style="border-top:1px solid rgba(74,158,190,0.15); padding-top:0.7rem;">
+            <div style="font-family:'Cinzel',serif; font-size:0.52rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:0.45rem;">Exemplos</div>
+            <ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:0.3rem;">
+              <li style="font-family:'EB Garamond',serif; font-size:0.85rem; color:var(--ink-faint); padding-left:0.9rem; position:relative;"><span style="position:absolute;left:0;color:var(--rune-blue);opacity:0.7;">·</span>Transformar corrompido mantendo humanidade</li>
+              <li style="font-family:'EB Garamond',serif; font-size:0.85rem; color:var(--ink-faint); padding-left:0.9rem; position:relative;"><span style="position:absolute;left:0;color:var(--rune-blue);opacity:0.7;">·</span>Sacrificar algo precioso para salvar outro</li>
+              <li style="font-family:'EB Garamond',serif; font-size:0.85rem; color:var(--ink-faint); padding-left:0.9rem; position:relative;"><span style="position:absolute;left:0;color:var(--rune-blue);opacity:0.7;">·</span>Destruir fonte de opressão sistemática</li>
+              <li style="font-family:'EB Garamond',serif; font-size:0.85rem; color:var(--ink-faint); padding-left:0.9rem; position:relative;"><span style="position:absolute;left:0;color:var(--rune-blue);opacity:0.7;">·</span>Reconciliar facções em guerra</li>
+              <li style="font-family:'EB Garamond',serif; font-size:0.85rem; color:var(--ink-faint); padding-left:0.9rem; position:relative;"><span style="position:absolute;left:0;color:var(--rune-blue);opacity:0.7;">·</span>Salvar comunidade inteira</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Exemplo prático -->
+      <div style="padding:0.9rem 1.1rem; background:rgba(155,89,182,0.07); border:1px solid rgba(155,89,182,0.2); border-radius:5px;">
+        <div style="font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.32em; text-transform:uppercase; color:var(--sanity-color); margin-bottom:0.5rem;">Exemplo Prático</div>
+        <div style="font-family:'EB Garamond',serif; font-size:0.9rem; color:var(--ink-dim); line-height:1.75;">
+          Leyn está em <strong style="color:var(--ink);">1 / 23 PV</strong>. Bebe sangue, descansa, usa poção — o ponteiro não sai de 1.
+          Então ocorre um <strong style="color:var(--rune-glow);">Ato Maior</strong>: +2 PV desbloqueados.
+          Leyn agora pode ser curado até <strong style="color:var(--ink);">3 PV</strong> — e o máximo sobe para 25.
+          Um <strong style="color:var(--gold);">Ato Menor</strong> depois? Mais 1 desbloqueado — até <strong style="color:var(--ink);">4 PV</strong> curáveis.
+          Assim o Renascido reconstrói sua vitalidade, ato por ato, compaixão por compaixão.
+        </div>
+      </div>
+      </div>
+      </div>
+
+  </section>
+
+  <!-- ── FINALE ── -->
+  <!-- ── FINALE ── -->
+  <div class="scene-divider">
+    <div class="scene-divider-line"></div>
+    <div class="scene-divider-hourglass">
+      <span class="scene-divider-glyph rune-flicker">✦</span>
+      <svg class="hourglass-svg" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <rect x="4" y="1" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <rect x="4" y="24.5" width="16" height="2.5" rx="1" fill="#5a4e42"/>
+        <path d="M5 3.5 L12 13.5 L19 3.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M5 24.5 L12 14.5 L19 24.5 Z" fill="none" stroke="#5a4e42" stroke-width="0.8"/>
+        <path d="M 7 4 Q 12 5.5 17 4 L 15 10 Q 12 12 9 10 Z" fill="#8b6a3e" opacity="0.55"/>
+        <path d="M 8.5 23 Q 12 24.5 15.5 23 L 14.5 18 Q 12 17 9.5 18 Z" fill="#8b6a3e" opacity="0.55"/>
+        <line x1="12" y1="12.5" x2="12" y2="15.5" stroke="#8b6a3e" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+      </svg>
+      <span class="scene-divider-time highlight">fim da saga iii &nbsp;·&nbsp; ~23h38</span>
+      <span class="scene-divider-glyph rune-flicker">✦</span>
+    </div>
+    <div class="scene-divider-line"></div>
+  </div>
+
+  <div class="finale-block">
+    <p class="finale-quote">
+      Morreu uma vez na noite.<br>
+      Ressuscitou não por poder, não por vingança —<br>
+      mas pelas lágrimas de uma criatura que recuperou a humanidade <em>através dele</em>.<br><br>
+      E no fim, onde esperava encontrar solidão,<br>
+      encontrou <em>família</em>.
+    </p>
+    <div class="finale-divider"></div>
+    <div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+  </div>
+
+</div><!-- /page-wrapper -->
+<div id="saga-end-sentinel" style="height:1px;width:100%;position:relative;margin-top:-1px;"></div>
+
+<script>
+  (function () {
+    var tracker  = document.querySelector('.floating-stats');
+    var sentinel = document.getElementById('saga-end-sentinel');
+    if (!tracker || !sentinel) return;
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          tracker.classList.add('visible');
+        }
+      });
+    }, { threshold: 0 });
+
+    observer.observe(sentinel);
+  })();
+</script>
+</body>
+</html>
