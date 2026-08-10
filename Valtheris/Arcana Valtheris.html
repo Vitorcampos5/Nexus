@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arcana — Valtheris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700;900&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blood:#8b1a1a;--ember:#c0392b;--gold:#c9a84c;--gold-dim:#7a6030;
+  --ash:#d4c9b5;--bone:#e8dfc8;--void:#0a0805;--deep:#110f0a;
+  --surface:#1a1610;--mid:#251f17;--rim:#2e2720;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:'IM Fell English',serif;background:var(--void);color:var(--ash);min-height:100vh}
+
+/* ── noise overlay ── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  background-size:200px;opacity:.4
+}
+
+.screen{display:none;position:relative;z-index:1;min-height:100vh;padding:2rem 1.2rem}
+.screen.active{display:flex;flex-direction:column;align-items:center}
+
+/* ══ MENU ══════════════════════════════════════════════ */
+.menu-title{
+  font-family:'Cinzel Decorative',serif;font-size:1.6rem;font-weight:900;
+  color:var(--bone);letter-spacing:.08em;text-align:center;margin-bottom:.3rem
+}
+.menu-sub{
+  font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.5em;
+  color:var(--gold-dim);text-transform:uppercase;text-align:center;margin-bottom:2.5rem
+}
+.menu-divider{
+  width:180px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);
+  margin:.8rem auto 2rem
+}
+.card-grid{display:flex;flex-direction:column;gap:1.2rem;width:100%;max-width:520px}
+.card{
+  background:var(--deep);border:1px solid rgba(201,168,76,.12);
+  padding:1.4rem 1.6rem;cursor:pointer;transition:border-color .3s,background .3s;
+  position:relative;overflow:hidden
+}
+.card:hover{border-color:rgba(201,168,76,.35);background:var(--surface)}
+.card::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(139,26,26,.07),transparent);
+  pointer-events:none
+}
+.card-glyph{font-size:1.8rem;margin-bottom:.6rem;display:block;opacity:.7}
+.card-title{
+  font-family:'Cinzel Decorative',serif;font-size:.85rem;font-weight:700;
+  color:var(--bone);margin-bottom:.4rem
+}
+.card-desc{
+  font-family:'IM Fell English',serif;font-style:italic;
+  font-size:.75rem;color:var(--gold-dim);line-height:1.5
+}
+.card-badge{
+  font-family:'Cinzel',serif;font-size:.38rem;letter-spacing:.3em;
+  text-transform:uppercase;color:rgba(201,168,76,.4);margin-top:.6rem;display:block
+}
+
+/* ── shared game chrome ── */
+.game-header{text-align:center;margin-bottom:1.8rem;width:100%;max-width:600px}
+.game-title{
+  font-family:'Cinzel Decorative',serif;font-size:1.1rem;font-weight:900;
+  color:var(--bone);letter-spacing:.06em;margin:0
+}
+.game-sub{
+  font-family:'Cinzel',serif;font-size:.42rem;letter-spacing:.4em;
+  color:var(--gold-dim);text-transform:uppercase;margin-top:.25rem
+}
+
+
+.btn-primary{
+  background:rgba(139,26,26,.25);border:1px solid rgba(201,168,76,.3);
+  color:var(--bone);font-family:'Cinzel',serif;font-size:.54rem;
+  letter-spacing:.2em;text-transform:uppercase;padding:.6rem 1.4rem;
+  cursor:pointer;transition:.2s;display:inline-block;margin:.5rem .3rem
+}
+.btn-primary:hover{background:rgba(139,26,26,.45);border-color:var(--gold)}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed}
+.btn-secondary{
+  background:none;border:1px solid rgba(201,168,76,.15);
+  color:var(--gold-dim);font-family:'Cinzel',serif;font-size:.48rem;
+  letter-spacing:.15em;text-transform:uppercase;padding:.45rem 1rem;
+  cursor:pointer;transition:.2s;margin:.3rem
+}
+.btn-secondary:hover{background:rgba(201,168,76,.05);border-color:rgba(201,168,76,.3)}
+
+.panel{
+  background:var(--deep);border:1px solid rgba(201,168,76,.1);
+  padding:1.2rem 1.4rem;width:100%;max-width:560px;margin:.6rem 0
+}
+.panel-title{
+  font-family:'Cinzel',serif;font-size:.48rem;letter-spacing:.35em;
+  text-transform:uppercase;color:var(--gold-dim);margin-bottom:.7rem
+}
+.lore-text{
+  font-family:'IM Fell English',serif;font-style:italic;
+  font-size:.8rem;color:var(--ash);line-height:1.7
+}
+.gold-line{color:var(--gold)}
+.blood-line{color:#c05050}
+.result-big{
+  font-family:'Cinzel Decorative',serif;font-size:1.1rem;
+  color:var(--bone);text-align:center;margin:1rem 0;letter-spacing:.06em
+}
+
+/* ── hp bar ── */
+.hp-row{display:flex;align-items:center;gap:.6rem;margin:.4rem 0}
+.hp-label{font-family:'Cinzel',serif;font-size:.4rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--gold-dim);min-width:60px}
+.hp-bar-wrap{flex:1;height:8px;background:var(--rim);border:1px solid rgba(201,168,76,.1)}
+.hp-bar-fill{height:100%;background:linear-gradient(90deg,var(--blood),var(--ember));
+  transition:width .4s ease}
+.hp-val{font-family:'Cinzel',serif;font-size:.42rem;color:var(--ash);min-width:40px;text-align:right}
+
+/* ── dice animation ── */
+.dice-wrap{display:flex;gap:1.5rem;justify-content:center;margin:1.2rem 0;align-items:center}
+.die{
+  width:72px;height:72px;background:var(--surface);border:1px solid rgba(201,168,76,.2);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  position:relative
+}
+.die-label{font-family:'Cinzel',serif;font-size:.35rem;letter-spacing:.25em;
+  text-transform:uppercase;color:var(--gold-dim);margin-bottom:.15rem}
+.die-val{
+  font-family:'Cinzel Decorative',serif;font-size:1.4rem;font-weight:900;
+  color:var(--bone);transition:color .1s;min-width:2ch;text-align:center
+}
+.die.rolling .die-val{color:var(--gold);animation:diceFlicker .06s infinite}
+@keyframes diceFlicker{0%{opacity:.6}50%{opacity:1}100%{opacity:.7}}
+.die.settled .die-val{color:var(--gold);text-shadow:0 0 12px rgba(201,168,76,.5)}
+
+/* ── combat ── */
+.enemy-card{
+  display:flex;flex-direction:column;gap:.5rem;
+  background:var(--surface);border:1px solid rgba(139,26,26,.25);
+  padding:1rem 1.2rem;width:100%;max-width:560px
+}
+.enemy-name{font-family:'Cinzel Decorative',serif;font-size:.85rem;color:var(--bone)}
+.enemy-lore{font-family:'IM Fell English',serif;font-style:italic;font-size:.7rem;color:var(--gold-dim);line-height:1.5;margin:.3rem 0}
+.action-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.6rem;justify-content:center}
+.log{
+  width:100%;max-width:560px;background:var(--void);border:1px solid rgba(201,168,76,.08);
+  padding:.8rem 1rem;max-height:180px;overflow-y:auto;margin:.6rem 0
+}
+.log-entry{
+  font-family:'IM Fell English',serif;font-style:italic;
+  font-size:.72rem;line-height:1.5;color:var(--ash);margin:.15rem 0;
+  border-bottom:1px solid rgba(201,168,76,.04);padding-bottom:.15rem
+}
+.log-entry.hit{color:#d4a0a0}
+.log-entry.miss{color:var(--gold-dim)}
+.log-entry.crit{color:var(--gold)}
+.log-entry.sys{color:rgba(201,168,76,.5);font-size:.65rem}
+
+/* ── oracle ── */
+.oracle-wrap{text-align:center;max-width:560px;width:100%}
+.oracle-domain{
+  font-family:'Cinzel',serif;font-size:.42rem;letter-spacing:.5em;
+  text-transform:uppercase;color:var(--gold-dim);margin:1rem 0 .4rem
+}
+.oracle-prophecy{
+  font-family:'IM Fell English',serif;font-style:italic;
+  font-size:.95rem;line-height:1.8;color:var(--ash);
+  padding:1.2rem 1.4rem;border:1px solid rgba(201,168,76,.12);
+  background:var(--deep);text-align:center;min-height:80px;
+  transition:opacity .4s
+}
+.oracle-attribution{
+  font-family:'Cinzel',serif;font-size:.38rem;letter-spacing:.25em;
+  color:rgba(201,168,76,.35);margin-top:.6rem;font-style:normal
+}
+.oracle-scores{display:flex;gap:1.5rem;justify-content:center;margin:.8rem 0}
+.oracle-die-result{text-align:center}
+.oracle-die-result .val{
+  font-family:'Cinzel Decorative',serif;font-size:1.8rem;color:var(--gold);display:block;
+  text-shadow:0 0 20px rgba(201,168,76,.4)
+}
+.oracle-die-result .lbl{
+  font-family:'Cinzel',serif;font-size:.36rem;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--gold-dim)
+}
+
+/* ── cristalizados ── */
+.cristal-wrap{width:100%;max-width:600px}
+.timer{
+  font-family:'Cinzel Decorative',serif;font-size:1.2rem;color:var(--ash);
+  text-align:center;margin:.5rem 0
+}
+.timer.urgent{color:var(--ember);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.orbs-row{display:flex;gap:1.2rem;justify-content:center;margin:.8rem 0;flex-wrap:wrap}
+.orb{
+  width:56px;height:56px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;flex-direction:column;cursor:default;
+  border:2px solid rgba(255,255,255,.1);position:relative;transition:.3s
+}
+.orb-num{font-family:'Cinzel Decorative',serif;font-size:.75rem;color:rgba(255,255,255,.8)}
+.prompt-box{
+  background:var(--mid);border:1px solid rgba(201,168,76,.15);
+  padding:.9rem 1.1rem;margin:.8rem 0;text-align:center
+}
+.prompt-text{
+  font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--gold)
+}
+.responses-grid{display:flex;flex-direction:column;gap:.5rem;margin:.6rem 0}
+.response-row{
+  display:flex;gap:.7rem;align-items:flex-start;
+  background:var(--surface);border:1px solid rgba(201,168,76,.08);padding:.7rem .9rem
+}
+.response-label{
+  font-family:'Cinzel Decorative',serif;font-size:.65rem;color:var(--gold-dim);
+  min-width:22px;padding-top:2px
+}
+.response-text{
+  font-family:'IM Fell English',serif;font-style:italic;
+  font-size:.78rem;color:var(--ash);line-height:1.5;flex:1
+}
+.round-counter{
+  font-family:'Cinzel',serif;font-size:.4rem;letter-spacing:.4em;
+  text-transform:uppercase;color:var(--gold-dim);text-align:center;margin:.4rem 0
+}
+.id-form{display:flex;flex-direction:column;gap:.6rem;align-items:center;margin:1rem 0}
+.id-row{display:flex;gap:.8rem;align-items:center;font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.1em;color:var(--ash)}
+.id-row select{
+  background:var(--mid);border:1px solid rgba(201,168,76,.2);color:var(--ash);
+  font-family:'Cinzel',serif;font-size:.5rem;padding:.3rem .5rem
+}
+.reveal-box{
+  background:var(--deep);border:1px solid rgba(201,168,76,.2);
+  padding:1rem 1.2rem;margin:.6rem 0;text-align:center
+}
+.reveal-name{
+  font-family:'Cinzel Decorative',serif;font-size:.9rem;margin:.3rem 0;
+  letter-spacing:.05em
+}
+.reveal-note{
+  font-family:'IM Fell English',serif;font-style:italic;
+  font-size:.75rem;color:var(--gold-dim);line-height:1.5;margin-top:.5rem
+}
+
+/* ── select style ── */
+.attr-row{display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;margin:.4rem 0;justify-content:center}
+.attr-label{font-family:'Cinzel',serif;font-size:.44rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-dim)}
+.attr-select{
+  background:var(--surface);border:1px solid rgba(201,168,76,.2);color:var(--ash);
+  font-family:'Cinzel',serif;font-size:.5rem;padding:.3rem .5rem;letter-spacing:.05em
+}
+
+/* ── fade ── */
+.fade-in{animation:fadeIn .5s ease forwards}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.typewriter{overflow:hidden;white-space:pre-wrap}
+
+/* scroll */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--void)}
+::-webkit-scrollbar-thumb{background:rgba(201,168,76,.2);border-radius:2px}
+
+#amb-die-canvas{display:block;cursor:pointer}
+#amb-end-text{margin:1rem 0}
+/* ── Extraído de inline styles ───────────────────────────── */
+.amb-phase{width:100%;max-width:560px}
+#amb-phase-end{text-align:center}
+#amb-react-btns{text-align:center}
+#enemy-bar{background:linear-gradient(90deg,#3a1010,#6b1a1a)}
+#round-indicator{font-family:'Cinzel',serif;font-size:.4rem;letter-spacing:.3em;text-transform:uppercase;text-align:center;margin-top:.3rem}
+#oracle-canvas{display:block;margin:0 auto .3rem;cursor:pointer}
+#oracle-dice-anim{text-align:center;margin:.5rem 0}
+#oracle-output{opacity:0;transition:opacity .6s}
+#cristal-canvas{display:block;margin:0 auto;pointer-events:none}
+#c-reveals{display:flex;flex-direction:column;gap:.5rem;margin:.8rem 0}
+#c-next-btn{text-align:center;margin-top:.8rem}
+
+/* ── display:none inicial (controlado por JS) ─────────────── */
+#amb-phase-roll,#amb-phase-react,#amb-phase-combat,
+#amb-phase-end,#amb-die-val,
+#c-identify-form,#c-result{display:none}
+
+/* ── Classes utilitárias ─────────────────────────────────── */
+.note-dim{font-size:.55rem;color:var(--gold-dim)}
+.mt-xs{margin-top:.5rem}
+.mb-xs{margin-bottom:.8rem}
+.mt-sm{margin-top:.6rem}
+.mt-md{margin-top:1rem}
+.my-xs{margin:.6rem 0}
+.text-center{text-align:center}
+.menu-spacer{height:2.5rem}
+.amb-die-row{display:flex;flex-direction:column;align-items:center;gap:.4rem}
+.cristal-intro{font-family:'IM Fell English',serif;font-style:italic;font-size:.72rem;color:var(--gold-dim);text-align:center;max-width:500px;margin:0 auto .8rem;line-height:1.5}
+
+/* ── Breadcrumb ───────────────────────────────────────────── */
+#breadcrumb{font-family:'Cinzel',serif;font-size:.38rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold-dim);padding:.5rem 1.2rem;opacity:.6;display:none}
+#breadcrumb.visible{display:block}
+#breadcrumb a{color:var(--gold-dim);text-decoration:none}
+#breadcrumb a:hover{color:var(--gold)}
+
+/* ── Mobile ─────────────────────────────────────────────── */
+@media(max-width:640px){
+  .screen{padding:1.2rem .8rem}
+  .game-header{margin-bottom:1.2rem}
+  .card-grid{gap:.8rem}
+  .card{padding:1rem 1.2rem}
+  .menu-title{font-size:2.2rem}
+  .menu-sub{font-size:.8rem}
+  /* Tap targets mínimos */
+  .btn-primary,.btn-secondary{padding:.75rem 1.2rem;min-height:44px}
+  button{min-height:44px}
+  /* iOS zoom — select/input precisam de ≥16px */
+  select,input,textarea{font-size:16px!important}
+  .attr-select{font-size:16px!important;padding:.5rem .6rem}
+  /* Dice/oracle wrap em coluna */
+  .dice-row{flex-direction:column;align-items:center}
+  .oracle-scores{flex-direction:column;align-items:center;gap:.6rem}
+}
+
+/* ── touch-action nos canvases (remove 300ms delay) ─────── */
+#amb-die-canvas,#oracle-canvas,#cristal-canvas{touch-action:manipulation}
+
+/* ── prefers-reduced-motion ──────────────────────────────── */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<!-- avisa o mapa do Nexus (se estiver por perto) que esta página foi visitada -->
+<script>try{ if (window.top !== window) window.top.postMessage({ tipo:'nexus-visita', id:'valtheris_arcana' }, '*'); }catch(e){}</script>
+<nav id="breadcrumb" aria-label="breadcrumb"></nav>
+<main>
+
+<!-- ════════════════════ MENU ════════════════════ -->
+<div class="screen active" id="s-menu">
+  <div class="menu-spacer"></div>
+  <h1 class="menu-title">🜏 Arcana</h1>
+  <p class="menu-sub">Valtheris · Jogos do Continente Caído</p>
+  <div class="menu-divider"></div>
+  <div class="card-grid">
+    <div class="card" onclick="showGame('ambush')">
+      <span class="card-glyph">⚔</span>
+      <div class="card-title">Simulador de Emboscada</div>
+      <div class="card-desc">Uma emboscada ocorre antes do roll de iniciativa. A qualidade do planejamento determina a CD — e a CD determina se você reage ou sangra primeiro.</div>
+      <span class="card-badge">Combate tático · Percepção · Ataque de Oportunidade</span>
+    </div>
+    <div class="card" onclick="showGame('oracle')">
+      <span class="card-glyph">☽</span>
+      <div class="card-title">Oráculo de Valtheris</div>
+      <div class="card-desc">Role d20 + d100 e consulte o que os registros do continente guardam. Cada resultado é uma voz diferente — do cosmos, do sangue, do véu, ou do fim inscrito.</div>
+      <span class="card-badge">Lore · Profecias · Dois dados</span>
+    </div>
+    <div class="card" onclick="showGame('cristal')">
+      <span class="card-glyph">◈</span>
+      <div class="card-title">Os Cristalizados</div>
+      <div class="card-desc">Cinco estados emocionais petrificados. Dois parecem iguais — quietude, ausência de agitação. Um está em paz com o mundo. O outro está em ausência dele.</div>
+      <span class="card-badge">Puzzle de identificação · Tempo limitado · 3 rodadas</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ AMBUSH ════════════════════ -->
+<div class="screen" id="s-ambush">
+  
+  <div class="game-header">
+    <h2 class="game-title">Simulador de Emboscada</h2>
+    <p class="game-sub">Percepção · Iniciativa · Ataque de Oportunidade</p>
+  </div>
+  <div id="amb-phase-setup" class="amb-phase">
+    <div class="panel">
+      <div class="panel-title">Configurar Personagem</div>
+      <div class="attr-row">
+        <span class="attr-label">Mod. Sabedoria <span class="note-dim">(Percepção)</span></span>
+        <select class="attr-select" id="sel-sab">
+          <option value="-2">−2 (6–7)</option>
+          <option value="-1">−1 (8–9)</option>
+          <option value="0">+0 (10–11)</option>
+          <option value="1" selected>+1 (12–13)</option>
+          <option value="2">+2 (14–15)</option>
+          <option value="3">+3 (16–17)</option>
+          <option value="4">+4 (18–19)</option>
+          <option value="5">+5 (20+)</option>
+        </select>
+      </div>
+      <div class="attr-row mt-xs">
+        <span class="attr-label">Mod. Destreza <span class="note-dim">(Iniciativa)</span></span>
+        <select class="attr-select" id="sel-des">
+          <option value="-2">−2 (6–7)</option>
+          <option value="-1">−1 (8–9)</option>
+          <option value="0">+0 (10–11)</option>
+          <option value="1" selected>+1 (12–13)</option>
+          <option value="2">+2 (14–15)</option>
+          <option value="3">+3 (16–17)</option>
+          <option value="4">+4 (18–19)</option>
+          <option value="5">+5 (20+)</option>
+        </select>
+      </div>
+      <div class="attr-row mt-xs">
+        <span class="attr-label">Bônus de Ataque</span>
+        <select class="attr-select" id="sel-atk">
+          <option value="2">+2</option>
+          <option value="3">+3</option>
+          <option value="4" selected>+4</option>
+          <option value="5">+5</option>
+          <option value="6">+6</option>
+          <option value="7">+7</option>
+          <option value="8">+8</option>
+        </select>
+      </div>
+      <div class="attr-row mt-xs">
+        <span class="attr-label">Classe de Armadura</span>
+        <select class="attr-select" id="sel-ca">
+          <option value="10">10 — Sem armadura</option>
+          <option value="12">12 — Couro</option>
+          <option value="13" selected>13 — Couro Tachonado</option>
+          <option value="14">14 — Peitoral</option>
+          <option value="15">15 — Meia-Armadura</option>
+          <option value="16">16 — Cota de Escamas</option>
+          <option value="17">17 — Armadura de Banda</option>
+          <option value="18">18 — Armadura Completa</option>
+        </select>
+      </div>
+      <div class="attr-row mt-xs">
+        <span class="attr-label">HP Máximo</span>
+        <select class="attr-select" id="sel-hp">
+          <option value="15">15 PV — Explorador</option>
+          <option value="25" selected>25 PV — Veterano</option>
+          <option value="40">40 PV — Campeão</option>
+        </select>
+      </div>
+      <div class="attr-row mt-sm">
+        <span class="attr-label">Inimigo</span>
+        <select class="attr-select" id="sel-enemy">
+          <option value="0">Aleatório</option>
+          <option value="1">Carniçal dos Esgotos</option>
+          <option value="2">Aberração da Carne</option>
+          <option value="3">Guardião Jurado</option>
+        </select>
+      </div>
+    </div>
+    <div class="text-center mt-xs">
+      <button class="btn-primary" onclick="ambushStart()">⚔ Iniciar Emboscada</button>
+    </div>
+  </div>
+
+  <div id="amb-phase-roll" class="amb-phase">
+    <div class="panel">
+      <div class="panel-title">Qualidade da Emboscada</div>
+      <div id="amb-quality-text" class="lore-text"></div>
+    </div>
+    <div class="dice-wrap amb-die-row">
+      <canvas id="amb-die-canvas" width="180" height="160"></canvas>
+      <div id="amb-die-val"></div>
+    </div>
+    <div class="text-center">
+      <button class="btn-primary" id="btn-roll-perc" onclick="ambushRollPerception()">Rolar Percepção</button>
+    </div>
+  </div>
+
+  <div id="amb-phase-react" class="amb-phase">
+    <div id="amb-react-text" class="panel"></div>
+    <div class="text-center" id="amb-react-btns"></div>
+  </div>
+
+  <div id="amb-phase-combat" class="amb-phase">
+    <div id="enemy-display" class="enemy-card"></div>
+    <div class="my-xs">
+      <div class="hp-row">
+        <span class="hp-label">Você</span>
+        <div class="hp-bar-wrap"><div class="hp-bar-fill" id="player-bar"></div></div>
+        <span class="hp-val" id="player-hp-val"></span>
+      </div>
+      <div class="hp-row">
+        <span class="hp-label" id="enemy-hp-label">Inimigo</span>
+        <div class="hp-bar-wrap"><div class="hp-bar-fill" id="enemy-bar"></div></div>
+        <span class="hp-val" id="enemy-hp-val"></span>
+      </div>
+    </div>
+    <div class="log" id="combat-log"></div>
+    <div class="action-row" id="action-btns">
+      <button class="btn-primary" id="btn-attack" onclick="playerAction('attack')">⚔ Atacar (1d8+3)</button>
+      <button class="btn-primary" id="btn-dodge" onclick="playerAction('dodge')">🛡 Desviar</button>
+      <button class="btn-secondary" id="btn-flee" onclick="playerAction('flee')">↩ Fugir</button>
+    </div>
+    <div class="text-center mt-xs">
+      <span id="round-indicator"></span>
+    </div>
+  </div>
+
+  <div id="amb-phase-end" class="amb-phase">
+    <div id="amb-end-result" class="result-big"></div>
+    <div id="amb-end-text" class="panel"></div>
+    <button class="btn-primary" onclick="ambushReset()">↺ Jogar Novamente</button>
+  </div>
+</div>
+
+<!-- ════════════════════ ORACLE ════════════════════ -->
+<div class="screen" id="s-oracle">
+  
+  <div class="game-header">
+    <h2 class="game-title">Oráculo de Valtheris</h2>
+    <p class="game-sub">Consulte o que o continente guarda</p>
+  </div>
+  <div class="oracle-wrap">
+    <canvas id="oracle-canvas" width="160" height="160"></canvas>
+      <button class="btn-primary" id="btn-consult" onclick="oracleRoll()">☽ Consultar o Oráculo</button>
+    </div>
+    <div id="oracle-output">
+      <div class="oracle-domain" id="or-domain"></div>
+      <div class="oracle-scores">
+        <div class="oracle-die-result"><span class="val" id="or-final-d20"></span><span class="lbl">d20</span></div>
+        <div class="oracle-die-result"><span class="val" id="or-final-d100"></span><span class="lbl">d100</span></div>
+      </div>
+      <div class="oracle-prophecy" id="or-prophecy"></div>
+      <div class="oracle-attribution" id="or-attribution"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ CRISTALIZADOS ════════════════════ -->
+<div class="screen" id="s-cristal">
+  
+  <div class="game-header">
+    <h2 class="game-title">Os Cristalizados</h2>
+    <p class="game-sub">Identifique o que permaneceu</p>
+  </div>
+  <div class="cristal-wrap">
+    <div class="timer" id="c-timer">1:30</div>
+    <div class="cristal-intro">
+      Cada Cristalizado reteve apenas o estado emocional dominante de sua morte. Leia com atenção. Dois deles são quase impossíveis de distinguir de fora.
+    </div>
+    <div class="orbs-row" id="orbs-row"></div>
+    <canvas id="cristal-canvas" width="320" height="180"></canvas>
+    <div class="round-counter" id="c-round-counter"></div>
+    <div class="prompt-box">
+      <div class="prompt-text" id="c-prompt"></div>
+    </div>
+    <div class="responses-grid" id="c-responses"></div>
+    <div class="text-center mt-xs" id="c-next-btn">
+      <button class="btn-secondary" onclick="cristalNext()">Próxima Pergunta →</button>
+    </div>
+    <div id="c-identify-form">
+      <div class="panel my-xs">
+        <div class="panel-title">Identificação Final</div>
+        <div class="lore-text mb-xs">A distinção só se torna clara com tempo de observação. Identifique qual é qual:</div>
+        <div class="id-form">
+          <div class="id-row">
+            <span>◈ Felicidade é</span>
+            <select id="pick-felicidade" class="attr-select">
+              <option value="">— escolher —</option>
+            </select>
+          </div>
+          <div class="id-row">
+            <span>◈ Vazio é</span>
+            <select id="pick-vazio" class="attr-select">
+              <option value="">— escolher —</option>
+            </select>
+          </div>
+        </div>
+        <div class="text-center mt-sm">
+          <button class="btn-primary" onclick="cristalReveal()">Revelar</button>
+        </div>
+      </div>
+    </div>
+    <div id="c-result">
+      <div id="c-result-title" class="result-big"></div>
+      <div id="c-reveals"></div>
+      <div class="text-center mt-md">
+        <button class="btn-primary" onclick="cristalReset()">↺ Jogar Novamente</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════ NAVIGATION ════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goMenu(){
+  const nav=document.getElementById('breadcrumb');
+  nav.innerHTML='';nav.classList.remove('visible');
+  showScreen('s-menu');
+}
+function showGame(g){
+  const titles={ambush:'Emboscada',oracle:'Oráculo',cristal:'Cristalizados'};
+  const nav=document.getElementById('breadcrumb');
+  nav.innerHTML=`<a href="#" onclick="goMenu();return false;">Arcana</a> · ${titles[g]}`;
+  nav.classList.add('visible');
+  if(g==='ambush'){ambushReset();showScreen('s-ambush')}
+  if(g==='oracle'){showScreen('s-oracle')}
+  if(g==='cristal'){cristalInit();showScreen('s-cristal')}
+}
+
+// ════ DICE UTIL ══════════════════════════════════════════════
+function animateDie(elVal, elWrap, sides, finalVal, cb){
+  elWrap.classList.remove('settled');
+  elWrap.classList.add('rolling');
+  let ticks=0; const total=18;
+  const iv=setInterval(()=>{
+    elVal.textContent=Math.ceil(Math.random()*sides);
+    if(++ticks>=total){
+      clearInterval(iv);
+      elVal.textContent=finalVal;
+      elWrap.classList.remove('rolling');
+      elWrap.classList.add('settled');
+      if(cb)cb();
+    }
+  },55);
+}
+function rollD(sides){return Math.ceil(Math.random()*sides)}
+function diceRange(val,sides){return Math.max(1,Math.min(sides,val))}
+
+// ════ AMBUSH GAME ════════════════════════════════════════════
+const ENEMIES=[
+  {name:'Carniçal dos Esgotos',hp:18,ac:13,atk:4,dmgDie:6,dmgBonus:2,lore:'Fragmento de consciência humana preso em carne retorcida — descartado nos esgotos do Culto e esquecido. A maioria degenera indefinidamente. Este chegou perto demais.',ambush:'improvisada'},
+  {name:'Aberração da Carne',hp:28,ac:15,atk:6,dmgDie:6,dmgBonus:3,multi:2,lore:'Um soldado traído pelos nobres que o empregavam para caçar vampiros. Carne retorcida por magia proibida, sussurrada pelas Coisas Antigas. Dentro dela, a consciência presa de quem um dia foi ainda percebe.',ambush:'planejada'},
+  {name:'Guardião Jurado',hp:45,ac:17,atk:7,dmgDie:10,dmgBonus:4,lore:'Move-se por intenção gravada em vida — um guerreiro que morreu antes de ser dispensado de seu juramento. O corpo permaneceu inerte por décadas. A condição do juramento foi acionada.',ambush:'elaborada'}
+];
+const AMBUSH_TABLE=[
+  {name:'Improvisada',cd:9,desc:'Pouco ou nenhum planejamento. A criatura simplesmente se escondeu e esperou — erros óbvios de posicionamento e timing.'},
+  {name:'Básica',cd:13,desc:'Planejamento mínimo. Uma posição de vantagem foi escolhida, mas sem coordenação nem atenção ao ambiente.'},
+  {name:'Planejada',cd:16,desc:'Múltiplos vetores de ataque coordenados, posições de cobertura, timing calculado. O terreno foi considerado.'},
+  {name:'Elaborada',cd:19,desc:'Rotas de escape bloqueadas, distração prévia, estudo do alvo. Cada variável foi antecipada.'},
+  {name:'Profissional',cd:23,desc:'Execução de assassinos especializados. Detectar requer habilidade excepcional ou informação prévia.'}
+];
+
+let ambState={};
+
+function ambushReset(){
+  Object.keys(ambState).forEach(k=>delete ambState[k]);
+  document.getElementById('amb-phase-setup').style.display='block';
+  document.getElementById('amb-phase-roll').style.display='none';
+  document.getElementById('amb-phase-react').style.display='none';
+  document.getElementById('amb-phase-combat').style.display='none';
+  document.getElementById('amb-phase-end').style.display='none';
+  // 3D die reset handled by animation loop — no DOM reset needed
+}
+
+function ambushStart(){
+  const sab=parseInt(document.getElementById('sel-sab').value);
+  const des=parseInt(document.getElementById('sel-des').value);
+  const atk=parseInt(document.getElementById('sel-atk').value);
+  const ca =parseInt(document.getElementById('sel-ca').value);
+  const hp =parseInt(document.getElementById('sel-hp').value);
+  const ei =parseInt(document.getElementById('sel-enemy').value);
+  const enemy=ei===0?ENEMIES[Math.floor(Math.random()*3)]:ENEMIES[ei-1];
+  const preferred=AMBUSH_TABLE.findIndex(a=>a.name.toLowerCase()===enemy.ambush)||1;
+  const qi=Math.max(0,Math.min(4,preferred+Math.floor(Math.random()*2)-1));
+  const quality=AMBUSH_TABLE[qi];
+  ambState={sab,des,playerAtkBonus:atk,playerHP:hp,playerMaxHP:hp,playerAC:ca,
+            enemy:{...enemy,currentHP:enemy.hp},
+            quality,playerDodging:false,round:0,maxRounds:5};
+  document.getElementById('amb-quality-text').innerHTML=
+    `<span class="gold-line">${quality.name}</span> — CD ${quality.cd}<br><br><span style="color:var(--ash)">${quality.desc}</span>`;
+  document.getElementById('amb-phase-setup').style.display='none';
+  document.getElementById('amb-phase-roll').style.display='block';
+  document.getElementById('btn-roll-perc').disabled=false;
+}
+
+function ambushRollPerception(){
+  document.getElementById('btn-roll-perc').disabled=true;
+  const natural=rollD(20);
+  const total=natural+ambState.sab;
+  // Use 3D die if available, otherwise fallback
+  const doAfterRoll = () => {
+    const cd=ambState.quality.cd;
+    const success=total>=cd;
+    ambState.detected=success;
+    setTimeout(()=>ambushReactPhase(natural,total,cd,success),400);
+  };
+  if (window.d20ThreeRoll) {
+    window.d20ThreeRoll(natural, doAfterRoll);
+  } else {
+    animateDie(document.getElementById('amb-die-val'),document.getElementById('amb-die-canvas'),20,natural,doAfterRoll);
+  }
+}
+
+function ambushReactPhase(natural,total,cd,success){
+  // Roll initiative after perception (1d20 + DES)
+  const initNat=rollD(20);
+  const initTotal=initNat+ambState.des;
+  const enemyInit=rollD(20)+2; // inimigo usa +2 de init padrão
+  ambState.playerGoesFirst = initTotal >= enemyInit;
+  ambState.initLog = `Iniciativa — você: ${initNat}+${ambState.des}=${initTotal} vs inimigo: ${enemyInit}. ${ambState.playerGoesFirst?'Você age primeiro.':'Inimigo age primeiro.'}`;
+  document.getElementById('amb-phase-roll').style.display='none';
+  document.getElementById('amb-phase-react').style.display='block';
+  const box=document.getElementById('amb-react-text');
+  const btns=document.getElementById('amb-react-btns');
+  if(success){
+    box.innerHTML=`<div class="panel-title">Percepção Bem-Sucedida</div>
+    <div class="lore-text"><span class="gold-line">Resultado: ${natural} + ${ambState.des>=0?'+':''}${ambState.des} = ${total} vs CD ${cd}</span><br><br>
+    Você detecta o movimento a tempo. Os reflexos reagem antes que a mente processe conscientemente a ameaça —<br>
+    <strong>Ataque de Oportunidade disponível</strong>. Escolha sua reação:</div>`;
+    btns.innerHTML=`<button class="btn-primary" onclick="ambushAoO('attack')">⚔ Atacar (AoO — 1d8+3)</button>
+    <button class="btn-secondary" onclick="ambushAoO('shield')">🛡 Postura Defensiva (+2 CA)</button>`;
+  } else {
+    const dmgRoll=rollD(ambState.enemy.dmgDie)+(ambState.enemy.multi?rollD(ambState.enemy.dmgDie):0)+ambState.enemy.dmgBonus;
+    const hitRoll=rollD(20)+ambState.enemy.atk;
+    const hit=hitRoll>=ambState.playerAC;
+    const dmg=hit?dmgRoll:0;
+    ambState.playerHP=Math.max(0,ambState.playerHP-dmg);
+    box.innerHTML=`<div class="panel-title">Emboscada Bem-Sucedida</div>
+    <div class="lore-text"><span class="blood-line">Resultado: ${natural} + ${ambState.des>=0?'+':''}${ambState.des} = ${total} vs CD ${cd}</span><br><br>
+    Você não detectou a tempo. <strong>${ambState.enemy.name}</strong> age primeiro.<br><br>
+    ${hit?`<span class="blood-line">Ataque surpresa! ${hitRoll} vs CA ${ambState.playerAC} — Golpe! ${dmg} de dano.</span>`:`<span class="gold-line">Ataque surpresa! ${hitRoll} vs CA ${ambState.playerAC} — Errou.</span>`}
+    </div>`;
+    btns.innerHTML=`<button class="btn-primary" onclick="ambushStartCombat(false)">Entrar em Combate</button>`;
+  }
+}
+
+function ambushAoO(type){
+  const btns=document.getElementById('amb-react-btns');
+  const box=document.getElementById('amb-react-text');
+  if(type==='attack'){
+    const atkRoll=rollD(20)+ambState.playerAtkBonus;
+    const hit=atkRoll>=ambState.enemy.ac;
+    const dmg=hit?rollD(8)+3:0;
+    if(hit) ambState.enemy.currentHP=Math.max(0,ambState.enemy.currentHP-dmg);
+    box.innerHTML+=`<br><div style="color:${hit?'var(--gold)':'var(--gold-dim)'}">
+    Ataque de Oportunidade: ${atkRoll} vs CA ${ambState.enemy.ac} — ${hit?`Golpe! ${dmg} de dano.`:'Errou.'}
+    ${ambState.enemy.currentHP<=0?'<br><strong style="color:var(--gold)">Inimigo abatido!</strong>':''}</div>`;
+    if(ambState.enemy.currentHP<=0){
+      btns.innerHTML=`<button class="btn-primary" onclick="ambushEnd('victory','vitória de oportunidade')">Ver Resultado</button>`;return;
+    }
+  } else {
+    ambState.playerAC+=2;ambState.shieldRound=true;
+    box.innerHTML+='<br><div style="color:var(--ash)">Postura defensiva. +2 CA nesta rodada.</div>';
+  }
+  btns.innerHTML=`<button class="btn-primary" onclick="ambushStartCombat(true)">Entrar em Combate</button>`;
+}
+
+function ambushStartCombat(detected){
+  document.getElementById('amb-phase-react').style.display='none';
+  document.getElementById('amb-phase-combat').style.display='block';
+  const e=ambState.enemy;
+  document.getElementById('enemy-display').innerHTML=`
+    <div class="enemy-name">${e.name}</div>
+    <div class="enemy-lore">${e.lore}</div>
+    <div style="font-family:'Cinzel',serif;font-size:.4rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-dim);margin-top:.4rem">CA ${e.ac} · ATK +${e.atk} · ${e.multi?`2d${e.dmgDie}`:' d'+e.dmgDie}+${e.dmgBonus}</div>`;
+  document.getElementById('enemy-hp-label').textContent=e.name;
+  updateCombatBars();
+  addLog('Combate iniciado.',true);
+  addLog(ambState.initLog, true);
+  ambState.round=1;
+  document.getElementById('round-indicator').textContent=`Rodada ${ambState.round} / ${ambState.maxRounds}`;
+  if(!ambState.detected && !ambState.playerGoesFirst){
+    addLog('⚠ Surpresa! O inimigo age antes de você nesta rodada.',true);
+    setTimeout(enemyTurn,600);
+  } else {
+    if(ambState.playerGoesFirst) addLog('Você age primeiro.',true);
+    enableActions(true);
+  }
+}
+
+function updateCombatBars(){
+  const ph=ambState.playerHP,pm=ambState.playerMaxHP;
+  const eh=ambState.enemy.currentHP,em=ambState.enemy.hp;
+  document.getElementById('player-bar').style.width=(ph/pm*100)+'%';
+  document.getElementById('player-hp-val').textContent=`${ph}/${pm}`;
+  document.getElementById('enemy-bar').style.width=(eh/em*100)+'%';
+  document.getElementById('enemy-hp-val').textContent=`${eh}/${em}`;
+}
+
+function addLog(text,sys=false,type=''){
+  const log=document.getElementById('combat-log');
+  const div=document.createElement('div');
+  div.className='log-entry'+(sys?' sys':type?' '+type:'');
+  div.textContent=text;
+  log.appendChild(div);
+  log.scrollTop=log.scrollHeight;
+}
+
+function enableActions(on){
+  document.getElementById('btn-attack').disabled=!on;
+  document.getElementById('btn-dodge').disabled=!on;
+  document.getElementById('btn-flee').disabled=!on;
+}
+
+function playerAction(type){
+  enableActions(false);
+  ambState.playerDodging=false;
+  const e=ambState.enemy;
+  if(type==='attack'){
+    const atkNat=rollD(20);
+    const atkRoll=atkNat+ambState.playerAtkBonus;
+    const isCrit=(atkNat===20);
+    const isFumble=(atkNat===1);
+    let hit=false,dmg=0,msg='';
+    if(isFumble){
+      msg=`Você ataca: 1 (FALHA CRÍTICA!) — O ataque falha automaticamente.`;
+      addLog(msg,'','miss');
+    } else if(isCrit){
+      // Crítico: dobra os dados de dano
+      dmg=rollD(8)+rollD(8)+3;
+      e.currentHP=Math.max(0,e.currentHP-dmg);
+      msg=`Você ataca: 20 (CRÍTICO!) vs CA ${e.ac} — Golpe! ${dmg} de dano (dados dobrados).`;
+      addLog(msg,'','crit');
+    } else {
+      hit=(atkRoll>=e.ac);
+      dmg=hit?rollD(8)+3:0;
+      if(hit){e.currentHP=Math.max(0,e.currentHP-dmg);addLog(`Você ataca: ${atkRoll} vs CA ${e.ac} — Golpe! ${dmg} de dano.`,'','crit')}
+      else{addLog(`Você ataca: ${atkRoll} vs CA ${e.ac} — Errou.`,'','miss')}
+    }
+  } else if(type==='dodge'){
+    ambState.playerDodging=true;addLog('Você faz a ação Desviar. Ataques contra você têm desvantagem.',true);
+  } else {
+    const fleeRoll=rollD(20)+ambState.des;
+    if(fleeRoll>=12){addLog(`Você tenta fugir: ${fleeRoll} vs CD 12 — Êxito. Você recua.`,true);ambushEnd('fled','fuga bem-sucedida');return;}
+    else{addLog(`Você tenta fugir: ${fleeRoll} vs CD 12 — Falhou. O inimigo golpeia enquanto você recua!`,true,'hit');
+    const aoo=rollD(20)+e.atk;const aooHit=aoo>=ambState.playerAC;
+    const aooDmg=aooHit?rollD(e.dmgDie)+(e.multi?rollD(e.dmgDie):0)+e.dmgBonus:0;
+    if(aooHit){ambState.playerHP=Math.max(0,ambState.playerHP-aooDmg);addLog(`Ataque de Oportunidade do inimigo: ${aoo} vs CA ${ambState.playerAC} — Golpe! ${aooDmg} de dano.`,'','hit')}
+    else{addLog(`Ataque de Oportunidade do inimigo: ${aoo} vs CA ${ambState.playerAC} — Errou.`,'','miss')}
+    }
+  }
+  updateCombatBars();
+  if(e.currentHP<=0){ambushEnd('victory','combate');return}
+  if(ambState.playerHP<=0){ambushEnd('defeat','combate');return}
+  setTimeout(enemyTurn,500);
+}
+
+function enemyTurn(){
+  const e=ambState.enemy;
+  const dis=ambState.playerDodging;
+  const r1=rollD(20)+e.atk;const r2=dis?rollD(20)+e.atk:r1;
+  const atkRoll=dis?Math.min(r1,r2):r1;
+  const hit=atkRoll>=ambState.playerAC;
+  const dmg=hit?rollD(e.dmgDie)+(e.multi?rollD(e.dmgDie):0)+e.dmgBonus:0;
+  if(hit){ambState.playerHP=Math.max(0,ambState.playerHP-dmg);addLog(`${e.name} ataca: ${atkRoll}${dis?' (desvantagem)':''} vs CA ${ambState.playerAC} — Golpe! ${dmg} de dano.`,'','hit')}
+  else{addLog(`${e.name} ataca: ${atkRoll}${dis?' (desvantagem)':''} vs CA ${ambState.playerAC} — Errou.`,'','miss')}
+  if(ambState.shieldRound){ambState.playerAC-=2;ambState.shieldRound=false}
+  updateCombatBars();
+  if(ambState.playerHP<=0){ambushEnd('defeat','combate');return}
+  ambState.round++;
+  document.getElementById('round-indicator').textContent=`Rodada ${ambState.round} / ${ambState.maxRounds}`;
+  if(ambState.round>ambState.maxRounds){ambushEnd('stalemate','impasse');return}
+  enableActions(true);
+}
+
+function ambushEnd(outcome,reason){
+  document.getElementById('amb-phase-combat').style.display='none';
+  document.getElementById('amb-phase-react').style.display='none';
+  document.getElementById('amb-phase-end').style.display='block';
+  const titles={victory:'Vitória',defeat:'Queda',stalemate:'Impasse',fled:'Retirada'};
+  const colors={victory:'var(--gold)',defeat:'var(--ember)',stalemate:'var(--ash)',fled:'var(--gold-dim)'};
+  const notes={victory:'O inimigo foi abatido. A emboscada falhou — o predador tornou-se presa.',
+    defeat:'Você caiu. A emboscada cumpriu seu propósito — um Carniçal bem-sucedido nunca avisa.',
+    stalemate:'Cinco rodadas. Nenhum vencedor claro. Valtheris não tem finais limpos.',
+    fled:'Você recuou. Não é covardia — é sobrevivência. O inimigo continua lá fora.'};
+  document.getElementById('amb-end-result').textContent=titles[outcome];
+  document.getElementById('amb-end-result').style.color=colors[outcome];
+  document.getElementById('amb-end-text').innerHTML=`<div class="lore-text">${notes[outcome]}</div>`;
+}
+
+// ════ ORACLE GAME ════════════════════════════════════════════
+const ORACLE={
+  domains:[
+    {range:[1,5],name:'DOMÍNIO DO QUE NÃO COUBE',
+     frags:[
+      'Valtheris não é o começo. É o que restou depois que algo muito maior passou por aqui.',
+      'Os Seres Antigos não corrompem o equilíbrio — são externos a ele. E essa exterioridade é o que os torna incompreensíveis.',
+      'Nem tudo que existe cabe na estrutura do cosmos. O que não cabe é, via de regra, o mais perigoso.',
+      'Há coisas que vieram antes do cosmos e esperam pacientemente que ele termine.',
+      'A fronteira foi atravessada nos dois sentidos. Mas não retornou ao lugar.',
+      'O vento soprou diferente. Parou por exatamente um minuto — e os anciãos souberam.',
+      'O Guardião não precisa de mestre. Precisa apenas de uma condição não cumprida e de tempo.',
+      'A consciência emergiu da fusão — mais antiga do que qualquer um dos corpos que habita.',
+      'Uma ameaça sem dono é, em Valtheris, uma das mais perigosas que existem.',
+      'Pele sobre pele. Osso encaixando em cavidade alheia. Nervos encontrando continuidade em tecido que não é o seu.',
+     ],
+     attributions:['Observação dos Estudiosos do Plano da Morte','Registro Selado — Arquivo Cinza III','Nota Marginal, Codex Anterior ao Ciclo']
+    },
+    {range:[6,10],name:'DOMÍNIO DO SANGUE QUE FUNDOU',
+     frags:[
+      'O Culto produziu os Carniçais como descarte. O que criou inadvertidamente não controla, não comanda e provavelmente não consegue destruir.',
+      'Em vez de recompensa, receberam experimentos. A carne foi retorcida por magia proibida, sussurrada pelas Coisas Antigas através dos pactos nobres.',
+      'A Igreja chamou isso de profanação durante séculos — ao mesmo tempo em que documentava os métodos em arquivos selados.',
+      'Os aldeões buscaram água sobre as runas profanas todos os dias por mais de cem anos sem saber. O massacre foi a cobertura. O poço era o objetivo.',
+      'Ouvir um Arauto pronunciar seu nome pelo poder profano pode ser tão perigoso quanto ser atacado fisicamente.',
+      'O que a transformação oculta é que o humano original ainda existe lá dentro — preso, não transcendido.',
+      'A cerâmica é uma prisão, não uma ascensão. O fogo líquido que flui entre as fissuras era, antes, um homem.',
+      'Há sangue nos contratos selados. E há contratos no sangue derramado.',
+      'Os nobres que os empregavam para caçar vampiros usaram seus próprios soldados como matéria-prima para experimentos.',
+      'O fogo azul arde onde os olhos deveriam estar. O calor que emite derrete pedras. Mas lá dentro, alguém ainda lembra do próprio nome.',
+     ],
+     attributions:['Depoimento Recuperado — Fortaleza do Culto','Arquivos da Inquisição, Ciclo Cinza MCCXIV','Nota do Escriba, Campanha do Véu da Carne']
+    },
+    {range:[11,15],name:'DOMÍNIO DO VÉU QUE PERSISTE',
+     frags:[
+      'Felicidade e Vazio são os dois estados que de fora parecem iguais — quietude, ausência de agitação. Por dentro são opostos absolutos.',
+      'Um está em paz com o mundo. O outro está em ausência dele. Identificar qual é qual exige escutar não o que dizem, mas como respondem.',
+      'O portador existe simultaneamente em ambos os planos, sem pertencer completamente a nenhum.',
+      'Espectros persistem por peso emocional próprio. A questão é sempre qual sentimento ficou preso — e por quanto tempo.',
+      'A intensidade do sentimento no momento da morte foi grande o suficiente para consumir tudo — a identidade, a memória, o nome.',
+      'Paz nunca falou. Apenas observa. Não está claro se é incapaz de falar ou se escolhe não fazê-lo.',
+      'Há algo nos Cristalizados que reconhece presença — de uma forma que outros espectros não conseguem.',
+      'A fronteira é uma fresta. E o que existe na fresta não pertence a nenhum dos dois lados.',
+      'Não é invisibilidade. É existir entre o que é vivo e o que é espectral.',
+      'O estado emocional dominante no momento da morte consumiu tudo. O que sobra é aquele único estado, puro e sem contexto, habitando uma forma moldável.',
+     ],
+     attributions:['Registro de Encontro com Cristalizados, Estudioso Anônimo','Observação do Plano Espectral, Ciclo Cinza MCXCII','Nota da Coleção — Codex de Valtheris, Capítulo VI']
+    },
+    {range:[16,20],name:'DOMÍNIO DO FIM INSCRITO',
+     frags:[
+      'É o único deus que inscreveu uma profecia de extinção do próprio povo no momento da criação — e não explicou por quê.',
+      'Um deus que mente sobre o fim de seu povo para poupar-lhes a dor não os ama — os administra.',
+      'O que ele não disse foi quando. Nem se há saída. Os elfos interpretam esse silêncio como espaço deliberado.',
+      'Imortais com suas linhas já escritas, destinados a lutarem quando o selo que os limita for quebrado.',
+      'Vivendo em um mundo onde a espada da honra corta e o infinito do profano rege — em meio a escolhas, um dos dois se fortalece.',
+      'O cosmos é dividido em camadas sobrepostas de realidade. Mas nem tudo que existe cabe nessa estrutura.',
+      'O fim foi escrito antes do começo. O que resta é descobrir se há espaço entre as linhas.',
+      'Ambos nem se conhecem, mas se encontraram além da luz e das sombras. São a representação do oposto do outro.',
+      'As raízes atravessam o mundo inteiro. Os galhos tocam o céu sem jamais chegar a ele. Não é metáfora.',
+      'A única coisa que um deus de equilíbrio pode dar a um povo livre é a chance de encontrar o que ele não pode encontrar por eles.',
+     ],
+     attributions:['Profecia de Rillifane, transcrita pelos Anciãos das Florestas','Registro do Cosmos — Estudioso do Ciclo Anterior','Fragmento das Runas Fundacionais, tradução élfica']
+    }
+  ]
+};
+
+function oracleRoll(){
+  document.getElementById('btn-consult').disabled=true;
+  document.getElementById('oracle-output').style.opacity='0';
+  if (window.oracleThreeConsult) window.oracleThreeConsult();
+  const d20=rollD(20),d100=rollD(100);
+  setTimeout(()=>oracleReveal(d20,d100), 1200);
+}
+
+function oracleReveal(d20,d100){
+  const domain=ORACLE.domains.find(d=>d20>=d.range[0]&&d20<=d.range[1]);
+  const fragIdx=Math.min(9,Math.floor((d100-1)/10));
+  const frag=domain.frags[fragIdx];
+  const attr=domain.attributions[Math.floor(Math.random()*domain.attributions.length)];
+  document.getElementById('or-domain').textContent=domain.name;
+  document.getElementById('or-final-d20').textContent=d20;
+  document.getElementById('or-final-d100').textContent=d100;
+  document.getElementById('or-prophecy').textContent=frag;
+  document.getElementById('or-attribution').textContent='— '+attr;
+  document.getElementById('oracle-output').style.opacity='1';
+  setTimeout(()=>{document.getElementById('btn-consult').disabled=false},1200);
+}
+
+// ════ CRISTALIZADOS GAME ════════════════════════════════════
+const CRISTAL_DATA={
+  odio: { col3D:0xc0392b,
+    color:'#6b1a1a',glow:'rgba(139,26,26,0.6)',label:'Ódio',
+    responses:[
+      'Nada que não possa ser melhorado. O potencial não é beleza — é incompletude.',
+      'Sim. Inexatidão. Me irrita de forma desproporcional ao dano real que causa.',
+      'O que pode ser provado. O resto é especulação com graus variados de probabilidade.'
+    ]
+  },
+  amor: { col3D:0xff6090,
+    color:'#6b1537',glow:'rgba(107,21,55,0.6)',label:'Amor',
+    responses:[
+      'Mais do que parece. Você precisa parar de olhar como se já soubesse o que vai encontrar.',
+      'Muita coisa. Mas doer não é o mesmo que ser insuportável.',
+      'Você. Esta conversa. O que sinto agora.'
+    ]
+  },
+  felicidade: { col3D:0xc9a84c,
+    color:'#2d6b2d',glow:'rgba(45,107,45,0.6)',label:'Felicidade',
+    responses:[
+      'O cheiro da pedra molhada. Isso vai ficar.',
+      'Havia. Passou.',
+      'Isto aqui.' // + pausa leve
+    ]
+  },
+  paz: { col3D:0x8090a0,
+    color:'#8a8a80',glow:'rgba(138,138,128,0.4)',label:'Paz',
+    responses:['','',''] // silence
+  },
+  vazio: { col3D:0x4a7bbb,
+    color:'#1a3a6b',glow:'rgba(26,58,107,0.6)',label:'Vazio',
+    responses:[
+      'Você falou comigo. Registrei.',
+      'A pergunta implica que havia algo antes. Não tenho acesso a esse registro.',
+      'A pergunta é recebida. Não tenho resposta que corresponda ao que você espera que resposta seja.'
+    ]
+  }
+};
+const PROMPTS=[
+  'O que traz consigo deste lugar?',
+  'Existe algo que ainda dói?',
+  'O que é real para você?'
+];
+
+let cState={};
+
+function cristalInit(){
+  // shuffle order
+  const keys=['odio','amor','felicidade','paz','vazio'];
+  for(let i=keys.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[keys[i],keys[j]]=[keys[j],keys[i]]}
+  cState={order:keys,round:0,timer:90,timerActive:true,timerInt:null,done:false};
+  buildOrbs();
+  populateSelects();
+  renderRound();
+  document.getElementById('c-identify-form').style.display='none';
+  document.getElementById('c-result').style.display='none';
+  document.getElementById('c-next-btn').style.display='block';
+  startTimer();
+}
+
+function buildOrbs(){
+  const row=document.getElementById('orbs-row');row.innerHTML='';
+  cState.order.forEach((key,i)=>{
+    const orb=document.createElement('div');
+    orb.className='orb';
+    orb.dataset.key=key;
+    orb.style.background='#1a1525';
+    orb.style.boxShadow='0 0 8px rgba(80,70,100,0.25)';
+    orb.innerHTML=`<span class="orb-num">${toRoman(i+1)}</span>`;
+    row.appendChild(orb);
+  });
+  // 3D neutro: cor unica ate o reveal
+  if (window.buildCristalOrbs3D) {
+    const entities = cState.order.map(()=>({ color: 0x2a2038 }));
+    window.buildCristalOrbs3D(entities);
+  }
+}
+
+function populateSelects(){
+  const nums=cState.order.map((_,i)=>toRoman(i+1));
+  ['pick-felicidade','pick-vazio'].forEach(id=>{
+    const sel=document.getElementById(id);sel.innerHTML='<option value="">— escolher —</option>';
+    nums.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;sel.appendChild(o)});
+  });
+}
+
+function toRoman(n){return['I','II','III','IV','V'][n-1]}
+
+function renderRound(){
+  const r=cState.round;
+  if(r>=3){showIdentify();return}
+  document.getElementById('c-round-counter').textContent=`Pergunta ${r+1} de 3`;
+  document.getElementById('c-prompt').textContent=PROMPTS[r];
+  const grid=document.getElementById('c-responses');grid.innerHTML='';
+  cState.order.forEach((key,i)=>{
+    const d=CRISTAL_DATA[key];
+    const resp=d.responses[r];
+    const row=document.createElement('div');row.className='response-row fade-in';
+    row.style.animationDelay=(i*0.07)+'s';
+    row.innerHTML=`<span class="response-label" style="color:var(--ash)">${toRoman(i+1)}</span>
+    <span class="response-text">${resp||'<em style="color:var(--rim)">(silêncio)</em>'}</span>`;
+    grid.appendChild(row);
+  });
+}
+
+function cristalNext(){
+  cState.round++;
+  renderRound();
+}
+
+function showIdentify(){
+  document.getElementById('c-next-btn').style.display='none';
+  document.getElementById('c-round-counter').textContent='Identificação';
+  document.getElementById('c-prompt').textContent='Qual é qual?';
+  document.getElementById('c-responses').innerHTML='';
+  document.getElementById('c-identify-form').style.display='block';
+}
+
+function startTimer(){
+  if(cState.timerInt)clearInterval(cState.timerInt);
+  cState.timerInt=setInterval(()=>{
+    if(!cState.timerActive||cState.done){clearInterval(cState.timerInt);return}
+    cState.timer--;
+    const m=Math.floor(cState.timer/60),s=cState.timer%60;
+    document.getElementById('c-timer').textContent=`${m}:${s<10?'0'+s:s}`;
+    if(cState.timer<=20)document.getElementById('c-timer').classList.add('urgent');
+    if(cState.timer<=0){clearInterval(cState.timerInt);showIdentify()}
+  },1000);
+}
+
+function revealOrbColors(){
+  document.querySelectorAll('#orbs-row .orb').forEach(orb=>{
+    const d=CRISTAL_DATA[orb.dataset.key];
+    if(!d) return;
+    orb.style.background=d.color;
+    orb.style.boxShadow=`0 0 14px ${d.glow}`;
+  });
+  if(window.buildCristalOrbs3D){
+    const entities=cState.order.map(k=>({color:CRISTAL_DATA[k].col3D||0x9b6dff}));
+    window.buildCristalOrbs3D(entities);
+  }
+}
+
+function cristalReveal(){
+  const pf=document.getElementById('pick-felicidade').value;
+  const pv=document.getElementById('pick-vazio').value;
+  if(!pf||!pv){alert('Escolha ambos antes de revelar.');return}
+  if(pf===pv){alert('Escolha entidades diferentes para cada uma.');return}
+  cState.done=true;cState.timerActive=false;
+  revealOrbColors();
+  const felIdx=cState.order.indexOf('felicidade');
+  const vazIdx=cState.order.indexOf('vazio');
+  const correctF=toRoman(felIdx+1);
+  const correctV=toRoman(vazIdx+1);
+  const hitF=pf===correctF;const hitV=pv===correctV;
+  const score=(hitF?1:0)+(hitV?1:0);
+  document.getElementById('c-identify-form').style.display='none';
+  document.getElementById('c-result').style.display='block';
+  const titles=['Nenhum acerto','Metade certo','Identificação correta'];
+  document.getElementById('c-result-title').textContent=titles[score];
+  document.getElementById('c-result-title').style.color=score===2?'var(--gold)':score===1?'var(--ash)':'var(--ember)';
+  const reveals=document.getElementById('c-reveals');reveals.innerHTML='';
+  cState.order.forEach((key,i)=>{
+    const d=CRISTAL_DATA[key];
+    const box=document.createElement('div');box.className='reveal-box fade-in';
+    box.style.animationDelay=(i*0.08)+'s';
+    box.innerHTML=`<div class="reveal-name" style="color:${d.color}">${toRoman(i+1)} — ${d.label}</div>
+    ${key==='felicidade'?`<div class="reveal-note">Responde ao ambiente com leveza. Mínima, mas presente. O que diz toca o mundo ao redor — mesmo que com uma única palavra.</div>`:''}
+    ${key==='vazio'?`<div class="reveal-note">Não responde — absorve. Processa a entrada sem devolver nada que corresponda. A quietude é a mesma de fora, mas por dentro há ausência, não paz.</div>`:''}
+    ${key==='paz'?'<div class="reveal-note">Nunca falou. Não está claro se escolhe o silêncio ou não consegue quebrar. A presença é sentida mais do que percebida.</div>':''}
+    ${key==='odio'?'<div class="reveal-note">O motor é a raiva, mas o método é análise fria. Contesta quase tudo — e raramente está errado.</div>':''}
+    ${key==='amor'?'<div class="reveal-note">Emocional sem ser frágil. Dos Cristalizados conhecidos, é o que mais inicia conversa por conta própria.</div>':''}`;
+    reveals.appendChild(box);
+  });
+}
+
+function cristalReset(){
+  if(cState.timerInt)clearInterval(cState.timerInt);
+  document.getElementById('c-timer').classList.remove('urgent');
+  cristalInit();
+}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// THREE.JS 3D ENGINE — D20, Crystal Ball, Cristalizados
+// ══════════════════════════════════════════════════════════════════════
+function makeRenderer(canvas, alpha) {
+  const r = new THREE.WebGLRenderer({ canvas, alpha: !!alpha, antialias: true });
+  r.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  r.setSize(canvas.width, canvas.height);
+  r.setClearColor(0x000000, alpha ? 0 : 1);
+  return r;
+}
+
+// ── 1. D20 ICOSAHEDRON — Ambush ───────────────────────────────────────
+(function() {
+  const canvas = document.getElementById('amb-die-canvas');
+  if (!canvas) return;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, canvas.width/canvas.height, 0.1, 100);
+  camera.position.set(0, 0, 4.5);
+  const renderer = makeRenderer(canvas, true);
+
+  scene.add(new THREE.AmbientLight(0x3a1a0a, 1.5));
+  const dLight = new THREE.DirectionalLight(0xc9a84c, 3);
+  dLight.position.set(2, 3, 4);
+  scene.add(dLight);
+  const rLight = new THREE.PointLight(0x8b1a1a, 2, 10);
+  rLight.position.set(-2, -1, 2);
+  scene.add(rLight);
+
+  const geo = new THREE.IcosahedronGeometry(1.4, 0);
+  const mat = new THREE.MeshPhongMaterial({ color:0x1a1005, emissive:0x3a1000, specular:0xc9a84c, shininess:90 });
+  const die = new THREE.Mesh(geo, mat);
+  const lineMat = new THREE.LineBasicMaterial({ color:0xc9a84c, transparent:true, opacity:0.5 });
+  const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geo), lineMat);
+  die.add(wire);
+  scene.add(die);
+
+  // Floating label sprite
+  const fc = document.createElement('canvas'); fc.width = fc.height = 128;
+  const fx = fc.getContext('2d');
+  const ft = new THREE.CanvasTexture(fc);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:ft, transparent:true }));
+  sp.scale.set(1.4,1.4,1); sp.position.set(0,0,1.55);
+  scene.add(sp);
+
+  function drawLabel(v, col) {
+    fx.clearRect(0,0,128,128);
+    fx.fillStyle = col||'#c9a84c';
+    fx.font = 'bold 68px serif'; fx.textAlign='center'; fx.textBaseline='middle';
+    fx.fillText(String(v), 64, 70);
+    ft.needsUpdate = true;
+  }
+  drawLabel('—', '#7a6030');
+
+  let rolling=false, vx=0,vy=0,vz=0;
+
+  window.d20ThreeRoll = function(value, onDone) {
+    rolling = true;
+    vx=(Math.random()-.5)*.5; vy=(Math.random()-.5)*.5; vz=.3;
+    drawLabel('?','#5a4020');
+    let t=0;
+    const iv = setInterval(()=>{
+      t+=55;
+      if(t>1600){ vx*=.85;vy*=.85;vz*=.85; }
+      if(t>2200){
+        clearInterval(iv); rolling=false;
+        const col = value===20?'#ff9020':value===1?'#c0392b':'#c9a84c';
+        drawLabel(value, col);
+        mat.emissive.setHex(value===20?0x804010:value===1?0x4a0808:0x2a1200);
+        setTimeout(()=>{mat.emissive.setHex(0x3a1000);}, 1000);
+        if(onDone) onDone();
+      }
+    }, 55);
+  };
+
+  (function loop(){
+    requestAnimationFrame(loop);
+    if(rolling){ die.rotation.x+=vx; die.rotation.y+=vy; die.rotation.z+=vz;
+      vx+=(Math.random()-.5)*.025; vy+=(Math.random()-.5)*.025;
+      const spd=Math.sqrt(vx*vx+vy*vy+vz*vz); if(spd>.42){vx/=spd*2.4;vy/=spd*2.4;}
+    } else { die.rotation.y+=.006; die.rotation.x+=.003; }
+    renderer.render(scene,camera);
+  })();
+})();
+
+// ── 2. CRYSTAL BALL — Oracle ──────────────────────────────────────────
+(function(){
+  const canvas = document.getElementById('oracle-canvas');
+  if(!canvas) return;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(40, canvas.width/canvas.height, 0.1, 100);
+  camera.position.set(0,0,6);
+  const renderer = makeRenderer(canvas, true);
+
+  scene.add(new THREE.AmbientLight(0x100820, 2));
+  const pt1 = new THREE.PointLight(0x6b35cc, 4, 14); pt1.position.set(2,2,3); scene.add(pt1);
+  const pt2 = new THREE.PointLight(0x8b1a1a, 2, 10); pt2.position.set(-2,-1,2); scene.add(pt2);
+
+  // Glass outer
+  const glass = new THREE.Mesh(
+    new THREE.SphereGeometry(1.1,32,32),
+    new THREE.MeshPhongMaterial({ color:0x9060cc, emissive:0x200840, specular:0xffffff, shininess:140, transparent:true, opacity:0.25 })
+  ); scene.add(glass);
+
+  // Inner fog
+  const fog = new THREE.Mesh(
+    new THREE.SphereGeometry(0.8,16,16),
+    new THREE.MeshPhongMaterial({ color:0x5a30b0, emissive:0x3a1060, transparent:true, opacity:0.55 })
+  ); scene.add(fog);
+
+  // Particles
+  const N=90, pos=new Float32Array(N*3), spd=[];
+  for(let i=0;i<N;i++){
+    const r=.28+Math.random()*.52, th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1);
+    pos[i*3]=r*Math.sin(ph)*Math.cos(th); pos[i*3+1]=r*Math.sin(ph)*Math.sin(th); pos[i*3+2]=r*Math.cos(ph);
+    spd.push({r,th,ph,sp:.003+Math.random()*.009,ph2:Math.random()*Math.PI*2});
+  }
+  const pGeo = new THREE.BufferGeometry(); pGeo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  const pMat = new THREE.PointsMaterial({color:0xa060ff,size:.055,transparent:true,opacity:.75});
+  const pts = new THREE.Points(pGeo,pMat); scene.add(pts);
+
+  let consulting=false;
+  window.oracleThreeConsult = function(){
+    consulting=true; pt1.intensity=10; pt2.intensity=5;
+    setTimeout(()=>{ consulting=false; pt1.intensity=4; pt2.intensity=2; },2800);
+  };
+
+  let tick=0;
+  (function loop(){
+    requestAnimationFrame(loop); tick+=.016;
+    glass.rotation.y=tick*.07; fog.rotation.y=tick*-.14; fog.rotation.x=tick*.06;
+    const p=pGeo.attributes.position;
+    for(let i=0;i<N;i++){
+      const s=spd[i]; s.th+=s.sp;
+      const sc=consulting?1+Math.sin(tick*9)*.35:.85+Math.sin(tick*2+s.ph2)*.15;
+      p.array[i*3]=s.r*sc*Math.sin(s.ph)*Math.cos(s.th);
+      p.array[i*3+1]=s.r*sc*Math.sin(s.ph)*Math.sin(s.th);
+      p.array[i*3+2]=s.r*sc*Math.cos(s.ph);
+    }
+    p.needsUpdate=true;
+    pMat.color.setHex(consulting?0xffb060:0xa060ff);
+    pMat.opacity=consulting?.9:.75;
+    renderer.render(scene,camera);
+  })();
+})();
+
+// ── 3. CRISTALIZADOS — 5 floating orbs (lazy init) ───────────────────
+(function(){
+  const COLS=[0x9b6dff,0xc0392b,0xc9a84c,0x4a9b6d,0x4a7bbb];
+  let scene=null,camera=null,renderer=null,orbs3D=[],tick=0,loopStarted=false;
+
+  function initRenderer(){
+    const canvas=document.getElementById('cristal-canvas');
+    if(!canvas||renderer) return;
+    // Responsive: fit to container width (fixes overflow clip on narrow viewports)
+    const wrap=canvas.parentElement||document.body;
+    const W=Math.min(wrap.clientWidth||320, 320);
+    const H=Math.round(W*180/320);
+    scene    = new THREE.Scene();
+    camera   = new THREE.PerspectiveCamera(60, W/H, 0.1, 100);
+    camera.position.set(0,0,5);
+    renderer = new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    renderer.setSize(W,H);
+    renderer.setClearColor(0x000000,0);
+    scene.add(new THREE.AmbientLight(0x0a0510,2));
+  }
+
+  function startLoop(){
+    if(loopStarted) return; loopStarted=true;
+    (function loop(){
+      requestAnimationFrame(loop); tick+=.016;
+      if(!renderer||!scene||!camera) return;
+      orbs3D.forEach(o=>{
+        o.group.position.y = Math.sin(tick+o.phase)*.18;
+        o.core.rotation.y  = tick*.7;
+        o.core.rotation.x  = tick*.4;
+        // orbit fragments
+        o.frags.forEach((f,fi)=>{
+          const ang=((fi)/4)*Math.PI*2 + tick*.7;
+          f.position.set(Math.cos(ang)*.5, Math.sin(ang)*.3, Math.sin(ang*.7)*.25);
+          f.rotation.y=tick*1.2;
+        });
+      });
+      renderer.render(scene,camera);
+    })();
+  }
+
+  window.buildCristalOrbs3D = function(entities){
+    setTimeout(()=>{
+      // Reinit renderer if canvas size changed (rotation, replay on different viewport)
+      const canvas=document.getElementById('cristal-canvas');
+      if(canvas && renderer){
+        const wrap=canvas.parentElement||document.body;
+        const W=Math.min(wrap.clientWidth||320,320);
+        const H=Math.round(W*180/320);
+        if(canvas.width!==W||canvas.height!==H){
+          renderer.setSize(W,H);
+          camera.aspect=W/H;
+          camera.updateProjectionMatrix();
+        }
+      }
+      initRenderer();
+      if(!scene) return;
+      orbs3D.forEach(o=>scene.remove(o.group)); orbs3D.length=0;
+
+      const n = Math.min(entities.length, 5);
+      // Calculate spacing to fit all N orbs inside frustum
+      // At FOV=60°, dist=5: half-width = 5*tan(30°)*aspect = 5*0.577*(320/180)≈5.14
+      // Use fixed spacing so all fit comfortably
+      const totalSpan = 7.0; // world units for all orbs
+      const sp = n > 1 ? totalSpan/(n-1) : 0;
+      const sx = -(totalSpan/2);
+
+      entities.slice(0,n).forEach((e,i)=>{
+        const col = (e.color !== undefined) ? e.color : COLS[i%COLS.length];
+        const g   = new THREE.Group();
+        g.position.set(n===1 ? 0 : sx+i*sp, 0, 0);
+
+        // Point light inside orb
+        const pl = new THREE.PointLight(col, 2, 3.5);
+        g.add(pl);
+
+        // Core — sphere instead of octahedron
+        const core = new THREE.Mesh(
+          new THREE.SphereGeometry(.38, 16, 16),
+          new THREE.MeshPhongMaterial({
+            color:col, emissive:col, emissiveIntensity:.5,
+            transparent:true, opacity:.8, shininess:80
+          })
+        );
+        g.add(core);
+
+        // Outer glow shell
+        const shell = new THREE.Mesh(
+          new THREE.SphereGeometry(.52, 12, 12),
+          new THREE.MeshPhongMaterial({
+            color:col, emissive:col, emissiveIntensity:.15,
+            transparent:true, opacity:.15, side:THREE.BackSide
+          })
+        );
+        g.add(shell);
+
+        // 4 orbiting fragments (tetrahedra)
+        const frags = [];
+        for(let f=0;f<4;f++){
+          const ang=(f/4)*Math.PI*2;
+          const fr = new THREE.Mesh(
+            new THREE.TetrahedronGeometry(.09,0),
+            new THREE.MeshPhongMaterial({
+              color:col, emissive:col, emissiveIntensity:.4,
+              transparent:true, opacity:.65
+            })
+          );
+          fr.position.set(Math.cos(ang)*.5, Math.sin(ang)*.3, 0);
+          g.add(fr); frags.push(fr);
+        }
+
+        scene.add(g);
+        orbs3D.push({group:g, core, frags, phase:i*1.1, col});
+      });
+
+      startLoop();
+    }, 100);
+  };
+})();
+</script>
+
+<script>
+// ── 3D card tilt ──────────────────────────────────────────────────────
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('pointermove', e => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`perspective(600px) rotateX(${-y*10}deg) rotateY(${x*10}deg) translateZ(4px)`;
+  });
+  card.addEventListener('pointerleave',()=>{ card.style.transform=''; });
+});
+
+// ── postMessage to hub ────────────────────────────────────────────────
+document.addEventListener('click', function(e) {
+  const a = e.target.closest('a[href]');
+  if (!a) return;
+  const to = a.getAttribute('href');
+  if (!to || to.startsWith('#') || to.startsWith('javascript')) return;
+  try { window.parent.postMessage({ type: 'nav', to: to }, '*'); } catch(e2) {}
+});
+</script>
+</main>
+</body>
+</html>

@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grimório dos Dados — RPG Dice Roller</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #070508;
+      --surface: #100c0e;
+      --surface-2: #171013;
+      --border: #2c1d22;
+      --border-h: #55343e;
+      --gold: #c9a84c;
+      --gold-bright: #f0cc50;
+      --gold-dim: #6a5025;
+      --crimson: #7c1212;
+      --crimson-b: #d94040;
+      --green: #2a7a4a;
+      --green-b: #52c87c;
+      --blue-b: #7aadde;
+      --purple-b: #cc88ff;
+      --text: #ddd0a8;
+      --text-dim: #7a6a50;
+      --text-bright: #fff8e0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Cinzel', serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── CANVAS & OVERLAYS ── */
+    #bgCanvas {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
+    }
+    .vignette {
+      position: fixed; inset: 0;
+      background: radial-gradient(ellipse at 50% 40%, transparent 25%, rgba(4,2,5,0.88) 100%);
+      pointer-events: none; z-index: 1;
+    }
+
+    /* ── LAYOUT ── */
+    .app {
+      position: relative; z-index: 2;
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    /* ── HEADER ── */
+    .header { text-align: center; padding: 0.5rem 0 2rem; }
+
+    .eyebrow {
+      font-size: 0.6rem;
+      letter-spacing: 0.55em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 1rem;
+    }
+
+    .title {
+      font-family: 'Cinzel Decorative', serif;
+      font-weight: 900;
+      font-size: clamp(2rem, 6.5vw, 4.2rem);
+      line-height: 1.08;
+      background: linear-gradient(175deg, #fff8e0 0%, var(--gold) 42%, var(--gold-dim) 82%, #2a1508 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 28px rgba(201,168,76,0.45));
+      margin-bottom: 0.6rem;
+    }
+
+    .subtitle {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      letter-spacing: 0.07em;
+    }
+
+    .divider {
+      display: flex; align-items: center; gap: 1rem;
+      margin: 1.2rem auto; max-width: 360px;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    }
+    .divider span { color: var(--gold-dim); font-size: 0.95rem; }
+
+    /* ── PANEL ── */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.4s;
+    }
+    .panel::before {
+      content: '';
+      position: absolute; inset: 0; border-radius: 14px;
+      background:
+        radial-gradient(ellipse at 0% 0%, rgba(201,168,76,0.04) 0%, transparent 55%),
+        radial-gradient(ellipse at 100% 100%, rgba(139,26,26,0.04) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .panel.panel-glow-gold  { border-color: rgba(201,168,76,0.45); box-shadow: 0 0 30px rgba(201,168,76,0.08); }
+    .panel.panel-glow-red   { border-color: rgba(217,64,64,0.4);   box-shadow: 0 0 30px rgba(217,64,64,0.07); }
+    .panel.panel-glow-green { border-color: rgba(82,200,124,0.35); box-shadow: 0 0 30px rgba(82,200,124,0.07); }
+
+    .sect-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      display: flex; align-items: center; gap: 0.6rem;
+      margin-bottom: 1.2rem;
+    }
+    .sect-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: var(--border);
+    }
+
+    /* ── DICE GRID ── */
+    .dice-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+    }
+    @media (max-width: 580px) {
+      .dice-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    .die-btn {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0.32rem;
+      padding: 0.7rem 0.3rem;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .die-btn::after {
+      content: '';
+      position: absolute; inset: 0; border-radius: 10px;
+      opacity: 0;
+      background: radial-gradient(ellipse at center, rgba(201,168,76,0.18), transparent 70%);
+      transition: opacity 0.25s;
+    }
+    .die-btn:hover { background: rgba(201,168,76,0.035); border-color: var(--border-h); }
+    .die-btn:hover::after { opacity: 0.6; }
+    .die-btn.active { background: rgba(201,168,76,0.07); border-color: var(--gold); }
+    .die-btn.active::after { opacity: 1; }
+    .die-btn:active { transform: scale(0.91); }
+
+    .die-btn.pop {
+      animation: die-pop 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes die-pop {
+      from { transform: scale(0.88); }
+      to   { transform: scale(1); }
+    }
+
+    .die-icon {
+      width: 50px; height: 50px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .die-icon svg {
+      width: 100%; height: 100%;
+      transition: filter 0.22s;
+    }
+    .die-btn.active .die-icon svg {
+      filter: drop-shadow(0 0 7px rgba(201,168,76,0.75));
+    }
+
+    .die-lbl {
+      font-size: 0.65rem; font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      transition: color 0.2s;
+    }
+    .die-btn.active .die-lbl { color: var(--gold); }
+
+    /* ── CONTROLS ── */
+    .ctrl-row { display: flex; gap: 1.8rem; flex-wrap: wrap; }
+
+    .ctrl-block { flex: 1; min-width: 110px; }
+
+    .ctrl-lbl {
+      font-size: 0.58rem; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--gold-dim);
+      display: block; margin-bottom: 0.6rem;
+    }
+
+    .qty-row { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+
+    .qty-pill {
+      width: 32px; height: 32px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-dim);
+      font-family: 'Cinzel', serif; font-size: 0.78rem;
+      cursor: pointer; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .qty-pill:hover { border-color: var(--border-h); color: var(--text); }
+    .qty-pill.active { border-color: var(--gold); background: rgba(201,168,76,0.1); color: var(--gold); }
+
+    .mod-row { display: flex; align-items: center; gap: 0.5rem; }
+
+    .mod-step {
+      width: 32px; height: 32px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text); font-size: 1.15rem;
+      cursor: pointer; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1; transition: all 0.15s;
+    }
+    .mod-step:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+    .mod-val {
+      min-width: 44px; text-align: center;
+      font-size: 0.95rem; font-weight: 600;
+      color: var(--text);
+    }
+
+    .adv-pills { display: flex; gap: 0.4rem; }
+
+    .adv-pill {
+      font-family: 'Cinzel', serif; font-size: 0.62rem;
+      letter-spacing: 0.06em;
+      padding: 0.32rem 0.7rem;
+      border: 1px solid var(--border);
+      background: transparent; color: var(--text-dim);
+      cursor: pointer; border-radius: 20px;
+      transition: all 0.15s;
+    }
+    .adv-pill:hover { border-color: var(--border-h); color: var(--text); }
+    .adv-pill.adv-on { border-color: var(--green); color: var(--green-b); background: rgba(42,122,74,0.1); }
+    .adv-pill.dis-on { border-color: var(--crimson); color: var(--crimson-b); background: rgba(124,18,18,0.1); }
+
+    /* ── CoC SECTION ── */
+    .coc-sec {
+      margin-top: 1.2rem; padding-top: 1.2rem;
+      border-top: 1px solid var(--border);
+      display: none;
+    }
+    .coc-sec.on { display: block; }
+
+    .coc-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+
+    .coc-in {
+      width: 62px;
+      background: var(--surface-2);
+      border: 1px solid var(--border-h);
+      color: var(--text);
+      font-family: 'Cinzel', serif; font-size: 1rem;
+      padding: 0.32rem 0.5rem; border-radius: 6px;
+      text-align: center; outline: none;
+      transition: border-color 0.15s;
+    }
+    .coc-in:focus { border-color: var(--gold-dim); }
+    .coc-in::-webkit-outer-spin-button,
+    .coc-in::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .coc-in[type=number] { -moz-appearance: textfield; }
+
+    .coc-thresh { display: flex; gap: 0.75rem; flex-wrap: wrap; font-size: 0.7rem; color: var(--text-dim); align-items: center; }
+    .coc-thresh span { display: flex; align-items: center; gap: 0.3rem; }
+
+    .tb { font-size: 0.6rem; padding: 0.12rem 0.38rem; border-radius: 9px; font-weight: 600; white-space: nowrap; }
+    .tb-ext  { background: rgba(90,30,138,0.2);  color: var(--purple-b); border: 1px solid rgba(90,30,138,0.4); }
+    .tb-hard { background: rgba(30,90,138,0.2);  color: var(--blue-b);   border: 1px solid rgba(30,90,138,0.4); }
+    .tb-ok   { background: rgba(42,122,74,0.15); color: var(--green-b);  border: 1px solid rgba(42,122,74,0.35); }
+
+    /* ── ROLL BUTTON ── */
+    .roll-wrap { text-align: center; margin: 1.4rem 0; }
+
+    .roll-btn {
+      position: relative; overflow: hidden;
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 0.98rem; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold-bright);
+      padding: 1.05rem 3.5rem;
+      background: linear-gradient(140deg, rgba(201,168,76,0.12), rgba(201,168,76,0.04));
+      border: 1.5px solid var(--gold);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: box-shadow 0.3s, color 0.25s;
+      box-shadow: 0 0 18px rgba(201,168,76,0.14), inset 0 0 28px rgba(201,168,76,0.03);
+    }
+    .roll-btn-glow {
+      position: absolute; inset: 0; border-radius: 8px;
+      background: radial-gradient(ellipse at 50% 50%, rgba(201,168,76,0.28), transparent 70%);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .roll-btn:hover .roll-btn-glow { opacity: 1; }
+    .roll-btn:hover {
+      box-shadow: 0 0 36px rgba(201,168,76,0.32), inset 0 0 36px rgba(201,168,76,0.07);
+      color: var(--text-bright);
+    }
+    .roll-btn:active { transform: scale(0.96); }
+
+    .ripple-ring {
+      position: absolute;
+      background: rgba(201,168,76,0.38);
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple-out 0.55s linear;
+      pointer-events: none;
+    }
+    @keyframes ripple-out {
+      to { transform: scale(30); opacity: 0; }
+    }
+
+    .roll-btn.shaking { animation: btn-shake 0.48s ease; }
+    @keyframes btn-shake {
+      0%,100% { transform: translateX(0) rotate(0); }
+      18% { transform: translateX(-4px) rotate(-1.8deg); }
+      36% { transform: translateX(4px) rotate(1.8deg); }
+      54% { transform: translateX(-3px) rotate(-1deg); }
+      72% { transform: translateX(3px) rotate(1deg); }
+    }
+
+    .btn-icon { margin-right: 0.5rem; }
+
+    /* ── RESULT PANEL ── */
+    .result-panel { text-align: center; padding: 2rem 1.5rem 2.5rem; }
+
+    .res-label {
+      font-size: 0.62rem; letter-spacing: 0.4em;
+      text-transform: uppercase; color: var(--gold-dim);
+      min-height: 1.15em; margin-bottom: 0.85rem;
+      transition: color 0.3s;
+    }
+
+    .res-num {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(4.5rem, 18vw, 9rem);
+      font-weight: 900; line-height: 1;
+      color: var(--gold-bright);
+      text-shadow:
+        0 0 40px rgba(240,204,80,0.72),
+        0 0 80px rgba(240,204,80,0.35),
+        0 0 160px rgba(240,204,80,0.15);
+      min-height: 1.1em;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.2s, text-shadow 0.3s;
+    }
+    .res-num.empty {
+      color: var(--text-dim); text-shadow: none; opacity: 0.3;
+    }
+    .res-num.scrambling {
+      color: rgba(200,180,120,0.5); text-shadow: none;
+      animation: sc-shake 0.06s linear infinite;
+    }
+    @keyframes sc-shake {
+      0%   { transform: translateX(-2px) rotate(-0.5deg); }
+      100% { transform: translateX(2px)  rotate(0.5deg); }
+    }
+    .res-num.popping {
+      animation: pop-in 0.28s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes pop-in {
+      from { transform: scale(0.78); opacity: 0.4; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+    .res-num.red-glow {
+      color: var(--crimson-b);
+      text-shadow:
+        0 0 40px rgba(217,64,64,0.8),
+        0 0 90px rgba(217,64,64,0.35);
+    }
+    .res-num.green-glow {
+      color: var(--green-b);
+      text-shadow:
+        0 0 40px rgba(82,200,124,0.7),
+        0 0 90px rgba(82,200,124,0.3);
+    }
+
+    .res-breakdown {
+      display: flex; align-items: center;
+      justify-content: center; flex-wrap: wrap;
+      gap: 0.38rem; min-height: 2rem;
+      margin-top: 0.75rem;
+    }
+    .rb-chip {
+      font-size: 0.85rem; padding: 0.22rem 0.5rem;
+      border-radius: 5px;
+      background: var(--surface-2); border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .rb-chip.nat-max { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 7px rgba(201,168,76,0.4); }
+    .rb-chip.nat-min { border-color: var(--crimson); color: var(--crimson-b); }
+    .rb-op  { color: var(--text-dim); font-size: 0.8rem; }
+    .rb-mod { font-size: 0.8rem; color: var(--text-dim); }
+
+    .quality-area {
+      min-height: 2.2rem; display: flex;
+      justify-content: center; align-items: center;
+      margin-top: 0.75rem;
+    }
+    .q-badge {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em;
+      padding: 0.35rem 1.1rem; border-radius: 20px;
+      animation: badge-up 0.28s ease;
+    }
+    @keyframes badge-up {
+      from { transform: translateY(8px); opacity: 0; }
+      to   { transform: translateY(0);   opacity: 1; }
+    }
+    .q-critical { background: rgba(201,168,76,0.18); color: var(--gold-bright); border: 1px solid var(--gold); }
+    .q-extreme  { background: rgba(90,30,138,0.2);   color: var(--purple-b);    border: 1px solid rgba(90,30,138,0.5); }
+    .q-hard     { background: rgba(30,90,138,0.2);   color: var(--blue-b);      border: 1px solid rgba(30,90,138,0.5); }
+    .q-success  { background: rgba(42,122,74,0.18);  color: var(--green-b);     border: 1px solid rgba(42,122,74,0.5); }
+    .q-failure  { background: rgba(120,80,40,0.18);  color: #cc9966;            border: 1px solid rgba(120,80,40,0.45); }
+    .q-fumble   { background: rgba(139,18,18,0.22);  color: var(--crimson-b);   border: 1px solid var(--crimson); }
+    .q-nat20    { background: rgba(201,168,76,0.18); color: var(--gold-bright); border: 1px solid var(--gold); }
+    .q-nat1     { background: rgba(139,18,18,0.22);  color: var(--crimson-b);   border: 1px solid var(--crimson); }
+
+    /* ── HISTORY ── */
+    .hist-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+
+    .clear-btn {
+      font-family: 'Cinzel', serif; font-size: 0.58rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.28rem 0.7rem;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-dim); cursor: pointer; border-radius: 4px;
+      transition: all 0.15s;
+    }
+    .clear-btn:hover { border-color: var(--crimson); color: var(--crimson-b); }
+
+    .hist-list {
+      list-style: none; max-height: 230px;
+      overflow-y: auto; padding-right: 4px;
+    }
+    .hist-list::-webkit-scrollbar { width: 3px; }
+    .hist-list::-webkit-scrollbar-track { background: var(--surface-2); border-radius: 2px; }
+    .hist-list::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+    .hist-row {
+      display: flex; align-items: center; gap: 0.65rem;
+      padding: 0.48rem 0;
+      border-bottom: 1px solid rgba(44,29,34,0.55);
+      animation: hist-in 0.22s ease;
+      font-size: 0.8rem;
+    }
+    @keyframes hist-in {
+      from { opacity: 0; transform: translateY(-5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hist-row:last-child { border-bottom: none; }
+    .h-die  { color: var(--text-dim); min-width: 56px; font-size: 0.72rem; }
+    .h-num  { color: var(--gold); font-weight: 700; min-width: 30px; text-align: right; font-size: 0.88rem; }
+    .h-det  { flex: 1; color: var(--text-dim); font-size: 0.72rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .h-time { color: var(--border-h); font-size: 0.62rem; white-space: nowrap; }
+    .h-qb   { font-size: 0.58rem; padding: 0.1rem 0.35rem; border-radius: 8px; font-weight: 600; white-space: nowrap; }
+
+    .hist-empty {
+      font-family: 'IM Fell English', serif; font-style: italic;
+      color: var(--text-dim); text-align: center;
+      padding: 0.9rem 0; font-size: 0.88rem;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center;
+      font-family: 'IM Fell English', serif; font-style: italic;
+      color: var(--text-dim); font-size: 0.75rem;
+      margin-top: 0.5rem; padding-bottom: 1rem;
+    }
+
+    /* ── HELP TOOLTIP STRIP ── */
+    .kbd-hint {
+      text-align: center; font-size: 0.58rem; letter-spacing: 0.15em;
+      color: var(--gold-dim); margin-bottom: 0.25rem;
+    }
+    .kbd {
+      display: inline-block;
+      border: 1px solid var(--border-h);
+      border-radius: 4px; padding: 0.08rem 0.4rem;
+      font-size: 0.58rem; color: var(--text-dim);
+      background: var(--surface-2);
+    }
+  
+/* ── ACESSIBILIDADE: MOVIMENTO REDUZIDO ─────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<!-- avisa o mapa do Nexus (se estiver por perto) que esta página foi visitada -->
+<script>try{ if (window.top !== window) window.top.postMessage({ tipo:'nexus-visita', id:'valtheris_dados' }, '*'); }catch(e){}</script>
+  <canvas id="bgCanvas"></canvas>
+  <div class="vignette"></div>
+
+  <div class="app">
+
+    <!-- ── HEADER ── -->
+    <header class="header">
+      <div class="eyebrow">✦ D&amp;D · Pathfinder · Call of Cthulhu · Sistema D20 ✦</div>
+      <h1 class="title">Grimório dos Dados</h1>
+      <p class="subtitle">"Que os dados sejam com você, aventureiro"</p>
+      <div class="divider"><span>⚔</span></div>
+    </header>
+
+    <main>
+
+    <!-- ── DICE SELECTOR ── -->
+    <div class="panel">
+      <div class="sect-label">Escolha o Dado</div>
+      <div class="dice-grid" id="diceGrid"></div>
+    </div>
+
+    <!-- ── CONTROLS ── -->
+    <div class="panel">
+      <div class="sect-label">Configuração</div>
+      <div class="ctrl-row">
+        <!-- Quantity -->
+        <div class="ctrl-block">
+          <span class="ctrl-lbl">Quantidade</span>
+          <div class="qty-row" id="qtyRow"></div>
+        </div>
+        <!-- Modifier -->
+        <div class="ctrl-block">
+          <span class="ctrl-lbl">Modificador</span>
+          <div class="mod-row">
+            <button class="mod-step" id="modMinus">−</button>
+            <div class="mod-val" id="modVal">0</div>
+            <button class="mod-step" id="modPlus">+</button>
+          </div>
+        </div>
+        <!-- Advantage -->
+        <div class="ctrl-block" id="advBlock">
+          <span class="ctrl-lbl">Vantagem (D20)</span>
+          <div class="adv-pills">
+            <button class="adv-pill" id="advPill">⬆ Vantagem</button>
+            <button class="adv-pill" id="disPill">⬇ Desvantagem</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CoC section (d100 only) -->
+      <div class="coc-sec" id="cocSec">
+        <div class="sect-label" style="margin-bottom:0.7rem;">Call of Cthulhu — Nível de Habilidade</div>
+        <div class="coc-row">
+          <span class="ctrl-lbl" style="margin:0;">Habilidade:</span>
+          <input type="number" class="coc-in" id="cocSkill" value="50" min="1" max="99">
+          <span class="ctrl-lbl" style="margin:0;">%</span>
+          <div class="coc-thresh">
+            <span><span class="tb tb-ext">Extremo</span> ≤ <strong id="cocExt">10</strong>%</span>
+            <span><span class="tb tb-hard">Difícil</span> ≤ <strong id="cocHard">25</strong>%</span>
+            <span><span class="tb tb-ok">Sucesso</span> ≤ <strong id="cocNorm">50</strong>%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ROLL BUTTON ── -->
+    <div class="kbd-hint">Pressione <span class="kbd">Espaço</span> ou <span class="kbd">R</span> para rolar</div>
+    <div class="roll-wrap">
+      <button class="roll-btn" id="rollBtn">
+        <span class="roll-btn-glow"></span>
+        <span class="btn-icon">⚄</span>Rolar os Dados
+      </button>
+    </div>
+
+    <!-- ── RESULT ── -->
+    <div class="panel result-panel" id="resultPanel">
+      <div class="res-label" id="resLabel">Escolha um dado e role!</div>
+      <div class="res-num empty" id="resNum">—</div>
+      <div class="res-breakdown" id="resBd"></div>
+      <div class="quality-area" id="qualArea"></div>
+    </div>
+
+    <!-- ── HISTORY ── -->
+    <div class="panel">
+      <div class="hist-head">
+        <div class="sect-label" style="margin:0;">Histórico de Rolagens</div>
+        <button class="clear-btn" id="clearBtn">Limpar</button>
+      </div>
+      <ul class="hist-list" id="histList">
+        <li class="hist-empty">— Nenhuma rolagem ainda —</li>
+      </ul>
+    </div>
+
+    </main>
+
+    <div class="footer">D&amp;D 5e · Pathfinder · Call of Cthulhu 7ª Ed · Qualquer sistema D20</div>
+  </div><!-- /app -->
+
+  <script>
+  // ════════════════════════════════════════════════════════════
+  //  DIE DEFINITIONS
+  // ════════════════════════════════════════════════════════════
+  const DICE = [
+    {
+      sides: 4, label: 'D4',
+      svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="50,7 94,87 6,87" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/>
+        <line x1="50" y1="7"  x2="50" y2="87" stroke="currentColor" stroke-width="1" stroke-opacity="0.25"/>
+        <line x1="6"  y1="87" x2="72" y2="47" stroke="currentColor" stroke-width="1" stroke-opacity="0.25"/>
+        <line x1="94" y1="87" x2="28" y2="47" stroke="currentColor" stroke-width="1" stroke-opacity="0.25"/>
+      </svg>`
+    },
+    {
+      sides: 6, label: 'D6',
+      svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="9" y="9" width="82" height="82" rx="9" stroke="currentColor" stroke-width="3.5"/>
+        <line x1="9"  y1="50" x2="91" y2="50" stroke="currentColor" stroke-width="1" stroke-opacity="0.22"/>
+        <line x1="50" y1="9"  x2="50" y2="91" stroke="currentColor" stroke-width="1" stroke-opacity="0.22"/>
+      </svg>`
+    },
+    {
+      sides: 8, label: 'D8',
+      svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="50,6 94,50 50,94 6,50" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/>
+        <line x1="50" y1="6"  x2="50" y2="94" stroke="currentColor" stroke-width="1" stroke-opacity="0.22"/>
+        <line x1="6"  y1="50" x2="94" y2="50" stroke="currentColor" stroke-width="1" stroke-opacity="0.22"/>
+      </svg>`
+    },
+    {
+      sides: 10, label: 'D10',
+      svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="50,5 91,37 76,90 24,90 9,37" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/>
+        <line x1="50" y1="5"  x2="24" y2="90" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+        <line x1="50" y1="5"  x2="76" y2="90" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+        <line x1="9"  y1="37" x2="91" y2="37" stroke="currentColor" stroke-width="1" stroke-opacity="0.2"/>
+      </svg>`
+    },
+    {
+      sides: 12, label: 'D12',
+      svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="50,5 91,33 91,67 50,95 9,67 9,33" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/>
+        <polygon points="50,28 72,42 72,58 50,72 28,58 28,42" stroke="currentColor" stroke-width="1" stroke-opacity="0.22"/>
+      </svg>`
+    },
+    {
+      sides: 20, label: 'D20',
+      svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="50,5 93,30 93,70 50,95 7,70 7,30" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/>
+        <line x1="50" y1="5"  x2="93" y2="30" stroke="currentColor" stroke-width="1" stroke-opacity="0.22"/>
+        <line x1="50" y1="5"  x2="7"  y2="30" stroke="currentColor" stroke-width="1" stroke-opacity="0.22"/>
+        <line x1="50" y1="95" x2="93" y2="70" stroke="currentColor" stroke-width="1" stroke-opacity="0.22"/>
+        <line x1="50" y1="95" x2="7"  y2="70" stroke="currentColor" stroke-width="1" stroke-opacity="0.22"/>
+        <line x1="7"  y1="30" x2="7"  y2="70" stroke="currentColor" stroke-width="1" stroke-opacity="0.22"/>
+        <line x1="93" y1="30" x2="93" y2="70" stroke="currentColor" stroke-width="1" stroke-opacity="0.22"/>
+        <line x1="7"  y1="30" x2="50" y2="50" stroke="currentColor" stroke-width="1" stroke-opacity="0.18"/>
+        <line x1="93" y1="30" x2="50" y2="50" stroke="currentColor" stroke-width="1" stroke-opacity="0.18"/>
+        <line x1="7"  y1="70" x2="50" y2="50" stroke="currentColor" stroke-width="1" stroke-opacity="0.18"/>
+        <line x1="93" y1="70" x2="50" y2="50" stroke="currentColor" stroke-width="1" stroke-opacity="0.18"/>
+        <line x1="50" y1="5"  x2="50" y2="50" stroke="currentColor" stroke-width="1" stroke-opacity="0.18"/>
+        <line x1="50" y1="95" x2="50" y2="50" stroke="currentColor" stroke-width="1" stroke-opacity="0.18"/>
+      </svg>`
+    },
+    {
+      sides: 100, label: 'D100',
+      svg: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="43" stroke="currentColor" stroke-width="3.5"/>
+        <circle cx="50" cy="50" r="29" stroke="currentColor" stroke-width="1" stroke-opacity="0.22"/>
+        <circle cx="50" cy="50" r="14" stroke="currentColor" stroke-width="1" stroke-opacity="0.18"/>
+        <line x1="50" y1="7"  x2="50" y2="93" stroke="currentColor" stroke-width="1" stroke-opacity="0.14"/>
+        <line x1="7"  y1="50" x2="93" y2="50" stroke="currentColor" stroke-width="1" stroke-opacity="0.14"/>
+        <line x1="19" y1="19" x2="81" y2="81" stroke="currentColor" stroke-width="1" stroke-opacity="0.1"/>
+        <line x1="81" y1="19" x2="19" y2="81" stroke="currentColor" stroke-width="1" stroke-opacity="0.1"/>
+      </svg>`
+    },
+  ];
+
+  // ════════════════════════════════════════════════════════════
+  //  STATE
+  // ════════════════════════════════════════════════════════════
+  let S = {
+    die:      DICE[5],   // d20 default
+    qty:      1,
+    mod:      0,
+    adv:      null,      // null | 'adv' | 'dis'
+    cocSkill: 50,
+    rolling:  false,
+  };
+  let history = [];
+
+  // ════════════════════════════════════════════════════════════
+  //  HELPERS
+  // ════════════════════════════════════════════════════════════
+  const $ = id => document.getElementById(id);
+  function roll1(sides) { return Math.floor(Math.random() * sides) + 1; }
+
+  // ════════════════════════════════════════════════════════════
+  //  BUILD UI
+  // ════════════════════════════════════════════════════════════
+  function buildGrid() {
+    const grid = $('diceGrid');
+    DICE.forEach(die => {
+      const btn = document.createElement('button');
+      btn.className = 'die-btn' + (die === S.die ? ' active' : '');
+      btn.setAttribute('aria-label', die.label);
+      const col = die === S.die ? 'var(--gold)' : 'var(--text-dim)';
+      btn.innerHTML = `<div class="die-icon" style="color:${col}">${die.svg}</div>
+                       <div class="die-lbl">${die.label}</div>`;
+      btn.addEventListener('click', () => selectDie(die, btn));
+      grid.appendChild(btn);
+    });
+  }
+
+  function selectDie(die, btn) {
+    S.die = die;
+    S.adv = null;
+    document.querySelectorAll('.die-btn').forEach(b => {
+      b.classList.remove('active');
+      b.querySelector('.die-icon').style.color = 'var(--text-dim)';
+    });
+    btn.classList.add('active');
+    btn.querySelector('.die-icon').style.color = 'var(--gold)';
+    btn.classList.remove('pop');
+    void btn.offsetWidth;
+    btn.classList.add('pop');
+
+    // Advantage only visible for d20
+    const ab = $('advBlock');
+    ab.style.opacity = die.sides === 20 ? '1' : '0.32';
+    ab.style.pointerEvents = die.sides === 20 ? 'auto' : 'none';
+    $('advPill').className = 'adv-pill';
+    $('disPill').className = 'adv-pill';
+
+    // CoC section only for d100
+    $('cocSec').classList.toggle('on', die.sides === 100);
+  }
+
+  function buildQty() {
+    const row = $('qtyRow');
+    for (let i = 1; i <= 10; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'qty-pill' + (i === S.qty ? ' active' : '');
+      btn.textContent = i;
+      btn.addEventListener('click', () => {
+        S.qty = i;
+        row.querySelectorAll('.qty-pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+      row.appendChild(btn);
+    }
+  }
+
+  function initMod() {
+    $('modMinus').addEventListener('click', () => { S.mod--; renderMod(); });
+    $('modPlus').addEventListener('click',  () => { S.mod++; renderMod(); });
+  }
+  function renderMod() {
+    $('modVal').textContent = S.mod > 0 ? `+${S.mod}` : `${S.mod}`;
+  }
+
+  function initAdv() {
+    $('advPill').addEventListener('click', () => {
+      S.adv = S.adv === 'adv' ? null : 'adv';
+      $('advPill').className = 'adv-pill' + (S.adv === 'adv' ? ' adv-on' : '');
+      $('disPill').className = 'adv-pill';
+    });
+    $('disPill').addEventListener('click', () => {
+      S.adv = S.adv === 'dis' ? null : 'dis';
+      $('disPill').className = 'adv-pill' + (S.adv === 'dis' ? ' dis-on' : '');
+      $('advPill').className = 'adv-pill';
+    });
+  }
+
+  function initCoC() {
+    $('cocSkill').addEventListener('input', () => {
+      S.cocSkill = Math.max(1, Math.min(99, parseInt($('cocSkill').value) || 50));
+      updateCocThresh();
+    });
+    updateCocThresh();
+  }
+  function updateCocThresh() {
+    const s = S.cocSkill;
+    $('cocExt').textContent  = Math.floor(s / 5);
+    $('cocHard').textContent = Math.floor(s / 2);
+    $('cocNorm').textContent = s;
+  }
+
+  // ════════════════════════════════════════════════════════════
+  //  ROLL LOGIC
+  // ════════════════════════════════════════════════════════════
+  function getCoCQuality(r, skill) {
+    if (r === 1)                                                   return { label: '⚡ Crítico!',                cls: 'q-critical' };
+    if (r <= Math.floor(skill / 5))                                return { label: '✦ Sucesso Extremo',         cls: 'q-extreme'  };
+    if (r <= Math.floor(skill / 2))                                return { label: '◈ Sucesso Difícil',         cls: 'q-hard'     };
+    if (r <= skill)                                                return { label: '✓ Sucesso',                  cls: 'q-success'  };
+    if (r === 100 || (r >= 96 && skill < 50))                     return { label: '💀 Falha Crítica (Fumble)!', cls: 'q-fumble'   };
+    return { label: '✗ Falha', cls: 'q-failure' };
+  }
+
+  function doRoll() {
+    if (S.rolling) return;
+    const { die, qty, mod, adv, cocSkill } = S;
+    const sides = die.sides;
+
+    // Roll dice
+    const count = (sides === 20 && adv) ? 2 : qty;
+    const rolls = Array.from({ length: count }, () => roll1(sides));
+
+    // Resolve advantage / disadvantage
+    let used = rolls;
+    if (sides === 20 && adv) {
+      const chosen = adv === 'adv' ? Math.max(...rolls) : Math.min(...rolls);
+      used = [chosen];
+    }
+
+    const base  = used.reduce((a, b) => a + b, 0);
+    const total = base + mod;
+
+    // Quality badge
+    let quality = null;
+    if (sides === 100) {
+      quality = getCoCQuality(rolls[0], cocSkill);
+    } else if (sides === 20 && used.length === 1) {
+      if (used[0] === 20) quality = { label: '⚡ Natural 20!', cls: 'q-nat20' };
+      else if (used[0] === 1) quality = { label: '💀 Natural 1!', cls: 'q-nat1' };
+    }
+
+    // Result panel glow class
+    let panelClass = '';
+    if (quality) {
+      if (['q-critical','q-extreme','q-nat20'].includes(quality.cls)) panelClass = 'panel-glow-gold';
+      else if (['q-fumble','q-nat1'].includes(quality.cls))            panelClass = 'panel-glow-red';
+      else if (['q-success','q-hard'].includes(quality.cls))           panelClass = 'panel-glow-green';
+    }
+
+    // Build history description
+    let desc;
+    if (sides === 20 && adv) {
+      desc = `[${rolls.join(', ')}] → ${used[0]}${mod !== 0 ? ` ${mod >= 0 ? '+' : ''}${mod} = ${total}` : ''}`;
+    } else {
+      desc = used.join(' + ') + (qty > 1 || mod !== 0 ? ` = ${total}` : '') +
+             (mod !== 0 ? ` (mod ${mod >= 0 ? '+' : ''}${mod})` : '');
+    }
+    const advLabel = adv === 'adv' ? ' (Vant.)' : adv === 'dis' ? ' (Desv.)' : '';
+
+    history.unshift({
+      dieLabel: die.label + advLabel,
+      total, desc, quality,
+      time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+    });
+    if (history.length > 60) history.pop();
+
+    animate(total, sides, used, rolls, mod, adv, quality, panelClass);
+  }
+
+  // ════════════════════════════════════════════════════════════
+  //  ANIMATION
+  // ════════════════════════════════════════════════════════════
+  let _raf, _iv;
+
+  function animate(total, sides, used, allRolls, mod, adv, quality, panelClass) {
+    S.rolling = true;
+    clearInterval(_iv);
+
+    const numEl    = $('resNum');
+    const rollBtn  = $('rollBtn');
+    const panel    = $('resultPanel');
+
+    numEl.className   = 'res-num scrambling';
+    numEl.textContent = '—';
+    rollBtn.classList.add('shaking');
+    $('resLabel').textContent = 'Rolando...';
+    $('resBd').innerHTML      = '';
+    $('qualArea').innerHTML   = '';
+    panel.className           = 'panel result-panel';
+
+    const duration = 680, tick = 52;
+    let elapsed = 0;
+    const maxVal = sides * used.length + Math.abs(mod);
+
+    _iv = setInterval(() => {
+      elapsed += tick;
+      numEl.textContent = Math.floor(Math.random() * maxVal) + 1;
+
+      if (elapsed >= duration) {
+        clearInterval(_iv);
+        rollBtn.classList.remove('shaking');
+        showResult(total, sides, used, allRolls, mod, adv, quality, panelClass);
+        S.rolling = false;
+        renderHistory();
+      }
+    }, tick);
+  }
+
+  function showResult(total, sides, used, allRolls, mod, adv, quality, panelClass) {
+    const { die, qty } = S;
+    const numEl = $('resNum');
+
+    // Number colour
+    let numClass = 'res-num popping';
+    if (quality) {
+      if (['q-critical','q-nat20'].includes(quality.cls)) numClass += ' green-glow';
+      else if (['q-fumble','q-nat1'].includes(quality.cls)) numClass += ' red-glow';
+    }
+    numEl.className   = numClass;
+    numEl.textContent = total;
+    setTimeout(() => numEl.classList.remove('popping'), 350);
+
+    // Label
+    let lbl;
+    if (adv && die.sides === 20) {
+      lbl = `2D20 com ${adv === 'adv' ? 'Vantagem' : 'Desvantagem'}`;
+    } else {
+      const qStr = qty > 1 ? qty : '';
+      const mStr = mod !== 0 ? ` ${mod >= 0 ? '+' : ''}${mod}` : '';
+      lbl = `${qStr}${die.label}${mStr}`;
+    }
+    $('resLabel').textContent = lbl;
+
+    // Breakdown chips
+    const bd = $('resBd');
+    bd.innerHTML = '';
+    if (adv && die.sides === 20) {
+      allRolls.forEach((v, i) => {
+        const chosen = v === used[0];
+        const chip = el('span', 'rb-chip' + (chosen && adv === 'adv' ? ' nat-max' : chosen && adv === 'dis' ? ' nat-min' : ''), v);
+        bd.appendChild(chip);
+        if (i < allRolls.length - 1) bd.appendChild(el('span', 'rb-op', 'vs'));
+      });
+      if (mod !== 0) bd.appendChild(el('span', 'rb-mod', `${mod >= 0 ? '+' : ''}${mod} = ${total}`));
+    } else {
+      used.forEach((v, i) => {
+        const cls = v === sides ? ' nat-max' : (v === 1 && sides > 1 ? ' nat-min' : '');
+        bd.appendChild(el('span', 'rb-chip' + cls, v));
+        if (i < used.length - 1) bd.appendChild(el('span', 'rb-op', '+'));
+      });
+      if (used.length > 1 || mod !== 0) {
+        const txt = mod !== 0 ? `${mod >= 0 ? '+' : ''}${mod} = ${total}` : `= ${total}`;
+        bd.appendChild(el('span', 'rb-mod', txt));
+      }
+    }
+
+    // Quality badge
+    const qa = $('qualArea');
+    qa.innerHTML = '';
+    if (quality) {
+      qa.appendChild(el('span', `q-badge ${quality.cls}`, quality.label));
+    }
+
+    // Panel glow
+    const panel = $('resultPanel');
+    panel.className = `panel result-panel ${panelClass}`;
+  }
+
+  function el(tag, cls, text) {
+    const e = document.createElement(tag);
+    e.className = cls;
+    e.textContent = text;
+    return e;
+  }
+
+  // ════════════════════════════════════════════════════════════
+  //  HISTORY
+  // ════════════════════════════════════════════════════════════
+  function renderHistory() {
+    const list = $('histList');
+    list.innerHTML = '';
+    if (!history.length) {
+      list.innerHTML = '<li class="hist-empty">— Nenhuma rolagem ainda —</li>';
+      return;
+    }
+    history.forEach(h => {
+      const li = document.createElement('li');
+      li.className = 'hist-row';
+      const qHtml = h.quality
+        ? `<span class="h-qb ${h.quality.cls}">${h.quality.label}</span>`
+        : '';
+      li.innerHTML = `
+        <span class="h-die">${h.dieLabel}</span>
+        <span class="h-num">${h.total}</span>
+        ${qHtml}
+        <span class="h-det">${h.desc}</span>
+        <span class="h-time">${h.time}</span>`;
+      list.appendChild(li);
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════
+  //  PARTICLE BACKGROUND
+  // ════════════════════════════════════════════════════════════
+  function initParticles() {
+    const canvas = $('bgCanvas');
+    const ctx    = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width  = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const SYMS = ['✦', '◈', '⬡', '⟁', '◇', '✧', '⚄', '⚅', '⬢', '✦', '◆', '⬟'];
+    const pts  = Array.from({ length: 32 }, () => ({
+      x:     Math.random() * window.innerWidth,
+      y:     Math.random() * window.innerHeight,
+      size:  Math.random() * 13 + 5,
+      alpha: Math.random() * 0.09 + 0.02,
+      vy:    Math.random() * 0.22 + 0.055,
+      vx:    (Math.random() - 0.5) * 0.14,
+      ph:    Math.random() * Math.PI * 2,
+      sym:   SYMS[Math.floor(Math.random() * SYMS.length)],
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const t = Date.now() * 0.0009;
+
+      pts.forEach(p => {
+        const a = Math.max(0, Math.min(0.12, p.alpha + Math.sin(t + p.ph) * 0.025));
+        ctx.globalAlpha = a;
+        ctx.fillStyle   = '#c9a84c';
+        ctx.font        = `${p.size}px serif`;
+        ctx.textAlign   = 'center';
+        ctx.fillText(p.sym, p.x, p.y);
+
+        p.y -= p.vy;
+        p.x += p.vx;
+
+        if (p.y < -18)                p.y = canvas.height + 18;
+        if (p.x < -18)                p.x = canvas.width  + 18;
+        if (p.x > canvas.width  + 18) p.x = -18;
+      });
+
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(draw);
+    }
+    draw();
+  }
+
+  // ════════════════════════════════════════════════════════════
+  //  ROLL BUTTON RIPPLE
+  // ════════════════════════════════════════════════════════════
+  function initRollBtn() {
+    const btn = $('rollBtn');
+    btn.addEventListener('click', function(e) {
+      // Ripple
+      const r   = document.createElement('span');
+      const rect = this.getBoundingClientRect();
+      const sz  = 20;
+      r.className = 'ripple-ring';
+      r.style.cssText = `width:${sz}px;height:${sz}px;left:${e.clientX - rect.left - sz/2}px;top:${e.clientY - rect.top - sz/2}px;`;
+      this.appendChild(r);
+      setTimeout(() => r.remove(), 600);
+      doRoll();
+    });
+
+    document.addEventListener('keydown', e => {
+      if ((e.code === 'Space' || e.key === 'r' || e.key === 'R') &&
+           document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        doRoll();
+      }
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════
+  //  BOOTSTRAP
+  // ════════════════════════════════════════════════════════════
+  function init() {
+    buildGrid();
+    buildQty();
+    initMod();
+    initAdv();
+    initCoC();
+    initRollBtn();
+    initParticles();
+
+    $('clearBtn').addEventListener('click', () => {
+      history = [];
+      renderHistory();
+    });
+
+    // Trigger initial die selection UI state
+    const activeBtn = document.querySelector('.die-btn.active');
+    if (activeBtn) selectDie(S.die, activeBtn);
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

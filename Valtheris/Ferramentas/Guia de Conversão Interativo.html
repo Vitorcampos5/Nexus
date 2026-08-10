@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conversor CoC → Valtheris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#04030c; --border:#2a1e0a;
+  --gold:#c89830; --gold-l:#f0c050; --gold-d:#2a1e08; --gold-p:#c8a840;
+ --teal-l:#24c8d8; --teal-d:#041820;
+ --void-l:#9050e0; --brine-l:#30e878; --blood-l:#c84858;  --san:#3a6b8a; --san-l:#5a9bba;
+  --text:#b0a070; --text-d:#504030; --text-f:#201808;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--text);font-family:'EB Garamond',Georgia,serif;font-size:16px;line-height:1.75;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:.45}
+
+.top-bar{height:4px;background:linear-gradient(90deg,var(--gold) 0%,var(--teal-l) 20%,var(--void-l) 40%,var(--brine-l) 60%,var(--blood-l) 80%,var(--gold) 100%);background-size:200% 100%;animation:bar 10s linear infinite}
+@keyframes bar{0%{background-position:0%}100%{background-position:200%}}
+
+/* ══ HEADER ══ */
+.doc-header{max-width:980px;margin:0 auto;padding:44px 24px 32px;text-align:center}
+.doc-header::after{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),var(--teal-d),transparent);margin-top:32px}
+.doc-eyebrow{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.4em;text-transform:uppercase;color:var(--text-f);margin-bottom:14px}
+.doc-title{font-family:'Cinzel Decorative',serif;font-size:clamp(1.6rem,5vw,2.8rem);font-weight:900;background:linear-gradient(135deg,var(--gold-l) 0%,var(--teal-l) 30%,var(--void-l) 55%,var(--brine-l) 75%,var(--gold-l) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;line-height:1.1}
+.doc-subtitle{font-family:'Cinzel',serif;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-p);margin-bottom:10px}
+.doc-desc{font-style:italic;color:var(--text-d);font-size:.9rem;max-width:580px;margin:0 auto}
+
+/* ══ CONVERTER APP ══ */
+.converter-app{max-width:980px;margin:0 auto;padding:0 24px 40px}
+
+/* TABS */
+.tab-nav{display:flex;gap:0;border-bottom:2px solid var(--gold-d);margin-bottom:0;overflow-x:auto}
+.tab-btn{font-family:'Cinzel',serif;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;padding:10px 20px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--text-d);cursor:pointer;transition:all .2s;white-space:nowrap;margin-bottom:-2px}
+.tab-btn:hover{color:var(--gold-p)}
+.tab-btn.active{color:var(--gold-l);border-bottom-color:var(--gold-l);background:rgba(200,152,48,.05)}
+.tab-content{display:none;background:rgba(6,4,14,.7);border:1px solid var(--gold-d);border-top:none;padding:28px}
+.tab-content.active{display:block}
+
+/* ══ FULL BLOCK CONVERTER ══ */
+.converter-grid{display:grid;grid-template-columns:340px 1fr;gap:24px;align-items:start}
+@media(max-width:720px){.converter-grid{grid-template-columns:1fr}}
+
+/* Input panel */
+.input-panel{}
+.input-panel-title{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal-l);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--teal-d)}
+.input-section-label{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-d);margin:14px 0 8px}
+.stat-inputs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:4px}
+.field{display:flex;flex-direction:column;gap:3px}
+.field label{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-d)}
+.field input,.field select{background:rgba(8,6,20,.9);border:1px solid var(--gold-d);color:var(--gold-p);font-family:'Fira Code',monospace;font-size:.88rem;padding:6px 10px;width:100%;transition:border-color .2s;outline:none;-moz-appearance:textfield}
+.field input::-webkit-inner-spin-button,.field input::-webkit-outer-spin-button{-webkit-appearance:none}
+.field input:focus,.field select:focus{border-color:var(--gold-p)}
+.field select{cursor:pointer}
+.field-wide{grid-column:1/-1}
+.cb-group{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.cb-row{display:flex;align-items:center;gap:8px;font-size:.86rem;color:var(--text-d);cursor:pointer}
+.cb-row input[type=checkbox]{width:14px;height:14px;accent-color:var(--gold-l);cursor:pointer}
+.cb-row:hover{color:var(--text)}
+.cb-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.btn-convert{width:100%;margin-top:16px;padding:10px;background:rgba(200,152,48,.08);border:1px solid var(--gold-d);color:var(--gold-l);font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.btn-convert:hover{background:rgba(200,152,48,.15);border-color:var(--gold-l)}
+
+/* ══ OUTPUT: D&D STAT BLOCK ══ */
+.output-panel{}
+.sb{background:rgba(4,3,12,.95);border:1px solid var(--gold-d);border-top:3px solid var(--gold-l);font-size:.9rem}
+.sb-name{font-family:'Cinzel Decorative',serif;font-size:1.3rem;padding:16px 20px 2px;background:linear-gradient(135deg,var(--gold-l),var(--teal-l));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2}
+.sb-type{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-d);padding:0 20px 14px}
+.sb-div{height:1px;background:linear-gradient(90deg,transparent,var(--gold-d),transparent);margin:0 20px}
+.sb-div.thick{height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.sb-vitals{display:flex;gap:20px;padding:12px 20px;flex-wrap:wrap}
+.sb-vital{display:flex;flex-direction:column;align-items:center}
+.sb-vital-label{font-family:'Cinzel',serif;font-size:.46rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-d);margin-bottom:2px}
+.sb-vital-value{font-family:'Cinzel Decorative',serif;font-size:1.1rem;color:var(--teal-l);line-height:1}
+.sb-vital-sub{font-family:'Fira Code',monospace;font-size:.58rem;color:var(--text-d)}
+.sb-stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:0;border-top:1px solid var(--gold-d);border-bottom:1px solid var(--gold-d)}
+.sb-stat{text-align:center;padding:10px 4px;border-right:1px solid rgba(200,152,48,.12)}
+.sb-stat:last-child{border-right:none}
+.sb-stat-name{font-family:'Cinzel',serif;font-size:.48rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-d);display:block}
+.sb-stat-val{font-family:'Fira Code',monospace;font-size:.88rem;color:var(--gold-p);display:block;margin:2px 0}
+.sb-stat-mod{font-family:'Fira Code',monospace;font-size:.72rem;color:var(--teal-l);display:block}
+.sb-stat.hi .sb-stat-val{color:var(--brine-l)}
+.sb-stat.hi .sb-stat-mod{color:var(--brine-l)}
+.sb-stat.lo .sb-stat-val{color:var(--void-l)}
+.sb-stat.lo .sb-stat-mod{color:var(--void-l)}
+.sb-props{padding:12px 20px}
+.sb-prop{font-size:.84rem;color:var(--text-d);padding:3px 0;border-bottom:1px solid rgba(200,152,48,.08);display:flex;gap:8px;align-items:baseline}
+.sb-prop:last-child{border-bottom:none}
+.sb-prop strong{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.08em;color:var(--gold-p);flex-shrink:0}
+.sb-prop span{font-family:'Fira Code',monospace;font-size:.78rem;color:var(--teal-l)}
+.sb-cr-row{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:rgba(200,152,48,.04)}
+.sb-cr{display:flex;align-items:baseline;gap:6px}
+.sb-cr-label{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-d)}
+.sb-cr-value{font-family:'Cinzel Decorative',serif;font-size:1.6rem;background:linear-gradient(135deg,var(--gold-l),var(--teal-l));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.sb-cr-xp{font-family:'Fira Code',monospace;font-size:.62rem;color:var(--text-d)}
+.sb-section-label{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-d);padding:10px 20px 4px;border-top:1px solid rgba(200,152,48,.15)}
+.sb-trait{padding:5px 20px 3px;font-size:.86rem;color:var(--text-d);line-height:1.55}
+.sb-trait strong{color:var(--gold-p);font-weight:600}
+.sb-trait em{font-style:normal;color:var(--teal-l);font-family:'Fira Code',monospace;font-size:.78rem}
+.sb-san{padding:10px 20px;border-top:2px solid var(--san);background:rgba(58,107,138,.05);font-size:.84rem;color:#8abac8}
+.sb-san strong{color:var(--san-l)}
+.sb-empty{padding:20px;text-align:center;font-style:italic;color:var(--text-d);font-size:.88rem}
+.btn-copy{width:100%;padding:9px;background:rgba(18,136,152,.08);border:1px solid var(--teal-d);color:var(--teal-l);font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-top:8px}
+.btn-copy:hover{background:rgba(18,136,152,.15);border-color:var(--teal-l)}
+.copy-feedback{font-family:'Fira Code',monospace;font-size:.7rem;color:var(--brine-l);text-align:center;padding:6px;display:none}
+
+/* ══ TAB 2: SINGLE STAT ══ */
+.single-converter{max-width:560px;margin:0 auto}
+.single-converter-title{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-l);margin-bottom:20px;text-align:center}
+.direction-toggle{display:flex;justify-content:center;gap:0;margin-bottom:24px;border:1px solid var(--gold-d)}
+.dir-btn{flex:1;padding:9px;background:transparent;border:none;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-d);cursor:pointer;transition:all .2s}
+.dir-btn.active{background:rgba(200,152,48,.1);color:var(--gold-l)}
+.conv-pair{display:grid;grid-template-columns:1fr 40px 1fr;gap:0;align-items:end;margin-bottom:16px}
+.conv-input-box{background:rgba(8,6,20,.9);border:1px solid var(--gold-d);padding:16px 18px}
+.conv-input-box label{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-d);display:block;margin-bottom:8px}
+.conv-input-box input{background:transparent;border:none;color:var(--gold-l);font-family:'Fira Code',monospace;font-size:2rem;width:100%;outline:none;-moz-appearance:textfield}
+.conv-input-box input::-webkit-inner-spin-button,.conv-input-box input::-webkit-outer-spin-button{-webkit-appearance:none}
+.conv-input-box input.output-val{color:var(--teal-l);cursor:default}
+.conv-arrow{display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--gold-d);padding-bottom:16px}
+.conv-result-details{background:rgba(4,3,12,.6);border:1px solid rgba(200,152,48,.12);padding:14px 18px;margin-top:12px}
+.conv-result-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(200,152,48,.08);font-size:.86rem}
+.conv-result-row:last-child{border-bottom:none}
+.conv-result-label{color:var(--text-d);font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.08em}
+.conv-result-value{color:var(--teal-l);font-family:'Fira Code',monospace;font-size:.82rem}
+
+/* ══ TAB 3: COMBAT ══ */
+.combat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:600px){.combat-grid{grid-template-columns:1fr}}
+.combat-card{background:rgba(4,3,12,.7);border:1px solid var(--gold-d);padding:18px}
+.combat-card-title{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-p);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--gold-d)}
+.combat-input{background:rgba(8,6,20,.9);border:1px solid var(--gold-d);padding:6px 10px;width:100%;color:var(--gold-l);font-family:'Fira Code',monospace;font-size:1.1rem;outline:none;margin-bottom:10px;-moz-appearance:textfield}
+.combat-input::-webkit-inner-spin-button,.combat-input::-webkit-outer-spin-button{-webkit-appearance:none}
+.combat-input:focus{border-color:var(--gold-p)}
+.combat-result{font-family:'Fira Code',monospace;font-size:1.5rem;color:var(--teal-l);margin:8px 0 4px;text-align:center}
+.combat-result-note{font-size:.8rem;color:var(--text-d);text-align:center;font-style:italic}
+
+/* ══ TAB 4: SANIDADE ══ */
+.san-converter{max-width:580px;margin:0 auto}
+.san-input-row{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;margin-bottom:20px}
+.san-slash{font-size:1.4rem;color:var(--text-d);text-align:center;font-family:'Fira Code',monospace}
+.san-output-box{background:rgba(20,40,70,.25);border:1px solid var(--san);border-top:2px solid var(--san-l);padding:20px 24px;margin-top:4px}
+.san-output-title{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--san-l);margin-bottom:12px}
+.san-output-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.san-result-box{background:rgba(4,3,12,.6);border:1px solid rgba(58,107,138,.3);padding:12px;text-align:center}
+.san-result-label{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.16em;text-transform:uppercase;color:var(--san);margin-bottom:4px;display:block}
+.san-result-value{font-family:'Fira Code',monospace;font-size:1rem;color:var(--san-l);display:block}
+.san-result-sub{font-size:.76rem;color:var(--text-d);font-style:italic;margin-top:3px;display:block}
+
+/* ══ REFERENCE TABLES ══ */
+main{max-width:980px;margin:0 auto;padding:0 24px 90px}
+section{margin-bottom:54px;animation:fade-in .4s ease both}
+@keyframes fade-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+section:nth-child(1){animation-delay:.05s}section:nth-child(2){animation-delay:.10s}section:nth-child(3){animation-delay:.15s}section:nth-child(4){animation-delay:.20s}section:nth-child(5){animation-delay:.25s}section:nth-child(6){animation-delay:.30s}
+p{margin-bottom:10px}p:last-child{margin-bottom:0}
+
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.section-num{font-family:'Fira Code',monospace;font-size:.68rem;color:var(--gold-p);border:1px solid var(--gold-d);padding:2px 8px;flex-shrink:0}
+h2{font-family:'Cinzel',serif;font-size:.9rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+h2.gold{color:var(--gold-l)}.h2.teal{color:var(--teal-l)}.h2.brine{color:var(--brine-l)}
+h2.teal{color:var(--teal-l)}
+h2.void{color:var(--void-l)}
+h2.blood{color:var(--blood-l)}
+h2.san{color:var(--san-l)}
+h2.brine{color:var(--brine-l)}
+
+/* Tables */
+.t{width:100%;border-collapse:collapse;margin:10px 0;font-size:.88rem}
+.t thead tr{background:rgba(40,30,8,.8);border-bottom:2px solid var(--gold-d)}
+.t thead th{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-p);padding:9px 12px;text-align:left;white-space:nowrap}
+.t tbody tr{border-bottom:1px solid rgba(40,32,12,.7)}
+.t tbody tr:last-child{border-bottom:none}
+.t tbody tr:hover{background:rgba(200,152,48,.04)}
+.t td{padding:7px 12px;vertical-align:middle;color:#907858}
+.t td:first-child{font-family:'Fira Code',monospace;font-size:.8rem;color:var(--gold-p);white-space:nowrap}
+.t td.arr{color:var(--text-d);font-family:'Fira Code',monospace;font-size:.9rem;text-align:center;width:28px;padding:7px 4px}
+.t td.res{font-family:'Fira Code',monospace;font-size:.8rem;color:var(--teal-l)}
+.t td.note{font-style:italic;color:var(--text-d);font-size:.82rem}
+.t tr.hi td{color:var(--brine-l)}.t tr.hi td:first-child{color:var(--brine-l)}.t tr.hi td.res{color:var(--brine-l)}
+.t tr.crit td{color:var(--blood-l)}.t tr.crit td:first-child{color:var(--blood-l)}.t tr.crit td.res{color:var(--blood-l)}
+.t tr.cur{background:rgba(200,152,48,.05)}.t tr.cur td:first-child{color:var(--gold-l)}
+
+/* callouts */
+.callout{border-left:3px solid;padding:12px 16px;margin:12px 0;font-style:italic;font-size:.88rem;line-height:1.7}
+.callout strong{font-style:normal;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.1em;display:block;margin-bottom:3px}
+.callout.gold{border-color:var(--gold-d);background:rgba(30,20,4,.12);color:#907850}.callout.gold strong{color:var(--gold-l)}
+.callout.teal{border-color:var(--teal-d);background:rgba(4,18,24,.12);color:#508090}.callout.teal strong{color:var(--teal-l)}
+.callout.san{border-color:var(--san);background:rgba(20,50,80,.10);color:#8abac8}.callout.san strong{color:var(--san-l)}
+.callout.tip{border-color:#3a2a10;background:rgba(20,14,4,.10);color:#907050}.callout.tip strong{color:var(--gold-l)}
+
+/* formula box */
+.formula{background:rgba(8,6,20,.85);border:1px solid var(--gold-d);border-left:3px solid var(--gold-l);padding:14px 20px;margin:12px 0;font-family:'Fira Code',monospace;font-size:.84rem;color:var(--gold-p);line-height:1.9}
+.formula .fl{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-d);display:block;margin-bottom:6px}
+.formula .v{color:var(--teal-l)}
+.formula .n{font-family:'EB Garamond',serif;font-size:.8rem;color:var(--text-d);font-style:italic}
+
+footer{text-align:center;padding:32px 24px 56px;font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.26em;text-transform:uppercase;color:var(--text-f);border-top:1px solid var(--border)}
+footer span{color:var(--gold-d);margin:0 6px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--ink)}::-webkit-scrollbar-thumb{background:var(--gold-d);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--gold-l)}
+#top-btn{position:fixed;bottom:1.5rem;right:1.5rem;width:36px;height:36px;background:var(--ink);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-d);font-size:.9rem;cursor:pointer;transition:all .2s;z-index:100;font-family:'Fira Code',monospace}
+#top-btn:hover{border-color:var(--gold-d);color:var(--gold-l)}
+
+/* ── ACESSIBILIDADE: MOVIMENTO REDUZIDO ─────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+</style>
+</head>
+<body>
+<!-- avisa o mapa do Nexus (se estiver por perto) que esta página foi visitada -->
+<script>try{ if (window.top !== window) window.top.postMessage({ tipo:'nexus-visita', id:'valtheris_conversor' }, '*'); }catch(e){}</script>
+<div class="top-bar"></div>
+
+<div class="doc-header">
+  <p class="doc-eyebrow">Além do Véu da Carne &nbsp;⸸&nbsp; Ferramentas do Mestre</p>
+  <h1 class="doc-title">Conversor CoC 7e → Valtheris</h1>
+  <p class="doc-subtitle">Ferramenta Interativa &amp; Referência de Conversão</p>
+  <p class="doc-desc">Insira as estatísticas do CoC 7e e obtenha os valores convertidos para o sistema Valtheris (D&amp;D 5e adaptado) em tempo real. Tabelas de referência ao final.</p>
+</div>
+
+<!-- ══════════════════════════════════════ CONVERTER APP ══════════════════════════════════════ -->
+<div class="converter-app">
+
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('full')">⚔ Bloco Completo</button>
+    <button class="tab-btn" onclick="switchTab('stat')">◆ Atributo</button>
+    <button class="tab-btn" onclick="switchTab('combat')">🛡 Combate</button>
+    <button class="tab-btn" onclick="switchTab('sanity')">🌑 Sanidade</button>
+  </div>
+
+  <!-- ══ TAB 1: BLOCO COMPLETO ══ -->
+  <div class="tab-content active" id="tab-full">
+    <div class="direction-toggle" style="margin-bottom:20px;">
+      <button class="dir-btn active" id="full-dir-coc" onclick="setFullDir('coc')">CoC 7e → D&amp;D 5e</button>
+      <button class="dir-btn" id="full-dir-dnd" onclick="setFullDir('dnd')">D&amp;D 5e → CoC 7e</button>
+    </div>
+    <div class="converter-grid">
+
+      <!-- INPUTS -->
+      <div class="input-panel">
+        <div id="full-inputs-coc">
+        <div class="input-panel-title">Sistema CoC 7ª Edição — Entradas</div>
+
+        <div class="input-section-label">Identificação</div>
+        <div class="stat-inputs">
+          <div class="field field-wide">
+            <label>Nome da Criatura</label>
+            <input type="text" id="i-nome" placeholder="Ex: Shoggoth" oninput="updateFull()">
+          </div>
+          <div class="field field-wide">
+            <label>Tipo / Arquétipo</label>
+            <input type="text" id="i-tipo" placeholder="Ex: Monstro do Mythos" oninput="updateFull()">
+          </div>
+        </div>
+
+        <div class="input-section-label">Atributos CoC</div>
+        <div class="stat-inputs">
+          <div class="field"><label>FOR</label><input type="number" id="i-for" placeholder="50" min="1" max="600" oninput="updateFull()"></div>
+          <div class="field"><label>CON</label><input type="number" id="i-con" placeholder="50" min="1" max="600" oninput="updateFull()"></div>
+          <div class="field"><label>TAM</label><input type="number" id="i-tam" placeholder="50" min="1" max="600" oninput="updateFull()"></div>
+          <div class="field"><label>DES</label><input type="number" id="i-des" placeholder="50" min="1" max="600" oninput="updateFull()"></div>
+          <div class="field"><label>INT</label><input type="number" id="i-int" placeholder="50" min="1" max="600" oninput="updateFull()"></div>
+          <div class="field"><label>POD / SAB</label><input type="number" id="i-pod" placeholder="50" min="1" max="600" oninput="updateFull()"></div>
+          <div class="field"><label>APA (opcional)</label><input type="number" id="i-apa" placeholder="—" min="1" max="100" oninput="updateFull()"></div>
+          <div class="field"><label>PM</label><input type="number" id="i-pm" placeholder="10" min="1" max="200" oninput="updateFull()"></div>
+        </div>
+
+        <div class="input-section-label">Estatísticas de Combate</div>
+        <div class="stat-inputs">
+          <div class="field"><label>PV (Pontos de Vida)</label><input type="number" id="i-pv" placeholder="13" min="1" max="1000" oninput="updateFull()"></div>
+          <div class="field"><label>Corpo</label><input type="number" id="i-corpo" placeholder="1" min="0" max="20" oninput="updateFull()"></div>
+          <div class="field"><label>Lutar %</label><input type="number" id="i-lutar" placeholder="45" min="1" max="100" oninput="updateFull()"></div>
+          <div class="field"><label>Esquivar %</label><input type="number" id="i-esq" placeholder="25" min="1" max="100" oninput="updateFull()"></div>
+          <div class="field"><label>Movimento (terra)</label><input type="number" id="i-mov" placeholder="8" min="1" max="100" oninput="updateFull()"></div>
+          <div class="field"><label>Mov. Alternativo</label><input type="number" id="i-mov-alt" placeholder="—" min="0" max="100" oninput="updateFull()"></div>
+          <div class="field field-wide">
+            <label>Tipo do Mov. Alternativo</label>
+            <select id="i-mov-type" onchange="updateFull()">
+              <option value="swim">Natação</option>
+              <option value="fly">Voo</option>
+              <option value="burrow">Escavação</option>
+              <option value="climb">Escalada</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-section-label">Dano &amp; Armadura</div>
+        <div class="stat-inputs">
+          <div class="field field-wide">
+            <label>Dano Base (ex: 1D6, 2D8+4)</label>
+            <input type="text" id="i-dano" placeholder="Ex: 2D6+2" oninput="updateFull()">
+          </div>
+          <div class="field field-wide">
+            <label>Armadura CoC</label>
+            <select id="i-armor" onchange="updateFull()">
+              <option value="none">Sem armadura</option>
+              <option value="1">1 ponto (escamas leves)</option>
+              <option value="2">2 pontos (couro duro)</option>
+              <option value="3">3–4 pontos (quitina)</option>
+              <option value="6">6–7 pontos (rocha/metal)</option>
+              <option value="9res">9 pontos + armas→1pt</option>
+              <option value="physimm">Armas físicas → 1pt</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-section-label">Sanidade (CoC)</div>
+        <div class="stat-inputs">
+          <div class="field">
+            <label>Perda c/ Sucesso</label>
+            <select id="i-san-suc" onchange="updateFull()">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="1D3">1D3</option>
+              <option value="1D4">1D4</option>
+              <option value="1D6">1D6</option>
+              <option value="1D8">1D8</option>
+              <option value="1D10">1D10</option>
+              <option value="1D20">1D20</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Perda c/ Falha</label>
+            <select id="i-san-fal" onchange="updateFull()">
+              <option value="—">—</option>
+              <option value="1D3">1D3</option>
+              <option value="1D4">1D4</option>
+              <option value="1D6" selected>1D6</option>
+              <option value="1D8">1D8</option>
+              <option value="1D10">1D10</option>
+              <option value="1D20">1D20</option>
+              <option value="1D100">1D100</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-section-label">Habilidades Especiais</div>
+        <div class="cb-grid">
+          <label class="cb-row"><input type="checkbox" id="cb-anfibio" onchange="updateFull()"> Anfíbio</label>
+          <label class="cb-row"><input type="checkbox" id="cb-regen" onchange="updateFull()"> Regeneração</label>
+          <label class="cb-row"><input type="checkbox" id="cb-physres" onchange="updateFull()"> Resistência a não-mágico</label>
+          <label class="cb-row"><input type="checkbox" id="cb-engulf" onchange="updateFull()"> Engolfar</label>
+          <label class="cb-row"><input type="checkbox" id="cb-fordrain" onchange="updateFull()"> Dreno de FOR (3D10)</label>
+          <label class="cb-row"><input type="checkbox" id="cb-imortal" onchange="updateFull()"> Imortalidade</label>
+          <label class="cb-row"><input type="checkbox" id="cb-spellas" onchange="updateFull()"> Feitiços (Mythos)</label>
+          <label class="cb-row"><input type="checkbox" id="cb-divemb" onchange="updateFull()"> Mergulhador Letal</label>
+        </div>
+        </div><!-- /full-inputs-coc -->
+
+        <!-- D&D 5e INPUTS (hidden by default) -->
+        <div id="full-inputs-dnd" style="display:none">
+        <div class="input-panel-title" style="color:var(--teal-l)">Sistema D&amp;D 5e — Entradas</div>
+
+        <div class="input-section-label">Identificação</div>
+        <div class="stat-inputs">
+          <div class="field field-wide">
+            <label>Nome da Criatura</label>
+            <input type="text" id="d-nome" placeholder="Ex: Abissal" oninput="updateFull()">
+          </div>
+          <div class="field field-wide">
+            <label>Tipo / Arquétipo</label>
+            <input type="text" id="d-tipo" placeholder="Ex: Monstro do Mythos" oninput="updateFull()">
+          </div>
+        </div>
+
+        <div class="input-section-label">Atributos D&amp;D 5e (3–30)</div>
+        <div class="stat-inputs">
+          <div class="field"><label>FOR</label><input type="number" id="d-for" placeholder="15" min="3" max="30" oninput="updateFull()"></div>
+          <div class="field"><label>DES</label><input type="number" id="d-des" placeholder="12" min="3" max="30" oninput="updateFull()"></div>
+          <div class="field"><label>CON</label><input type="number" id="d-con" placeholder="14" min="3" max="30" oninput="updateFull()"></div>
+          <div class="field"><label>INT</label><input type="number" id="d-int" placeholder="10" min="3" max="30" oninput="updateFull()"></div>
+          <div class="field"><label>SAB</label><input type="number" id="d-sab" placeholder="10" min="3" max="30" oninput="updateFull()"></div>
+          <div class="field"><label>CAR (opcional)</label><input type="number" id="d-car" placeholder="8" min="3" max="30" oninput="updateFull()"></div>
+        </div>
+
+        <div class="input-section-label">Vitais &amp; Combate</div>
+        <div class="stat-inputs">
+          <div class="field"><label>HP</label><input type="number" id="d-hp" placeholder="52" min="1" max="1000" oninput="updateFull()"></div>
+          <div class="field"><label>CA</label><input type="number" id="d-ca" placeholder="13" min="10" max="25" oninput="updateFull()"></div>
+          <div class="field"><label>Bônus de Ataque</label><input type="number" id="d-atk" placeholder="5" min="0" max="17" oninput="updateFull()"></div>
+          <div class="field"><label>CR</label><input type="number" id="d-cr" placeholder="1" min="0" max="30" oninput="updateFull()"></div>
+          <div class="field"><label>Velocidade (metros)</label><input type="number" id="d-spd" placeholder="9" min="0" max="120" oninput="updateFull()"></div>
+          <div class="field"><label>Vel. Alternativa (m)</label><input type="number" id="d-spd-alt" placeholder="—" min="0" max="120" oninput="updateFull()"></div>
+          <div class="field field-wide">
+            <label>Tipo da Vel. Alternativa</label>
+            <select id="d-spd-type" onchange="updateFull()">
+              <option value="swim">Natação</option>
+              <option value="fly">Voo</option>
+              <option value="burrow">Escavação</option>
+            </select>
+          </div>
+          <div class="field field-wide">
+            <label>Tamanho da Criatura</label>
+            <select id="d-size" onchange="updateFull()">
+              <option value="Pequeno">Pequeno</option>
+              <option value="Médio" selected>Médio</option>
+              <option value="Grande">Grande</option>
+              <option value="Imenso">Imenso</option>
+              <option value="Gargantesco">Gargantesco</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-section-label">Dano &amp; Descrição</div>
+        <div class="stat-inputs">
+          <div class="field field-wide">
+            <label>Dano do Ataque (ex: 2D6+2)</label>
+            <input type="text" id="d-dano" placeholder="Ex: 2D6+2" oninput="updateFull()">
+          </div>
+        </div>
+
+        <div class="input-section-label">Sanidade (D&amp;D → CoC)</div>
+        <div class="stat-inputs">
+          <div class="field">
+            <label>Perda c/ Save (sucesso)</label>
+            <select id="d-san-suc" onchange="updateFull()">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="1D3">1D3</option>
+              <option value="1D4">1D4</option>
+              <option value="1D6">1D6</option>
+              <option value="1D8">1D8</option>
+              <option value="1D10">1D10</option>
+              <option value="1D20">1D20</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Perda c/ Save (falha)</label>
+            <select id="d-san-fal" onchange="updateFull()">
+              <option value="—">—</option>
+              <option value="1D3">1D3</option>
+              <option value="1D4">1D4</option>
+              <option value="1D6" selected>1D6</option>
+              <option value="1D8">1D8</option>
+              <option value="1D10">1D10</option>
+              <option value="1D20">1D20</option>
+              <option value="1D100">1D100</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-section-label">Habilidades Especiais</div>
+        <div class="cb-grid">
+          <label class="cb-row"><input type="checkbox" id="d-cb-anfibio" onchange="updateFull()"> Anfíbio</label>
+          <label class="cb-row"><input type="checkbox" id="d-cb-regen" onchange="updateFull()"> Regeneração</label>
+          <label class="cb-row"><input type="checkbox" id="d-cb-physres" onchange="updateFull()"> Resist. a não-mágico</label>
+          <label class="cb-row"><input type="checkbox" id="d-cb-imortal" onchange="updateFull()"> Imortalidade</label>
+          <label class="cb-row"><input type="checkbox" id="d-cb-engulf" onchange="updateFull()"> Engolfar</label>
+          <label class="cb-row"><input type="checkbox" id="d-cb-drain" onchange="updateFull()"> Dreno de FOR</label>
+          <label class="cb-row"><input type="checkbox" id="d-cb-spells" onchange="updateFull()"> Feitiços</label>
+          <label class="cb-row"><input type="checkbox" id="d-cb-fly" onchange="updateFull()"> Voo / Interestelar</label>
+        </div>
+        </div><!-- /full-inputs-dnd -->
+
+      </div>
+
+      <!-- OUTPUT -->
+      <div class="output-panel">
+        <div class="sb" id="stat-block">
+          <div class="sb-empty">Preencha os campos ao lado para gerar o bloco de estatísticas Valtheris.</div>
+        </div>
+        <button class="btn-copy" onclick="copyBlock()">⎘ Copiar Texto do Bloco</button>
+        <div class="copy-feedback" id="copy-feedback">✓ Copiado para a área de transferência</div>
+      </div>
+
+    </div>
+  </div><!-- /tab-full -->
+
+  <!-- ══ TAB 2: ATRIBUTO ÚNICO ══ -->
+  <div class="tab-content" id="tab-stat">
+    <div class="single-converter">
+      <div class="single-converter-title">Conversor de Atributo Único</div>
+
+      <div class="direction-toggle">
+        <button class="dir-btn active" id="dir-coc" onclick="setDir('coc')">CoC → D&amp;D 5e</button>
+        <button class="dir-btn" id="dir-dnd" onclick="setDir('dnd')">D&amp;D 5e → CoC</button>
+      </div>
+
+      <div class="conv-pair">
+        <div class="conv-input-box">
+          <label id="lbl-from">Valor CoC (5–600)</label>
+          <input type="number" id="stat-from" placeholder="70" min="1" max="600" oninput="updateStat()">
+        </div>
+        <div class="conv-arrow">→</div>
+        <div class="conv-input-box">
+          <label id="lbl-to">Stat D&amp;D 5e</label>
+          <input type="number" id="stat-to" class="output-val" placeholder="14" readonly>
+        </div>
+      </div>
+
+      <div class="conv-result-details" id="stat-details">
+        <div class="conv-result-row"><span class="conv-result-label">Modificador</span><span class="conv-result-value" id="res-mod">—</span></div>
+        <div class="conv-result-row"><span class="conv-result-label">Categoria</span><span class="conv-result-value" id="res-cat">—</span></div>
+        <div class="conv-result-row"><span class="conv-result-label">Salvaguarda (Prof +2)</span><span class="conv-result-value" id="res-save">—</span></div>
+        <div class="conv-result-row"><span class="conv-result-label">Teste de Perícia</span><span class="conv-result-value" id="res-skill">—</span></div>
+        <div class="conv-result-row"><span class="conv-result-label">Equivalente CoC aprox.</span><span class="conv-result-value" id="res-back">—</span></div>
+      </div>
+    </div>
+  </div><!-- /tab-stat -->
+
+  <!-- ══ TAB 3: COMBATE ══ -->
+  <div class="tab-content" id="tab-combat">
+    <div class="combat-grid">
+
+      <div class="combat-card">
+        <div class="combat-card-title">⚔ Lutar % → Bônus de Ataque</div>
+        <label style="font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-d);display:block;margin-bottom:6px;">Lutar (percentual CoC)</label>
+        <input type="number" class="combat-input" id="c-lutar" placeholder="45" min="1" max="100" oninput="updateCombat()">
+        <div class="combat-result" id="r-atk">—</div>
+        <div class="combat-result-note" id="r-atk-note">Bônus de ataque Valtheris</div>
+      </div>
+
+      <div class="combat-card">
+        <div class="combat-card-title">🛡 Corpo → Classe de Armadura</div>
+        <label style="font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-d);display:block;margin-bottom:6px;">Corpo CoC</label>
+        <input type="number" class="combat-input" id="c-corpo" placeholder="1" min="0" max="20" oninput="updateCombat()">
+        <div class="combat-result" id="r-ca">—</div>
+        <div class="combat-result-note" id="r-ca-note">Classe de Armadura Valtheris</div>
+      </div>
+
+      <div class="combat-card">
+        <div class="combat-card-title">❤ PV → HP Valtheris</div>
+        <label style="font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-d);display:block;margin-bottom:6px;">Pontos de Vida CoC</label>
+        <input type="number" class="combat-input" id="c-pv" placeholder="13" min="1" max="500" oninput="updateCombat()">
+        <div class="combat-result" id="r-hp">—</div>
+        <div class="combat-result-note" id="r-hp-note">HP Valtheris (× 4)</div>
+      </div>
+
+      <div class="combat-card">
+        <div class="combat-card-title">💨 Movimento → Velocidade</div>
+        <label style="font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-d);display:block;margin-bottom:6px;">Movimento CoC</label>
+        <input type="number" class="combat-input" id="c-mov" placeholder="8" min="1" max="100" oninput="updateCombat()">
+        <div class="combat-result" id="r-spd">—</div>
+        <div class="combat-result-note" id="r-spd-note">metros por turno (× 1,5)</div>
+      </div>
+
+      <div class="combat-card">
+        <div class="combat-card-title">📊 Corpo → CR Estimado</div>
+        <label style="font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-d);display:block;margin-bottom:6px;">Corpo CoC</label>
+        <input type="number" class="combat-input" id="c-cr-corpo" placeholder="1" min="0" max="20" oninput="updateCombat()">
+        <div class="combat-result" id="r-cr">—</div>
+        <div class="combat-result-note" id="r-cr-note">CR base (Corpo − 1)</div>
+      </div>
+
+      <div class="combat-card">
+        <div class="combat-card-title">🎲 PM → Pontos de Magia</div>
+        <label style="font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-d);display:block;margin-bottom:6px;">PM CoC</label>
+        <input type="number" class="combat-input" id="c-pm" placeholder="10" min="1" max="200" oninput="updateCombat()">
+        <div class="combat-result" id="r-pm">—</div>
+        <div class="combat-result-note" id="r-pm-note">Nível de Warlock equivalente</div>
+      </div>
+
+    </div>
+  </div><!-- /tab-combat -->
+
+  <!-- ══ TAB 4: SANIDADE ══ -->
+  <div class="tab-content" id="tab-sanity">
+    <div class="san-converter">
+      <p style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-l);text-align:center;margin-bottom:20px;">Conversor de Dano de Sanidade</p>
+      <p style="font-style:italic;color:var(--text-d);font-size:.88rem;text-align:center;margin-bottom:24px;">Insira os dados de SAN do CoC (Sucesso / Falha no Teste de POD)</p>
+
+      <div class="san-input-row">
+        <div class="field">
+          <label>Perda c/ Sucesso (CoC)</label>
+          <select id="s-suc" onchange="updateSanity()">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="1D3">1D3</option>
+            <option value="1D4">1D4</option>
+            <option value="1D6">1D6</option>
+            <option value="1D8">1D8</option>
+            <option value="1D10">1D10</option>
+            <option value="1D20">1D20</option>
+          </select>
+        </div>
+        <div class="san-slash">/</div>
+        <div class="field">
+          <label>Perda c/ Falha (CoC)</label>
+          <select id="s-fal" onchange="updateSanity()">
+            <option value="1D3">1D3</option>
+            <option value="1D4">1D4</option>
+            <option value="1D6" selected>1D6</option>
+            <option value="1D8">1D8</option>
+            <option value="1D10">1D10</option>
+            <option value="1D20">1D20</option>
+            <option value="1D100">1D100</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="san-output-box">
+        <div class="san-output-title">Resultado Valtheris</div>
+        <div class="san-output-grid">
+          <div class="san-result-box">
+            <span class="san-result-label">Tipo de Teste</span>
+            <span class="san-result-value" id="s-out-type">Save SAB</span>
+          </div>
+          <div class="san-result-box">
+            <span class="san-result-label">CD</span>
+            <span class="san-result-value" id="s-out-cd">—</span>
+            <span class="san-result-sub" id="s-out-cd-sub"></span>
+          </div>
+          <div class="san-result-box">
+            <span class="san-result-label">Pavor</span>
+            <span class="san-result-value" id="s-out-pavor">—</span>
+            <span class="san-result-sub" id="s-out-pavor-sub"></span>
+          </div>
+          <div class="san-result-box" style="grid-column:1/-1;border-top:1px solid rgba(58,107,138,.3);margin-top:4px;padding-top:12px">
+            <span class="san-result-label">Descrição Completa</span>
+            <span class="san-result-value" id="s-out-full" style="font-size:.78rem;color:#8abac8;font-family:'EB Garamond',serif;font-style:italic;display:block;margin-top:4px;line-height:1.5"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /tab-sanity -->
+
+</div><!-- /converter-app -->
+
+
+<!-- ══════════════════════════════════════ REFERENCE TABLES ══════════════════════════════════════ -->
+<main>
+
+  <section>
+    <div class="section-header">
+      <span class="section-num">REF 01</span>
+      <h2 class="teal">Atributos — Tabela Completa</h2>
+    </div>
+    <div class="formula">
+      <span class="fl">Fórmula</span>
+      Stat D&D ≈ <span class="v">CoC ÷ 5</span> &nbsp;·&nbsp; Máximo: 30 &nbsp;·&nbsp; CoC 50 = D&D 10 (+0) = humano médio em ambos
+    </div>
+    <table class="t">
+      <thead><tr><th>CoC Valor</th><th></th><th>D&D Stat</th><th>Mod</th><th>Categoria</th></tr></thead>
+      <tbody>
+        <tr><td>15–20</td><td class="arr">→</td><td class="res">3–4</td><td>−4/−3</td><td>Deficiente</td></tr>
+        <tr><td>25–35</td><td class="arr">→</td><td class="res">5–7</td><td>−3/−2</td><td>Muito fraco</td></tr>
+        <tr><td>40–45</td><td class="arr">→</td><td class="res">8–9</td><td>−1</td><td>Abaixo da média</td></tr>
+        <tr><td>50</td><td class="arr">→</td><td class="res">10–11</td><td>+0</td><td>Humano médio</td></tr>
+        <tr><td>55–65</td><td class="arr">→</td><td class="res">12–13</td><td>+1</td><td>Acima da média</td></tr>
+        <tr><td>70–75</td><td class="arr">→</td><td class="res">14–15</td><td>+2</td><td>Notavelmente forte</td></tr>
+        <tr><td>80–85</td><td class="arr">→</td><td class="res">16–17</td><td>+3</td><td>Excepcional</td></tr>
+        <tr><td>90–100</td><td class="arr">→</td><td class="res">18–20</td><td>+4/+5</td><td>Herói / Monstro menor</td></tr>
+        <tr class="hi"><td>110–160</td><td class="arr">→</td><td class="res">20–22</td><td>+5/+6</td><td>Acima do limite humano</td></tr>
+        <tr class="hi"><td>200–260</td><td class="arr">→</td><td class="res">24–25</td><td>+7</td><td>Monstruoso</td></tr>
+        <tr class="crit"><td>315</td><td class="arr">→</td><td class="res">28</td><td>+9</td><td>Colossal (Shoggoth FOR)</td></tr>
+        <tr class="crit"><td>420+</td><td class="arr">→</td><td class="res">30</td><td>+10</td><td>Divino — teto absoluto</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <div class="section-header">
+      <span class="section-num">REF 02</span>
+      <h2 class="gold">HP por CR — Calibração</h2>
+    </div>
+    <table class="t">
+      <thead><tr><th>CR</th><th>HP Alvo</th><th>Dado de Vida</th><th>Bônus Ataque</th><th>Dano/Rodada</th><th>CA típico</th><th>Exemplo</th></tr></thead>
+      <tbody>
+        <tr><td>1/4</td><td>20–30</td><td>4d8+4</td><td class="res">+3</td><td>5–8</td><td>12</td><td>Cultista</td></tr>
+        <tr><td>1/2</td><td>30–45</td><td>6d8+6</td><td class="res">+4</td><td>8–12</td><td>13</td><td>Tcho-Tcho</td></tr>
+        <tr class="cur"><td>1</td><td>52–65</td><td>8d8+16</td><td class="res">+5</td><td>12–16</td><td>13</td><td>Abissal</td></tr>
+        <tr class="cur"><td>2</td><td>65–85</td><td>10d8+20</td><td class="res">+5</td><td>16–22</td><td>13</td><td>Híbrido Abissal</td></tr>
+        <tr><td>3</td><td>90–120</td><td>12d10+24</td><td class="res">+5</td><td>22–28</td><td>14</td><td>Byakhee menor</td></tr>
+        <tr class="cur"><td>4</td><td>110–140</td><td>13d10+39</td><td class="res">+6</td><td>27–35</td><td>14</td><td>Byakhee</td></tr>
+        <tr><td>5</td><td>140–180</td><td>16d10+48</td><td class="res">+7</td><td>35–45</td><td>15</td><td>Ghast ancião</td></tr>
+        <tr><td>8</td><td>190–240</td><td>18d10+72</td><td class="res">+8</td><td>55–65</td><td>16</td><td>Lorde Shoggoth</td></tr>
+        <tr class="hi"><td>12</td><td>250–310</td><td>20d10+100</td><td class="res">+9</td><td>75–95</td><td>17</td><td>Shoggoth</td></tr>
+        <tr class="hi"><td>15</td><td>310–380</td><td>24d12+120</td><td class="res">+10</td><td>95–115</td><td>18</td><td>Dhole adulto</td></tr>
+        <tr class="crit"><td>20</td><td>400–480</td><td>30d12+180</td><td class="res">+12</td><td>130–160</td><td>19</td><td>Grande Antigo menor</td></tr>
+        <tr class="crit"><td>25</td><td>500–580</td><td>—</td><td class="res">+14</td><td>170–200</td><td>20</td><td>Hastur / Cthulhu</td></tr>
+        <tr class="crit"><td>30</td><td>615+</td><td>Escala divina</td><td class="res">+17</td><td>230+</td><td>22+</td><td>Tiamat / Yog-Sothoth</td></tr>
+      </tbody>
+    </table>
+    <div class="callout gold"><strong>Regra de Bolso</strong> HP Valtheris ≈ PV CoC × 4. Para CR alto (10+): multiplicar por 4–5 e ajustar por Regeneração e Resistências.</div>
+  </section>
+
+  <section>
+    <div class="section-header">
+      <span class="section-num">REF 03</span>
+      <h2 class="gold">CA · Ataque · Velocidade</h2>
+    </div>
+    <table class="t">
+      <thead><tr><th>Corpo CoC / Armadura</th><th></th><th>CA Valtheris</th><th>Nota</th></tr></thead>
+      <tbody>
+        <tr><td>Sem armadura (Corpo 0)</td><td class="arr">→</td><td class="res">10 + DES mod</td><td>Natural desprotegido</td></tr>
+        <tr><td>1 ponto (escamas finas)</td><td class="arr">→</td><td class="res">13</td><td>Abissal</td></tr>
+        <tr><td>2 pontos (couro duro)</td><td class="arr">→</td><td class="res">14</td><td>Byakhee</td></tr>
+        <tr><td>3–4 pontos (quitina)</td><td class="arr">→</td><td class="res">15</td><td>Inseto de Shaggai</td></tr>
+        <tr><td>6–7 pontos</td><td class="arr">→</td><td class="res">16–17</td><td>Chthoniano</td></tr>
+        <tr class="hi"><td>9 pts + armas→1pt</td><td class="arr">→</td><td class="res">17 + Resistência</td><td>Shoggoth — B/P/C não-mágico</td></tr>
+        <tr class="crit"><td>Imune a dano físico</td><td class="arr">→</td><td class="res">Imunidade a não-mágico</td><td>Apenas entidades CR 20+</td></tr>
+      </tbody>
+    </table>
+    <table class="t" style="margin-top:14px">
+      <thead><tr><th>Lutar %</th><th></th><th>Bônus Ataque</th><th>Mov. CoC</th><th></th><th>Velocidade</th></tr></thead>
+      <tbody>
+        <tr><td>25–35%</td><td class="arr">→</td><td class="res">+2/+3</td><td>5</td><td class="arr">→</td><td class="res">6–7m</td></tr>
+        <tr><td>40–50%</td><td class="arr">→</td><td class="res">+4/+5</td><td>8</td><td class="arr">→</td><td class="res">12m</td></tr>
+        <tr><td>55–65%</td><td class="arr">→</td><td class="res">+5/+6</td><td>10</td><td class="arr">→</td><td class="res">15m</td></tr>
+        <tr class="hi"><td>70–80%</td><td class="arr">→</td><td class="res">+7/+8</td><td>16 (voo)</td><td class="arr">→</td><td class="res">24m voo</td></tr>
+        <tr class="crit"><td>85–100%</td><td class="arr">→</td><td class="res">+9/+11</td><td>20+</td><td class="arr">→</td><td class="res">30m+</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <div class="section-header">
+      <span class="section-num">REF 04</span>
+      <h2 class="san">Sanidade — Conversão Completa</h2>
+    </div>
+    <div class="callout san"><strong>Mudança Fundamental</strong> "Teste de POD" (CoC) → "Salvaguarda de SAB" (Valtheris). SAN = SAB × 5. Dados de perda permanecem os mesmos. Adicionar Pavor (fonte Mythos — nunca substitui Amedrontado padrão do D&D).</div>
+    <table class="t">
+      <thead><tr><th>Perda CoC (Suc/Falha)</th><th>CD SAB Valtheris</th><th>Pavor</th><th>Insanidade (falha 5+)</th></tr></thead>
+      <tbody>
+        <tr><td>0 / 1D3–1D4</td><td class="res">CD 8</td><td>—</td><td>Não</td></tr>
+        <tr><td>0 / 1D6</td><td class="res">CD 10</td><td>1 nível</td><td>Possível</td></tr>
+        <tr><td>1 / 1D6</td><td class="res">CD 13</td><td>2 níveis</td><td>Possível</td></tr>
+        <tr class="hi"><td>1D6 / 1D20</td><td class="res">CD 16</td><td>3 níveis</td><td>Imediata</td></tr>
+        <tr class="crit"><td>1D10 / 1D100</td><td class="res">CD 18–20+</td><td>Auto nível 4</td><td>Quase certa</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <div class="section-header">
+      <span class="section-num">REF 05</span>
+      <h2 class="gold">Checklist de Conversão</h2>
+    </div>
+    <table class="t">
+      <thead><tr><th>#</th><th>Etapa</th><th>Ferramenta</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Definir CR alvo (função narrativa)</td><td>Corpo − 1 = base; ajustar por habilidades</td></tr>
+        <tr><td>2</td><td>Converter atributos (FOR/CON/TAM/DES/INT/POD)</td><td>Tab Atributo ou Ref 01</td></tr>
+        <tr><td>3</td><td>Calcular HP</td><td>PV × 4 (ajustar por CR)</td></tr>
+        <tr><td>4</td><td>Definir CA</td><td>Corpo → Ref 03</td></tr>
+        <tr><td>5</td><td>Bônus de ataque e dano</td><td>Lutar % → Ref 03</td></tr>
+        <tr><td>6</td><td>Substituir "Teste de POD" por "Save SAB CD X"</td><td>Tab Sanidade ou Ref 04</td></tr>
+        <tr><td>7</td><td>Converter mecânicas especiais</td><td>Ver abaixo</td></tr>
+      </tbody>
+    </table>
+    <table class="t" style="margin-top:14px">
+      <thead><tr><th>Mecânica CoC</th><th></th><th>Equivalente Valtheris</th></tr></thead>
+      <tbody>
+        <tr><td>Engolfar (FOR vs. FOR)</td><td class="arr">→</td><td class="res">Ação Bônus: Agarrado+Cego+dano automático</td></tr>
+        <tr><td>Dreno de FOR (3D10/rodada)</td><td class="arr">→</td><td class="res">3D10 redução de FOR máxima (Save CON anula)</td></tr>
+        <tr><td>Armadura "X pontos"</td><td class="arr">→</td><td class="res">CA natural + Resistência se relevante</td></tr>
+        <tr><td>Regeneração X PV/rodada</td><td class="arr">→</td><td class="res">Regeneração X×5 HP/turno</td></tr>
+        <tr><td>Feitiços (% chance)</td><td class="arr">→</td><td class="res">Magias de Warlock (CD = 10 + CR/2, min 12)</td></tr>
+        <tr><td>Teste de POD (SAN)</td><td class="arr">→</td><td class="res">Salvaguarda de SAB (CD 8–20+) + Pavor</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer>
+  Conversor CoC 7e → Valtheris <span>⸸</span> Além do Véu da Carne <span>⸸</span> Ferramenta do Mestre
+</footer>
+<button id="top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ══════════════════════════════════════
+// TABELAS DE CONVERSÃO
+// ══════════════════════════════════════
+const COC_TO_D5E_MAP=[
+  [5,2],[10,3],[15,4],[20,5],[25,6],[30,7],[35,8],[40,8],[45,9],
+  [50,10],[55,11],[60,12],[65,13],[70,14],[75,15],[80,16],[85,17],[90,18],[95,19],[100,20],
+  [130,21],[160,22],[190,23],[220,24],[260,25],[280,26],[315,28],[380,29],[420,30]
+];
+
+function cocToStat(coc){
+  coc=parseInt(coc)||0;
+  if(coc<=0)return 3;
+  for(let i=0;i<COC_TO_D5E_MAP.length-1;i++){
+    const[c1,d1]=COC_TO_D5E_MAP[i];
+    const[c2,d2]=COC_TO_D5E_MAP[i+1];
+    if(coc<=c1)return d1;
+    if(coc<=c2){const t=(coc-c1)/(c2-c1);return Math.min(30,Math.round(d1+t*(d2-d1)));}
+  }
+  return 30;
+}
+
+function d5eToCoc(d5e){
+  d5e=parseInt(d5e)||10;
+  d5e=Math.max(3,Math.min(30,d5e));
+  for(let i=0;i<COC_TO_D5E_MAP.length-1;i++){
+    const[c1,d1]=COC_TO_D5E_MAP[i];
+    const[c2,d2]=COC_TO_D5E_MAP[i+1];
+    if(d5e>=d1&&d5e<=d2){const t=(d5e-d1)/(d2-d1);return Math.round(c1+t*(c2-c1));}
+  }
+  if(d5e<=COC_TO_D5E_MAP[0][1])return COC_TO_D5E_MAP[0][0];
+  return COC_TO_D5E_MAP[COC_TO_D5E_MAP.length-1][0];
+}
+
+function modN(stat){return Math.floor((stat-10)/2);}
+function modStr(stat){const m=modN(stat);return m>=0?`+${m}`:String(m);}
+function statCat(stat){
+  if(stat<=5)return'Deficiente';if(stat<=8)return'Fraco';if(stat<=10)return'Médio';
+  if(stat<=13)return'Acima da média';if(stat<=16)return'Excepcional';
+  if(stat<=20)return'Heroico';if(stat<=24)return'Monstruoso';return'Divino';
+}
+function lutarToAtk(p){
+  p=parseInt(p)||45;
+  const t=[[25,2],[35,3],[45,4],[50,5],[60,5],[65,6],[72,7],[80,8],[87,9],[92,10],[100,11]];
+  for(const[threshold,b]of t)if(p<=threshold)return b;return 12;
+}
+function corpoToCA(c,res){
+  c=parseInt(c)||0;
+  if(c<=0)return'10 + DES';if(c===1)return 13;if(c===2)return 14;
+  if(c<=4)return 15;if(c<=6)return 16;if(c<=8)return 17;
+  return res?'17 + Resistência':18;
+}
+function pvToHp(pv){return Math.round((parseInt(pv)||1)*4);}
+function movToSpeed(m){return Math.round((parseInt(m)||8)*1.5);}
+function crToProf(cr){if(cr<=4)return 2;if(cr<=8)return 3;if(cr<=12)return 4;if(cr<=16)return 5;if(cr<=20)return 6;return 7;}
+function crToXP(cr){
+  const x={0:10,0.125:25,0.25:50,0.5:100,1:200,2:450,3:700,4:1100,5:1800,6:2300,7:2900,8:3900,9:5000,10:5900,11:7200,12:8400,13:10000,14:11500,15:13000,16:15000,17:18000,18:20000,19:22000,20:25000,21:33000,22:41000,23:50000,24:62000,25:75000,26:90000,27:105000,28:120000,29:135000,30:155000};
+  return x[cr]||Math.round(cr*5000);
+}
+function crDisplay(cr){return cr===0.125?'1/8':cr===0.25?'1/4':cr===0.5?'1/2':String(cr);}
+function estimateCR(corpo,lutar,regen,physres,engulf,drain,legendary){
+  let cr=Math.max(0,parseInt(corpo)-1);
+  if(regen)cr+=2;if(physres)cr+=1;if(engulf)cr+=1;if(drain)cr+=1;if(legendary)cr+=2;
+  if(parseInt(lutar)>70)cr+=1;if(parseInt(lutar)<35)cr-=1;
+  return Math.max(0,Math.min(30,cr));
+}
+function sanToValtheris(suc,fal){
+  const map={
+    '1D100':{cd:18,pavor:4,desc:'Horror cósmico — Grande Antigo ou engolfamento'},
+    '1D20':{cd:16,pavor:3,desc:'Horror maior — Shoggoth, Dhole, entidades imensas'},
+    '1D10':{cd:14,pavor:2,desc:'Horror sério — monstro poderoso do Mythos'},
+    '1D8':{cd:13,pavor:2,desc:'Horror moderado'},
+    '1D6':{cd:suc==='1'?13:10,pavor:suc==='1'?2:1,desc:suc==='1'?'Horror menor com impacto garantido':'Monstro do Mythos padrão'},
+    '1D4':{cd:8,pavor:0,desc:'Perturbador — perda mínima garantida'},
+    '1D3':{cd:8,pavor:0,desc:'Perturbador leve'},
+    '—':{cd:0,pavor:0,desc:'Sem dano de sanidade'}
+  };
+  return map[fal]||{cd:10,pavor:1,desc:'Monstro do Mythos'};
+}
+
+// ══════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  const btn=document.querySelector(`.tab-btn[onclick*="${name}"]`);
+  if(btn)btn.classList.add('active');
+  const tab=document.getElementById(`tab-${name}`);
+  if(tab)tab.classList.add('active');
+}
+
+// ══════════════════════════════════════
+// FULL BLOCK DIRECTION
+// ══════════════════════════════════════
+let fullDir='coc';
+
+function setFullDir(dir){
+  fullDir=dir;
+  g('full-dir-coc').classList.toggle('active',dir==='coc');
+  g('full-dir-dnd').classList.toggle('active',dir==='dnd');
+  g('full-inputs-coc').style.display=dir==='coc'?'block':'none';
+  g('full-inputs-dnd').style.display=dir==='dnd'?'block':'none';
+  g('stat-block').innerHTML='<div class="sb-empty">Preencha os campos para gerar o bloco de estatísticas.</div>';
+}
+
+// ══════════════════════════════════════
+// FULL BLOCK — D&D → CoC
+// ══════════════════════════════════════
+function updateFullReverse(){
+  const nome=g('d-nome').value||'Criatura';
+  const tipo=g('d-tipo').value||'Monstro do Mythos · Não-alinhado';
+  const FOR=parseInt(g('d-for').value)||10;
+  const DES=parseInt(g('d-des').value)||10;
+  const CON=parseInt(g('d-con').value)||10;
+  const INT=parseInt(g('d-int').value)||10;
+  const WIS=parseInt(g('d-sab').value)||10;
+  const CAR=g('d-car').value?parseInt(g('d-car').value):null;
+  const hp=parseInt(g('d-hp').value)||13;
+  const ca=parseInt(g('d-ca').value)||13;
+  const atk=parseInt(g('d-atk').value)||5;
+  const cr=parseInt(g('d-cr').value)||1;
+  const spd=parseInt(g('d-spd').value)||9;
+  const spdAlt=parseInt(g('d-spd-alt').value)||0;
+  const spdType=g('d-spd-type').value;
+  const size=g('d-size').value;
+  const dano=g('d-dano').value||'';
+  const sanSuc=g('d-san-suc').value;
+  const sanFal=g('d-san-fal').value;
+
+  const cbAnfib=g('d-cb-anfibio').checked;
+  const cbRegen=g('d-cb-regen').checked;
+  const cbPhysRes=g('d-cb-physres').checked;
+  const cbImortal=g('d-cb-imortal').checked;
+  const cbEngulf=g('d-cb-engulf').checked;
+  const cbDrain=g('d-cb-drain').checked;
+  const cbSpells=g('d-cb-spells').checked;
+  const cbFly=g('d-cb-fly').checked;
+
+  // Convert stats: D&D → CoC
+  const cocFOR=d5eToCoc(FOR);
+  const cocCON=d5eToCoc(CON);
+  const cocDES=d5eToCoc(DES);
+  const cocINT=d5eToCoc(INT);
+  const cocPOD=d5eToCoc(WIS);
+  const cocAPA=CAR?d5eToCoc(CAR):null;
+
+  // TAM from size
+  const tamMap={Pequeno:30,Médio:55,Grande:90,Imenso:200,Gargantesco:360};
+  const cocTAM=tamMap[size]||55;
+
+  // PV from HP
+  const cocPV=Math.round(hp/4);
+
+  // PM from WIS equivalent
+  const cocPM=Math.round(cocPOD/5)*2||10;
+
+  // Corpo from CA
+  let cocCorpo=0;
+  if(ca<=11)cocCorpo=0;
+  else if(ca<=13)cocCorpo=1;
+  else if(ca===14)cocCorpo=2;
+  else if(ca===15)cocCorpo=3;
+  else if(ca===16)cocCorpo=6;
+  else if(ca>=17&&cbPhysRes)cocCorpo=9;
+  else cocCorpo=7;
+
+  // Lutar % from attack bonus
+  const lutarMap=[[2,25],[3,35],[4,40],[5,45],[6,55],[7,65],[8,72],[9,80],[10,87],[11,92],[12,95],[17,99]];
+  let lutarPct=45;
+  for(const[a,p]of lutarMap){if(atk<=a){lutarPct=p;break;}}
+  const esqPct=Math.round(lutarPct*0.55);
+
+  // Movement from speed
+  const cocMov=Math.max(1,Math.round(spd/1.5));
+  const cocMovAlt=spdAlt?Math.max(1,Math.round(spdAlt/1.5)):0;
+
+  // Dano Extra from FOR+TAM
+  const danoExtraIdx=Math.floor((cocFOR+cocTAM)/150);
+  const danoExtraTable=['Nenhum','1D4','1D6','2D6','3D6','4D6','6D6','8D6'];
+  const danoExtra=danoExtraTable[Math.min(danoExtraIdx,danoExtraTable.length-1)];
+
+  // Regeneração
+  const regenCoC=cbRegen?Math.max(2,Math.round(cocPV/20)*2):0;
+
+  // Armor string
+  let armorStr='';
+  if(cocCorpo>=9&&cbPhysRes)armorStr='9 pts · armas físicas → 1 ponto de dano';
+  else if(cocCorpo>=1)armorStr=`${cocCorpo} ponto${cocCorpo>1?'s':''} (armadura natural)`;
+  else armorStr='Sem armadura';
+
+  // Speed string CoC
+  const spdTypeLabel={swim:'nadando',fly:'voando',burrow:'escavando'};
+  let movStr=`${cocMov}`;
+  if(cbFly&&!spdAlt)movStr+=` / ${cocMov} voando`;
+  else if(cocMovAlt)movStr+=` / ${cocMovAlt} ${spdTypeLabel[spdType]||''}`;
+
+  // Stat tier classes (for CoC block styling)
+  const tiers=[
+    cocFOR>=150?'hi':cocFOR<=30?'lo':'norm',
+    cocCON>=120?'hi':cocCON<=30?'lo':'norm',
+    cocTAM>=180?'hi':cocTAM<=30?'lo':'norm',
+    cocDES>=70?'hi':cocDES<=25?'lo':'norm',
+    cocINT>=65?'hi':cocINT<=25?'lo':'norm',
+    cocPOD>=65?'hi':cocPOD<=25?'lo':'norm',
+  ];
+  const sNames=['FOR','CON','TAM','DES','INT','POD'];
+  const sVals=[cocFOR,cocCON,cocTAM,cocDES,cocINT,cocPOD];
+
+  const statsHTML=sNames.map((n,i)=>`
+    <div class="sb-stat ${tiers[i]}">
+      <span class="sb-stat-name">${n}</span>
+      <span class="sb-stat-val ${tiers[i]}">${sVals[i]}</span>
+      <span class="sb-stat-mod" style="font-size:.58rem">${Math.floor(sVals[i]/5)}D6×5</span>
+    </div>`).join('');
+
+  // Traits
+  let traits='';
+  if(cbAnfib)traits+=`<div class="sb-trait"><strong>Anfíbio.</strong> Respira ar e água. Sem penalidades aquáticas.</div>`;
+  if(cbPhysRes)traits+=`<div class="sb-trait"><strong>Armadura Especial.</strong> Armas físicas causam apenas 1 ponto de dano por ataque. (Equivalente a Resistência a não-mágico em D&D.)</div>`;
+  if(cbRegen)traits+=`<div class="sb-trait"><strong>Regeneração ${regenCoC} PV/rodada.</strong> Recupera ${regenCoC} PV no início de cada rodada. Especificar o que bloqueia (ex: fogo).</div>`;
+  if(cbImortal)traits+=`<div class="sb-trait"><strong>Imortalidade.</strong> Não envelhece nem adoece. Só morre por dano direto.</div>`;
+  if(cbFly)traits+=`<div class="sb-trait"><strong>Voo / Interestelar.</strong> Capaz de voar e potencialmente de viagem interestelar com proteção adequada.</div>`;
+
+  // Actions
+  let actions='';
+  if(dano||lutarPct)actions+=`<div class="sb-trait"><strong>Lutar ${lutarPct}% (${Math.floor(lutarPct/2)}/${Math.floor(lutarPct/5)}).</strong> Dano: ${dano||danoExtra} ${danoExtra!=='Nenhum'?`+ ${danoExtra} (Dano Extra)`:''}</div>`;
+  if(cocDES>0)actions+=`<div class="sb-trait"><strong>Esquivar ${esqPct}% (${Math.floor(esqPct/2)}/${Math.floor(esqPct/5)}).</strong></div>`;
+  if(cbEngulf)actions+=`<div class="sb-trait"><strong>Engolfar.</strong> Teste resistido de FOR (FOR ${cocFOR} vs. FOR da vítima). Falha: vítima engolfada, sofre ${danoExtra||'dano extra'}/rodada. Escape: Teste de FOR bem-sucedido.</div>`;
+  if(cbDrain)actions+=`<div class="sb-trait"><strong>Morder e Prender (mnbr).</strong> Após mordida bem-sucedida: drena 3D10 de FOR/rodada até a morte (FOR=0). Recuperação: 1D10+5 FOR/dia de descanso.</div>`;
+
+  // SAN (pass through from input)
+  const sanStr=(sanSuc&&sanFal&&sanFal!=='—')?`${sanSuc} / ${sanFal} — Teste de POD`:'—';
+
+  // Feitiços
+  let spellsStr='';
+  if(cbSpells){
+    const spellPct=Math.max(10,Math.min(90,cr*8));
+    spellsStr=`<div class="sb-trait"><strong>Feitiços (${spellPct}% de chance · 1D${cr<=2?3:cr<=5?4:6} feitiços).</strong> Trate como magias de Warlock (CD ${10+Math.ceil(cr/2)}) ao converter para D&D.</div>`;
+  }
+
+  g('stat-block').innerHTML=`
+    <div class="sb-name">${nome}</div>
+    <div class="sb-type" style="color:var(--teal-l)">CoC 7e · ${tipo}</div>
+    <div class="sb-div thick"></div>
+    <div class="sb-vitals">
+      <div class="sb-vital">
+        <div class="sb-vital-label">PV</div>
+        <div class="sb-vital-value">${cocPV}</div>
+        <div class="sb-vital-sub">HP ${hp} ÷ 4</div>
+      </div>
+      <div class="sb-vital">
+        <div class="sb-vital-label">Corpo / Armadura</div>
+        <div class="sb-vital-value">${cocCorpo}</div>
+        <div class="sb-vital-sub">${armorStr}</div>
+      </div>
+      <div class="sb-vital">
+        <div class="sb-vital-label">Movimento</div>
+        <div class="sb-vital-value" style="font-size:.85rem">${movStr}</div>
+        <div class="sb-vital-sub">Vel. ${spd}m ÷ 1,5</div>
+      </div>
+      <div class="sb-vital">
+        <div class="sb-vital-label">PM</div>
+        <div class="sb-vital-value">${cocPM}</div>
+        <div class="sb-vital-sub">SAB ${WIS} → POD ${cocPOD}</div>
+      </div>
+    </div>
+    <div class="sb-div"></div>
+    <div class="sb-stats-grid">${statsHTML}</div>
+    ${cocAPA!==null?`<div style="padding:6px 20px;font-size:.82rem;color:var(--text-d);font-family:'Fira Code',monospace">APA: ${cocAPA} (2D6×5) — CoC exclusive (Aparência)</div>`:''}
+    <div class="sb-props">
+      <div class="sb-prop"><strong>Lutar</strong><span>${lutarPct}% (${Math.floor(lutarPct/2)} / ${Math.floor(lutarPct/5)})</span></div>
+      <div class="sb-prop"><strong>Esquivar</strong><span>${esqPct}% (${Math.floor(esqPct/2)} / ${Math.floor(esqPct/5)})</span></div>
+      <div class="sb-prop"><strong>Dano Extra</strong><span>${danoExtra}</span></div>
+      ${regenCoC?`<div class="sb-prop"><strong>Regeneração</strong><span>${regenCoC} PV / rodada</span></div>`:''}
+    </div>
+    <div class="sb-div thick"></div>
+    <div class="sb-cr-row">
+      <div class="sb-cr">
+        <div class="sb-cr-label">CR Origem</div>
+        <div class="sb-cr-value" style="font-size:1.1rem">${cr}</div>
+      </div>
+      <div>
+        <div class="sb-cr-label">Corpo CoC</div>
+        <div class="sb-cr-value" style="font-size:1.1rem">${cocCorpo}</div>
+      </div>
+      <div>
+        <div class="sb-cr-xp">Tamanho: ${size} → TAM ${cocTAM}</div>
+      </div>
+    </div>
+    <div class="sb-div"></div>
+    ${traits?`<div class="sb-section-label">Traços &amp; Armadura</div>${traits}`:''}
+    ${actions?`<div class="sb-section-label">Perícias de Combate</div>${actions}`:''}
+    ${spellsStr?`<div class="sb-section-label">Feitiços</div>${spellsStr}`:''}
+    ${sanStr!=='—'?`<div class="sb-san"><strong>Dano de Sanidade (CoC):</strong> ${sanStr} · Teste de POD</div>`:''}
+  `;
+}
+
+// ══════════════════════════════════════
+// FULL BLOCK — CoC → D&D
+// ══════════════════════════════════════
+function g(id){return document.getElementById(id);}
+
+function updateFull(){
+  if(fullDir==='dnd'){updateFullReverse();return;}
+  const nome=g('i-nome').value||'Criatura';
+  const tipo=g('i-tipo').value||'Monstro do Mythos · Não-alinhado';
+  const fCoC=parseInt(g('i-for').value)||50;
+  const cCoC=parseInt(g('i-con').value)||50;
+  const tamCoC=parseInt(g('i-tam').value)||50;
+  const dCoC=parseInt(g('i-des').value)||50;
+  const iCoC=parseInt(g('i-int').value)||50;
+  const pCoC=parseInt(g('i-pod').value)||50;
+  const apaCoC=g('i-apa').value?parseInt(g('i-apa').value):null;
+  const pv=parseInt(g('i-pv').value)||13;
+  const corpo=parseInt(g('i-corpo').value)||1;
+  const lutar=parseInt(g('i-lutar').value)||45;
+  const mov=parseInt(g('i-mov').value)||8;
+  const movAlt=parseInt(g('i-mov-alt').value)||0;
+  const movType=g('i-mov-type').value;
+  const dano=g('i-dano').value||'';
+  const armor=g('i-armor').value;
+  const sanSuc=g('i-san-suc').value;
+  const sanFal=g('i-san-fal').value;
+
+  const cbRegen=g('cb-regen').checked;
+  const cbPhysRes=g('cb-physres').checked||armor==='9res'||armor==='physimm';
+  const cbAnfib=g('cb-anfibio').checked;
+  const cbEngulf=g('cb-engulf').checked;
+  const cbDrain=g('cb-fordrain').checked;
+  const cbImortal=g('cb-imortal').checked;
+  const cbSpells=g('cb-spellas').checked;
+  const cbDive=g('cb-divemb').checked;
+
+  // Convert stats
+  const FOR=cocToStat(fCoC),CON=cocToStat(cCoC),DEX=cocToStat(dCoC);
+  const INT=cocToStat(iCoC),WIS=cocToStat(pCoC);
+  const CAR=apaCoC?cocToStat(apaCoC):8;
+
+  // Size
+  let size='Médio';
+  if(tamCoC<40)size='Pequeno';else if(tamCoC<80)size='Médio';
+  else if(tamCoC<180)size='Grande';else if(tamCoC<280)size='Imenso';else size='Gargantesco';
+
+  // CR & vitals
+  const cr=estimateCR(corpo,lutar,cbRegen,cbPhysRes,cbEngulf,cbDrain,false);
+  const prof=crToProf(cr);
+  const xp=crToXP(cr);
+  const hp=pvToHp(pv)+(cbRegen?Math.round(pvToHp(pv)*0.2):0);
+  const caVal=armor==='none'?`${10+modN(DEX)} (sem armadura)`
+    :armor==='1'?'13 (armadura natural)'
+    :armor==='2'?'14 (armadura natural)'
+    :armor==='3'?'15 (armadura natural)'
+    :armor==='6'?'16 (armadura natural)'
+    :armor==='9res'?'17 (armadura natural)'
+    :`${10+modN(DEX)}`;
+  const spd=movToSpeed(mov);
+  const spdAlt=movAlt?movToSpeed(movAlt):0;
+  const atkBonus=lutarToAtk(lutar);
+  const hitDice=`${Math.round(hp/6.5)}d${size==='Gargantesco'?20:size==='Imenso'?12:size==='Grande'?10:8}`;
+  const regenVal=Math.max(5,Math.round(pvToHp(pv)/25)*5);
+  const san=sanToValtheris(sanSuc,sanFal);
+
+  // Speed string
+  let spdStr=`${spd}m`;
+  if(cbAnfib)spdStr+=spdAlt?`, ${spdAlt}m natação`:', 9m natação';
+  else if(spdAlt){
+    const labels={swim:'natação',fly:'voo',burrow:'escavação',climb:'escalada'};
+    spdStr+=`, ${spdAlt}m ${labels[movType]||''}`;
+  }
+
+  // Proficiency saves
+  const saves=[];
+  if(FOR>=18)saves.push(`FOR ${modStr(FOR+prof*1)}`);
+  if(CON>=14)saves.push(`CON ${modStr(CON+prof*1)}`);
+  saves.push(`SAB ${modStr(WIS+prof*0)}`);
+
+  // Skills
+  const skills=[];
+  if(INT>=12)skills.push(`Percepção +${modN(WIS)+prof}`);
+  if(DEX>=12)skills.push(`Furtividade +${modN(DEX)+prof}`);
+
+  // Resistances
+  const resArr=[];
+  if(cbPhysRes)resArr.push('Cortante, perfurante e contundente de fontes não-mágicas');
+
+  // Traits
+  let traits='';
+  if(cbAnfib)traits+=`<div class="sb-trait"><strong>Anfíbio.</strong> Pode respirar ar e água. Sem penalidade de movimento ou ataque em ambiente aquático.</div>`;
+  if(cbPhysRes)traits+=`<div class="sb-trait"><strong>Resistência a Não-Mágico.</strong> Resistência a dano cortante, perfurante e contundente de armas não-mágicas.</div>`;
+  if(cbRegen)traits+=`<div class="sb-trait"><strong>Regeneração ${regenVal}.</strong> Recupera ${regenVal} PV no início de cada turno. Bloqueado por fogo ou relâmpago naquele turno.</div>`;
+  if(cbImortal)traits+=`<div class="sb-trait"><strong>Imortalidade.</strong> Não morre de velhice nem doença. Apenas dano direto pode matá-la.</div>`;
+  if(cbDive)traits+=`<div class="sb-trait"><strong>Mergulhador Letal.</strong> Se voar ≥ 18m em linha reta antes de atacar, o próximo ataque de Mordida é crítico automático se acertar.</div>`;
+
+  // Actions
+  let actions='';
+  if(dano)actions+=`<div class="sb-trait"><strong>Ataque Corpo a Corpo.</strong> <em>+${atkBonus} para acertar</em>, alcance 1,5m, um alvo. <em>Acerto:</em> ${dano} de dano.</div>`;
+  if(cbEngulf){
+    const esc=8+prof+modN(FOR);
+    actions+=`<div class="sb-trait"><strong>Engolfar <em>(Ação Bônus — após acerto)</em>.</strong> Alvo Médio ou menor faz Save FOR CD ${esc}. Falha: Agarrado (Escape CD ${esc}, Força), Cego, não respira. Início de cada turno: ${dano||'dano automático'}. Máx. 4 criaturas Médias simultâneas.</div>`;
+  }
+  if(cbDrain){
+    const esc=8+prof+modN(FOR);
+    const sv=8+prof+modN(CON);
+    actions+=`<div class="sb-trait"><strong>Morder e Prender <em>(Substitui ataque de Mordida)</em>.</strong> <em>+${atkBonus} para acertar</em>. Acerto: ${dano||'2D8+'+modN(FOR)} mais alvo Agarrado (Escape CD ${esc}, Força). Enquanto Agarrado, início de cada turno: <em>3D10 redução de FOR máxima</em> (Save CON CD ${sv} anula). Morte quando FOR = 0. Recuperação: 1D10+5 FOR/descanso longo.</div>`;
+  }
+  if(cbSpells){
+    const spellCD=10+Math.ceil(cr/2);const spellAtk=spellCD-8;
+    actions+=`<div class="sb-trait"><strong>Feitiços do Mythos.</strong> CD de magia ${spellCD}, bônus de ataque +${spellAtk}. Trate como magias de Warlock (espaços de nível ${Math.max(1,Math.min(5,Math.ceil(cr/4)))}). Feitiços específicos a definir pelo GM.</div>`;
+  }
+
+  // Sanity block
+  let sanBlock='';
+  if(sanFal&&sanFal!=='—'){
+    const pavorStr=san.pavor>0?` · Pavor ${san.pavor} nível${san.pavor>1?'s':''}`:'';
+    sanBlock=`<strong>Save SAB CD ${san.cd}</strong> · Sucesso: ${sanSuc} SAN · Falha: ${sanFal} SAN${pavorStr}`;
+    if(san.pavor>=3)sanBlock+=` · Falha por 5+: Insanidade`;
+  }
+
+  // Build stat block HTML
+  const statCls=[
+    FOR>=18?'hi':FOR<=7?'lo':'',
+    DEX>=14?'hi':DEX<=7?'lo':'',
+    CON>=16?'hi':CON<=7?'lo':'',
+    INT>=13?'hi':INT<=7?'lo':'',
+    WIS>=12?'hi':WIS<=7?'lo':'',
+    CAR>=12?'hi':CAR<=5?'lo':''
+  ];
+  const statVals=[FOR,DEX,CON,INT,WIS,CAR];
+  const statNames=['FOR','DES','CON','INT','SAB','CAR'];
+
+  const statsHTML=statNames.map((n,i)=>`
+    <div class="sb-stat ${statCls[i]}">
+      <span class="sb-stat-name">${n}</span>
+      <span class="sb-stat-val">${statVals[i]}</span>
+      <span class="sb-stat-mod">${modStr(statVals[i])}</span>
+    </div>`).join('');
+
+  g('stat-block').innerHTML=`
+    <div class="sb-name">${nome}</div>
+    <div class="sb-type">${size} · ${tipo}</div>
+    <div class="sb-div thick"></div>
+    <div class="sb-vitals">
+      <div class="sb-vital"><div class="sb-vital-label">PV</div><div class="sb-vital-value">${hp}</div><div class="sb-vital-sub">(${hitDice})</div></div>
+      <div class="sb-vital"><div class="sb-vital-label">CA</div><div class="sb-vital-value">${caVal}</div></div>
+      <div class="sb-vital"><div class="sb-vital-label">Velocidade</div><div class="sb-vital-value" style="font-size:.85rem">${spdStr}</div></div>
+    </div>
+    <div class="sb-div"></div>
+    <div class="sb-stats-grid">${statsHTML}</div>
+    <div class="sb-props">
+      ${saves.length?`<div class="sb-prop"><strong>Salvaguardas</strong><span>${saves.join(', ')}</span></div>`:''}
+      ${skills.length?`<div class="sb-prop"><strong>Perícias</strong><span>${skills.join(', ')}</span></div>`:''}
+      ${resArr.length?`<div class="sb-prop"><strong>Resistências</strong><span>${resArr.join('; ')}</span></div>`:''}
+      <div class="sb-prop"><strong>Idiomas</strong><span>—</span></div>
+    </div>
+    <div class="sb-div thick"></div>
+    <div class="sb-cr-row">
+      <div class="sb-cr"><div class="sb-cr-label">CR</div><div class="sb-cr-value">${crDisplay(cr)}</div></div>
+      <div><div class="sb-cr-label">Proficiência</div><div class="sb-cr-value" style="font-size:1rem">+${prof}</div></div>
+      <div><div class="sb-cr-xp">${xp.toLocaleString()} XP</div></div>
+    </div>
+    <div class="sb-div"></div>
+    ${traits?`<div class="sb-section-label">Traços</div>${traits}`:''}
+    ${actions?`<div class="sb-section-label">Ações</div>${actions}`:''}
+    ${sanBlock?`<div class="sb-san">${sanBlock}</div>`:''}
+  `;
+}
+
+// ══════════════════════════════════════
+// SINGLE STAT CONVERTER
+// ══════════════════════════════════════
+let statDir='coc';
+function setDir(d){
+  statDir=d;
+  g('dir-coc').classList.toggle('active',d==='coc');
+  g('dir-dnd').classList.toggle('active',d==='dnd');
+  g('lbl-from').textContent=d==='coc'?'Valor CoC (5–600)':'Stat D&D 5e (3–30)';
+  g('lbl-to').textContent=d==='coc'?'Stat D&D 5e':'Valor CoC aprox.';
+  g('stat-from').placeholder=d==='coc'?'70':'14';
+  g('stat-from').max=d==='coc'?600:30;
+  g('stat-from').min=d==='coc'?1:3;
+  g('stat-from').value='';
+  g('stat-to').value='';
+  clearStatDetails();
+}
+
+function clearStatDetails(){
+  ['res-mod','res-cat','res-save','res-skill','res-back'].forEach(id=>g(id).textContent='—');
+}
+
+function updateStat(){
+  const val=parseInt(g('stat-from').value);
+  if(isNaN(val)||val<1){g('stat-to').value='';clearStatDetails();return;}
+  let result,d5e,cocBack;
+  if(statDir==='coc'){
+    d5e=cocToStat(val);
+    g('stat-to').value=d5e;
+    const m=modN(d5e);
+    g('res-mod').textContent=modStr(d5e);
+    g('res-cat').textContent=statCat(d5e);
+    g('res-save').textContent=`${modStr(d5e+2)} (com Prof +2)`;
+    g('res-skill').textContent=`${modStr(d5e+2)} (perícia + Prof +2)`;
+    g('res-back').textContent=`≈ CoC ${val}`;
+  } else {
+    const coc=d5eToCoc(val);
+    g('stat-to').value=coc;
+    g('res-mod').textContent=modStr(val);
+    g('res-cat').textContent=statCat(val);
+    g('res-save').textContent=`${modStr(val+2)} (com Prof +2)`;
+    g('res-skill').textContent=`${modStr(val+2)} (perícia + Prof +2)`;
+    g('res-back').textContent=`≈ CoC ${coc}`;
+  }
+}
+
+// ══════════════════════════════════════
+// COMBAT CONVERTERS
+// ══════════════════════════════════════
+function updateCombat(){
+  const lutar=parseInt(g('c-lutar').value)||0;
+  const corpo=parseInt(g('c-corpo').value)||0;
+  const pv=parseInt(g('c-pv').value)||0;
+  const mov=parseInt(g('c-mov').value)||0;
+  const crCorpo=parseInt(g('c-cr-corpo').value)||0;
+  const pm=parseInt(g('c-pm').value)||0;
+
+  if(lutar){const a=lutarToAtk(lutar);g('r-atk').textContent=`+${a}`;g('r-atk-note').textContent=`CD de Save: ${8+a}`;}
+  else{g('r-atk').textContent='—';g('r-atk-note').textContent='Bônus de ataque Valtheris';}
+
+  if(corpo){
+    const ca=corpoToCA(corpo,false);
+    g('r-ca').textContent=String(ca);
+    g('r-ca-note').textContent=corpo>=9?'+ Resistência a não-mágico':'Armadura natural';
+  } else{g('r-ca').textContent='—';g('r-ca-note').textContent='Classe de Armadura Valtheris';}
+
+  if(pv){g('r-hp').textContent=pvToHp(pv);g('r-hp-note').textContent=`PV ${pv} × 4 = HP ${pvToHp(pv)}`;}
+  else{g('r-hp').textContent='—';g('r-hp-note').textContent='HP Valtheris (× 4)';}
+
+  if(mov){const s=movToSpeed(mov);g('r-spd').textContent=`${s}m`;g('r-spd-note').textContent=`Mov ${mov} × 1,5 = ${s}m/turno`;}
+  else{g('r-spd').textContent='—';g('r-spd-note').textContent='metros por turno (× 1,5)';}
+
+  if(crCorpo){
+    const cr=Math.max(0,crCorpo-1);
+    g('r-cr').textContent=crDisplay(cr);
+    g('r-cr-note').textContent=`${crToXP(cr).toLocaleString()} XP · Prof +${crToProf(cr)}`;
+  } else{g('r-cr').textContent='—';g('r-cr-note').textContent='CR base (Corpo − 1)';}
+
+  if(pm){
+    const lvl=Math.max(1,Math.min(9,Math.round(pm/10)));
+    g('r-pm').textContent=`Nv.${lvl}`;
+    g('r-pm-note').textContent=`CD Magia ${10+lvl} · Bônus +${2+lvl}`;
+  } else{g('r-pm').textContent='—';g('r-pm-note').textContent='Nível de Warlock equivalente';}
+}
+
+// ══════════════════════════════════════
+// SANITY CONVERTER
+// ══════════════════════════════════════
+function updateSanity(){
+  const suc=g('s-suc').value;
+  const fal=g('s-fal').value;
+  const san=sanToValtheris(suc,fal);
+
+  g('s-out-cd').textContent=san.cd>0?String(san.cd):'—';
+  g('s-out-cd-sub').textContent=san.cd>0?`Save SAB CD ${san.cd}`:'Sem teste';
+  g('s-out-pavor').textContent=san.pavor>0?`${san.pavor} nível${san.pavor>1?'s':''}`:san.cd>0?'0':'—';
+  g('s-out-pavor-sub').textContent=san.pavor>=3?'Falha 5+: Insanidade':san.pavor>0?'Fonte Mythos':'';
+
+  const pavorNames=['','Perturbado','Assustado','Aterrorizado','Apavorado','Colapso'];
+  const pName=san.pavor>0?pavorNames[Math.min(san.pavor,5)]:'';
+
+  let full='';
+  if(san.cd>0){
+    full=`Salvaguarda de SAB (CD ${san.cd}) — Sucesso: ${suc} SAN · Falha: ${fal} SAN`;
+    if(san.pavor>0)full+=` · Pavor ${san.pavor} (${pName})`;
+    if(san.pavor>=3)full+=` · Falha por 5 ou mais: Insanidade imediata`;
+    full+=`. ${san.desc}.`;
+  } else { full='Sem dano de sanidade para esta configuração.'; }
+  g('s-out-full').textContent=full;
+}
+
+// ══════════════════════════════════════
+// COPY BLOCK
+// ══════════════════════════════════════
+function copyBlock(){
+  const nome=g('i-nome').value||'Criatura';
+  const text=document.getElementById('stat-block').innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    const fb=g('copy-feedback');
+    fb.style.display='block';
+    setTimeout(()=>fb.style.display='none',2200);
+  });
+}
+
+// Init
+updateSanity();
+</script>
+</body>
+</html>

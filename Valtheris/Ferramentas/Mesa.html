@@ -1,0 +1,3238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mesa do Mestre — Valtheris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ══ TOKENS — espelho do hub ══════════════════════════════════════════ */
+:root {
+  --blood:    #8b1a1a;
+  --ember:    #c0392b;
+  --gold:     #c9a84c;
+  --gold-dim: #7a6030;
+  --ash:      #d4c9b5;
+  --bone:     #e8dfc8;
+  --void:     #0a0805;
+  --deep:     #110f0a;
+  --mid:      #251f17;
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--void);
+  color: var(--ash);
+  font-family: 'Cinzel', serif;
+  overflow: hidden;
+}
+
+/* ── textura de ruído (igual ao hub) ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  background-size: 200px; opacity: .3;
+}
+
+/* ── radial vignette ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse 100% 80% at 50% 50%, transparent 40%, rgba(5,4,3,.5) 100%);
+}
+
+.mesa {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column;
+  height: 100vh; width: 100%;
+}
+
+/* ══ BARRA DE FERRAMENTAS ════════════════════════════════════════════ */
+.tool-nav {
+  flex-shrink: 0;
+  height: 42px;
+  background: var(--deep);
+  border-bottom: 1px solid rgba(201,168,76,.14);
+  display: flex; align-items: stretch;
+  overflow-x: auto; scrollbar-width: none;
+  position: relative; z-index: 10;
+}
+.tool-nav::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,.12) 20%, rgba(201,168,76,.12) 80%, transparent);
+}
+.tool-nav::-webkit-scrollbar { display: none; }
+
+.tool-tab {
+  flex-shrink: 0;
+  padding: 0 1rem;
+  font-family: 'Cinzel', serif;
+  font-size: .48rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--gold-dim);
+  background: none; border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color .2s, border-color .2s, background .2s;
+  display: flex; align-items: center; gap: .4rem;
+  white-space: nowrap;
+}
+.tool-tab:hover { color: var(--ash); background: rgba(201,168,76,.04); }
+.tool-tab.active {
+  color: var(--gold);
+  border-bottom-color: var(--ember);
+  background: rgba(139,26,26,.06);
+}
+.tab-glyph { font-size: .8rem; }
+.tab-soon {
+  font-size: .35rem; letter-spacing: .1em;
+  padding: .1rem .3rem;
+  background: rgba(17,14,8,.8);
+  border: 1px solid rgba(122,96,48,.2);
+  border-radius: 2px;
+  color: rgba(122,96,48,.45);
+}
+.tool-sep {
+  width: 1px; flex-shrink: 0;
+  background: rgba(201,168,76,.08);
+  margin: 9px 2px;
+}
+
+/* ══ PAINÉIS ════════════════════════════════════════════════════════ */
+.tool-panel { display: none; flex: 1; overflow: hidden; flex-direction: column; }
+.tool-panel.active { display: flex; }
+
+/* placeholder */
+.panel-vacant {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: .9rem; opacity: .28; pointer-events: none;
+}
+.vacant-glyph { font-size: 3.2rem; filter: grayscale(.7); }
+.vacant-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1rem; color: var(--bone);
+}
+.vacant-sub {
+  font-family: 'IM Fell English', serif; font-style: italic;
+  font-size: .72rem; color: var(--gold-dim);
+  max-width: 280px; text-align: center; line-height: 1.6;
+}
+
+/* ══ RASTREADOR DE INICIATIVA ════════════════════════════════════════ */
+.init-layout {
+  display: flex; flex: 1; overflow: hidden; height: 100%;
+}
+
+/* ── painel lateral ── */
+.init-aside {
+  width: 256px; flex-shrink: 0;
+  background: var(--deep);
+  border-right: 1px solid rgba(201,168,76,.09);
+  display: flex; flex-direction: column;
+  padding: 1.1rem 1rem;
+  gap: 1.1rem;
+  overflow-y: auto;
+}
+.init-aside::-webkit-scrollbar { width: 2px; }
+.init-aside::-webkit-scrollbar-thumb { background: var(--blood); border-radius: 2px; }
+
+/* rodada */
+.rodada-block { text-align: center; }
+.rodada-eyebrow {
+  font-size: .4rem; letter-spacing: .35em; text-transform: uppercase;
+  color: var(--gold-dim); display: block; margin-bottom: .35rem;
+}
+.rodada-num {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 2.6rem; color: var(--bone); line-height: 1;
+  text-shadow: 0 0 28px rgba(192,57,43,.45);
+  display: block; transition: text-shadow .3s;
+}
+.rodada-num.beat {
+  animation: rodadaBeat .38s cubic-bezier(.36,.07,.19,.97) both;
+}
+@keyframes rodadaBeat {
+  0%   { transform: scale(1);    text-shadow: 0 0 28px rgba(192,57,43,.45); }
+  35%  { transform: scale(1.14); text-shadow: 0 0 50px rgba(201,168,76,.8); }
+  100% { transform: scale(1);    text-shadow: 0 0 28px rgba(192,57,43,.45); }
+}
+.rodada-sub {
+  font-family: 'IM Fell English', serif; font-style: italic;
+  font-size: .6rem; color: var(--gold-dim);
+  display: block; margin-top: .2rem;
+  min-height: .9rem; transition: opacity .3s;
+}
+.rodada-rule {
+  width: 56px; height: 1px; margin: .55rem auto 0;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,.28), transparent);
+}
+
+/* seção label */
+.aside-label {
+  font-size: .4rem; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--gold-dim);
+  display: block; margin-bottom: .55rem;
+  padding-bottom: .28rem;
+  border-bottom: 1px solid rgba(201,168,76,.07);
+}
+
+/* form */
+.add-form { display: flex; flex-direction: column; gap: .52rem; }
+.form-pair { display: flex; gap: .35rem; }
+.field { display: flex; flex-direction: column; gap: .2rem; flex: 1; }
+.field-lbl {
+  font-size: .36rem; letter-spacing: .2em; text-transform: uppercase;
+  color: rgba(122,96,48,.7);
+}
+.field-inp {
+  background: rgba(10,8,5,.85);
+  border: 1px solid rgba(201,168,76,.13);
+  border-radius: 3px;
+  color: var(--ash);
+  font-family: 'Cinzel', serif; font-size: .58rem;
+  padding: .38rem .45rem;
+  width: 100%; outline: none;
+  transition: border-color .18s, box-shadow .18s;
+  -webkit-appearance: none;
+}
+.field-inp:focus {
+  border-color: rgba(201,168,76,.38);
+  box-shadow: 0 0 7px rgba(201,168,76,.08);
+}
+.field-inp::placeholder { color: rgba(122,96,48,.4); }
+.field-inp[type=number]::-webkit-inner-spin-button,
+.field-inp[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+.field-inp[type=number] { -moz-appearance: textfield; }
+.field-inp.err { border-color: rgba(192,57,43,.65) !important; }
+
+/* tipo */
+.tipo-btns { display: flex; gap: .28rem; }
+.tipo-btn {
+  flex: 1; padding: .36rem 0;
+  font-family: 'Cinzel', serif; font-size: .44rem; letter-spacing: .1em;
+  text-transform: uppercase; border-radius: 3px; cursor: pointer;
+  background: rgba(10,8,5,.85);
+  border: 1px solid rgba(201,168,76,.12);
+  color: var(--gold-dim);
+  transition: all .18s;
+}
+.tipo-btn:hover { background: rgba(201,168,76,.05); color: var(--ash); }
+.tipo-btn.sel-pc {
+  background: rgba(74,123,187,.13);
+  border-color: rgba(74,123,187,.45);
+  color: rgba(160,200,240,.9);
+}
+.tipo-btn.sel-npc {
+  background: rgba(139,26,26,.18);
+  border-color: rgba(192,57,43,.45);
+  color: rgba(230,130,110,.9);
+}
+
+.btn-adicionar {
+  width: 100%; padding: .52rem;
+  font-family: 'Cinzel', serif; font-size: .5rem; letter-spacing: .16em; text-transform: uppercase;
+  background: rgba(139,26,26,.18);
+  border: 1px solid rgba(192,57,43,.3);
+  border-radius: 3px; color: var(--ash); cursor: pointer;
+  transition: all .2s;
+}
+.btn-adicionar:hover {
+  background: rgba(139,26,26,.35);
+  border-color: rgba(201,168,76,.38);
+  color: var(--gold);
+  box-shadow: 0 0 10px rgba(139,26,26,.2);
+}
+.btn-adicionar:active { transform: scale(.97); }
+
+/* controles de turno */
+.turn-controls { display: flex; flex-direction: column; gap: .42rem; }
+
+.btn-turn {
+  width: 100%; padding: .55rem;
+  font-family: 'Cinzel', serif; font-size: .5rem; letter-spacing: .14em; text-transform: uppercase;
+  border-radius: 3px; cursor: pointer; transition: all .22s;
+  background: none;
+}
+.btn-turn.next {
+  background: rgba(139,26,26,.15);
+  border: 1px solid rgba(192,57,43,.35);
+  color: var(--ash);
+}
+.btn-turn.next:hover {
+  background: rgba(192,57,43,.28);
+  border-color: var(--ember);
+  color: var(--bone);
+  box-shadow: 0 0 12px rgba(192,57,43,.18);
+}
+.btn-turn.prev {
+  border: 1px solid rgba(201,168,76,.16);
+  color: var(--gold-dim);
+}
+.btn-turn.prev:hover { background: rgba(201,168,76,.05); color: var(--ash); }
+.btn-turn.reset {
+  border: 1px solid rgba(60,50,38,.4);
+  color: rgba(100,80,55,.55);
+  font-size: .44rem;
+}
+.btn-turn.reset:hover {
+  background: rgba(50,40,25,.3);
+  color: rgba(160,130,80,.7);
+  border-color: rgba(122,96,48,.3);
+}
+.btn-turn:active { transform: scale(.97); }
+
+/* ── lista de combatentes ── */
+.init-main {
+  flex: 1; overflow-y: auto;
+  padding: .9rem 1rem;
+  display: flex; flex-direction: column; gap: .48rem;
+  scroll-behavior: smooth;
+}
+.init-main::-webkit-scrollbar { width: 3px; }
+.init-main::-webkit-scrollbar-track { background: rgba(10,8,5,.4); }
+.init-main::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, var(--blood), var(--ember));
+  border-radius: 2px;
+}
+
+/* estado vazio */
+.lista-vazia {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: .75rem; opacity: .25; pointer-events: none; text-align: center;
+}
+.lista-vazia-glyph { font-size: 2.6rem; }
+.lista-vazia-titulo {
+  font-family: 'Cinzel Decorative', serif; font-size: .8rem; color: var(--bone);
+}
+.lista-vazia-sub {
+  font-family: 'IM Fell English', serif; font-style: italic;
+  font-size: .68rem; color: var(--gold-dim); line-height: 1.5;
+}
+
+/* ── card de combatente ── */
+.card {
+  background: rgba(17,15,10,.82);
+  border: 1px solid rgba(201,168,76,.09);
+  border-left: 3px solid rgba(201,168,76,.12);
+  border-radius: 3px;
+  padding: .6rem .75rem;
+  transition: border-color .3s, box-shadow .3s, background .3s, opacity .35s, transform .35s;
+  animation: cardIn .28s ease both;
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.card.t-pc  { border-left-color: rgba(74,123,187,.45); }
+.card.t-npc { border-left-color: rgba(139,26,26,.45); }
+
+.card.ativo {
+  background: rgba(22,17,10,.96);
+  border-color: rgba(201,168,76,.38);
+  border-left-color: var(--gold);
+  box-shadow: 0 0 18px rgba(201,168,76,.09), inset 0 0 18px rgba(201,168,76,.03);
+}
+.card.derrotado {
+  opacity: .38; filter: saturate(.25);
+  border-left-color: rgba(55,45,32,.3) !important;
+}
+
+/* linha 1: indicador, iniciativa, nome, tipo */
+.card-l1 {
+  display: flex; align-items: center; gap: .55rem;
+  margin-bottom: .45rem;
+}
+.c-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  background: var(--mid); border: 1px solid rgba(201,168,76,.12);
+  transition: background .3s, box-shadow .3s;
+}
+.ativo .c-dot {
+  background: var(--gold); box-shadow: 0 0 7px var(--gold);
+  animation: dotPulse 2s ease-in-out infinite;
+}
+@keyframes dotPulse {
+  0%,100% { box-shadow: 0 0 4px var(--gold); }
+  50%      { box-shadow: 0 0 13px var(--gold); }
+}
+.c-init {
+  font-family: 'Cinzel Decorative', serif; font-size: .62rem; font-weight: 700;
+  color: var(--gold); background: rgba(201,168,76,.07);
+  border: 1px solid rgba(201,168,76,.18); border-radius: 2px;
+  padding: .1rem .38rem; min-width: 26px; text-align: center; flex-shrink: 0;
+}
+.c-nome {
+  font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--bone); flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.c-tipo {
+  font-size: .36rem; letter-spacing: .12em; padding: .1rem .32rem;
+  border-radius: 2px; flex-shrink: 0;
+}
+.t-pc .c-tipo {
+  background: rgba(74,123,187,.1); border: 1px solid rgba(74,123,187,.28);
+  color: rgba(155,195,240,.65);
+}
+.t-npc .c-tipo {
+  background: rgba(139,26,26,.1); border: 1px solid rgba(139,26,26,.28);
+  color: rgba(215,120,100,.65);
+}
+
+/* barra de HP */
+.c-hp-row {
+  display: flex; align-items: center; gap: .45rem;
+  margin-bottom: .42rem;
+}
+.c-hp-lbl {
+  font-size: .36rem; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--gold-dim); flex-shrink: 0; width: 16px;
+}
+.c-hp-track {
+  flex: 1; height: 5px; border-radius: 3px;
+  background: rgba(10,8,5,.9); border: 1px solid rgba(201,168,76,.06); overflow: hidden;
+}
+.c-hp-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--blood), var(--ember));
+  transition: width .4s cubic-bezier(.34,1.56,.64,1);
+}
+.c-hp-fill.baixo { background: linear-gradient(90deg, #4a0606, var(--blood)); }
+.c-hp-fill.alto  { background: linear-gradient(90deg, var(--blood), #c8921a); }
+.c-hp-num {
+  font-size: .48rem; color: var(--ash); flex-shrink: 0; min-width: 38px; text-align: right;
+}
+.c-hp-num .hp-max { color: var(--gold-dim); }
+
+/* ações */
+.c-acoes {
+  display: flex; gap: .3rem; align-items: center; flex-wrap: wrap;
+}
+.c-ca {
+  font-size: .42rem; letter-spacing: .1em; padding: .16rem .36rem;
+  background: rgba(10,8,5,.9); border: 1px solid rgba(201,168,76,.1);
+  border-radius: 2px; color: var(--gold-dim); flex-shrink: 0;
+}
+.btn-card {
+  font-family: 'Cinzel', serif; font-size: .44rem; letter-spacing: .06em;
+  padding: .18rem .46rem; border-radius: 2px; cursor: pointer;
+  transition: all .18s; flex-shrink: 0;
+}
+.btn-dano {
+  background: none; border: 1px solid rgba(139,26,26,.38);
+  color: rgba(210,110,90,.75);
+}
+.btn-dano:hover { background: rgba(139,26,26,.22); border-color: var(--ember); color: var(--bone); }
+.btn-cura {
+  background: none; border: 1px solid rgba(60,110,50,.38);
+  color: rgba(110,190,90,.65);
+}
+.btn-cura:hover { background: rgba(60,110,50,.18); border-color: rgba(80,170,60,.5); color: rgba(160,240,130,.9); }
+.btn-derrotar {
+  background: none; border: 1px solid rgba(70,55,38,.35);
+  color: rgba(130,100,65,.5);
+}
+.btn-derrotar:hover { background: rgba(55,40,20,.3); border-color: rgba(110,80,40,.45); color: rgba(180,140,90,.7); }
+.btn-remover {
+  margin-left: auto;
+  background: none; border: 1px solid rgba(50,40,28,.28);
+  color: rgba(90,70,45,.4);
+}
+.btn-remover:hover { background: rgba(139,26,26,.16); border-color: rgba(139,26,26,.45); color: rgba(200,100,80,.75); }
+.btn-card:active { transform: scale(.95); }
+
+/* condições */
+.c-conds {
+  display: flex; flex-wrap: wrap; gap: .22rem; margin-top: .38rem; align-items: center;
+}
+.cond-tag {
+  font-size: .36rem; letter-spacing: .1em; text-transform: uppercase;
+  padding: .1rem .36rem; border-radius: 2px; cursor: pointer;
+  background: rgba(139,26,26,.16); border: 1px solid rgba(192,57,43,.24);
+  color: rgba(215,140,120,.75); transition: all .18s;
+}
+.cond-tag:hover { background: rgba(139,26,26,.34); border-color: var(--ember); color: var(--bone); }
+.cond-tag.esp {
+  background: rgba(60,35,100,.18); border-color: rgba(120,80,200,.22);
+  color: rgba(175,140,235,.72);
+}
+.cond-tag.esp:hover { background: rgba(74,50,120,.32); border-color: rgba(150,100,240,.5); }
+.btn-add-cond {
+  font-family: 'Cinzel', serif; font-size: .34rem; letter-spacing: .1em;
+  padding: .09rem .3rem; background: none;
+  border: 1px dashed rgba(201,168,76,.16); border-radius: 2px;
+  color: rgba(122,96,48,.5); cursor: pointer; transition: all .18s;
+}
+.btn-add-cond:hover { border-color: rgba(201,168,76,.42); background: rgba(201,168,76,.04); color: var(--ash); }
+
+/* ══ MODAL HP ═══════════════════════════════════════════════════════ */
+.overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,.68);
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(3px);
+}
+.overlay.vis { display: flex; }
+
+.modal {
+  background: var(--deep); border: 1px solid rgba(201,168,76,.2);
+  border-radius: 4px; padding: 1.4rem 1.5rem;
+  min-width: 230px; max-width: 90vw;
+  box-shadow: 0 10px 50px rgba(0,0,0,.65);
+  animation: modalPop .18s ease both;
+}
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(.9) translateY(-10px); }
+  to   { opacity: 1; transform: scale(1)  translateY(0); }
+}
+.modal-eyebrow {
+  display: block; font-size: .4rem; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--gold-dim); text-align: center; margin-bottom: .5rem;
+}
+.modal-nome {
+  display: block;
+  font-family: 'Cinzel Decorative', serif; font-size: .82rem;
+  color: var(--bone); text-align: center; margin-bottom: 1rem;
+}
+.modal-inp {
+  width: 100%; text-align: center;
+  font-family: 'Cinzel Decorative', serif; font-size: 2rem; color: var(--gold);
+  background: rgba(10,8,5,.85); border: 1px solid rgba(201,168,76,.22);
+  border-radius: 3px; padding: .45rem; outline: none; margin-bottom: .9rem;
+  -moz-appearance: textfield;
+}
+.modal-inp::-webkit-inner-spin-button,
+.modal-inp::-webkit-outer-spin-button { -webkit-appearance: none; }
+.modal-inp:focus { border-color: rgba(201,168,76,.45); }
+.modal-btns { display: flex; gap: .42rem; }
+.modal-btn {
+  flex: 1; padding: .48rem;
+  font-family: 'Cinzel', serif; font-size: .48rem; letter-spacing: .14em;
+  text-transform: uppercase; border-radius: 3px; cursor: pointer; transition: all .18s;
+}
+.mbtn-dano  { background: rgba(139,26,26,.18); border: 1px solid rgba(192,57,43,.38); color: rgba(230,140,120,.9); }
+.mbtn-dano:hover  { background: rgba(192,57,43,.3); color: var(--bone); }
+.mbtn-cura  { background: rgba(40,80,38,.18);  border: 1px solid rgba(74,150,60,.38);  color: rgba(140,220,120,.9); }
+.mbtn-cura:hover  { background: rgba(74,150,60,.28); color: var(--bone); }
+.mbtn-cancel { background: none; border: 1px solid rgba(201,168,76,.13); color: var(--gold-dim); flex: 0 0 auto; padding: .48rem .7rem; }
+.mbtn-cancel:hover { background: rgba(201,168,76,.05); color: var(--ash); }
+
+/* ══ MODAL CONDIÇÕES ════════════════════════════════════════════════ */
+.cond-modal { min-width: 268px; max-width: 320px; }
+.cond-grid { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: .8rem; }
+.cond-opt {
+  font-family: 'Cinzel', serif; font-size: .43rem; letter-spacing: .1em;
+  text-transform: uppercase; padding: .26rem .56rem;
+  background: rgba(17,15,10,.85); border: 1px solid rgba(201,168,76,.11);
+  border-radius: 2px; color: var(--ash); cursor: pointer; transition: all .18s;
+}
+.cond-opt:hover { background: rgba(139,26,26,.18); border-color: rgba(192,57,43,.38); color: var(--bone); }
+.cond-opt.on  { background: rgba(139,26,26,.28); border-color: rgba(192,57,43,.55); color: var(--bone); }
+.cond-opt.esp-opt { background: rgba(50,30,90,.18); border-color: rgba(110,70,190,.2); color: rgba(175,140,235,.8); }
+.cond-opt.esp-opt:hover { background: rgba(74,50,120,.3); border-color: rgba(140,100,230,.45); }
+.cond-opt.esp-opt.on { background: rgba(74,50,120,.38); border-color: rgba(160,110,240,.55); }
+.cond-close {
+  width: 100%; padding: .44rem;
+  font-family: 'Cinzel', serif; font-size: .47rem; letter-spacing: .15em; text-transform: uppercase;
+  background: none; border: 1px solid rgba(201,168,76,.13);
+  border-radius: 3px; color: var(--gold-dim); cursor: pointer; transition: all .18s;
+}
+.cond-close:hover { background: rgba(201,168,76,.05); color: var(--ash); }
+
+/* ══ RESPONSIVO ════════════════════════════════════════════════════ */
+@media (max-width: 560px) {
+  .init-aside { width: 210px; padding: .8rem .75rem; gap: .9rem; }
+  .rodada-num { font-size: 2rem; }
+}
+@media (max-width: 430px) {
+  .init-layout { flex-direction: column; }
+  .init-aside {
+    width: 100%; height: auto; border-right: none;
+    border-bottom: 1px solid rgba(201,168,76,.1);
+    overflow: visible;
+  }
+  .rodada-block, .add-form, .turn-controls { max-width: 100%; }
+  .init-main { padding: .7rem .8rem; }
+}
+
+
+/* ══ AMBIENTE SONORO ════════════════════════════════════════════════ */
+.amb-layout { display: flex; flex: 1; overflow: hidden; height: 100%; }
+.amb-aside  { width: 220px; }
+
+.amb-master-row {
+  display: flex; align-items: center; gap: .5rem; margin-top: .4rem;
+}
+.amb-vol-val {
+  font-size: .48rem; color: var(--gold-dim);
+  min-width: 30px; text-align: right; flex-shrink: 0;
+}
+
+.amb-slider {
+  -webkit-appearance: none; appearance: none;
+  flex: 1; height: 3px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--ember) 50%, rgba(201,168,76,.12) 0%);
+  outline: none; cursor: pointer;
+}
+.amb-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 10px; height: 10px;
+  border-radius: 50%; background: var(--gold); border: none;
+  cursor: pointer; box-shadow: 0 0 5px rgba(201,168,76,.45);
+}
+.amb-slider::-moz-range-thumb {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--gold); border: none; cursor: pointer;
+}
+
+.amb-main {
+  flex: 1; overflow-y: auto;
+  padding: .8rem 1rem;
+  display: flex; flex-direction: column; gap: .15rem;
+}
+.amb-main::-webkit-scrollbar { width: 3px; }
+.amb-main::-webkit-scrollbar-track { background: rgba(10,8,5,.4); }
+.amb-main::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, var(--blood), var(--ember));
+  border-radius: 2px;
+}
+
+.amb-cat-label {
+  font-size: .4rem; letter-spacing: .32em; text-transform: uppercase;
+  color: var(--gold-dim); padding: .6rem 0 .3rem;
+  border-top: 1px solid rgba(201,168,76,.08); margin-top: .2rem;
+}
+.amb-cat-label:first-of-type { border-top: none; margin-top: 0; padding-top: .15rem; }
+
+.amb-grid-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: .38rem; margin-bottom: .3rem;
+}
+
+.amb-card {
+  background: rgba(17,15,10,.8);
+  border: 1px solid rgba(201,168,76,.09);
+  border-radius: 3px; padding: .6rem .55rem;
+  display: flex; flex-direction: column; gap: .38rem;
+  transition: border-color .25s, background .25s, box-shadow .25s;
+}
+.amb-card.playing {
+  border-color: rgba(201,168,76,.28);
+  background: rgba(22,16,8,.92);
+  box-shadow: 0 0 10px rgba(201,168,76,.06), inset 0 0 10px rgba(201,168,76,.025);
+}
+
+.amb-thumb {
+  position: relative; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+}
+.amb-glyph {
+  font-size: 1.5rem; transition: opacity .3s;
+  position: relative; z-index: 1;
+}
+.amb-card.playing .amb-glyph { opacity: .6; }
+
+.amb-bars {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 2px; align-items: flex-end;
+  height: 13px; opacity: 0; transition: opacity .3s;
+}
+.amb-card.playing .amb-bars { opacity: 1; }
+.amb-bar {
+  width: 3px; border-radius: 1px;
+  background: linear-gradient(to top, var(--ember), var(--gold));
+  animation: barWave 1.2s ease-in-out infinite;
+}
+.amb-bar:nth-child(1) { animation-duration: 1.10s; animation-delay: 0s;   }
+.amb-bar:nth-child(2) { animation-duration: 1.35s; animation-delay: .15s; }
+.amb-bar:nth-child(3) { animation-duration:  .90s; animation-delay: .28s; }
+.amb-bar:nth-child(4) { animation-duration: 1.20s; animation-delay: .42s; }
+@keyframes barWave {
+  0%,100% { height: 2px; }
+  50%      { height: 11px; }
+}
+
+.amb-nome {
+  font-family: 'Cinzel', serif; font-size: .5rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ash); text-align: center;
+  transition: color .25s;
+}
+.amb-card.playing .amb-nome { color: var(--gold); }
+
+.amb-vol-row { display: flex; align-items: center; }
+.amb-vol-row .amb-slider { flex: 1; }
+
+.amb-toggle {
+  width: 100%; padding: .28rem;
+  font-size: .65rem; font-family: monospace;
+  background: rgba(10,8,5,.8);
+  border: 1px solid rgba(201,168,76,.12);
+  border-radius: 2px; color: var(--gold-dim);
+  cursor: pointer; transition: all .18s;
+}
+.amb-toggle:hover {
+  background: rgba(201,168,76,.05);
+  border-color: rgba(201,168,76,.28); color: var(--ash);
+}
+.amb-card.playing .amb-toggle {
+  background: rgba(139,26,26,.14);
+  border-color: rgba(192,57,43,.3);
+  color: rgba(220,140,120,.85);
+}
+.amb-card.playing .amb-toggle:hover { background: rgba(139,26,26,.26); }
+
+@media (max-width: 430px) {
+  .amb-layout { flex-direction: column; }
+  .amb-aside  { width: 100%; border-bottom: 1px solid rgba(201,168,76,.1); }
+}
+
+/* ══ CRONÔMETRO DE TENSÃO ════════════════════════════════════════════ */
+.tens-layout { display: flex; flex: 1; overflow: hidden; height: 100%; }
+
+.tens-main {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden; transition: background 1s ease;
+}
+.tens-main::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 0px transparent; transition: box-shadow 1.2s ease;
+}
+.tens-main.alerta::after   { box-shadow: inset 0 0 80px  rgba(192,80,30,.18); }
+.tens-main.critico::after  { box-shadow: inset 0 0 120px rgba(192,30,30,.32); }
+.tens-main.iminente::after { box-shadow: inset 0 0 150px rgba(192,30,30,.55); animation: vigFlash .45s ease-in-out infinite; }
+.tens-main.expirado::after { box-shadow: inset 0 0 180px rgba(192,30,30,.70); }
+@keyframes vigFlash { 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+.tens-center { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+
+.tens-ring-wrap {
+  width: min(340px, calc(100vw - 260px), calc(100vh - 120px));
+  max-width: 340px; aspect-ratio: 1/1; position: relative;
+}
+.tens-ring-svg { width: 100%; height: 100%; }
+.ring-track { stroke: rgba(201,168,76,.07); stroke-width: 2.5; fill: none; }
+.ring-prog  {
+  fill: none; stroke: var(--tens-col, rgba(201,168,76,.7)); stroke-width: 2.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px var(--tens-glow, rgba(201,168,76,.4)));
+  transition: stroke .8s ease, filter .8s ease, stroke-dashoffset .95s linear;
+}
+
+.tens-overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .35rem;
+}
+.tens-scene-label {
+  font-family: 'Cinzel', serif; font-size: .44rem; letter-spacing: .28em;
+  text-transform: uppercase; color: var(--gold-dim); transition: color .8s;
+}
+.tens-num {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(2.4rem, 6vw, 3.8rem); font-weight: 900;
+  color: var(--bone); line-height: 1;
+  text-shadow: 0 0 28px var(--tens-glow, rgba(201,168,76,.4));
+  transition: color .8s, text-shadow .8s;
+}
+.tens-scene-desc {
+  font-family: 'IM Fell English', serif; font-style: italic;
+  font-size: .65rem; color: var(--gold-dim); transition: color .8s;
+}
+.tens-status-lbl {
+  font-family: 'Cinzel', serif; font-size: .42rem; letter-spacing: .25em;
+  text-transform: uppercase; color: rgba(122,96,48,.45); transition: color .4s;
+}
+
+.tens-ring-wrap.atencao { --tens-col:rgba(210,145,45,.88); --tens-glow:rgba(210,145,45,.38); }
+.tens-ring-wrap.alerta  { --tens-col:rgba(210,82,28,.92);  --tens-glow:rgba(210,82,28,.42);  }
+.tens-ring-wrap.critico { --tens-col:rgba(200,32,32,1);    --tens-glow:rgba(200,32,32,.58);  }
+.tens-ring-wrap.iminente {
+  --tens-col:rgba(230,32,32,1); --tens-glow:rgba(230,32,32,.72);
+  animation: ringFlash .4s ease-in-out infinite;
+}
+@keyframes ringFlash { 0%,100%{opacity:1;} 50%{opacity:.45;} }
+
+.tens-num.iminente { animation: numShake .28s ease-in-out infinite; }
+@keyframes numShake {
+  0%,100%{transform:translateX(0);} 25%{transform:translateX(-3px);} 75%{transform:translateX(3px);}
+}
+.tens-num.expirado {
+  font-size: clamp(1.1rem, 2.8vw, 1.9rem) !important;
+  color: var(--ember); text-shadow: 0 0 40px rgba(192,57,43,.8);
+  animation: expPulse 1s ease-in-out infinite;
+}
+@keyframes expPulse {
+  0%,100%{text-shadow:0 0 20px rgba(192,57,43,.4);} 50%{text-shadow:0 0 60px rgba(192,57,43,.95);}
+}
+
+.preset-grid { display: flex; flex-direction: column; gap: .28rem; }
+.preset-btn {
+  display: flex; align-items: center; gap: .45rem; padding: .38rem .5rem;
+  border-radius: 3px; cursor: pointer;
+  background: rgba(17,15,10,.8); border: 1px solid rgba(201,168,76,.1);
+  transition: all .18s; text-align: left; width: 100%;
+}
+.preset-btn:hover  { background: rgba(201,168,76,.05);  border-color: rgba(201,168,76,.22); }
+.preset-btn.active { background: rgba(139,26,26,.18);   border-color: rgba(201,168,76,.28); }
+.preset-glyph { font-size: .88rem; flex-shrink: 0; }
+.preset-nome  { font-family:'Cinzel',serif; font-size:.48rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ash); display:block; }
+.preset-tempo { font-family:'IM Fell English',serif; font-style:italic; font-size:.5rem; color:var(--gold-dim); display:block; }
+
+.custom-time-row { display:flex; align-items:center; gap:.3rem; margin-bottom:.5rem; }
+.custom-time-row .field-inp { text-align:center; }
+.custom-sep { font-family:'Cinzel Decorative',serif; font-size:1rem; color:var(--gold-dim); flex-shrink:0; }
+.btn-turn:disabled { opacity:.28; cursor:not-allowed; pointer-events:none; }
+
+@media (max-width: 430px) {
+  .tens-layout { flex-direction: column; }
+  .tens-ring-wrap { width: min(280px, 85vw); }
+}
+
+/* ══ RASTREADOR DE CONDIÇÕES ════════════════════════════════════════ */
+.cond-layout { display: flex; flex: 1; overflow: hidden; height: 100%; }
+
+.cond-main {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
+}
+
+.cond-mode-bar {
+  flex-shrink: 0; padding: .45rem .8rem .35rem;
+  display: flex; gap: .35rem;
+  border-bottom: 1px solid rgba(201,168,76,.08);
+  background: rgba(10,8,5,.35);
+}
+.cond-mode-btn {
+  font-family: 'Cinzel', serif; font-size: .44rem; letter-spacing: .18em;
+  text-transform: uppercase; padding: .26rem .65rem;
+  background: none; border: 1px solid rgba(201,168,76,.12);
+  border-radius: 2px; color: var(--gold-dim); cursor: pointer; transition: all .18s;
+}
+.cond-mode-btn:hover  { background: rgba(201,168,76,.05); color: var(--ash); }
+.cond-mode-btn.active {
+  background: rgba(139,26,26,.15); border-color: rgba(201,168,76,.28); color: var(--gold);
+}
+
+.cond-view { display: none; flex: 1; overflow-y: auto; padding: .7rem .9rem; }
+.cond-view.active { display: block; }
+.cond-view::-webkit-scrollbar { width: 3px; }
+.cond-view::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, var(--blood), var(--ember)); border-radius: 2px;
+}
+
+/* Sidebar entity list */
+#cond-entity-list {
+  display: flex; flex-direction: column; gap: .25rem;
+  max-height: 260px; overflow-y: auto;
+}
+#cond-entity-list::-webkit-scrollbar { width: 2px; }
+#cond-entity-list::-webkit-scrollbar-thumb { background: var(--blood); border-radius: 2px; }
+
+.cond-entity-item {
+  display: flex; align-items: center; gap: .4rem; padding: .3rem .42rem;
+  background: rgba(17,15,10,.8); border: 1px solid rgba(201,168,76,.09); border-radius: 3px;
+}
+.cond-ent-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.cond-ent-dot.t-pc  { background: rgba(74,123,187,.75); }
+.cond-ent-dot.t-npc { background: rgba(192,57,43,.75); }
+.cond-ent-nome {
+  font-family: 'Cinzel', serif; font-size: .48rem; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--ash); flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cond-ent-remove {
+  font-size: .55rem; background: none; border: none;
+  color: rgba(100,80,55,.35); cursor: pointer; padding: 0 .1rem;
+  transition: color .18s; flex-shrink: 0; line-height: 1;
+}
+.cond-ent-remove:hover { color: rgba(192,57,43,.7); }
+
+/* Tracker rows */
+.tracker-entity {
+  margin-bottom: .55rem; padding: .52rem .62rem;
+  background: rgba(17,15,10,.8);
+  border: 1px solid rgba(201,168,76,.09);
+  border-left: 3px solid rgba(201,168,76,.12);
+  border-radius: 3px;
+  animation: cardIn .28s ease both;
+}
+.tracker-entity.t-pc  { border-left-color: rgba(74,123,187,.42); }
+.tracker-entity.t-npc { border-left-color: rgba(139,26,26,.42); }
+
+.tracker-ent-header {
+  display: flex; align-items: center; gap: .5rem; margin-bottom: .45rem;
+}
+.tracker-ent-nome {
+  font-family: 'Cinzel', serif; font-size: .57rem; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--bone); flex: 1;
+}
+.tracker-tipo-badge { font-size: .36rem; letter-spacing: .12em; padding: .1rem .3rem; border-radius: 2px; }
+.t-pc .tracker-tipo-badge  { background: rgba(74,123,187,.1);  border: 1px solid rgba(74,123,187,.28);  color: rgba(155,195,240,.65); }
+.t-npc .tracker-tipo-badge { background: rgba(139,26,26,.1);   border: 1px solid rgba(139,26,26,.28);   color: rgba(215,120,100,.65); }
+
+.cond-toggles { display: flex; flex-wrap: wrap; gap: .22rem; }
+.cond-toggle-btn {
+  font-family: 'Cinzel', serif; font-size: .37rem; letter-spacing: .07em;
+  padding: .14rem .38rem; border-radius: 2px; cursor: pointer;
+  background: rgba(10,8,5,.8); border: 1px solid rgba(201,168,76,.1);
+  color: rgba(122,96,48,.55); transition: all .18s;
+}
+.cond-toggle-btn:hover { background: rgba(201,168,76,.05); border-color: rgba(201,168,76,.22); color: var(--ash); }
+.cond-toggle-btn.on {
+  background: rgba(139,26,26,.22); border-color: rgba(192,57,43,.44); color: rgba(225,140,120,.9);
+}
+.cond-toggle-btn.on.esp {
+  background: rgba(74,50,120,.24); border-color: rgba(140,100,230,.44); color: rgba(190,155,245,.9);
+}
+
+/* Tracker empty state */
+.tracker-empty {
+  display: flex; flex-direction: column; align-items: center; gap: .7rem;
+  padding: 3rem 2rem; opacity: .25; text-align: center; pointer-events: none;
+}
+.tracker-empty-glyph { font-size: 2.3rem; }
+.tracker-empty-title { font-family:'Cinzel Decorative',serif; font-size:.78rem; color:var(--bone); }
+.tracker-empty-sub   { font-family:'IM Fell English',serif; font-style:italic; font-size:.65rem; color:var(--gold-dim); line-height:1.5; }
+
+/* Codex cards */
+.codex-cat-label {
+  font-size: .4rem; letter-spacing: .32em; text-transform: uppercase;
+  color: var(--gold-dim); padding: .55rem 0 .28rem;
+  border-top: 1px solid rgba(201,168,76,.08); margin-top: .25rem;
+}
+.codex-cat-label:first-of-type { border-top: none; margin-top: 0; padding-top: .1rem; }
+.codex-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: .38rem; margin-bottom: .25rem;
+}
+.codex-card {
+  background: rgba(17,15,10,.8); border: 1px solid rgba(201,168,76,.09);
+  border-radius: 3px; padding: .55rem .62rem;
+}
+.codex-card.esp-card { border-color: rgba(120,80,200,.15); }
+.codex-card-hdr { display: flex; align-items: center; gap: .38rem; margin-bottom: .3rem; }
+.codex-card-glyph { font-size: .95rem; flex-shrink: 0; }
+.codex-card-nome  {
+  font-family:'Cinzel',serif; font-size:.5rem; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--bone); flex:1;
+}
+.codex-card-badge {
+  font-size:.33rem; letter-spacing:.1em; padding:.07rem .25rem; border-radius:2px; flex-shrink:0;
+}
+.codex-badge-std { background:rgba(201,168,76,.07);  border:1px solid rgba(201,168,76,.14); color:var(--gold-dim); }
+.codex-badge-val { background:rgba(74,50,120,.14);   border:1px solid rgba(120,80,200,.24); color:rgba(180,145,240,.75); }
+.codex-card-efeito {
+  font-family:'IM Fell English',serif; font-size:.57rem; color:var(--ash); line-height:1.56;
+  border-top:1px solid rgba(201,168,76,.06); padding-top:.28rem;
+}
+
+@media (max-width: 430px) {
+  .cond-layout { flex-direction: column; }
+}
+
+/* ══ GERADOR DE ENCONTROS ════════════════════════════════════════════ */
+.enc-layout { display: flex; flex: 1; overflow: hidden; height: 100%; }
+
+.enc-main {
+  flex: 1; display: flex; flex-direction: column;
+  overflow-y: auto; padding: .9rem 1rem; gap: .8rem;
+}
+.enc-main::-webkit-scrollbar { width: 3px; }
+.enc-main::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, var(--blood), var(--ember)); border-radius: 2px;
+}
+
+/* Bioma grid */
+.bioma-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: .28rem;
+}
+.bioma-btn {
+  display: flex; align-items: center; gap: .35rem; padding: .36rem .45rem;
+  background: rgba(17,15,10,.8); border: 1px solid rgba(201,168,76,.1);
+  border-radius: 3px; cursor: pointer; transition: all .18s;
+  font-family: 'Cinzel', serif;
+}
+.bioma-btn:hover  { background: rgba(201,168,76,.05); border-color: rgba(201,168,76,.22); }
+.bioma-btn.active { background: rgba(139,26,26,.18);  border-color: rgba(201,168,76,.3);  }
+.bioma-btn.veu-btn.active { background: rgba(74,50,120,.22); border-color: rgba(140,100,230,.35); }
+.bioma-glyph { font-size: .82rem; flex-shrink: 0; }
+.bioma-nome  { font-size: .44rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ash); }
+
+/* Perigo buttons */
+.perigo-row { display: flex; gap: .25rem; flex-wrap: wrap; }
+.perigo-btn {
+  flex: 1; padding: .3rem .2rem; min-width: 0;
+  font-family: 'Cinzel', serif; font-size: .4rem; letter-spacing: .1em;
+  text-transform: uppercase; text-align: center;
+  background: rgba(17,15,10,.8); border: 1px solid rgba(201,168,76,.1);
+  border-radius: 3px; cursor: pointer; transition: all .18s; color: var(--gold-dim);
+}
+.perigo-btn:hover  { background: rgba(201,168,76,.05); color: var(--ash); }
+.perigo-btn.active { background: rgba(139,26,26,.18);  border-color: rgba(192,57,43,.4); color: var(--bone); }
+
+.btn-gerar {
+  width: 100%; padding: .62rem;
+  font-family: 'Cinzel Decorative', serif; font-size: .52rem; letter-spacing: .18em;
+  text-transform: uppercase; background: rgba(139,26,26,.2);
+  border: 1px solid rgba(192,57,43,.38); border-radius: 3px;
+  color: var(--bone); cursor: pointer; transition: all .22s;
+}
+.btn-gerar:hover {
+  background: rgba(192,57,43,.32); border-color: rgba(201,168,76,.4); color: var(--gold);
+  box-shadow: 0 0 14px rgba(192,57,43,.2);
+}
+.btn-gerar:active { transform: scale(.97); }
+
+/* Encounter card */
+.enc-card {
+  background: rgba(17,15,10,.85); border: 1px solid rgba(201,168,76,.15);
+  border-radius: 4px; padding: 1.1rem 1.2rem;
+  animation: cardIn .3s ease both;
+  display: flex; flex-direction: column; gap: .65rem;
+}
+.enc-card-hdr {
+  display: flex; align-items: center; gap: .6rem;
+  padding-bottom: .55rem;
+  border-bottom: 1px solid rgba(201,168,76,.1);
+}
+.enc-bioma-glyph { font-size: 1.5rem; flex-shrink: 0; }
+.enc-bioma-nome  {
+  font-family: 'Cinzel', serif; font-size: .44rem; letter-spacing: .28em;
+  text-transform: uppercase; color: var(--gold-dim); flex: 1;
+}
+.enc-perigo-badge {
+  font-size: .36rem; letter-spacing: .12em; padding: .1rem .38rem; border-radius: 2px;
+}
+.badge-facil    { background:rgba(40,100,40,.15); border:1px solid rgba(80,160,80,.28); color:rgba(130,210,110,.8); }
+.badge-moderado { background:rgba(80,80,20,.15);  border:1px solid rgba(180,160,40,.28); color:rgba(220,200,80,.8); }
+.badge-dificil  { background:rgba(120,50,20,.18); border:1px solid rgba(210,100,40,.3);  color:rgba(240,140,80,.85); }
+.badge-mortal   { background:rgba(139,26,26,.2);  border:1px solid rgba(192,57,43,.4);   color:rgba(230,130,110,.9); }
+
+.enc-inimigos {
+  font-family: 'Cinzel Decorative', serif; font-size: clamp(1rem, 2.5vw, 1.5rem);
+  color: var(--bone); font-weight: 700;
+  text-shadow: 0 0 20px rgba(192,57,43,.3);
+  line-height: 1.2;
+}
+.enc-contexto {
+  font-family: 'IM Fell English', serif; font-style: italic;
+  font-size: .72rem; color: var(--gold-dim); line-height: 1.6;
+}
+.enc-contexto::before { content: '"'; }
+.enc-contexto::after  { content: '"'; }
+
+.enc-cenario {
+  font-family: 'IM Fell English', serif; font-size: .65rem;
+  color: var(--ash); line-height: 1.58;
+  padding: .5rem .6rem;
+  background: rgba(10,8,5,.6); border-left: 2px solid rgba(201,168,76,.2);
+}
+
+.enc-cplic {
+  display: flex; align-items: flex-start; gap: .45rem; padding: .45rem .55rem;
+  background: rgba(139,26,26,.12); border: 1px solid rgba(192,57,43,.25); border-radius: 3px;
+}
+.enc-cplic-label {
+  font-family: 'Cinzel', serif; font-size: .38rem; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--ember); flex-shrink: 0; padding-top: .05rem;
+}
+.enc-cplic-text {
+  font-family: 'IM Fell English', serif; font-size: .62rem; color: var(--ash); line-height: 1.5;
+}
+
+/* History */
+.enc-hist-title {
+  font-size: .38rem; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--gold-dim); display: block; margin-bottom: .35rem;
+  padding-bottom: .25rem; border-bottom: 1px solid rgba(201,168,76,.07);
+}
+.enc-hist-item {
+  display: flex; align-items: center; gap: .45rem; padding: .3rem .42rem;
+  background: rgba(17,15,10,.7); border: 1px solid rgba(201,168,76,.07);
+  border-radius: 3px; cursor: pointer; transition: all .18s; margin-bottom: .22rem;
+}
+.enc-hist-item:hover { background: rgba(201,168,76,.04); border-color: rgba(201,168,76,.16); }
+.enc-hist-glyph { font-size: .8rem; flex-shrink: 0; }
+.enc-hist-nome  {
+  font-family: 'Cinzel', serif; font-size: .45rem; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--ash); flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.enc-hist-perigo { font-size: .36rem; color: var(--gold-dim); flex-shrink: 0; }
+
+/* Empty state */
+.enc-empty {
+  display: flex; flex-direction: column; align-items: center; gap: .8rem;
+  padding: 3rem 2rem; opacity: .22; text-align: center; pointer-events: none;
+}
+.enc-empty-glyph { font-size: 2.8rem; }
+.enc-empty-title { font-family:'Cinzel Decorative',serif; font-size:.85rem; color:var(--bone); }
+.enc-empty-sub   { font-family:'IM Fell English',serif; font-style:italic; font-size:.68rem; color:var(--gold-dim); }
+
+@media (max-width: 430px) {
+  .enc-layout { flex-direction: column; }
+  .bioma-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ══ ESPÓLIOS ════════════════════════════════════════════════════════ */
+.esp-layout { display: flex; flex: 1; overflow: hidden; height: 100%; }
+.esp-main   { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: .9rem 1rem; gap: .55rem; }
+.esp-main::-webkit-scrollbar { width: 3px; }
+.esp-main::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, var(--blood), var(--ember)); border-radius: 2px; }
+
+.esp-section-label {
+  font-size: .38rem; letter-spacing: .32em; text-transform: uppercase;
+  color: var(--gold-dim); display: block; margin-bottom: .32rem;
+  padding-bottom: .2rem; border-bottom: 1px solid rgba(201,168,76,.08);
+}
+
+.btn-rolar {
+  width: 100%; padding: .56rem;
+  font-family: 'Cinzel Decorative', serif; font-size: .5rem; letter-spacing: .16em; text-transform: uppercase;
+  background: rgba(139,26,26,.2); border: 1px solid rgba(192,57,43,.36); border-radius: 3px;
+  color: var(--bone); cursor: pointer; transition: all .22s;
+}
+.btn-rolar:hover { background: rgba(192,57,43,.3); border-color: rgba(201,168,76,.38); color: var(--gold); box-shadow: 0 0 12px rgba(192,57,43,.18); }
+
+.btn-limpar-esp {
+  width: 100%; padding: .38rem;
+  font-family: 'Cinzel', serif; font-size: .44rem; letter-spacing: .14em; text-transform: uppercase;
+  background: none; border: 1px solid rgba(60,50,38,.35); border-radius: 3px;
+  color: rgba(100,80,55,.5); cursor: pointer; transition: all .18s;
+}
+.btn-limpar-esp:hover { background: rgba(50,40,25,.3); color: rgba(160,130,80,.7); border-color: rgba(122,96,48,.3); }
+
+.esp-bag {
+  display: flex; flex-direction: column; gap: .2rem;
+  max-height: 200px; overflow-y: auto;
+}
+.esp-bag::-webkit-scrollbar { width: 2px; }
+.esp-bag::-webkit-scrollbar-thumb { background: var(--blood); border-radius: 2px; }
+.esp-bag-item {
+  font-size: .46rem; color: var(--ash); padding: .22rem .4rem;
+  background: rgba(17,15,10,.7); border: 1px solid rgba(201,168,76,.07); border-radius: 2px;
+  display: flex; align-items: center; gap: .35rem;
+}
+.esp-bag-glyph { font-size: .7rem; flex-shrink: 0; }
+.esp-bag-empty { font-family:'IM Fell English',serif; font-style:italic; font-size:.52rem; color:rgba(122,96,48,.38); }
+
+.esp-result {
+  background: rgba(17,15,10,.85); border: 1px solid rgba(201,168,76,.14);
+  border-radius: 4px; padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: .5rem;
+  animation: cardIn .3s ease both;
+}
+.esp-result-title {
+  font-family:'Cinzel',serif; font-size:.5rem; letter-spacing:.25em; text-transform:uppercase;
+  color:var(--gold-dim); display:block; margin-bottom:.1rem;
+}
+.esp-moedas {
+  font-family:'Cinzel Decorative',serif; font-size:1.1rem; color:var(--gold);
+  text-shadow: 0 0 16px rgba(201,168,76,.35);
+}
+.esp-items-group { display: flex; flex-direction: column; gap: .28rem; }
+.esp-item {
+  padding: .38rem .5rem; border-radius: 3px;
+  display: flex; flex-direction: column; gap: .14rem;
+}
+.esp-item.mundano  { background:rgba(17,15,10,.7); border:1px solid rgba(201,168,76,.09); }
+.esp-item.magico   { background:rgba(40,20,70,.15); border:1px solid rgba(120,80,200,.22); }
+.esp-item.valtheris{ background:rgba(80,10,10,.18); border:1px solid rgba(192,57,43,.3); }
+.esp-item-nome {
+  font-family:'Cinzel',serif; font-size:.5rem; letter-spacing:.08em; text-transform:uppercase; color:var(--bone);
+}
+.esp-item-desc {
+  font-family:'IM Fell English',serif; font-style:italic; font-size:.56rem; color:var(--ash); line-height:1.5;
+}
+.esp-item-badge {
+  display:inline-block; font-size:.34rem; letter-spacing:.1em; padding:.07rem .28rem; border-radius:2px; margin-top:.05rem; align-self:flex-start;
+}
+.badge-mundano  { background:rgba(201,168,76,.07); border:1px solid rgba(201,168,76,.14); color:var(--gold-dim); }
+.badge-magico   { background:rgba(74,50,120,.15);  border:1px solid rgba(120,80,200,.28); color:rgba(180,145,240,.8); }
+.badge-valtheris{ background:rgba(139,26,26,.18);  border:1px solid rgba(192,57,43,.35); color:rgba(225,140,120,.9); }
+
+/* ══ NOTAS DE SESSÃO ═════════════════════════════════════════════════ */
+.notas-layout { display: flex; flex: 1; overflow: hidden; height: 100%; }
+.notas-aside  {
+  width: 200px; flex-shrink: 0;
+  background: var(--deep); border-right: 1px solid rgba(201,168,76,.09);
+  display: flex; flex-direction: column; padding: .9rem .8rem; gap: .9rem; overflow-y: auto;
+}
+.notas-aside::-webkit-scrollbar { width: 2px; }
+.notas-aside::-webkit-scrollbar-thumb { background: var(--blood); border-radius: 2px; }
+
+.btn-nova-sessao {
+  width: 100%; padding: .48rem;
+  font-family: 'Cinzel', serif; font-size: .46rem; letter-spacing: .14em; text-transform: uppercase;
+  background: rgba(139,26,26,.18); border: 1px solid rgba(192,57,43,.3); border-radius: 3px;
+  color: var(--ash); cursor: pointer; transition: all .2s;
+}
+.btn-nova-sessao:hover { background: rgba(192,57,43,.28); border-color: rgba(201,168,76,.35); color: var(--gold); }
+
+.notas-session-list { display: flex; flex-direction: column; gap: .22rem; }
+.notas-sess-item {
+  padding: .32rem .42rem; border-radius: 3px; cursor: pointer;
+  background: rgba(17,15,10,.8); border: 1px solid rgba(201,168,76,.09);
+  transition: all .18s; display: flex; align-items: center; gap: .3rem;
+}
+.notas-sess-item:hover  { background: rgba(201,168,76,.05); border-color: rgba(201,168,76,.2); }
+.notas-sess-item.active { background: rgba(139,26,26,.18); border-color: rgba(201,168,76,.28); }
+.notas-sess-num  { font-family:'Cinzel',serif; font-size:.46rem; letter-spacing:.08em; color:var(--gold); flex-shrink:0; }
+.notas-sess-nome { font-family:'Cinzel',serif; font-size:.44rem; letter-spacing:.06em; color:var(--ash); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.notas-sess-del  { font-size:.5rem; background:none; border:none; color:rgba(100,80,55,.35); cursor:pointer; padding:0 .08rem; transition:color .18s; flex-shrink:0; line-height:1; }
+.notas-sess-del:hover { color:rgba(192,57,43,.7); }
+
+.notas-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 1rem 1.1rem; gap: .65rem; }
+.notas-fields { display: flex; gap: .5rem; align-items: flex-end; }
+.notas-field-titulo { flex: 1; }
+.notas-field-data   { flex: 0 0 110px; }
+
+.notas-textarea {
+  flex: 1; width: 100%; resize: none;
+  background: rgba(10,8,5,.85); border: 1px solid rgba(201,168,76,.13); border-radius: 3px;
+  color: var(--ash); font-family: 'IM Fell English', serif; font-style: italic; font-size: .68rem;
+  line-height: 1.7; padding: .7rem .8rem; outline: none;
+  transition: border-color .18s;
+}
+.notas-textarea:focus { border-color: rgba(201,168,76,.35); }
+.notas-textarea::placeholder { color: rgba(122,96,48,.35); font-style: italic; }
+
+.notas-footer {
+  display: flex; gap: .5rem; align-items: center; flex-shrink: 0;
+}
+.notas-save-indicator {
+  font-family:'IM Fell English',serif; font-style:italic; font-size:.52rem;
+  color:rgba(122,96,48,.45); flex:1; transition:color .3s;
+}
+.notas-save-indicator.saved { color:rgba(80,160,80,.6); }
+
+.notas-empty {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .75rem; opacity: .22; pointer-events: none; text-align: center;
+}
+.notas-empty-glyph { font-size:2.5rem; }
+.notas-empty-title { font-family:'Cinzel Decorative',serif; font-size:.8rem; color:var(--bone); }
+.notas-empty-sub   { font-family:'IM Fell English',serif; font-style:italic; font-size:.66rem; color:var(--gold-dim); }
+
+@media (max-width: 430px) {
+  .esp-layout   { flex-direction: column; }
+  .notas-layout { flex-direction: column; }
+  .notas-aside  { width: 100%; border-bottom: 1px solid rgba(201,168,76,.1); max-height: 160px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+</style>
+</head>
+<body>
+<!-- avisa o mapa do Nexus (se estiver por perto) que esta página foi visitada -->
+<script>try{ if (window.top !== window) window.top.postMessage({ tipo:'nexus-visita', id:'valtheris_mesa' }, '*'); }catch(e){}</script>
+<div class="mesa">
+  <h1 class="sr-only">Mesa do Mestre — Valtheris</h1>
+
+  <!-- ══ BARRA DE FERRAMENTAS ════════════════════════════════════════ -->
+  <nav class="tool-nav">
+    <button class="tool-tab active" onclick="trocarFerramenta('iniciativa', this)">
+      <span class="tab-glyph">⚔️</span>Iniciativa
+    </button>
+    <div class="tool-sep"></div>
+    <button class="tool-tab" onclick="trocarFerramenta('ambiente', this)">
+      <span class="tab-glyph">🎵</span>Ambiente
+    </button>
+    <button class="tool-tab" onclick="trocarFerramenta('tensao', this)">
+      <span class="tab-glyph">⏳</span>Tensão
+    </button>
+    <button class="tool-tab" onclick="trocarFerramenta('condicoes', this)">
+      <span class="tab-glyph">🩸</span>Condições
+    </button>
+    <div class="tool-sep"></div>
+    <button class="tool-tab" onclick="trocarFerramenta('encontros', this)">
+      <span class="tab-glyph">🦅</span>Encontros
+    </button>
+    <button class="tool-tab" onclick="trocarFerramenta('espolios', this)">
+      <span class="tab-glyph">🗡️</span>Espólios
+    </button>
+    <button class="tool-tab" onclick="trocarFerramenta('notas', this)">
+      <span class="tab-glyph">📜</span>Notas
+    </button>
+  </nav>
+
+  <main class="mesa-main">
+
+  <!-- ══ PAINEL: INICIATIVA ══════════════════════════════════════════ -->
+  <div class="tool-panel active" id="painel-iniciativa">
+    <div class="init-layout">
+
+      <!-- aside: form + controles -->
+      <aside class="init-aside">
+
+        <!-- rodada -->
+        <div class="rodada-block">
+          <span class="rodada-eyebrow">Rodada</span>
+          <span class="rodada-num" id="rodada-num">1</span>
+          <span class="rodada-sub" id="rodada-sub">Aguardando combate</span>
+          <div class="rodada-rule"></div>
+        </div>
+
+        <!-- adicionar combatente -->
+        <div>
+          <span class="aside-label">Adicionar combatente</span>
+          <div class="add-form">
+            <div class="field">
+              <span class="field-lbl">Nome</span>
+              <input class="field-inp" id="f-nome" type="text" placeholder="Kael Ashvorn…" autocomplete="off">
+            </div>
+            <div class="form-pair">
+              <div class="field">
+                <span class="field-lbl">Iniciativa</span>
+                <input class="field-inp" id="f-init" type="number" placeholder="18" min="0" max="99">
+              </div>
+              <div class="field">
+                <span class="field-lbl">HP Máx.</span>
+                <input class="field-inp" id="f-hp" type="number" placeholder="40" min="1">
+              </div>
+            </div>
+            <div class="field">
+              <span class="field-lbl">Classe de Armadura</span>
+              <input class="field-inp" id="f-ca" type="number" placeholder="14" min="0" max="99">
+            </div>
+            <div class="field">
+              <span class="field-lbl">Tipo</span>
+              <div class="tipo-btns">
+                <button class="tipo-btn sel-pc"  id="btn-pj"  onclick="selecionarTipo('pc')">🛡 PJ</button>
+                <button class="tipo-btn"          id="btn-npc" onclick="selecionarTipo('npc')">💀 NPC</button>
+              </div>
+            </div>
+            <button class="btn-adicionar" onclick="adicionarCombatente()">＋ Entrar na batalha</button>
+          </div>
+        </div>
+
+        <!-- controle de turnos -->
+        <div>
+          <span class="aside-label">Turno</span>
+          <div class="turn-controls">
+            <button class="btn-turn next" onclick="proximoTurno()">Próximo Turno →</button>
+            <button class="btn-turn prev" onclick="turnoAnterior()">← Turno Anterior</button>
+            <button class="btn-turn reset" onclick="reiniciarCombate()">↺ Reiniciar combate</button>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- lista de combatentes -->
+      <div class="init-main" id="lista-combatentes">
+        <div class="lista-vazia" id="lista-vazia">
+          <span class="lista-vazia-glyph">⚔️</span>
+          <span class="lista-vazia-titulo">Nenhum combatente</span>
+          <span class="lista-vazia-sub">Adicione personagens e criaturas<br>para iniciar o rastreamento de batalha</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAINÉIS FUTUROS ════════════════════════════════════════════ -->
+  <div class="tool-panel" id="painel-ambiente">
+    <div class="amb-layout">
+      <aside class="init-aside amb-aside">
+        <div class="rodada-block">
+          <span class="rodada-eyebrow">Volume Mestre</span>
+          <div class="amb-master-row">
+            <input type="range" class="amb-slider" id="master-vol" min="0" max="100" value="80">
+            <span class="amb-vol-val" id="master-val">80%</span>
+          </div>
+          <div class="rodada-rule"></div>
+        </div>
+        <div class="rodada-block">
+          <span class="rodada-eyebrow">Camadas Ativas</span>
+          <span class="rodada-num" id="amb-count">0</span>
+          <span class="rodada-sub" id="amb-status">Silêncio</span>
+          <div class="rodada-rule"></div>
+        </div>
+        <div>
+          <span class="aside-label">Controles</span>
+          <div class="turn-controls">
+            <button class="btn-turn next"  onclick="pararTudo()">⏹ Parar Tudo</button>
+            <button class="btn-turn prev"  onclick="mutarTudo()">🔇 Silenciar</button>
+            <button class="btn-turn reset" onclick="restaurarTudo()">🔊 Restaurar</button>
+          </div>
+        </div>
+      </aside>
+      <div class="amb-main" id="amb-main"></div>
+    </div>
+  </div>
+  <div class="tool-panel" id="painel-tensao">
+    <div class="tens-layout">
+      <aside class="init-aside">
+        <div>
+          <span class="aside-label">Cenários</span>
+          <div class="preset-grid" id="preset-grid"></div>
+        </div>
+        <div>
+          <span class="aside-label">Personalizado</span>
+          <div class="custom-time-row">
+            <input class="field-inp" id="custom-min" type="number" min="0" max="99" value="5" placeholder="05">
+            <span class="custom-sep">:</span>
+            <input class="field-inp" id="custom-sec" type="number" min="0" max="59" value="0"  placeholder="00">
+          </div>
+          <button class="btn-adicionar" onclick="aplicarCustom()">Definir Tempo</button>
+        </div>
+        <div>
+          <span class="aside-label">Controles</span>
+          <div class="turn-controls">
+            <button class="btn-turn next"  id="btn-tens-start" onclick="iniciarTensao()">▶ Iniciar</button>
+            <button class="btn-turn prev"  id="btn-tens-pause" onclick="pausarTensao()" disabled>⏸ Pausar</button>
+            <button class="btn-turn reset" onclick="reiniciarTensao()">↺ Reiniciar</button>
+          </div>
+        </div>
+      </aside>
+
+      <div class="tens-main" id="tens-main">
+        <div class="tens-center">
+          <div class="tens-ring-wrap" id="tens-ring-wrap">
+            <svg class="tens-ring-svg" viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+              <circle class="ring-track" cx="140" cy="140" r="120"/>
+              <circle class="ring-prog"  cx="140" cy="140" r="120" id="ring-prog"
+                stroke-dasharray="753.98" stroke-dashoffset="753.98"
+                transform="rotate(-90 140 140)"/>
+            </svg>
+            <div class="tens-overlay">
+              <span class="tens-scene-label" id="tens-scene-label">Selecione um cenário</span>
+              <span class="tens-num"         id="tens-num">—:——</span>
+              <span class="tens-scene-desc"  id="tens-scene-desc">—</span>
+            </div>
+          </div>
+          <span class="tens-status-lbl" id="tens-status-lbl">Aguardando</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tool-panel" id="painel-condicoes">
+    <div class="cond-layout">
+      <aside class="init-aside">
+        <div>
+          <span class="aside-label">Adicionar Entidade</span>
+          <div class="add-form">
+            <div class="field">
+              <span class="field-lbl">Nome</span>
+              <input class="field-inp" id="cond-nome" type="text" placeholder="Kael Ashvorn…" autocomplete="off">
+            </div>
+            <div class="field">
+              <span class="field-lbl">Tipo</span>
+              <div class="tipo-btns">
+                <button class="tipo-btn sel-pc"  id="cond-btn-pc"  onclick="condTipo('pc')">🛡 PJ</button>
+                <button class="tipo-btn"         id="cond-btn-npc" onclick="condTipo('npc')">💀 NPC</button>
+              </div>
+            </div>
+            <button class="btn-adicionar" onclick="addEntidade()">＋ Adicionar</button>
+          </div>
+        </div>
+        <div>
+          <span class="aside-label">Entidades</span>
+          <div id="cond-entity-list"></div>
+        </div>
+        <div>
+          <span class="aside-label">Ações</span>
+          <div class="turn-controls">
+            <button class="btn-turn prev"  onclick="limparCondicoes()">↺ Limpar Condições</button>
+            <button class="btn-turn reset" onclick="removerTodas()">✕ Remover Todas</button>
+          </div>
+        </div>
+      </aside>
+
+      <div class="cond-main">
+        <div class="cond-mode-bar">
+          <button class="cond-mode-btn active" onclick="condModo('rastrear', this)">Rastreamento</button>
+          <button class="cond-mode-btn"        onclick="condModo('codex', this)">Codex</button>
+        </div>
+        <div id="cond-view-rastrear" class="cond-view active">
+          <div id="cond-tracker"></div>
+        </div>
+        <div id="cond-view-codex" class="cond-view"></div>
+      </div>
+    </div>
+  </div>
+  <div class="tool-panel" id="painel-encontros">
+    <div class="enc-layout">
+      <aside class="init-aside">
+        <div>
+          <span class="aside-label">Bioma</span>
+          <div class="bioma-grid" id="bioma-grid"></div>
+        </div>
+        <div>
+          <span class="aside-label">Perigo</span>
+          <div class="perigo-row" id="perigo-row"></div>
+        </div>
+        <div style="margin-top:.3rem">
+          <button class="btn-gerar" onclick="gerarEncontro()">⚔ Gerar Encontro</button>
+        </div>
+        <div>
+          <span class="aside-label">Histórico</span>
+          <div id="enc-historico"></div>
+        </div>
+      </aside>
+      <div class="enc-main" id="enc-main">
+        <div class="enc-empty">
+          <span class="enc-empty-glyph">🦅</span>
+          <span class="enc-empty-title">Selecione bioma e perigo</span>
+          <span class="enc-empty-sub">Pressione Gerar Encontro<br>para criar um encontro procedural</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tool-panel" id="painel-espolios">
+    <div class="esp-layout">
+      <aside class="init-aside">
+        <div>
+          <span class="aside-label">Nível de Perigo</span>
+          <div class="perigo-row" id="esp-perigo-row"></div>
+        </div>
+        <div style="margin-top:.3rem">
+          <button class="btn-rolar" onclick="rolarEspolio()">🗡 Rolar Espólio</button>
+        </div>
+        <div>
+          <span class="aside-label">Bolsa de Sessão</span>
+          <div class="esp-bag" id="esp-bag">
+            <span class="esp-bag-empty">Vazia</span>
+          </div>
+        </div>
+        <div>
+          <button class="btn-limpar-esp" onclick="limparBolsa()">↺ Esvaziar Bolsa</button>
+        </div>
+      </aside>
+      <div class="esp-main" id="esp-main">
+        <div class="enc-empty">
+          <span class="enc-empty-glyph">🗡️</span>
+          <span class="enc-empty-title">Selecione o nível de perigo</span>
+          <span class="enc-empty-sub">Pressione Rolar Espólio<br>para gerar itens e moedas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tool-panel" id="painel-notas">
+    <div class="notas-layout">
+      <aside class="notas-aside">
+        <button class="btn-nova-sessao" onclick="novaSessao()">＋ Nova Sessão</button>
+        <div>
+          <span class="aside-label">Sessões</span>
+          <div class="notas-session-list" id="notas-lista"></div>
+        </div>
+      </aside>
+      <div class="notas-main" id="notas-main">
+        <div class="notas-empty" id="notas-empty">
+          <span class="notas-empty-glyph">📜</span>
+          <span class="notas-empty-title">Nenhuma sessão aberta</span>
+          <span class="notas-empty-sub">Crie uma nova sessão para começar<br>a registrar os eventos da campanha</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </main>
+
+</div><!-- /.mesa -->
+
+<!-- ══ MODAL HP ═══════════════════════════════════════════════════════ -->
+<div class="overlay" id="ov-hp" onclick="fecharHp(event)">
+  <div class="modal">
+    <span class="modal-eyebrow" id="hp-eyebrow">Aplicar Dano</span>
+    <span class="modal-nome"   id="hp-nome"></span>
+    <input class="modal-inp" id="hp-val" type="number" min="0" placeholder="0">
+    <div class="modal-btns">
+      <button class="modal-btn mbtn-cancel" onclick="fecharHp()">✕</button>
+      <button class="modal-btn" id="hp-confirm-btn" onclick="confirmarHp()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL CONDIÇÕES ══════════════════════════════════════════════ -->
+<div class="overlay" id="ov-cond" onclick="fecharCond(event)">
+  <div class="modal cond-modal">
+    <span class="modal-eyebrow">Condições</span>
+    <div class="cond-grid" id="cond-grid"></div>
+    <button class="cond-close" onclick="fecharCond()">Fechar</button>
+  </div>
+</div>
+
+<script>
+// ══ ESTADO ═══════════════════════════════════════════════════════════
+let combatentes   = [];
+let indiceAtivo   = -1;
+let rodada        = 1;
+let tipoSelecionado = 'pc';
+let alvoHp        = null;
+let modoHp        = 'dano';
+let alvoCond      = null;
+let proxId        = 1;
+
+const CONDICOES = [
+  // Padrão
+  { nome: 'Envenenado',    esp: false },
+  { nome: 'Agarrado',     esp: false },
+  { nome: 'Paralisado',   esp: false },
+  { nome: 'Atordoado',    esp: false },
+  { nome: 'Inconsciente', esp: false },
+  { nome: 'Assustado',    esp: false },
+  { nome: 'Caído',        esp: false },
+  { nome: 'Cego',         esp: false },
+  { nome: 'Surdo',        esp: false },
+  { nome: 'Concentração', esp: false },
+  { nome: 'Reação usada', esp: false },
+  // Valtheris
+  { nome: 'Sob o Véu',    esp: true  },
+  { nome: 'Sanidade −1',  esp: true  },
+  { nome: 'Maldito',      esp: true  },
+  { nome: 'Marcado',      esp: true  },
+  { nome: 'Queimando',    esp: true  },
+  { nome: 'Sangrando',    esp: true  },
+];
+
+// ══ NAVEGAÇÃO ENTRE FERRAMENTAS ══════════════════════════════════════
+function trocarFerramenta(id, btn) {
+  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tool-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('painel-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ══ FORM ═════════════════════════════════════════════════════════════
+function selecionarTipo(t) {
+  tipoSelecionado = t;
+  document.getElementById('btn-pj').className  = 'tipo-btn' + (t === 'pc'  ? ' sel-pc'  : '');
+  document.getElementById('btn-npc').className = 'tipo-btn' + (t === 'npc' ? ' sel-npc' : '');
+}
+
+function adicionarCombatente() {
+  const nome = document.getElementById('f-nome').value.trim();
+  const init = parseInt(document.getElementById('f-init').value) || 0;
+  const hp   = Math.max(1, parseInt(document.getElementById('f-hp').value)  || 10);
+  const ca   = parseInt(document.getElementById('f-ca').value)  || 0;
+
+  if (!nome) {
+    const inp = document.getElementById('f-nome');
+    inp.classList.add('err');
+    inp.focus();
+    setTimeout(() => inp.classList.remove('err'), 1500);
+    return;
+  }
+
+  combatentes.push({ id: proxId++, nome, iniciativa: init, hp, hpMax: hp, ca, tipo: tipoSelecionado, condicoes: [], derrotado: false });
+  combatentes.sort((a, b) => b.iniciativa - a.iniciativa);
+
+  // Reajusta índice ativo após reordenação
+  if (indiceAtivo >= 0) {
+    const idAtivo = combatentes[indiceAtivo]?.id;
+    if (idAtivo !== undefined) {
+      const novo = combatentes.findIndex(c => c.id === idAtivo);
+      if (novo >= 0) indiceAtivo = novo;
+    }
+  }
+
+  ['f-nome','f-init','f-hp','f-ca'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('f-nome').focus();
+  renderizar();
+}
+
+// Atalho de teclado: Enter adiciona
+['f-nome','f-init','f-hp','f-ca'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => {
+    if (e.key === 'Enter') adicionarCombatente();
+  });
+});
+
+// ══ GESTÃO DE TURNOS ═════════════════════════════════════════════════
+function proximoTurno() {
+  if (combatentes.length === 0) return;
+  const vivos = combatentes.filter(c => !c.derrotado);
+  if (vivos.length === 0) return;
+
+  if (indiceAtivo < 0) {
+    indiceAtivo = 0;
+    while (combatentes[indiceAtivo]?.derrotado) indiceAtivo++;
+  } else {
+    let prox = indiceAtivo + 1;
+    if (prox >= combatentes.length) { prox = 0; incrementarRodada(); }
+    let guard = 0;
+    while (combatentes[prox]?.derrotado && guard++ < combatentes.length) {
+      prox++;
+      if (prox >= combatentes.length) { prox = 0; incrementarRodada(); }
+    }
+    indiceAtivo = prox;
+  }
+  renderizar();
+  rolarAteLista();
+  atualizarSubRodada();
+}
+
+function turnoAnterior() {
+  if (combatentes.length === 0 || indiceAtivo < 0) return;
+  let ant = indiceAtivo - 1;
+  if (ant < 0) { ant = combatentes.length - 1; if (rodada > 1) { rodada--; document.getElementById('rodada-num').textContent = rodada; } }
+  let guard = 0;
+  while (combatentes[ant]?.derrotado && guard++ < combatentes.length) {
+    ant--;
+    if (ant < 0) ant = combatentes.length - 1;
+  }
+  indiceAtivo = ant;
+  renderizar();
+  rolarAteLista();
+  atualizarSubRodada();
+}
+
+function reiniciarCombate() {
+  if (combatentes.length > 0 && !confirm('Reiniciar combate? HP e condições serão restaurados.')) return;
+  combatentes.forEach(c => { c.hp = c.hpMax; c.condicoes = []; c.derrotado = false; });
+  indiceAtivo = -1; rodada = 1;
+  document.getElementById('rodada-num').textContent = '1';
+  document.getElementById('rodada-sub').textContent = 'Aguardando combate';
+  renderizar();
+}
+
+function incrementarRodada() {
+  rodada++;
+  const el = document.getElementById('rodada-num');
+  el.textContent = rodada;
+  el.classList.remove('beat');
+  void el.offsetWidth;
+  el.classList.add('beat');
+  setTimeout(() => el.classList.remove('beat'), 500);
+}
+
+function atualizarSubRodada() {
+  const ativo = combatentes[indiceAtivo];
+  if (ativo) document.getElementById('rodada-sub').textContent = ativo.nome;
+}
+
+function rolarAteLista() {
+  const cards = document.querySelectorAll('.card');
+  if (cards[indiceAtivo]) cards[indiceAtivo].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ══ RENDER ═══════════════════════════════════════════════════════════
+function renderizar() {
+  const lista = document.getElementById('lista-combatentes');
+  const vazio = document.getElementById('lista-vazia');
+
+  if (combatentes.length === 0) {
+    vazio.style.display = '';
+    Array.from(lista.children).forEach(c => { if (c !== vazio) c.remove(); });
+    return;
+  }
+  vazio.style.display = 'none';
+  Array.from(lista.children).forEach(c => { if (c !== vazio) c.remove(); });
+
+  combatentes.forEach((c, i) => {
+    const isAtivo = (i === indiceAtivo);
+    const pct     = Math.max(0, Math.round(c.hp / c.hpMax * 100));
+    const clHp    = pct <= 25 ? 'baixo' : pct >= 100 ? 'alto' : '';
+    const classes = `card t-${c.tipo}${isAtivo ? ' ativo' : ''}${c.derrotado ? ' derrotado' : ''}`;
+
+    const tagsCond = c.condicoes.map(cnd => {
+      const isEsp = CONDICOES.find(x => x.nome === cnd)?.esp;
+      return `<span class="cond-tag${isEsp ? ' esp' : ''}" onclick="removerCondicao(${c.id},'${esc(cnd)}')" title="Clique para remover">${cnd}</span>`;
+    }).join('');
+
+    const card = document.createElement('div');
+    card.className = classes;
+    card.innerHTML = `
+      <div class="card-l1">
+        <div class="c-dot"></div>
+        <span class="c-init">${c.iniciativa}</span>
+        <span class="c-nome">${esc(c.nome)}</span>
+        <span class="c-tipo">${c.tipo === 'pc' ? 'PJ' : 'NPC'}</span>
+      </div>
+      <div class="c-hp-row">
+        <span class="c-hp-lbl">HP</span>
+        <div class="c-hp-track"><div class="c-hp-fill ${clHp}" style="width:${pct}%"></div></div>
+        <span class="c-hp-num">${c.hp}<span class="hp-max"> / ${c.hpMax}</span></span>
+      </div>
+      <div class="c-acoes">
+        ${c.ca ? `<span class="c-ca">CA ${c.ca}</span>` : ''}
+        <button class="btn-card btn-dano"    onclick="abrirHp(${c.id},'dano')">⚔ Dano</button>
+        <button class="btn-card btn-cura"    onclick="abrirHp(${c.id},'cura')">♥ Cura</button>
+        <button class="btn-card btn-derrotar" onclick="alternarDerrotado(${c.id})">${c.derrotado ? '↩ Reanimar' : '☠ Derrotado'}</button>
+        <button class="btn-card btn-remover" onclick="removerCard(${c.id})">Remover</button>
+      </div>
+      <div class="c-conds">
+        ${tagsCond}
+        <button class="btn-add-cond" onclick="abrirCond(${c.id})">+ condição</button>
+      </div>`;
+    lista.appendChild(card);
+  });
+}
+
+// ══ MODAL HP ═════════════════════════════════════════════════════════
+function abrirHp(id, modo) {
+  alvoHp = id; modoHp = modo;
+  const c = combatentes.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('hp-eyebrow').textContent = modo === 'dano' ? 'Aplicar Dano' : 'Curar';
+  document.getElementById('hp-nome').textContent     = c.nome;
+  document.getElementById('hp-val').value            = '';
+  const btn = document.getElementById('hp-confirm-btn');
+  btn.className = `modal-btn ${modo === 'dano' ? 'mbtn-dano' : 'mbtn-cura'}`;
+  btn.textContent = modo === 'dano' ? '⚔ Aplicar dano' : '♥ Curar';
+  document.getElementById('ov-hp').classList.add('vis');
+  setTimeout(() => document.getElementById('hp-val').focus(), 80);
+}
+
+function fecharHp(ev) {
+  if (ev && ev.target !== document.getElementById('ov-hp')) return;
+  document.getElementById('ov-hp').classList.remove('vis');
+  alvoHp = null;
+}
+
+function confirmarHp() {
+  const val = parseInt(document.getElementById('hp-val').value) || 0;
+  const c   = combatentes.find(x => x.id === alvoHp);
+  if (!c || val <= 0) { fecharHp(); return; }
+  if (modoHp === 'dano') {
+    c.hp = Math.max(0, c.hp - val);
+    if (c.hp === 0) c.derrotado = true;
+  } else {
+    c.hp = Math.min(c.hpMax, c.hp + val);
+    c.derrotado = false;
+  }
+  document.getElementById('ov-hp').classList.remove('vis');
+  alvoHp = null; renderizar();
+}
+
+document.getElementById('hp-val').addEventListener('keydown', e => {
+  if (e.key === 'Enter')  confirmarHp();
+  if (e.key === 'Escape') fecharHp();
+});
+
+// ══ MODAL CONDIÇÕES ══════════════════════════════════════════════════
+function abrirCond(id) {
+  alvoCond = id;
+  const c = combatentes.find(x => x.id === id);
+  if (!c) return;
+  const grid = document.getElementById('cond-grid');
+  grid.innerHTML = '';
+  CONDICOES.forEach(cond => {
+    const ativa = c.condicoes.includes(cond.nome);
+    const btn = document.createElement('button');
+    btn.className = `cond-opt${cond.esp ? ' esp-opt' : ''}${ativa ? ' on' : ''}`;
+    btn.textContent = cond.nome;
+    btn.onclick = () => {
+      if (c.condicoes.includes(cond.nome)) {
+        c.condicoes = c.condicoes.filter(x => x !== cond.nome);
+        btn.classList.remove('on');
+      } else {
+        c.condicoes.push(cond.nome);
+        btn.classList.add('on');
+      }
+      renderizar();
+    };
+    grid.appendChild(btn);
+  });
+  document.getElementById('ov-cond').classList.add('vis');
+}
+
+function fecharCond(ev) {
+  if (ev && ev.target !== document.getElementById('ov-cond')) return;
+  document.getElementById('ov-cond').classList.remove('vis');
+  alvoCond = null;
+}
+
+function removerCondicao(id, cond) {
+  const c = combatentes.find(x => x.id === id);
+  if (c) { c.condicoes = c.condicoes.filter(x => x !== cond); renderizar(); }
+}
+
+// ══ AÇÕES DE CARD ════════════════════════════════════════════════════
+function alternarDerrotado(id) {
+  const c = combatentes.find(x => x.id === id);
+  if (c) { c.derrotado = !c.derrotado; renderizar(); }
+}
+
+function removerCard(id) {
+  const idx = combatentes.findIndex(x => x.id === id);
+  if (idx < 0) return;
+  combatentes.splice(idx, 1);
+  if (indiceAtivo >= combatentes.length) indiceAtivo = combatentes.length - 1;
+  renderizar();
+}
+
+
+// ══ AMBIENTE SONORO — Web Audio API ══════════════════════════════════
+
+const AmbAudioCtx = window.AudioContext || window.webkitAudioContext;
+let ambCtx        = null;
+let ambMasterGain = null;
+const noiseBuffers = {};
+const ambSons      = {};
+
+function ensureAmbCtx() {
+  if (!ambCtx) {
+    ambCtx = new AmbAudioCtx();
+    ambMasterGain = ambCtx.createGain();
+    ambMasterGain.gain.value = 0.8;
+    ambMasterGain.connect(ambCtx.destination);
+  }
+  if (ambCtx.state === 'suspended') ambCtx.resume();
+  return ambCtx;
+}
+
+function getNoiseBuffer(type) {
+  if (noiseBuffers[type]) return noiseBuffers[type];
+  const ctx = ensureAmbCtx();
+  const len = Math.floor(ctx.sampleRate * 3);
+  const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+  const d   = buf.getChannelData(0);
+  if (type === 'white') {
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  } else if (type === 'pink') {
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for (let i = 0; i < len; i++) {
+      const w = Math.random() * 2 - 1;
+      b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
+      b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
+      b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
+      d[i]=(b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.11; b6=w*0.115926;
+    }
+  } else if (type === 'brown') {
+    let last = 0;
+    for (let i = 0; i < len; i++) {
+      const w = Math.random() * 2 - 1;
+      d[i] = (last + 0.02*w) / 1.02; last = d[i]; d[i] *= 3.5;
+    }
+  }
+  noiseBuffers[type] = buf;
+  return buf;
+}
+
+// ── Fábricas de som ─────────────────────────────────────────────────
+function criarChuva(ctx, dest) {
+  const nodes = [];
+  const master = ctx.createGain(); master.gain.value = 1; master.connect(dest);
+  const s1 = ctx.createBufferSource(); s1.buffer = getNoiseBuffer('white'); s1.loop = true;
+  const f1 = ctx.createBiquadFilter(); f1.type = 'bandpass'; f1.frequency.value = 4000; f1.Q.value = 0.7;
+  const g1 = ctx.createGain(); g1.gain.value = 0.7;
+  s1.connect(f1); f1.connect(g1); g1.connect(master); s1.start();
+  const s2 = ctx.createBufferSource(); s2.buffer = getNoiseBuffer('white'); s2.loop = true;
+  const f2 = ctx.createBiquadFilter(); f2.type = 'bandpass'; f2.frequency.value = 1400; f2.Q.value = 1.5;
+  const g2 = ctx.createGain(); g2.gain.value = 0.3;
+  const lfo = ctx.createOscillator(); lfo.frequency.value = 0.14;
+  const lfoG = ctx.createGain(); lfoG.gain.value = 0.12;
+  lfo.connect(lfoG); lfoG.connect(g2.gain);
+  s2.connect(f2); f2.connect(g2); g2.connect(master); s2.start(); lfo.start();
+  nodes.push(s1, f1, g1, s2, f2, g2, lfo, lfoG, master);
+  return { nodes, timers: [], gainNode: master };
+}
+
+function criarVento(ctx, dest) {
+  const nodes = [];
+  const master = ctx.createGain(); master.gain.value = 1; master.connect(dest);
+  const s1 = ctx.createBufferSource(); s1.buffer = getNoiseBuffer('pink'); s1.loop = true;
+  const f1 = ctx.createBiquadFilter(); f1.type = 'lowpass'; f1.frequency.value = 350; f1.Q.value = 0.4;
+  const gVento = ctx.createGain(); gVento.gain.value = 0.65;
+  const lfo1 = ctx.createOscillator(); lfo1.frequency.value = 0.07;
+  const lfoG1 = ctx.createGain(); lfoG1.gain.value = 0.28;
+  lfo1.connect(lfoG1); lfoG1.connect(gVento.gain);
+  s1.connect(f1); f1.connect(gVento); gVento.connect(master); s1.start(); lfo1.start();
+  const s2 = ctx.createBufferSource(); s2.buffer = getNoiseBuffer('pink'); s2.loop = true;
+  const f2 = ctx.createBiquadFilter(); f2.type = 'bandpass'; f2.frequency.value = 500; f2.Q.value = 3.0;
+  const lfo2 = ctx.createOscillator(); lfo2.frequency.value = 0.04;
+  const lfoG2 = ctx.createGain(); lfoG2.gain.value = 180;
+  lfo2.connect(lfoG2); lfoG2.connect(f2.frequency);
+  const g2 = ctx.createGain(); g2.gain.value = 0.2;
+  s2.connect(f2); f2.connect(g2); g2.connect(master); s2.start(); lfo2.start();
+  nodes.push(s1, f1, gVento, lfo1, lfoG1, s2, f2, lfo2, lfoG2, g2, master);
+  return { nodes, timers: [], gainNode: master };
+}
+
+function criarMar(ctx, dest) {
+  const nodes = [];
+  const master = ctx.createGain(); master.gain.value = 1; master.connect(dest);
+  const src = ctx.createBufferSource(); src.buffer = getNoiseBuffer('pink'); src.loop = true;
+  const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 700;
+  const waveG = ctx.createGain(); waveG.gain.value = 0.5;
+  const lfo = ctx.createOscillator(); lfo.frequency.value = 0.07; lfo.type = 'sine';
+  const lfoG = ctx.createGain(); lfoG.gain.value = 0.45;
+  lfo.connect(lfoG); lfoG.connect(waveG.gain);
+  src.connect(f); f.connect(waveG); waveG.connect(master); src.start(); lfo.start();
+  const s2 = ctx.createBufferSource(); s2.buffer = getNoiseBuffer('white'); s2.loop = true;
+  const hF = ctx.createBiquadFilter(); hF.type = 'highpass'; hF.frequency.value = 2500;
+  const hG = ctx.createGain(); hG.gain.value = 0.08;
+  const lfoG2 = ctx.createGain(); lfoG2.gain.value = 0.07;
+  lfo.connect(lfoG2); lfoG2.connect(hG.gain);
+  s2.connect(hF); hF.connect(hG); hG.connect(master); s2.start();
+  nodes.push(src, f, waveG, lfo, lfoG, s2, hF, hG, lfoG2, master);
+  return { nodes, timers: [], gainNode: master };
+}
+
+function criarLareira(ctx, dest) {
+  const nodes = [], timers = [];
+  const master = ctx.createGain(); master.gain.value = 1; master.connect(dest);
+  const s1 = ctx.createBufferSource(); s1.buffer = getNoiseBuffer('brown'); s1.loop = true;
+  const f1 = ctx.createBiquadFilter(); f1.type = 'bandpass'; f1.frequency.value = 180; f1.Q.value = 0.6;
+  const g1 = ctx.createGain(); g1.gain.value = 1.3;
+  const flick = ctx.createOscillator(); flick.frequency.value = 3.8;
+  const flickG = ctx.createGain(); flickG.gain.value = 0.15;
+  flick.connect(flickG); flickG.connect(g1.gain);
+  s1.connect(f1); f1.connect(g1); g1.connect(master); s1.start(); flick.start();
+  const s2 = ctx.createBufferSource(); s2.buffer = getNoiseBuffer('white'); s2.loop = true;
+  const f2 = ctx.createBiquadFilter(); f2.type = 'bandpass'; f2.frequency.value = 900; f2.Q.value = 0.9;
+  const g2 = ctx.createGain(); g2.gain.value = 0.3;
+  s2.connect(f2); f2.connect(g2); g2.connect(master); s2.start();
+  nodes.push(s1, f1, g1, flick, flickG, s2, f2, g2, master);
+  function crackle() {
+    const t = ctx.currentTime;
+    const dur = 0.012 + Math.random() * 0.04;
+    const bLen = Math.floor(ctx.sampleRate * dur);
+    const bb = ctx.createBuffer(1, bLen, ctx.sampleRate);
+    const bd = bb.getChannelData(0);
+    for (let i = 0; i < bLen; i++) bd[i] = Math.random() * 2 - 1;
+    const burst = ctx.createBufferSource(); burst.buffer = bb;
+    const bF = ctx.createBiquadFilter(); bF.type = 'bandpass';
+    bF.frequency.value = 350 + Math.random() * 1200; bF.Q.value = 0.8;
+    const bG = ctx.createGain(); bG.gain.value = 0.07 + Math.random() * 0.22;
+    burst.connect(bF); bF.connect(bG); bG.connect(master);
+    burst.start(t); burst.stop(t + dur);
+    nodes.push(burst, bF, bG);
+    timers.push(setTimeout(crackle, 80 + Math.random() * 270));
+  }
+  timers.push(setTimeout(crackle, 120));
+  return { nodes, timers, gainNode: master };
+}
+
+function criarMasmorra(ctx, dest) {
+  const nodes = [], timers = [];
+  const master = ctx.createGain(); master.gain.value = 1; master.connect(dest);
+  const s1 = ctx.createBufferSource(); s1.buffer = getNoiseBuffer('brown'); s1.loop = true;
+  const f1 = ctx.createBiquadFilter(); f1.type = 'lowpass'; f1.frequency.value = 100;
+  const g1 = ctx.createGain(); g1.gain.value = 0.3;
+  s1.connect(f1); f1.connect(g1); g1.connect(master); s1.start();
+  const s2 = ctx.createBufferSource(); s2.buffer = getNoiseBuffer('brown'); s2.loop = true;
+  const f2 = ctx.createBiquadFilter(); f2.type = 'lowpass'; f2.frequency.value = 55;
+  const g2 = ctx.createGain(); g2.gain.value = 0.18;
+  s2.connect(f2); f2.connect(g2); g2.connect(master); s2.start();
+  nodes.push(s1, f1, g1, s2, f2, g2, master);
+  function drip() {
+    const t = ctx.currentTime;
+    const startF = 1100 + Math.random() * 700;
+    const d1 = ctx.createOscillator(); d1.type = 'sine';
+    d1.frequency.setValueAtTime(startF, t);
+    d1.frequency.exponentialRampToValueAtTime(startF * 0.38, t + 0.12);
+    const e1 = ctx.createGain();
+    e1.gain.setValueAtTime(0, t);
+    e1.gain.linearRampToValueAtTime(0.22, t + 0.004);
+    e1.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    d1.connect(e1); e1.connect(master); d1.start(t); d1.stop(t + 0.18);
+    const te = t + 0.07;
+    const d2 = ctx.createOscillator(); d2.type = 'sine'; d2.frequency.value = startF * 0.32;
+    const e2 = ctx.createGain();
+    e2.gain.setValueAtTime(0, te);
+    e2.gain.linearRampToValueAtTime(0.07, te + 0.003);
+    e2.gain.exponentialRampToValueAtTime(0.001, te + 0.22);
+    d2.connect(e2); e2.connect(master); d2.start(te); d2.stop(te + 0.22);
+    nodes.push(d1, e1, d2, e2);
+    timers.push(setTimeout(drip, 1600 + Math.random() * 4200));
+  }
+  timers.push(setTimeout(drip, 500 + Math.random() * 900));
+  return { nodes, timers, gainNode: master };
+}
+
+function criarTaverna(ctx, dest) {
+  const nodes = [], timers = [];
+  const master = ctx.createGain(); master.gain.value = 1; master.connect(dest);
+  for (let i = 0; i < 8; i++) {
+    const osc = ctx.createOscillator(); osc.type = 'sine';
+    osc.frequency.value = 160 + i * 55 + Math.random() * 45;
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.3 + Math.random() * 2.5;
+    const lfoG = ctx.createGain(); lfoG.gain.value = 0.02 + Math.random() * 0.018;
+    lfo.connect(lfoG);
+    const oscG = ctx.createGain(); oscG.gain.value = 0.022 + Math.random() * 0.014;
+    lfoG.connect(oscG.gain);
+    const filt = ctx.createBiquadFilter(); filt.type = 'lowpass'; filt.frequency.value = 480 + i * 65;
+    osc.connect(filt); filt.connect(oscG); oscG.connect(master);
+    osc.start(); lfo.start();
+    nodes.push(osc, lfo, lfoG, oscG, filt);
+  }
+  const srcN = ctx.createBufferSource(); srcN.buffer = getNoiseBuffer('brown'); srcN.loop = true;
+  const nF = ctx.createBiquadFilter(); nF.type = 'bandpass'; nF.frequency.value = 280; nF.Q.value = 0.5;
+  const nG = ctx.createGain(); nG.gain.value = 0.14;
+  srcN.connect(nF); nF.connect(nG); nG.connect(master); srcN.start();
+  nodes.push(srcN, nF, nG, master);
+  function evento() {
+    const t = ctx.currentTime;
+    const roll = Math.random();
+    if (roll < 0.45) {
+      const freq = 900 + Math.random() * 700;
+      const co = ctx.createOscillator(); co.type = 'sine'; co.frequency.value = freq;
+      const ce = ctx.createGain(); ce.gain.setValueAtTime(0.1, t); ce.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+      co.connect(ce); ce.connect(master); co.start(t); co.stop(t + 0.55);
+      nodes.push(co, ce);
+    } else if (roll < 0.75) {
+      const vo = ctx.createOscillator(); vo.type = 'sine';
+      vo.frequency.value = 220 + Math.random() * 180;
+      const vLfo = ctx.createOscillator(); vLfo.frequency.value = 5 + Math.random() * 5;
+      const vLfoG = ctx.createGain(); vLfoG.gain.value = 0.055;
+      vLfo.connect(vLfoG);
+      const vEnv = ctx.createGain();
+      vEnv.gain.setValueAtTime(0, t); vEnv.gain.linearRampToValueAtTime(0.09, t + 0.12);
+      vEnv.gain.setValueAtTime(0.09, t + 0.55); vEnv.gain.linearRampToValueAtTime(0, t + 0.75);
+      vLfoG.connect(vEnv.gain);
+      const vF = ctx.createBiquadFilter(); vF.type = 'lowpass'; vF.frequency.value = 900;
+      vo.connect(vF); vF.connect(vEnv); vEnv.connect(master);
+      vo.start(t); vLfo.start(t); vo.stop(t + 0.8); vLfo.stop(t + 0.8);
+      nodes.push(vo, vLfo, vLfoG, vEnv, vF);
+    }
+    timers.push(setTimeout(evento, 1200 + Math.random() * 3800));
+  }
+  timers.push(setTimeout(evento, 600 + Math.random() * 1200));
+  timers.push(setTimeout(evento, 1800 + Math.random() * 2000));
+  return { nodes, timers, gainNode: master };
+}
+
+function criarBatimento(ctx, dest) {
+  const nodes = [], timers = [];
+  const master = ctx.createGain(); master.gain.value = 1; master.connect(dest);
+  function beat() {
+    const t = ctx.currentTime;
+    const o1 = ctx.createOscillator(); o1.type = 'sine'; o1.frequency.value = 62;
+    const e1 = ctx.createGain(); e1.gain.setValueAtTime(0.92, t); e1.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+    o1.connect(e1); e1.connect(master); o1.start(t); o1.stop(t + 0.22);
+    const o1b = ctx.createOscillator(); o1b.type = 'sine'; o1b.frequency.value = 42;
+    const e1b = ctx.createGain(); e1b.gain.setValueAtTime(0.6, t); e1b.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+    o1b.connect(e1b); e1b.connect(master); o1b.start(t); o1b.stop(t + 0.28);
+    const t2 = t + 0.26;
+    const o2 = ctx.createOscillator(); o2.type = 'sine'; o2.frequency.value = 55;
+    const e2 = ctx.createGain(); e2.gain.setValueAtTime(0.52, t2); e2.gain.exponentialRampToValueAtTime(0.001, t2 + 0.18);
+    o2.connect(e2); e2.connect(master); o2.start(t2); o2.stop(t2 + 0.18);
+    nodes.push(o1, e1, o1b, e1b, o2, e2);
+    timers.push(setTimeout(beat, 940));
+  }
+  timers.push(setTimeout(beat, 80));
+  nodes.push(master);
+  return { nodes, timers, gainNode: master };
+}
+
+function criarDrone(ctx, dest) {
+  const nodes = [];
+  const master = ctx.createGain(); master.gain.value = 1; master.connect(dest);
+  [82, 98.6, 110.8, 123.0].forEach((freq, i) => {
+    const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.value = freq;
+    const vib = ctx.createOscillator(); vib.frequency.value = 0.15 + i * 0.07;
+    const vibG = ctx.createGain(); vibG.gain.value = 0.7;
+    vib.connect(vibG); vibG.connect(osc.frequency);
+    const oscG = ctx.createGain(); oscG.gain.value = 0.38;
+    osc.connect(oscG); oscG.connect(master);
+    osc.start(); vib.start();
+    nodes.push(osc, vib, vibG, oscG);
+  });
+  const srcN = ctx.createBufferSource(); srcN.buffer = getNoiseBuffer('pink'); srcN.loop = true;
+  const nF = ctx.createBiquadFilter(); nF.type = 'lowpass'; nF.frequency.value = 200;
+  const nG = ctx.createGain(); nG.gain.value = 0.12;
+  srcN.connect(nF); nF.connect(nG); nG.connect(master); srcN.start();
+  nodes.push(srcN, nF, nG, master);
+  return { nodes, timers: [], gainNode: master };
+}
+
+function criarVeu(ctx, dest) {
+  const nodes = [], timers = [];
+  const master = ctx.createGain(); master.gain.value = 1; master.connect(dest);
+  [98, 123.5, 147, 196, 234].forEach((freq, i) => {
+    const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.value = freq;
+    const vib = ctx.createOscillator(); vib.frequency.value = 0.07 + i * 0.03;
+    const vibG = ctx.createGain(); vibG.gain.value = 0.9;
+    vib.connect(vibG); vibG.connect(osc.frequency);
+    const oscG = ctx.createGain(); oscG.gain.value = 0.1;
+    osc.connect(oscG); oscG.connect(master);
+    osc.start(); vib.start();
+    nodes.push(osc, vib, vibG, oscG);
+  });
+  const srcN = ctx.createBufferSource(); srcN.buffer = getNoiseBuffer('pink'); srcN.loop = true;
+  const nF = ctx.createBiquadFilter(); nF.type = 'bandpass'; nF.frequency.value = 700; nF.Q.value = 1.8;
+  const nLfo = ctx.createOscillator(); nLfo.frequency.value = 0.06;
+  const nLfoG = ctx.createGain(); nLfoG.gain.value = 0.05;
+  nLfo.connect(nLfoG);
+  const nG = ctx.createGain(); nG.gain.value = 0.1;
+  nLfoG.connect(nG.gain);
+  srcN.connect(nF); nF.connect(nG); nG.connect(master); srcN.start(); nLfo.start();
+  nodes.push(srcN, nF, nLfo, nLfoG, nG);
+  function presenza() {
+    const t = ctx.currentTime;
+    const startF = 180 + Math.random() * 300;
+    const po = ctx.createOscillator(); po.type = 'sine';
+    po.frequency.setValueAtTime(startF, t);
+    po.frequency.exponentialRampToValueAtTime(startF * (1.4 + Math.random() * 0.8), t + 2.0);
+    const pe = ctx.createGain();
+    pe.gain.setValueAtTime(0, t);
+    pe.gain.linearRampToValueAtTime(0.08, t + 0.6);
+    pe.gain.linearRampToValueAtTime(0, t + 2.2);
+    po.connect(pe); pe.connect(master); po.start(t); po.stop(t + 2.2);
+    nodes.push(po, pe);
+    timers.push(setTimeout(presenza, 2500 + Math.random() * 7000));
+  }
+  timers.push(setTimeout(presenza, 1800 + Math.random() * 3000));
+  nodes.push(master);
+  return { nodes, timers, gainNode: master };
+}
+
+function criarBatalha(ctx, dest) {
+  const nodes = [], timers = [];
+  const master = ctx.createGain(); master.gain.value = 1; master.connect(dest);
+  const srcN = ctx.createBufferSource(); srcN.buffer = getNoiseBuffer('brown'); srcN.loop = true;
+  const nF = ctx.createBiquadFilter(); nF.type = 'lowpass'; nF.frequency.value = 220;
+  const nG = ctx.createGain(); nG.gain.value = 0.45;
+  srcN.connect(nF); nF.connect(nG); nG.connect(master); srcN.start();
+  const srcM = ctx.createBufferSource(); srcM.buffer = getNoiseBuffer('white'); srcM.loop = true;
+  const mF = ctx.createBiquadFilter(); mF.type = 'bandpass'; mF.frequency.value = 1800; mF.Q.value = 2.5;
+  const mG = ctx.createGain(); mG.gain.value = 0.055;
+  srcM.connect(mF); mF.connect(mG); mG.connect(master); srcM.start();
+  nodes.push(srcN, nF, nG, srcM, mF, mG, master);
+  function impact() {
+    const t = ctx.currentTime;
+    const roll = Math.random();
+    if (roll < 0.45) {
+      const io = ctx.createOscillator(); io.type = 'sine';
+      io.frequency.setValueAtTime(85, t); io.frequency.exponentialRampToValueAtTime(30, t + 0.18);
+      const ie = ctx.createGain(); ie.gain.setValueAtTime(0.42, t); ie.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+      io.connect(ie); ie.connect(master); io.start(t); io.stop(t + 0.35);
+      nodes.push(io, ie);
+    } else if (roll < 0.75) {
+      const co = ctx.createOscillator(); co.type = 'sawtooth'; co.frequency.value = 380 + Math.random() * 250;
+      const cF = ctx.createBiquadFilter(); cF.type = 'bandpass'; cF.frequency.value = 2200; cF.Q.value = 2;
+      const ce = ctx.createGain(); ce.gain.setValueAtTime(0.15, t); ce.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+      co.connect(cF); cF.connect(ce); ce.connect(master); co.start(t); co.stop(t + 0.09);
+      nodes.push(co, cF, ce);
+    } else {
+      const bLen = Math.floor(ctx.sampleRate * 0.18);
+      const bBuf = ctx.createBuffer(1, bLen, ctx.sampleRate);
+      const bd = bBuf.getChannelData(0);
+      for (let j = 0; j < bLen; j++) bd[j] = Math.random() * 2 - 1;
+      const burst = ctx.createBufferSource(); burst.buffer = bBuf;
+      const bF = ctx.createBiquadFilter(); bF.type = 'bandpass'; bF.frequency.value = 700 + Math.random() * 500; bF.Q.value = 1.5;
+      const bG = ctx.createGain(); bG.gain.value = 0.07;
+      burst.connect(bF); bF.connect(bG); bG.connect(master); burst.start(t); burst.stop(t + 0.18);
+      nodes.push(burst, bF, bG);
+    }
+    timers.push(setTimeout(impact, 350 + Math.random() * Math.random() * 2800));
+  }
+  timers.push(setTimeout(impact, 150 + Math.random() * 400));
+  timers.push(setTimeout(impact, 700 + Math.random() * 900));
+  return { nodes, timers, gainNode: master };
+}
+
+// ── Catálogo ─────────────────────────────────────────────────────────
+const SONS_DEF = [
+  { id: 'chuva',    nome: 'Chuva',            cat: 'Natureza', glyph: '🌧️', factory: criarChuva     },
+  { id: 'vento',    nome: 'Vento',            cat: 'Natureza', glyph: '🌬️', factory: criarVento     },
+  { id: 'mar',      nome: 'Mar',              cat: 'Natureza', glyph: '🌊', factory: criarMar       },
+  { id: 'lareira',  nome: 'Lareira',          cat: 'Arcano',   glyph: '🔥', factory: criarLareira   },
+  { id: 'masmorra', nome: 'Masmorra',         cat: 'Arcano',   glyph: '🪨', factory: criarMasmorra  },
+  { id: 'taverna',  nome: 'Taverna',          cat: 'Arcano',   glyph: '🍺', factory: criarTaverna   },
+  { id: 'batimento',nome: 'Batimento',        cat: 'Tensão',   glyph: '💓', factory: criarBatimento },
+  { id: 'drone',    nome: 'Drone',            cat: 'Tensão',   glyph: '〰️', factory: criarDrone     },
+  { id: 'veu',      nome: 'O Véu',            cat: 'O Véu',    glyph: '🜏', factory: criarVeu       },
+  { id: 'batalha',  nome: 'Batalha Distante', cat: 'O Véu',    glyph: '⚔️', factory: criarBatalha   },
+];
+
+// ── Controles ────────────────────────────────────────────────────────
+function toggleSon(id) {
+  const state = ambSons[id];
+  if (state && state.playing) {
+    const ctx = ensureAmbCtx();
+    state.gainNode.gain.setTargetAtTime(0, ctx.currentTime, 0.25);
+    state.timers.forEach(clearTimeout);
+    setTimeout(() => {
+      state.nodes.forEach(n => {
+        try { if (n.stop) n.stop(); } catch(e) {}
+        try { n.disconnect(); }       catch(e) {}
+      });
+      delete ambSons[id];
+      updateAmbCard(id, false);
+      atualizarContagem();
+    }, 520);
+  } else {
+    const ctx = ensureAmbCtx();
+    const def = SONS_DEF.find(s => s.id === id);
+    if (!def) return;
+    const slider = document.querySelector(`#amb-card-${id} .amb-slider`);
+    const vol = slider ? parseFloat(slider.value) / 100 : 0.5;
+    const s = def.factory(ctx, ambMasterGain);
+    s.playing = true;
+    s.gainNode.gain.setValueAtTime(0, ctx.currentTime);
+    s.gainNode.gain.setTargetAtTime(vol, ctx.currentTime, 0.3);
+    ambSons[id] = s;
+    updateAmbCard(id, true);
+    atualizarContagem();
+  }
+}
+
+function setSonVolume(id, v) {
+  const s = ambSons[id];
+  if (s) s.gainNode.gain.setTargetAtTime(parseFloat(v), ensureAmbCtx().currentTime, 0.05);
+}
+
+function pararTudo() {
+  Object.keys(ambSons).forEach(id => { if (ambSons[id]?.playing) toggleSon(id); });
+}
+function mutarTudo() {
+  ensureAmbCtx();
+  if (ambMasterGain) ambMasterGain.gain.setTargetAtTime(0, ambCtx.currentTime, 0.1);
+  const s = document.getElementById('master-vol');
+  if (s) { s.value = 0; atualizarSliderBg(s); }
+  const v = document.getElementById('master-val');
+  if (v) v.textContent = '0%';
+}
+function restaurarTudo() {
+  ensureAmbCtx();
+  if (ambMasterGain) ambMasterGain.gain.setTargetAtTime(0.8, ambCtx.currentTime, 0.1);
+  const s = document.getElementById('master-vol');
+  if (s) { s.value = 80; atualizarSliderBg(s); }
+  const v = document.getElementById('master-val');
+  if (v) v.textContent = '80%';
+}
+
+function updateAmbCard(id, playing) {
+  const card = document.getElementById('amb-card-' + id);
+  if (!card) return;
+  card.classList.toggle('playing', playing);
+  const btn = card.querySelector('.amb-toggle');
+  if (btn) btn.textContent = playing ? '⏹' : '▶';
+}
+function atualizarContagem() {
+  const count = Object.keys(ambSons).length;
+  const el  = document.getElementById('amb-count');
+  const sub = document.getElementById('amb-status');
+  if (el)  el.textContent  = count;
+  if (sub) sub.textContent = count === 0 ? 'Silêncio' : count === 1 ? '1 camada ativa' : count + ' camadas ativas';
+}
+function atualizarSliderBg(el) {
+  el.style.background = `linear-gradient(90deg, var(--ember) ${el.value}%, rgba(201,168,76,.12) 0%)`;
+}
+
+// ── Constrói o grid de sons ──────────────────────────────────────────
+function buildAmbGrid() {
+  const main = document.getElementById('amb-main');
+  if (!main) return;
+  const cats = {};
+  SONS_DEF.forEach(s => { if (!cats[s.cat]) cats[s.cat] = []; cats[s.cat].push(s); });
+  Object.entries(cats).forEach(([cat, sons]) => {
+    const catEl = document.createElement('div');
+    catEl.className = 'amb-cat-label';
+    catEl.textContent = cat;
+    main.appendChild(catEl);
+    const row = document.createElement('div');
+    row.className = 'amb-grid-row';
+    sons.forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'amb-card'; card.id = 'amb-card-' + s.id;
+      card.innerHTML = `
+        <div class="amb-thumb">
+          <span class="amb-glyph">${s.glyph}</span>
+          <div class="amb-bars">
+            <div class="amb-bar"></div><div class="amb-bar"></div>
+            <div class="amb-bar"></div><div class="amb-bar"></div>
+          </div>
+        </div>
+        <span class="amb-nome">${s.nome}</span>
+        <div class="amb-vol-row">
+          <input type="range" class="amb-slider" min="0" max="100" value="50"
+            oninput="setSonVolume('${s.id}',this.value/100);atualizarSliderBg(this)">
+        </div>
+        <button class="amb-toggle" onclick="toggleSon('${s.id}')">▶</button>`;
+      row.appendChild(card);
+    });
+    main.appendChild(row);
+  });
+  document.querySelectorAll('#amb-main .amb-slider').forEach(atualizarSliderBg);
+}
+
+buildAmbGrid();
+
+// Wire master slider
+(function() {
+  const ms = document.getElementById('master-vol');
+  if (!ms) return;
+  atualizarSliderBg(ms);
+  ms.addEventListener('input', function() {
+    atualizarSliderBg(this);
+    ensureAmbCtx();
+    if (ambMasterGain) ambMasterGain.gain.setTargetAtTime(this.value / 100, ambCtx.currentTime, 0.05);
+    const v = document.getElementById('master-val');
+    if (v) v.textContent = this.value + '%';
+  });
+})();
+
+
+// ══ CRONÔMETRO DE TENSÃO ═════════════════════════════════════════════
+
+const PRESETS_TENS = [
+  { id:'ritual',   nome:'Ritual',         glyph:'🜏', tempo:300, desc:'A câmara fecha'       },
+  { id:'bomba',    nome:'Bomba',          glyph:'💣', tempo:180, desc:'O mecanismo clica'    },
+  { id:'fuga',     nome:'Fuga',           glyph:'🏃', tempo:120, desc:'Passos se aproximam'  },
+  { id:'interroga',nome:'Interrogatório', glyph:'🔦', tempo:600, desc:'O silêncio pesa'      },
+  { id:'turno',    nome:'Turno Limite',   glyph:'⚔️', tempo:30,  desc:'Decida agora'         },
+];
+const TENS_STAGES = ['calmo','atencao','alerta','critico','iminente','expirado'];
+const TENS_CIRCUM = 2 * Math.PI * 120; // 753.98
+
+let tensTotal     = 0;
+let tensRemaining = 0;
+let tensInterval  = null;
+let tensPreset    = null;
+let tensLastStage = '';
+let tensAudioCtx  = null;
+
+function ensureTensCtx() {
+  if (!tensAudioCtx) tensAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (tensAudioCtx.state === 'suspended') tensAudioCtx.resume();
+  return tensAudioCtx;
+}
+
+function tensFormatoTempo(s) {
+  const m = Math.floor(Math.abs(s) / 60);
+  const r = Math.abs(s) % 60;
+  return `${String(m).padStart(2,'0')}:${String(r).padStart(2,'0')}`;
+}
+
+function buildPresets() {
+  const grid = document.getElementById('preset-grid');
+  if (!grid) return;
+  PRESETS_TENS.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'preset-btn'; btn.id = 'preset-' + p.id;
+    btn.innerHTML = `<span class="preset-glyph">${p.glyph}</span>
+      <span><span class="preset-nome">${p.nome}</span>
+            <span class="preset-tempo">${tensFormatoTempo(p.tempo)}</span></span>`;
+    btn.onclick = () => selecionarPreset(p.id);
+    grid.appendChild(btn);
+  });
+}
+
+function selecionarPreset(id) {
+  tensPreset = PRESETS_TENS.find(p => p.id === id);
+  if (!tensPreset) return;
+  _pararTensao();
+  tensLastStage = '';
+  document.getElementById('btn-tens-start').disabled = false;
+  document.getElementById('btn-tens-pause').disabled = true;
+  tensTotal = tensRemaining = tensPreset.tempo;
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('preset-' + id)?.classList.add('active');
+  document.getElementById('tens-scene-label').textContent = tensPreset.nome;
+  document.getElementById('tens-scene-desc').textContent  = tensPreset.desc;
+  _atualizarDisplay();
+  _atualizarEstagio(1.0);
+  _setStatus('Pronto');
+}
+
+function aplicarCustom() {
+  _pararTensao();
+  tensLastStage = '';
+  document.getElementById('btn-tens-start').disabled = false;
+  document.getElementById('btn-tens-pause').disabled = true;
+  const min   = Math.max(0, parseInt(document.getElementById('custom-min')?.value) || 0);
+  const sec   = Math.max(0, Math.min(59, parseInt(document.getElementById('custom-sec')?.value) || 0));
+  const total = min * 60 + sec;
+  if (total <= 0) return;
+  tensPreset = null; tensTotal = tensRemaining = total;
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tens-scene-label').textContent = 'Personalizado';
+  document.getElementById('tens-scene-desc').textContent  = '—';
+  _atualizarDisplay();
+  _atualizarEstagio(1.0);
+  _setStatus('Pronto');
+}
+
+function iniciarTensao() {
+  if (tensTotal <= 0 || tensInterval) return;
+  ensureTensCtx();
+  tensInterval = setInterval(() => {
+    if (tensRemaining <= 0) { _expirar(); return; }
+    tensRemaining--;
+    _atualizarDisplay();
+    const pct = tensRemaining / tensTotal;
+    _atualizarEstagio(pct);
+    _tocarTick(pct, tensRemaining);
+  }, 1000);
+  document.getElementById('btn-tens-start').disabled = true;
+  document.getElementById('btn-tens-pause').disabled = false;
+  _setStatus('Em contagem');
+}
+
+function pausarTensao() {
+  if (!tensInterval) return;
+  _pararTensao();
+  document.getElementById('btn-tens-start').disabled = false;
+  document.getElementById('btn-tens-pause').disabled = true;
+  _setStatus('Pausado');
+}
+
+function reiniciarTensao() {
+  _pararTensao();
+  tensRemaining = tensTotal;
+  const numEl = document.getElementById('tens-num');
+  if (numEl) numEl.classList.remove('iminente','expirado');
+  const wrap = document.getElementById('tens-ring-wrap');
+  if (wrap) TENS_STAGES.forEach(s => wrap.classList.remove(s));
+  const main = document.getElementById('tens-main');
+  if (main) TENS_STAGES.forEach(s => main.classList.remove(s));
+  tensLastStage = '';
+  document.getElementById('btn-tens-start').disabled = false;
+  document.getElementById('btn-tens-pause').disabled = true;
+  _atualizarDisplay();
+  _atualizarEstagio(tensTotal > 0 ? 1.0 : 0);
+  if (tensTotal > 0 && tensPreset) {
+    document.getElementById('tens-scene-label').textContent = tensPreset.nome;
+    document.getElementById('tens-scene-desc').textContent  = tensPreset.desc;
+  }
+  _setStatus(tensTotal > 0 ? 'Pronto' : 'Aguardando');
+}
+
+function _pararTensao() { clearInterval(tensInterval); tensInterval = null; }
+
+function _atualizarDisplay() {
+  const numEl = document.getElementById('tens-num');
+  const ring  = document.getElementById('ring-prog');
+  if (numEl) numEl.textContent = tensFormatoTempo(tensRemaining);
+  if (ring && tensTotal > 0)
+    ring.style.strokeDashoffset = (TENS_CIRCUM * (1 - tensRemaining / tensTotal)).toFixed(2);
+}
+
+function _atualizarEstagio(pct) {
+  const e = pct > .6 ? 'calmo' : pct > .4 ? 'atencao' : pct > .2 ? 'alerta' :
+            pct > .1 ? 'critico' : pct > 0 ? 'iminente' : 'expirado';
+  if (e === tensLastStage) return;
+  tensLastStage = e;
+  const wrap = document.getElementById('tens-ring-wrap');
+  const main = document.getElementById('tens-main');
+  const num  = document.getElementById('tens-num');
+  if (wrap) { TENS_STAGES.forEach(s => wrap.classList.remove(s)); wrap.classList.add(e); }
+  if (main) { TENS_STAGES.forEach(s => main.classList.remove(s)); main.classList.add(e); }
+  if (num)  { num.classList.remove('iminente','expirado'); if (e === 'iminente') num.classList.add('iminente'); }
+}
+
+function _expirar() {
+  _pararTensao();
+  tensRemaining = 0;
+  const numEl = document.getElementById('tens-num');
+  if (numEl) { numEl.textContent = 'TEMPO ESGOTADO'; numEl.classList.add('expirado'); }
+  const ring = document.getElementById('ring-prog');
+  if (ring)  ring.style.strokeDashoffset = TENS_CIRCUM;
+  const main = document.getElementById('tens-main');
+  if (main)  { TENS_STAGES.forEach(s => main.classList.remove(s)); main.classList.add('expirado'); }
+  document.getElementById('btn-tens-start').disabled = false;
+  document.getElementById('btn-tens-pause').disabled = true;
+  _setStatus('Tempo esgotado');
+  _tocarAlarme();
+}
+
+function _setStatus(txt) {
+  const el = document.getElementById('tens-status-lbl');
+  if (el) el.textContent = txt;
+}
+
+function _tocarTick(pct, rem) {
+  if (!tensAudioCtx || pct > 0.4) return;
+  const tick = pct <= 0.1               ? true
+             : pct <= 0.2 && rem % 5  === 0 ? true
+             : pct <= 0.4 && rem % 15 === 0 ? true : false;
+  if (!tick) return;
+  const ctx = tensAudioCtx, t = ctx.currentTime;
+  const len = Math.floor(ctx.sampleRate * 0.012);
+  const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+  const d   = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  const src = ctx.createBufferSource(); src.buffer = buf;
+  const f   = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 1800;
+  const g   = ctx.createGain(); g.gain.value = pct <= 0.1 ? 0.38 : 0.22;
+  src.connect(f); f.connect(g); g.connect(ctx.destination);
+  src.start(t); src.stop(t + 0.012);
+}
+
+function _tocarAlarme() {
+  const ctx = ensureTensCtx(), t = ctx.currentTime;
+  [440, 880, 440, 880, 660].forEach((freq, i) => {
+    const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.value = freq;
+    const env = ctx.createGain(); const ts = t + i * 0.42;
+    env.gain.setValueAtTime(0.4, ts); env.gain.exponentialRampToValueAtTime(0.001, ts + 0.38);
+    osc.connect(env); env.connect(ctx.destination); osc.start(ts); osc.stop(ts + 0.38);
+  });
+}
+
+buildPresets();
+
+// ══ RASTREADOR DE CONDIÇÕES ══════════════════════════════════════════
+
+const CONDICOES_DATA = [
+  { id:'envenenado',  nome:'Envenenado',    glyph:'☠️', cat:'Estado',    esp:false,
+    efeito:'−1 em ataques e testes de habilidade. Dano venenoso 1d4 no início de cada turno.' },
+  { id:'agarrado',    nome:'Agarrado',      glyph:'🤝', cat:'Movimento', esp:false,
+    efeito:'Velocidade 0. Ataques corpo a corpo do agarrador com vantagem.' },
+  { id:'paralisado',  nome:'Paralisado',    glyph:'🧊', cat:'Estado',    esp:false,
+    efeito:'Não pode se mover ou falar. Falha automática em Força e Destreza. Ataques com vantagem e críticos em 5 pés.' },
+  { id:'atordoado',   nome:'Atordoado',     glyph:'💫', cat:'Estado',    esp:false,
+    efeito:'Incapacitado, não pode se mover. Falha em Força e Destreza. Ataques contra ele com vantagem.' },
+  { id:'inconsciente',nome:'Inconsciente',  glyph:'💤', cat:'Estado',    esp:false,
+    efeito:'Cai prono, sem consciência. Falha em Força e Destreza. Ataques com vantagem; críticos em 5 pés.' },
+  { id:'assustado',   nome:'Assustado',     glyph:'👁', cat:'Mental',    esp:false,
+    efeito:'Desvantagem em ataques e testes enquanto a fonte do medo for visível. Não pode se aproximar.' },
+  { id:'caido',       nome:'Caído',         glyph:'⤵️', cat:'Movimento', esp:false,
+    efeito:'Prono. Ataques corpo a corpo com vantagem; ranged com desvantagem. Metade do mov. para levantar.' },
+  { id:'cego',        nome:'Cego',          glyph:'🕯', cat:'Sentido',   esp:false,
+    efeito:'Falha em testes de visão. Ataques com desvantagem; inimigos têm vantagem.' },
+  { id:'surdo',       nome:'Surdo',         glyph:'🔇', cat:'Sentido',   esp:false,
+    efeito:'Falha em testes de audição. Magias com componente verbal podem exigir teste.' },
+  { id:'concentracao',nome:'Concentração',  glyph:'🔮', cat:'Magia',     esp:false,
+    efeito:'Mantendo magia. Perde ao tomar dano (CD 10 ou metade). Somente uma magia de concentração ativa.' },
+  { id:'reacao',      nome:'Reação Usada',  glyph:'⚡', cat:'Ação',      esp:false,
+    efeito:'Não pode usar reação até o início do próximo turno.' },
+  { id:'queimando',   nome:'Queimando',     glyph:'🔥', cat:'Dano',      esp:false,
+    efeito:'1d6 de dano de fogo no início de cada turno. Ação para apagar (Destreza CD 10).' },
+  { id:'sangrando',   nome:'Sangrando',     glyph:'🩸', cat:'Dano',      esp:false,
+    efeito:'1d4 de dano no início de cada turno. Cura: ação + Medicina CD 12 ou magia.' },
+  { id:'veu',         nome:'Sob o Véu',     glyph:'🜏', cat:'O Véu',     esp:true,
+    efeito:'Percepções distorcidas pelo plano espiritual. Desvantagem em Percepção. Pode ver o invisível, mas CA −2. Risco de alucinações.' },
+  { id:'sanidade',    nome:'Sanidade −1',   glyph:'🧠', cat:'O Véu',     esp:true,
+    efeito:'Redução permanente de 1 ponto de Sanidade. Acumula. Ao chegar a 0: colapso mental e loucura permanente.' },
+  { id:'maldito',     nome:'Maldito',       glyph:'🔱', cat:'O Véu',     esp:true,
+    efeito:'Penalidade pela natureza da maldição. Resistências reduzidas. Remoção exige ritual específico.' },
+  { id:'marcado',     nome:'Marcado',       glyph:'🎯', cat:'O Véu',     esp:true,
+    efeito:'Sinalizado por entidade sobrenatural. Vantagem em ataques contra o marcado. Instável entre planos.' },
+];
+
+let condEntidades  = [];
+let condTipoSel    = 'pc';
+let condProxId     = 1;
+
+// ── Codex (lazy build) ────────────────────────────────────────────────
+function buildCondex() {
+  const view = document.getElementById('cond-view-codex');
+  if (!view || view.dataset.built) return;
+  view.dataset.built = '1';
+  const cats = {};
+  CONDICOES_DATA.forEach(c => { if (!cats[c.cat]) cats[c.cat] = []; cats[c.cat].push(c); });
+  Object.entries(cats).forEach(([cat, conds]) => {
+    const lbl = document.createElement('div');
+    lbl.className = 'codex-cat-label'; lbl.textContent = cat;
+    view.appendChild(lbl);
+    const grid = document.createElement('div'); grid.className = 'codex-grid';
+    conds.forEach(c => {
+      const card = document.createElement('div');
+      card.className = `codex-card${c.esp ? ' esp-card' : ''}`;
+      card.innerHTML = `<div class="codex-card-hdr">
+        <span class="codex-card-glyph">${c.glyph}</span>
+        <span class="codex-card-nome">${c.nome}</span>
+        <span class="codex-card-badge ${c.esp ? 'codex-badge-val' : 'codex-badge-std'}">${c.esp ? 'Véu' : 'Padrão'}</span>
+      </div>
+      <div class="codex-card-efeito">${c.efeito}</div>`;
+      grid.appendChild(card);
+    });
+    view.appendChild(grid);
+  });
+}
+
+// ── Mode toggle ───────────────────────────────────────────────────────
+function condModo(modo, btn) {
+  document.querySelectorAll('.cond-mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.cond-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('cond-view-' + modo)?.classList.add('active');
+  if (modo === 'codex') buildCondex();
+}
+
+// ── Entity CRUD ───────────────────────────────────────────────────────
+function condTipo(t) {
+  condTipoSel = t;
+  document.getElementById('cond-btn-pc').className  = 'tipo-btn' + (t === 'pc'  ? ' sel-pc'  : '');
+  document.getElementById('cond-btn-npc').className = 'tipo-btn' + (t === 'npc' ? ' sel-npc' : '');
+}
+
+function addEntidade() {
+  const inp  = document.getElementById('cond-nome');
+  const nome = inp?.value.trim();
+  if (!nome) {
+    if (inp) { inp.classList.add('err'); setTimeout(() => inp.classList.remove('err'), 1400); }
+    return;
+  }
+  condEntidades.push({ id: condProxId++, nome, tipo: condTipoSel, condicoes: new Set() });
+  inp.value = '';
+  _renderCondTracker();
+  _renderCondEntityList();
+}
+
+document.getElementById('cond-nome')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') addEntidade();
+});
+
+function removerEntidade(id) {
+  condEntidades = condEntidades.filter(e => e.id !== id);
+  _renderCondTracker(); _renderCondEntityList();
+}
+
+function limparCondicoes() {
+  condEntidades.forEach(e => e.condicoes.clear());
+  _renderCondTracker();
+}
+
+function removerTodas() {
+  condEntidades = [];
+  _renderCondTracker(); _renderCondEntityList();
+}
+
+function toggleCondEntidade(entId, condId) {
+  const ent = condEntidades.find(e => e.id === entId);
+  if (!ent) return;
+  if (ent.condicoes.has(condId)) ent.condicoes.delete(condId);
+  else ent.condicoes.add(condId);
+  _renderCondTracker();
+}
+
+// ── Renders ───────────────────────────────────────────────────────────
+function _renderCondEntityList() {
+  const list = document.getElementById('cond-entity-list');
+  if (!list) return;
+  list.innerHTML = '';
+  if (condEntidades.length === 0) {
+    list.innerHTML = `<span style="font-family:'IM Fell English',serif;font-style:italic;font-size:.54rem;color:rgba(122,96,48,.38);">Nenhuma entidade</span>`;
+    return;
+  }
+  condEntidades.forEach(ent => {
+    const item = document.createElement('div');
+    item.className = 'cond-entity-item';
+    item.innerHTML = `<div class="cond-ent-dot t-${ent.tipo}"></div>
+      <span class="cond-ent-nome">${esc(ent.nome)}</span>
+      <button class="cond-ent-remove" onclick="removerEntidade(${ent.id})" title="Remover">✕</button>`;
+    list.appendChild(item);
+  });
+}
+
+function _renderCondTracker() {
+  const tracker = document.getElementById('cond-tracker');
+  if (!tracker) return;
+  tracker.innerHTML = '';
+  if (condEntidades.length === 0) {
+    tracker.innerHTML = `<div class="tracker-empty">
+      <span class="tracker-empty-glyph">🩸</span>
+      <span class="tracker-empty-title">Sem entidades rastreadas</span>
+      <span class="tracker-empty-sub">Adicione personagens ou criaturas<br>para monitorar condições de combate</span>
+    </div>`;
+    return;
+  }
+  condEntidades.forEach(ent => {
+    const row = document.createElement('div');
+    row.className = `tracker-entity t-${ent.tipo}`;
+    const toggles = CONDICOES_DATA.map(c => {
+      const on  = ent.condicoes.has(c.id);
+      const cls = `cond-toggle-btn${on ? ' on' : ''}${on && c.esp ? ' esp' : ''}`;
+      return `<button class="${cls}" onclick="toggleCondEntidade(${ent.id},'${c.id}')" title="${c.efeito}">${c.glyph} ${c.nome}</button>`;
+    }).join('');
+    row.innerHTML = `<div class="tracker-ent-header">
+      <span class="tracker-ent-nome">${esc(ent.nome)}</span>
+      <span class="tracker-tipo-badge">${ent.tipo === 'pc' ? 'PJ' : 'NPC'}</span>
+    </div>
+    <div class="cond-toggles">${toggles}</div>`;
+    tracker.appendChild(row);
+  });
+}
+
+_renderCondTracker();
+_renderCondEntityList();
+
+// ══ GERADOR DE ENCONTROS ═════════════════════════════════════════════
+
+const ENC_BIOMAS = {
+  floresta: { glyph:'🌲', nome:'Floresta', veu:false,
+    inimigos:[
+      {nome:'Goblins Batedores',  qt:[2,5],perigos:['facil','moderado']},
+      {nome:'Lobos Cinzentos',    qt:[1,4],perigos:['facil']},
+      {nome:'Bandidos Florestais',qt:[2,4],perigos:['facil','moderado']},
+      {nome:'Orcs Saqueadores',   qt:[3,7],perigos:['moderado']},
+      {nome:'Gnolls',             qt:[2,5],perigos:['moderado','dificil']},
+      {nome:'Ogro',               qt:[1,2],perigos:['moderado','dificil']},
+      {nome:'Troll da Floresta',  qt:[1,1],perigos:['dificil']},
+      {nome:'Druida Corrompido',  qt:[1,1],perigos:['dificil','mortal']},
+      {nome:'Wyrm Jovem',         qt:[1,1],perigos:['mortal']},
+      {nome:'Guardião Sombrio',   qt:[1,1],perigos:['mortal']},
+    ],
+    contextos:['emboscando viajantes ocultos atrás de galhos','realizando ritual obscuro em clareira','protegendo território marcado com ossos','perseguindo rastro de animal ferido','fugindo de predador maior que ainda se aproxima','disputando carcaça de criatura desconhecida'],
+    cenario:['A floresta está anormalmente quieta; até os pássaros fugiram.','Névoa baixa cobre o chão entre as raízes antigas.','O cheiro de sangue velho e barro impregna o ar úmido.','Marcas de garras antigas cobrem as árvores ao redor.','Fungos bioluminescentes revelam pegadas que não deveriam existir.'],
+    complicacoes:['Um deles está Sob o Véu — age errático e imprevisível.','Armadilhas ocultas cobrem o perímetro (+2 CD para notar).','Uma terceira facção os observa das sombras sem agir.','O chão cede em raio de 6m: terreno difícil até o fim do combate.'],
+  },
+  masmorra: { glyph:'🪦', nome:'Masmorra', veu:false,
+    inimigos:[
+      {nome:'Esqueletos',        qt:[3,8],perigos:['facil','moderado']},
+      {nome:'Zumbis',            qt:[2,5],perigos:['facil','moderado']},
+      {nome:'Goblins Armados',   qt:[3,6],perigos:['facil']},
+      {nome:'Sombras',           qt:[2,4],perigos:['moderado','dificil']},
+      {nome:'Ghouls',            qt:[2,4],perigos:['moderado']},
+      {nome:'Troll da Pedra',    qt:[1,2],perigos:['dificil']},
+      {nome:'Necromante',        qt:[1,1],perigos:['dificil','mortal']},
+      {nome:'Vampiro Jovem',     qt:[1,1],perigos:['mortal']},
+      {nome:'Lich',              qt:[1,1],perigos:['mortal']},
+    ],
+    contextos:['patrulhando corredor com tocha apagada','festejando sobre restos de aventureiros anteriores','guardando câmara lacrada com selos rúnicos','respondendo a alarme de armadilha disparada','descansando após confronto com outra facção','arrastando suprimentos para câmara mais profunda'],
+    cenario:['Goteiras de água gelada pingam no silêncio absoluto.','Odor de enxofre e decomposição impregna o ar parado.','Tocha mortiça projeta sombras que parecem se mover sozinhas.','Paredes cobertas de inscrições em língua que ninguém mais fala.','Chão irregular com ralos que escorrem para o escuro absoluto.'],
+    complicacoes:['O eco amplifica todos os sons — furtividade impossível neste corredor.','Teto instável: falha em combate pode causar desabamento parcial.','Um dos mortos-vivos reconhece um PJ de vida anterior.','Névoa do Véu vaza por rachadura — visibilidade limitada a 3m.'],
+  },
+  cidade: { glyph:'🏚', nome:'Cidade', veu:false,
+    inimigos:[
+      {nome:'Ladrões de Rua',       qt:[2,4],perigos:['facil']},
+      {nome:'Guardas Corruptos',    qt:[2,3],perigos:['facil','moderado']},
+      {nome:'Gangue Armada',        qt:[3,6],perigos:['moderado']},
+      {nome:'Assassinos de Guilda', qt:[1,3],perigos:['moderado','dificil']},
+      {nome:'Golem de Cidade',      qt:[1,2],perigos:['dificil']},
+      {nome:'Espião da Coroa',      qt:[1,2],perigos:['dificil']},
+      {nome:'Agente do Véu',        qt:[1,1],perigos:['mortal']},
+      {nome:'Lorde das Sombras',    qt:[1,1],perigos:['mortal']},
+    ],
+    contextos:['bloqueando viela escura com intenção clara','recebendo ordens de figura encapuzada ao longe','cobrando "proteção" de comerciante local','perseguindo alguém que os PJs conhecem','posicionados para emboscada nos telhados','disfarçados entre a multidão do mercado'],
+    cenario:['Ruas molhadas de chuva noturna; lanternas oscilam no vento.','Mercado movimentado mascara a ameaça entre os transeuntes.','Viela fétida sem saída; paredes cobertas de cartazes rasgados.','Telhados baixos criam ângulos de emboscada favoráveis.','Sino de guarda ao longe — reforços em 3 rodadas se alertados.'],
+    complicacoes:['Testemunhas inocentes complicam qualquer ação aberta de violência.','A guarda da cidade está a caminho — 2d6 rodadas.','Um dos inimigos conhece a identidade real de um PJ.','Estrutura frágil: combate pesado pode colapsar o soalho.'],
+  },
+  pantano: { glyph:'🌿', nome:'Pântano', veu:false,
+    inimigos:[
+      {nome:'Lagartos de Pântano',qt:[2,5],perigos:['facil']},
+      {nome:'Trogloditas',        qt:[3,6],perigos:['facil','moderado']},
+      {nome:'Harpias',            qt:[1,3],perigos:['moderado']},
+      {nome:'Hidra Jovem',        qt:[1,1],perigos:['dificil']},
+      {nome:'Bruxas do Pântano',  qt:[1,3],perigos:['dificil','mortal']},
+      {nome:'Dragão Verde Jovem', qt:[1,1],perigos:['mortal']},
+    ],
+    contextos:['emergindo da água turva sem aviso','atraindo com sons de criança em apuros','cercando pelo flanco enquanto atenção é distraída','defendendo ninhos ocultos sob a lama','sob controle de feitiço de Bruxa ao redor','perseguindo trilha de sangue fresco'],
+    cenario:['Águas escuras e rasas ocultam o fundo — terreno difícil em toda área.','Neblina espessa reduz visibilidade para 9 metros.','Ruídos constantes de insetos cobrem sons de aproximação.','Vegetação densa bloqueia linha de visão além de 15 metros.','Gás metano no ar — fontes de fogo têm risco de explosão.'],
+    complicacoes:['Área amaldiçoada: cura por magia tem 50% de chance de falhar.','Piso de lama: criatura derrubada precisa de ação para se soltar.','Praga de insetos: Concentração requer teste CD 12 a cada rodada.','A água está subindo — área inundada em 5 rodadas.'],
+  },
+  ruinas: { glyph:'🏛', nome:'Ruínas', veu:false,
+    inimigos:[
+      {nome:'Saqueadores',          qt:[2,5],perigos:['facil']},
+      {nome:'Cultistas',            qt:[3,6],perigos:['facil','moderado']},
+      {nome:'Espectros',            qt:[1,3],perigos:['moderado','dificil']},
+      {nome:'Golem de Pedra',       qt:[1,2],perigos:['dificil']},
+      {nome:'Sacerdote Morto-Vivo', qt:[1,1],perigos:['dificil','mortal']},
+      {nome:'Arquilich',            qt:[1,1],perigos:['mortal']},
+    ],
+    contextos:['escavando artefatos protegidos por armadilha intacta','realizando invocação em altar ainda funcional','já alertados e em posição defensiva','perseguindo pesquisador que fugiu recentemente','aguardando eclipse para completar ritual','disputando tesouro com facção rival dentro das ruínas'],
+    cenario:['Colunas caídas criam cobertura densa — vantagem para ambos os lados.','Murais antigos ainda legíveis narram queda desta civilização.','Magia residual distorce feitiços lançados aqui (efeito a critério do Mestre).','Teto parcialmente aberto — chuva cria poças que conduzem eletricidade.','Símbolos do Véu entalhados em cada superfície disponível.'],
+    complicacoes:['Armadilha mágica ainda ativa — ativação causa 3d6 de dano arcano.','O local é sagrado: perturbação acorda guardião adicional em 1d4 rodadas.','Escritura no altar pode ser usada — mas o custo é desconhecido.','Estrutura instável: barulho de combate arrisca novo desabamento.'],
+  },
+  montanha: { glyph:'⛰', nome:'Montanha', veu:false,
+    inimigos:[
+      {nome:'Bandidos de Altitude',  qt:[2,5],perigos:['facil']},
+      {nome:'Águias Gigantes',       qt:[1,3],perigos:['facil','moderado']},
+      {nome:'Grifos',                qt:[1,3],perigos:['moderado']},
+      {nome:'Elementais de Terra',   qt:[1,3],perigos:['dificil']},
+      {nome:'Gigantes de Pedra',     qt:[1,2],perigos:['dificil','mortal']},
+      {nome:'Dragão de Gelo',        qt:[1,1],perigos:['mortal']},
+    ],
+    contextos:['controlando passagem estreita de forma organizada','atacando do alto com vantagem de altitude','protegendo ninho em pico próximo','varridos por tempestade de altitude','aquecendo-se em fissura geotérmica próxima','seguindo rastro de caravana recente'],
+    cenario:['Vento forte: projéteis têm desvantagem acima de 9 metros.','Nevasca iminente — visibilidade cai por rodada.','Passagem estreita: apenas dois combatentes lado a lado.','Queda de 30 metros à esquerda da trilha.','Eco perfeito: magias sonoras têm área dobrada.'],
+    complicacoes:['Avalanche pode ser desencadeada por barulho ou magia de som.','Altitude: testes de Constituição CD 12 após combate por fadiga.','Um inimigo escapou para alertar reforços — chegam em 1d6+2 rodadas.','Tempestade de relâmpagos aproxima — 20% de chance de raio por rodada.'],
+  },
+  veu: { glyph:'🜏', nome:'O Véu', veu:true,
+    inimigos:[
+      {nome:'Sombras do Véu',          qt:[2,5],perigos:['facil','moderado']},
+      {nome:'Ecos Lúcidos',            qt:[1,4],perigos:['facil','moderado']},
+      {nome:'Devorador de Memórias',   qt:[1,2],perigos:['dificil']},
+      {nome:'Entidade sem Forma',      qt:[1,1],perigos:['dificil','mortal']},
+      {nome:'Senhor do Véu',           qt:[1,1],perigos:['mortal']},
+    ],
+    contextos:['emergindo de fissura entre planos recém-aberta','atraídos pela Marca em um dos personagens','confusos — ainda acreditam estar no mundo material','executando diretiva de entidade superior desconhecida','repetindo em loop cena de morte violenta','testando os PJs para propósito não revelado'],
+    cenario:['A realidade aqui é translúcida — o mundo material visível mas inacessível.','Tempo flui irregular: uma rodada pode durar segundos ou horas.','Sons chegam atrasados e distorcidos — iniciativa com −2 para todos.','Tudo que morre aqui deixa Eco: novo inimigo com 50% de HP.','Sanidade −1 ao fim de cada rodada sem proteção arcana.'],
+    complicacoes:['Fissura se expande: em 3 rodadas o ambiente funde ao plano material.','Um PJ está sendo consumido pelo Véu — Sanidade −1 por rodada.','A entidade derrotada não pode morrer aqui — apenas ser banida.','Aliados normais não conseguem entrar: os PJs estão sós.'],
+  },
+};
+
+const PERIGOS_ENC = [
+  { id:'facil',    nome:'Fácil',     badge:'badge-facil'    },
+  { id:'moderado', nome:'Moderado',  badge:'badge-moderado' },
+  { id:'dificil',  nome:'Difícil',   badge:'badge-dificil'  },
+  { id:'mortal',   nome:'Mortal',    badge:'badge-mortal'   },
+  { id:'aleatorio',nome:'Aleatório', badge:'badge-moderado' },
+];
+
+let encBiomaSel  = 'floresta';
+let encPerigoSel = 'moderado';
+let encHistorico = [];
+
+// ── Build selectors ──────────────────────────────────────────────────
+function buildEncSelectors() {
+  // Biomas
+  const bg = document.getElementById('bioma-grid');
+  if (bg) Object.entries(ENC_BIOMAS).forEach(([id, bd]) => {
+    const btn = document.createElement('button');
+    btn.className = `bioma-btn${id === 'veu' ? ' veu-btn' : ''}${id === encBiomaSel ? ' active' : ''}`;
+    btn.id = 'bioma-' + id;
+    btn.innerHTML = `<span class="bioma-glyph">${bd.glyph}</span><span class="bioma-nome">${bd.nome}</span>`;
+    btn.onclick = () => {
+      document.querySelectorAll('.bioma-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      encBiomaSel = id;
+    };
+    bg.appendChild(btn);
+  });
+  // Perigos
+  const pr = document.getElementById('perigo-row');
+  if (pr) PERIGOS_ENC.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = `perigo-btn${p.id === encPerigoSel ? ' active' : ''}`;
+    btn.id = 'perigo-' + p.id;
+    btn.textContent = p.nome;
+    btn.onclick = () => {
+      document.querySelectorAll('.perigo-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      encPerigoSel = p.id;
+    };
+    pr.appendChild(btn);
+  });
+}
+
+// ── Generator ────────────────────────────────────────────────────────
+function gerarEncontro() {
+  const bd = ENC_BIOMAS[encBiomaSel];
+  if (!bd) return;
+  const perigoEfetivo = encPerigoSel === 'aleatorio'
+    ? ['facil','moderado','dificil','mortal'][Math.floor(Math.random() * 4)]
+    : encPerigoSel;
+  const elegiveis = bd.inimigos.filter(e => e.perigos.includes(perigoEfetivo));
+  if (!elegiveis.length) return;
+  const ini  = elegiveis[Math.floor(Math.random() * elegiveis.length)];
+  const qty  = ini.qt[0] + Math.floor(Math.random() * (ini.qt[1] - ini.qt[0] + 1));
+  const ctx  = bd.contextos[Math.floor(Math.random() * bd.contextos.length)];
+  const cen  = bd.cenario[Math.floor(Math.random() * bd.cenario.length)];
+  const cpl  = Math.random() < 0.35
+    ? bd.complicacoes[Math.floor(Math.random() * bd.complicacoes.length)]
+    : null;
+  const resultado = {
+    inimigos: qty > 1 ? `${qty} ${ini.nome}` : ini.nome,
+    contexto: ctx, cenario: cen, complicacao: cpl,
+    bioma: bd.nome, glyph: bd.glyph,
+    perigo: perigoEfetivo, veu: bd.veu,
+  };
+  renderEncResultado(resultado);
+  encHistorico.unshift(resultado);
+  if (encHistorico.length > 5) encHistorico.pop();
+  renderEncHistorico();
+}
+
+function renderEncResultado(r) {
+  const main = document.getElementById('enc-main');
+  if (!main) return;
+  const perigoMeta = PERIGOS_ENC.find(p => p.id === r.perigo) || PERIGOS_ENC[1];
+  main.innerHTML = `
+    <div class="enc-card">
+      <div class="enc-card-hdr">
+        <span class="enc-bioma-glyph">${r.glyph}</span>
+        <span class="enc-bioma-nome">${r.bioma}</span>
+        <span class="enc-perigo-badge ${perigoMeta.badge}">${perigoMeta.nome}</span>
+      </div>
+      <div class="enc-inimigos">${esc(r.inimigos)}</div>
+      <div class="enc-contexto">${esc(r.contexto)}</div>
+      <div class="enc-cenario">${esc(r.cenario)}</div>
+      ${r.complicacao ? `<div class="enc-cplic">
+        <span class="enc-cplic-label">⚠ Complicação</span>
+        <span class="enc-cplic-text">${esc(r.complicacao)}</span>
+      </div>` : ''}
+    </div>`;
+}
+
+function renderEncHistorico() {
+  const hist = document.getElementById('enc-historico');
+  if (!hist) return;
+  hist.innerHTML = '';
+  if (encHistorico.length === 0) return;
+  encHistorico.forEach((r, i) => {
+    const item = document.createElement('div');
+    item.className = 'enc-hist-item';
+    item.innerHTML = `<span class="enc-hist-glyph">${r.glyph}</span>
+      <span class="enc-hist-nome">${esc(r.inimigos)}</span>
+      <span class="enc-hist-perigo">${r.perigo}</span>`;
+    item.onclick = () => renderEncResultado(r);
+    hist.appendChild(item);
+  });
+}
+
+buildEncSelectors();
+
+// ══ ESPÓLIOS ══════════════════════════════════════════════════════════
+
+const r = (a,b) => a + Math.floor(Math.random() * (b - a + 1));
+
+const ESP_DB = {
+  facil: {
+    moedas: () => `${r(2,6)*5} po · ${r(3,8)} pp`,
+    mundano:[
+      {n:'Cantil com vinho azedo',     d:'Barato mas funcional.'},
+      {n:'Corda de 9 metros',          d:'Resistente, parcialmente usada.'},
+      {n:'Ração de viagem (2 dias)',    d:'Seca e sem gosto, mas serve.'},
+      {n:'Faca de caça',               d:'Enferrujada na bainha, lâmina ainda útil.'},
+      {n:'Mapa rasgado',               d:'Região parcialmente mapeada, marcas ilegíveis.'},
+      {n:'Tocha ×3',                   d:'Cobertas de pez, prontas para uso.'},
+      {n:'Pedra de afiar',             d:'Já bastante desgastada.'},
+      {n:'Amuleto de osso',            d:'Sem poder mágico detectável. Inquietante.'},
+    ],
+    magico:[
+      {n:'Poção de Cura Menor',        d:'Restaura 2d4+2 pontos de vida.'},
+      {n:'Pergaminho — Magia nível 1', d:'Magia aleatória. Tinta esmaecida.'},
+      {n:'Óleo de Afiamento',          d:'+1 de dano por 1 hora. Uma aplicação.'},
+    ],
+    valtheris:[], chanceMag:0.25, chanceVal:0, qtMun:[1,2],
+  },
+  moderado: {
+    moedas: () => `${r(2,4)*20} po · ${r(1,4)} gemas comuns`,
+    mundano:[
+      {n:'Armadura de Couro Reforçado',d:'Em bom estado, tamanho médio.'},
+      {n:'Kit de Cura',                d:'Suficiente para 5 usos de Medicina.'},
+      {n:'Ferramentas de Ladrão',      d:'Qualidade profissional, estojo de couro.'},
+      {n:'Pergaminho em Língua Antiga',d:'Texto filosófico ou instrucional — tradução necessária.'},
+      {n:'Bolsa de Componentes',       d:'Componentes comuns para magias de nível 1-2.'},
+      {n:'Espada Longa (qualidade)',   d:'Lâmina sem defeitos, empunhadura nova.'},
+    ],
+    magico:[
+      {n:'Poção de Cura Maior',        d:'Restaura 4d4+4 pontos de vida.'},
+      {n:'Espada Curta +1',            d:'Sem nome, lâmina fria ao toque.'},
+      {n:'Anel de Proteção +1',        d:'+1 na CA e testes de resistência.'},
+      {n:'Manto de Elfo',              d:'Vantagem em testes de Furtividade em ambiente natural.'},
+      {n:'Pergaminho — Magia nível 2', d:'Magia aleatória de 2º círculo. Selada com cera negra.'},
+    ],
+    valtheris:[
+      {n:'Fragmento do Véu (Pequeno)', d:'Cristal translúcido que vibra levemente. Componente raro para rituais. Manusear sem proteção: Sanidade −1 (CD 12).'},
+      {n:'Cinza de Alma (1 dose)',     d:'Cinza de alguém consumido pelo Véu. Potente em magias de necromancia. Pode atrair Sombras se exposta.'},
+    ],
+    chanceMag:0.55, chanceVal:0.18, qtMun:[1,3],
+  },
+  dificil: {
+    moedas: () => `${r(5,10)*50} po · ${r(2,4)*10} pp · ${r(1,3)} gemas raras`,
+    mundano:[
+      {n:'Grimório (feitiços 3-4)',     d:'4+1d4 feitiços de nível 3 ou 4. Capa de couro curtido.'},
+      {n:'Armadura de Mithril Leve',   d:'CA como couro reforçado, sem penalidade de furtividade.'},
+      {n:'Arma de Mestre',             d:'Artesanato excepcional. +1 de dano sem ser mágica.'},
+      {n:'Relíquia Histórica',         d:'Valor histórico significativo para uma facção ou nação.'},
+    ],
+    magico:[
+      {n:'Espada Longa +2 (Sombria)',  d:'Lâmina enegrecida. +2 ataque/dano. Sussurra em combate.'},
+      {n:'Armadura de Placas +1',      d:'Polida, com runas discretas de reforço arcano.'},
+      {n:'Cajado do Mago (7 cargas)',  d:'Ataques mágicos +1. Cargas para magias de força.'},
+      {n:'Botas de Teletransporte',    d:'3 cargas. Teletransporte a até 18 metros como ação bônus.'},
+      {n:'Anel de Resistência',        d:'Resistência a um tipo de dano (determine aleatoriamente).'},
+    ],
+    valtheris:[
+      {n:'Fragmento do Véu (Grande)',  d:'Cristal do tamanho de uma maçã, névoa fria ao redor. Pode abrir fissura temporária no Véu (ação). CD 15 para usar sem dano.'},
+      {n:'Tinta de Pacto (1 dose)',    d:'Tinta negra com brilho violeta. Contratos escritos com ela são vinculantes no plano material e no Véu.'},
+      {n:'Cristal de Memória',         d:'Armazena uma única memória com perfeição. Quebrado: libera a memória para todos em 6m de raio.'},
+      {n:'Selo de Banição',            d:'Pergaminho com símbolo do Véu. Sela portal, entidade ou área por 24h. Uso único.'},
+    ],
+    chanceMag:0.85, chanceVal:0.38, qtMun:[1,2],
+  },
+  mortal: {
+    moedas: () => `${r(5,12)*100} po · ${r(2,6)*50} pp · ${r(2,4)} gemas preciosas`,
+    mundano:[
+      {n:'Tomo de Conhecimento Proibido',d:'Contém segredos que deveriam permanecer ocultos. CD 14 de Sanidade para ler completamente.'},
+      {n:'Armadura de Plate Completa',   d:'Gravada com brasões de uma ordem há muito extinta.'},
+    ],
+    magico:[
+      {n:'Arma Lendária',              d:'Efeito único determinado pelo Mestre. Frequentemente amaldiçoada.'},
+      {n:'Orbe Arcano (Arquimago)',     d:'+2 nas jogadas de ataque mágico e CD. 3 cargas de magia nível 5.'},
+      {n:'Armadura dos Deuses +3',     d:'+3 CA. Resistência a dano não-mágico. Pesa sobre a consciência.'},
+      {n:'Anel do Desejo (1 carga)',    d:'Concede um desejo. O preço é sempre proporcional ao pedido.'},
+    ],
+    valtheris:[
+      {n:'Osso de Guardião',           d:'Osso de Guardião caído, pulsante com energia residual. Foco arcano (+1 CD). Às vezes sussurra nomes.'},
+      {n:'Fragmento do Véu (Puro)',    d:'Artefato raríssimo. Pode estabilizar ou destruir fissura permanente. Ritual de 1 hora. Atrai entidades ao portador.'},
+      {n:'Cinza de Alma Antiga (×5)',  d:'Cinza de alma poderosa. 5 doses. Magias de necromancia lançadas com ela têm nível efetivo +2.'},
+      {n:'Arma Marcada pelo Véu',      d:'+2 ataque e dano. 1×/dia ao acertar: alvo recebe Sanidade −1 (sem resistência).'},
+      {n:'Tomo do Véu (encadernado)',  d:'1d4 magias de nível 4-6. Leitura completa: CD 14 de Sanidade. Páginas úmidas ao toque.'},
+    ],
+    chanceMag:1.0, chanceVal:0.65, qtMun:[1,1],
+  },
+};
+
+let espPerigoSel = 'moderado';
+let espBolsa     = [];
+
+function buildEspPerigo() {
+  const row = document.getElementById('esp-perigo-row');
+  if (!row) return;
+  ['facil','moderado','dificil','mortal'].forEach(id => {
+    const labels = {facil:'Fácil',moderado:'Moderado',dificil:'Difícil',mortal:'Mortal'};
+    const btn = document.createElement('button');
+    btn.className = `perigo-btn${id === espPerigoSel ? ' active' : ''}`;
+    btn.id = 'esp-perigo-' + id; btn.textContent = labels[id];
+    btn.onclick = () => {
+      document.querySelectorAll('#esp-perigo-row .perigo-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active'); espPerigoSel = id;
+    };
+    row.appendChild(btn);
+  });
+}
+
+function rolarEspolio() {
+  const db = ESP_DB[espPerigoSel]; if (!db) return;
+  const moedas = db.moedas();
+  // Mundane items
+  const qt = db.qtMun[0] + Math.floor(Math.random() * (db.qtMun[1] - db.qtMun[0] + 1));
+  const pool = [...db.mundano].sort(() => Math.random() - .5).slice(0, qt);
+  // Magic item
+  const magItem = Math.random() < db.chanceMag && db.magico.length
+    ? db.magico[Math.floor(Math.random() * db.magico.length)] : null;
+  // Valtheris item
+  const valItem = Math.random() < db.chanceVal && db.valtheris.length
+    ? db.valtheris[Math.floor(Math.random() * db.valtheris.length)] : null;
+
+  const result = { moedas, mundanos: pool, magico: magItem, valtheris: valItem, perigo: espPerigoSel };
+  renderEspResult(result);
+  // Add to bag
+  if (valItem) espBolsa.push({glyph:'🜏', nome: valItem.n});
+  if (magItem) espBolsa.push({glyph:'✨', nome: magItem.n});
+  pool.forEach(i => espBolsa.push({glyph:'📦', nome: i.n}));
+  espBolsa.push({glyph:'💰', nome: moedas});
+  renderEspBolsa();
+}
+
+function renderEspResult(res) {
+  const main = document.getElementById('esp-main'); if (!main) return;
+  const perigoLabel = {facil:'Fácil',moderado:'Moderado',dificil:'Difícil',mortal:'Mortal'};
+  let html = `<div class="esp-result">
+    <span class="esp-result-title">Espólio — ${perigoLabel[res.perigo]||''}</span>
+    <div class="esp-moedas">💰 ${esc(res.moedas)}</div>`;
+  if (res.mundanos.length || res.magico || res.valtheris) {
+    html += `<div class="esp-items-group">`;
+    res.mundanos.forEach(i => { html += `<div class="esp-item mundano"><span class="esp-item-nome">${esc(i.n)}</span><span class="esp-item-desc">${esc(i.d)}</span><span class="esp-item-badge badge-mundano">Mundano</span></div>`; });
+    if (res.magico)    html += `<div class="esp-item magico"><span class="esp-item-nome">${esc(res.magico.n)}</span><span class="esp-item-desc">${esc(res.magico.d)}</span><span class="esp-item-badge badge-magico">Mágico</span></div>`;
+    if (res.valtheris) html += `<div class="esp-item valtheris"><span class="esp-item-nome">${esc(res.valtheris.n)}</span><span class="esp-item-desc">${esc(res.valtheris.d)}</span><span class="esp-item-badge badge-valtheris">Valtheris</span></div>`;
+    html += `</div>`;
+  }
+  html += `</div>`;
+  main.innerHTML = html;
+}
+
+function renderEspBolsa() {
+  const bag = document.getElementById('esp-bag'); if (!bag) return;
+  if (!espBolsa.length) { bag.innerHTML = `<span class="esp-bag-empty">Vazia</span>`; return; }
+  bag.innerHTML = espBolsa.slice(-20).reverse().map(i =>
+    `<div class="esp-bag-item"><span class="esp-bag-glyph">${i.glyph}</span>${esc(i.nome)}</div>`
+  ).join('');
+}
+
+function limparBolsa() { espBolsa = []; renderEspBolsa(); }
+
+buildEspPerigo();
+
+// ══ NOTAS DE SESSÃO ══════════════════════════════════════════════════
+
+const NOTAS_KEY   = 'valtheris_notas_v1';
+let notasSessoes  = [];
+let notasAtualId  = null;
+let notasSaveTimer= null;
+
+function notasCarregar() {
+  try { notasSessoes = JSON.parse(localStorage.getItem(NOTAS_KEY) || '[]'); } catch(e) { notasSessoes = []; }
+}
+function notasSalvar() {
+  try { localStorage.setItem(NOTAS_KEY, JSON.stringify(notasSessoes)); } catch(e) {}
+}
+
+function novaSessao() {
+  const num = notasSessoes.length + 1;
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  const nova = { id: Date.now(), num, titulo: `Sessão ${num}`, data: hoje, corpo: '' };
+  notasSessoes.push(nova);
+  notasSalvar();
+  renderNotasLista();
+  abrirSessao(nova.id);
+}
+
+function abrirSessao(id) {
+  notasAtualId = id;
+  const sess = notasSessoes.find(s => s.id === id);
+  if (!sess) return;
+  renderNotasLista();
+  const main = document.getElementById('notas-main'); if (!main) return;
+  document.getElementById('notas-empty')?.remove();
+  main.innerHTML = `
+    <div class="notas-fields">
+      <div class="notas-field-titulo field">
+        <span class="field-lbl">Título</span>
+        <input class="field-inp" id="notas-titulo" value="${esc(sess.titulo)}" oninput="notasAtualizarCampo('titulo',this.value)">
+      </div>
+      <div class="notas-field-data field">
+        <span class="field-lbl">Data</span>
+        <input class="field-inp" id="notas-data" value="${esc(sess.data)}" oninput="notasAtualizarCampo('data',this.value)">
+      </div>
+    </div>
+    <textarea class="notas-textarea" id="notas-corpo" placeholder="Registre aqui os eventos da sessão — NPCs encontrados, decisões tomadas, segredos revelados…" oninput="notasAtualizarCampo('corpo',this.value)">${esc(sess.corpo)}</textarea>
+    <div class="notas-footer">
+      <span class="notas-save-indicator" id="notas-save-ind">Salvo automaticamente</span>
+    </div>`;
+}
+
+function notasAtualizarCampo(campo, valor) {
+  const sess = notasSessoes.find(s => s.id === notasAtualId);
+  if (!sess) return;
+  sess[campo] = valor;
+  if (campo === 'titulo') renderNotasLista();
+  clearTimeout(notasSaveTimer);
+  notasSaveTimer = setTimeout(() => {
+    notasSalvar();
+    const ind = document.getElementById('notas-save-ind');
+    if (ind) { ind.textContent = 'Salvo'; ind.classList.add('saved'); setTimeout(() => { ind.textContent = 'Salvo automaticamente'; ind.classList.remove('saved'); }, 1800); }
+  }, 600);
+}
+
+function deletarSessao(id, ev) {
+  ev.stopPropagation();
+  if (!confirm('Apagar esta sessão?')) return;
+  notasSessoes = notasSessoes.filter(s => s.id !== id);
+  notasSalvar();
+  if (notasAtualId === id) {
+    notasAtualId = null;
+    const main = document.getElementById('notas-main');
+    if (main) main.innerHTML = `<div class="notas-empty" id="notas-empty">
+      <span class="notas-empty-glyph">📜</span>
+      <span class="notas-empty-title">Nenhuma sessão aberta</span>
+      <span class="notas-empty-sub">Crie uma nova sessão para começar<br>a registrar os eventos da campanha</span>
+    </div>`;
+  }
+  renderNotasLista();
+}
+
+function renderNotasLista() {
+  const lista = document.getElementById('notas-lista'); if (!lista) return;
+  lista.innerHTML = '';
+  if (!notasSessoes.length) {
+    lista.innerHTML = `<span style="font-family:'IM Fell English',serif;font-style:italic;font-size:.52rem;color:rgba(122,96,48,.38);">Nenhuma sessão</span>`;
+    return;
+  }
+  [...notasSessoes].reverse().forEach(s => {
+    const item = document.createElement('div');
+    item.className = `notas-sess-item${s.id === notasAtualId ? ' active' : ''}`;
+    item.innerHTML = `<span class="notas-sess-num">${s.num}</span>
+      <span class="notas-sess-nome">${esc(s.titulo)}</span>
+      <button class="notas-sess-del" onclick="deletarSessao(${s.id},event)" title="Apagar">✕</button>`;
+    item.addEventListener('click', () => abrirSessao(s.id));
+    lista.appendChild(item);
+  });
+}
+
+notasCarregar();
+renderNotasLista();
+if (notasSessoes.length) abrirSessao(notasSessoes[notasSessoes.length - 1].id);
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
