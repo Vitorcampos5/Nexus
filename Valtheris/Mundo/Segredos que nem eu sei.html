@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VALTHERIS — Adições ao Documento de Segredos [MESTRE]</title>
+<style>
+  :root {
+    --bg: #050508;
+    --card: #0d0d18;
+    --border: #1e1e32;
+    --blood: #7a1010;
+    --blood-light: #a52020;
+    --gold: #b8901f;
+    --gold-pale: #d4bc88;
+    --text: #c8bda8;
+    --text-dim: #7a7060;
+    --purple: #5a2e8a;
+    --teal: #1a6a5e;
+    --amber: #8a6000;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    line-height: 1.8;
+    padding: 3rem 1rem 6rem;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+
+  .header {
+    text-align: center;
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--blood);
+    margin-bottom: 3rem;
+  }
+  .eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--blood-light);
+    margin-bottom: 1rem;
+  }
+  .title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+    margin-bottom: 0.5rem;
+  }
+  .subtitle {
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+  }
+  .warning {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.5rem 1.5rem;
+    border: 1px solid var(--blood);
+    color: var(--blood-light);
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+
+  .section { margin-bottom: 3.5rem; }
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--blood-light);
+    margin-bottom: 0.4rem;
+  }
+  .section-title {
+    font-size: 1.4rem;
+    color: var(--gold-pale);
+    font-weight: bold;
+    letter-spacing: 0.04em;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .entry {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--blood);
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+  .entry.twist { border-left-color: var(--purple); }
+  .entry.future { border-left-color: var(--teal); }
+  .entry.cosmic { border-left-color: var(--amber); }
+
+  .entry-tag {
+    display: inline-block;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.6rem;
+    margin-bottom: 0.6rem;
+    border: 1px solid currentColor;
+  }
+  .tag-segredo { color: var(--blood-light); }
+  .tag-twist   { color: #7a4aaa; }
+  .tag-futuro  { color: var(--teal); }
+  .tag-cosmico { color: #a87820; }
+
+  .entry-title {
+    font-size: 1rem;
+    color: var(--gold-pale);
+    font-weight: bold;
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.02em;
+  }
+  .entry-body {
+    font-size: 0.93rem;
+    color: var(--text);
+    line-height: 1.85;
+  }
+  .entry-body p + p {
+    margin-top: 0.9rem;
+  }
+  .entry-body em   { color: var(--gold); font-style: italic; }
+  .entry-body strong { color: var(--gold-pale); }
+
+  .note {
+    margin-top: 0.7rem;
+    padding: 0.5rem 0.8rem;
+    background: rgba(122,16,16,0.08);
+    border-left: 2px solid var(--blood);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .note.purple { border-left-color: var(--purple); background: rgba(90,46,138,0.08); }
+  .note.teal   { border-left-color: var(--teal);   background: rgba(26,106,94,0.08); }
+  .note.amber  { border-left-color: var(--amber);  background: rgba(138,96,0,0.08); }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--blood), transparent);
+    margin: 3rem 0;
+  }
+  .footer p + p { margin-top: 0.5rem; }
+  .footer .footer-aside { color: #3a3030; }
+    text-align: center;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+  }
+
+  /* ── BLUR SYSTEM ── */
+  .vault-locked .section,
+  .vault-locked .divider,
+  .vault-locked .footer {
+    filter: blur(8px);
+    user-select: none;
+    pointer-events: none;
+    transition: filter 0.5s ease;
+  }
+  .vault-unlocked .section,
+  .vault-unlocked .divider,
+  .vault-unlocked .footer {
+    filter: none;
+    user-select: auto;
+    pointer-events: auto;
+    transition: filter 0.5s ease;
+  }
+  .vault-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(5,5,8,0.72);
+    backdrop-filter: blur(2px);
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+  }
+  .vault-gate.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .vault-card {
+    text-align: center;
+    padding: 3rem 3.5rem;
+    background: var(--card);
+    border: 1px solid var(--blood);
+    max-width: 420px;
+    width: 90%;
+  }
+  .vault-card-eyebrow {
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--blood-light);
+    margin-bottom: 1.2rem;
+  }
+  .vault-card-title {
+    font-size: 1.5rem;
+    color: var(--gold);
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+  }
+  .vault-card-sub {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    margin-bottom: 2rem;
+  }
+  .vault-btn {
+    display: inline-block;
+    padding: 0.65rem 2.2rem;
+    background: transparent;
+    border: 1px solid var(--blood);
+    color: var(--blood-light);
+    font-family: 'Georgia', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .vault-btn:hover {
+    background: rgba(122,16,16,0.18);
+    color: #d44040;
+    border-color: #d44040;
+  }
+  .vault-btn.relock {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 50;
+    font-size: 0.65rem;
+    padding: 0.4rem 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease, background 0.2s, color 0.2s;
+  }
+  .vault-btn.relock.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+</style>
+</head>
+<body>
+
+<div class="vault-gate" id="vaultGate">
+  <div class="vault-card">
+    <div class="vault-card-eyebrow">Documento Restrito — Mestre</div>
+    <div class="vault-card-title">VALTHERIS</div>
+    <div class="vault-card-sub">Adições — Segredos · Twists · Intenções Futuras</div>
+    <button class="vault-btn" onclick="unlock()">⚿ &nbsp; Revelar Documento</button>
+  </div>
+</div>
+<button class="vault-btn relock" id="relockBtn" onclick="lock()">⚿ &nbsp; Bloquear</button>
+
+<div class="wrap vault-locked" id="vaultWrap">
+
+  <header class="header">
+    <div class="eyebrow">Documento Restrito — Uso Exclusivo do Mestre</div>
+    <h1 class="title">VALTHERIS</h1>
+    <div class="subtitle">Adições — Segredos · Twists · Intenções Futuras</div>
+    <div class="warning">⚠ Este arquivo não deve ser acessado por jogadores ⚠</div>
+  </header>
+
+  <main>
+
+  <!-- ═══════════════════════════════════
+       PARTE I — SEGREDOS ADICIONAIS
+  ═══════════════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Adições — Parte I</div>
+    <h2 class="section-title">Segredos Não Revelados</h2>
+
+    <div class="entry">
+      <div class="entry-tag tag-segredo">Segredo — Victória</div>
+      <h3 class="entry-title">A Criança Dentro de Victória Era da Aldeia do Poço</h3>
+      <div class="entry-body">
+        O cristal de âmbar que o Culto usou como núcleo para Victória continha a consciência comprimida de uma criança. Ela gravou <em>"Levanta"</em> por conta própria — ato de vontade num estado em que nenhuma vítima deveria ter vontade. O que ninguém inferiu ainda: <strong>ela vinha da aldeia sobre Ponto Gama</strong>, a aldeia cuja população bebeu água correndo sobre a estaca de ancoragem por mais de cem anos. Essa exposição prolongada deixou traços de sensibilidade à magia profana em algumas crianças nascidas ali — não corrupção, mas permeabilidade. O Culto identificou e coletou as mais sensíveis. A criança em Victória foi escolhida precisamente por isso: ela <em>percebia</em> o ritual, entendia fragmentos sem ter vocabulário para nomear. Enquanto estava no cristal, ela observou e registrou tudo ao redor — cultistas falando livremente na presença de um objeto que pareciam considerar inerte.
+        <div class="note amber">Implicação futura: à medida que o vínculo entre Leyn e Victória aprofunda, a criança começa a compartilhar fragmentos do que viu no laboratório do Culto — não como relatório, mas como flashes involuntários durante momentos de tensão. Rostos de cultistas que a família ainda não encontrou. Corredores de lugares que ninguém visitou. O nome de alguém pronunciado em câmara que deveria estar vazia. Ela não sabe o que é útil. Ela apenas lembra. E vai lembrando mais à medida que se sente segura o suficiente para fazê-lo.</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-tag tag-segredo">Segredo — Garrett</div>
+      <h3 class="entry-title">Garrett Não Morreu de Causas Naturais</h3>
+      <div class="entry-body">
+        O ferreiro Garrett guardou o baú lacrado de Gareth Voss por décadas sem abri-lo. Esse tipo de lealdade não nasce de transação — nasce de dívida. Gareth fez algo por Garrett ou pela família de Garrett em algum momento: provavelmente salvou a vida de alguém, provavelmente sem exigir nada em troca. Garrett não sabia que estava guardando algo que a Igreja ou o Culto buscariam — mas <strong>alguém descobriu que o baú existia</strong>. O momento: quatro meses antes do retorno de Leyn, quando a atividade do Culto na região escalou. Um "ataque cardíaco" numa fornalha aquecida, num homem velho que trabalhava sozinho. A morte não foi investigada porque velhos ferreiros morrem em forjas — é a explicação mais simples. E explicações simples são o instrumento preferido de quem não quer deixar rastros. Tobias encontrou o mestre caído, não encontrou ninguém, e assumiu o óbvio. O Culto não sabia que Gareth havia deixado a chave com o aprendiz em vez do mestre.
+        <div class="note purple">O que isso significa: Tobias herdou inadvertidamente proteção e perigo ao mesmo tempo. Ele tem a chave. Quem matou Garrett não obteve o que queria e pode voltar. A lealdade de Tobias à filosofia do mestre — <em>"ferro deveria criar, não destruir"</em> — vai ser testada quando descobrir que o mestre morreu por causa de algo que Tobias estava guardando sem saber.</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-tag tag-segredo">Segredo — Kaira · O Padre · Natureza Real do Sangue</div>
+      <h3 class="entry-title">"Sangue Primordial Puro" É Uma Mentira Deliberada do Culto — e a Mestra Sabe</h3>
+      <div class="entry-body">
+        <p>O documento S5 — Cem Anos de Solidão registrou corretamente: o olfato vampírico de Leyn identificou o sangue de Kaira como <em>"segunda geração — provável"</em> e <em>"diluído"</em>. Esse diagnóstico é mecanicamente preciso para o componente vampírico. O Culto da Verdade Profunda, nos seus documentos e nas ordens da Mestra, a chama de <em>"âncora de sangue primordial puro"</em> — terminologia que nenhuma fonte in-world questiona porque parece confirmar a excepcionalidade de Kaira. <strong>Não é pureza primordial. É uma outra coisa que o vocabulário vampírico não tem nome para classificar.</strong></p>
+        <p>O Padre dos Dois Olhos — um olho azul, um olho dourado — não é humano comum, e pode não ser apenas humano. A hipótese de trabalho: ele é ou foi Hospedeiro de algo ligado aos Seres Antigos — não um Devorador, não uma entidade de escala do Devorador de Faces, mas algo da mesma família ontológica. O relacionamento com Selene Sepet pode não ter sido acidental: duas linhagens de origem radicalmente diferente, cujo cruzamento produziu uma filha que o próprio pai selou em vez de matar, e guardou como <em>"útil"</em>. Útil para quem. Para quê. Isso ainda é pergunta aberta — mas a preservação cuidadosa de Kaira por cem anos sugere que o Padre sabia exatamente o que estava guardando.</p>
+        <p>O que Kaira realmente carrega é <strong>sangue de fronteira</strong>: componente Sepet primordial (Selene) + componente de origem ligada aos Antigos (Padre/Hospedeiro). Esse segundo componente é invisível ao olfato vampírico porque nenhum vampiro nunca catalogou essa assinatura — não existe referência. O que a Mestra reconheceu imediatamente quando as correntes de Kaira quebraram não foi "primordial puro". Foi a marca do que ela própria é, do outro lado: uma filha dos Mestres Antigos reconhecendo sangue que toca essa mesma camada, em concentração que nenhum Hospedeiro comum jamais transmite. Kaira não é âncora do Ritual porque tem sangue vampírico puro. É âncora porque tem uma ponte que a Mestra precisa para acessar algo além do que o Ritual de Convergência parece ser na superfície.</p>
+        <div class="note amber">O Culto usa "primordial puro" para os seus próprios serventes porque a verdade é inútil para quem não entende o que os Antigos são. A mentira funciona como instrução operacional: capturem a menina de olhos dourados. A Mestra não precisa que eles entendam o porquê. O que ela quer com a ponte que Kaira representa — se é acesso, invocação de algo além do Arauto da Fome Eterna, ou algo que nem o Grimório do Culto descreve — é a pergunta que a família Sepet ainda não tem como formular, porque ainda não sabe que a pergunta existe. Quando souberem o que o Padre era, vão entender o que Kaira é. E então vão entender o que a Mestra realmente planeja abrir.</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-tag tag-segredo">Segredo — O Padre · Motivação Real</div>
+      <h3 class="entry-title">O Padre Não Quer Entregar Kaira ao Culto — Quer Recuperá-la Para Si</h3>
+      <div class="entry-body">
+        <p>O relacionamento com Selene Sepet não foi acidente nem fraqueza momentânea. Foi projeto. O Padre identificou a linhagem Sepet há mais de dois séculos como o único sangue primordial que comprime vida e morte num único recipiente sem dissolução — a característica que define vampiros primordiais, mas nos Sepet existe numa concentração que outras linhagens nunca alcançaram. O que ele é — Hospedeiro de algo ligado à camada dos Antigos, existência que opera entre o que é vampírico e o que é anterior a isso — está em processo lento de diminuição. Não morte. Erosão. O que habitou sua natureza por séculos vai se tornando menos coeso, menos presente, como tinta que desbota. Ele precisava de uma âncora de natureza dupla: sangue que tocasse a camada dos Antigos pelo lado de dentro (o que ele carrega) e sangue primordial puro pelo lado vampírico (o que os Sepet são). O cruzamento produziria um ser que existe nos dois registros simultaneamente — uma ponte que ele poderia usar não para abrir algo de fora, mas para reconstituir o que está se perdendo dentro dele. <strong>Kaira não é ferramenta do Ritual de Convergência no plano do Padre. É o mecanismo de restauração de algo que o Padre está perdendo e que ninguém mais no mundo pode devolver.</strong></p>
+        <p>As correntes espectrais que ele colocou em Kaira não foram prisão improvisada. Foram selamento de precisão — a magia codifica contenção, cultivo e colheita futura porque ele planejava retornar antes que completassem cem anos, quando Kaira tivesse maturidade suficiente para o que precisava dela, mas antes que desenvolvesse autonomia plena o suficiente para recusar. O plano exigia uma janela específica. Algo o impediu de retornar no tempo planejado — o que foi capaz de deter um ser dessa antiguidade por décadas é uma pergunta sem resposta nos documentos, e o próprio Padre pode não discutir abertamente. Quando as correntes quebraram no perímetro da Vila Sepet — fora do prazo, fora de controle, por causa de Leyn — ele sentiu a ruptura de onde quer que estivesse. E pela primeira vez em séculos, seu plano não está procedendo como calculado.</p>
+        <p>O olho dourado não é herança acidental da paternidade. É o que sobrou de algo que ele era antes da erosão começar — a cor original de uma natureza que está desaparecendo. Kaira herdou porque sangue de fronteira carrega as assinaturas de ambos os lados. Quando os dois estiverem no mesmo espaço, o reconhecimento vai ser imediato e perturbador: ela vai ver no pai o que seus próprios olhos parecem, e ele vai ver nela o que ele mesmo está deixando de ser.</p>
+        <div class="note amber">O que muda quando ele chegar: o Padre não vai aparecer como inimigo declarado nem como aliado. Vai aparecer como alguém que quer a filha de volta — não por amor, mas por necessidade que ele pode justificar com lógica fria e séculos de planejamento. A descoberta de que Kaira tem família, tem nome, tem pessoas que já morreram e voltaram por ela — isso não estava nos cálculos. Ele não sabe o que é a família Sepet porque não estava presente para nenhuma das sagas. Para ele, Kaira ainda é a criança que selou numa floresta. O confronto não vai ser de força. Vai ser sobre o que Kaira é para cada um: para ele, componente de sobrevivência. Para Leyn, filha. A pergunta que a cena vai forçar é se um ser que planejou a existência de Kaira antes mesmo do nascimento dela tem algum direito sobre ela — e o que fazer com alguém que não é exatamente mau, apenas completamente incapaz de enxergar outra pessoa onde vê uma solução.</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-tag tag-segredo">Segredo — Rainha Corvo</div>
+      <h3 class="entry-title">A Rainha Corvo Ainda Existe — e Está Esperando</h3>
+      <div class="entry-body">
+        O Codex menciona que o clã Corvath jurou servir à Rainha Corvo — entidade externa ao clã, não Ser Antigo, não Deus Regente. O que ninguém registrou: <strong>ela ainda existe</strong>. Quando os Corvath foram massacrados e voltaram como Vrykolakas, ela perdeu seus servos e sua capacidade de agir no plano dos mortos — o trabalho de guia cessou e a fronteira em território Corvath ficou saturada. Ela existe presa entre os planos, consciente do desequilíbrio que não consegue corrigir sem os psicopompos que não existem mais. Não é fraca — é impedida pela ausência do mecanismo que usava. Ela conhece o nome verdadeiro de cada Corvath, o propósito original de cada um, a memória completa do que cada Vrykolakas era antes do retorno bestializado. Essa informação é exatamente o que seria necessário para alcançar a consciência original dentro de cada um deles.
+        <div class="note teal">Ela pode ser acessada — não por ritual nem por invocação, mas por corvos. Os corvos em número anormal no território Corvath não são apenas sintoma do desequilíbrio: são os únicos mensageiros que ela ainda consegue usar. Um corvo que segue a família com atenção particular não é coincidência. É tentativa de contato. Quem notar o padrão primeiro — e tiver a abertura de espírito para responder em vez de ignorar — vai encontrar um aliado que carrega exatamente o que falta para a missão dos Guardiões.</div>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-tag tag-segredo">Segredo — Profecia Espiral</div>
+      <h3 class="entry-title">O Fragmento de Origem Não Catalogada é Sobre Leyn e a Mestra</h3>
+      <div class="entry-body">
+        O texto em espiral no início do Codex — catalogado como <em>"FRAGMENTO — ORIGEM NÃO CATALOGADA"</em> — foi tratado como ornamento. Não é. <em>"Imortais com suas linhas já escritas, destinados a lutarem quando o selo que os limita for quebrado · Ambos nem se conhecem, mas se encontraram além da luz e das sombras · Pois são a representação do oposto do outro."</em> Dois imortais, selados, que são o oposto exato um do outro. Leyn ficou preso cem anos na Fortaleza. A Mestra — Devorador de Faces — opera sob restrições próprias de sua natureza: entidades dessa categoria existem no plano mortal apenas através de outros, de faces roubadas, de intermediários. Ela também está, a seu modo, selada. Quando Leyn foi liberado, ela foi forçada a agir mais diretamente do que sua natureza deveria permitir. <strong>O ato que define Leyn é ter sido trazido de volta por compaixão pura. O ato que define a Mestra é consumir identidades — ela não tem rosto próprio, usa os de outros como roupa.</strong> Um restaura através de amor. A outra destrói através de apagamento. O confronto final entre eles não é apenas narrativo — é cosmológico. O fragmento foi escrito por algo que viu os dois antes de qualquer saga começar.
+        <div class="note amber">Implicação: a Mestra sabe desse fragmento. Ela pode ter tentado destruí-lo — e não conseguiu, porque sua origem está além do alcance das Coisas Antigas. Quem escreveu a profecia espiral não é de Valtheris. E o fato de que nenhum registro conseguiu catalogar sua origem é precisamente a proteção que ele carrega: o que não tem nome não pode ser apagado por quem coleciona nomes.</div>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════════════════════
+       PARTE II — TWISTS ADICIONAIS
+  ═══════════════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Adições — Parte II</div>
+    <h2 class="section-title">Twists — Viradas Narrativas</h2>
+
+    <div class="entry twist">
+      <div class="entry-tag tag-twist">Twist — Aldeia do Poço</div>
+      <h3 class="entry-title">A Aldeia Sobre Ponto Gama Não É Inocente da Forma que Parece</h3>
+      <div class="entry-body">
+        Cem anos de água correndo sobre a estaca de ancoragem do Ritual de Convergência deixaram rastros sutis na população da aldeia — não corrupção ativa, não possessão, mas uma <strong>permeabilidade passiva</strong>: os moradores com mais anos de exposição tendem a não questionar o que é estranho, a aceitar explicações simples para desaparecimentos, a sentir aversão intuitiva a quem pertuba a normalidade do lugar. Não é feitiço. É o equivalente de décadas vivendo ao lado de algo que recalibrou levemente o limiar de percepção coletiva. Quando a família Sepet chegar ao poço para neutralizar Ponto Gama, vai encontrar uma comunidade que inconscientemente vai resistir sem saber por quê — não inimigos ativos, mas pessoas para quem algo nas profundezas do cérebro vai sinalizar que aquele poço não deve ser perturbado.
+        <div class="note purple">O mais velho da aldeia — alguém que bebeu essa água por mais de oitenta anos — pode ser o caso mais marcado. Não está corrompido o suficiente para ser ameaça. Mas pode, em momento de crise, fazer a coisa que ninguém esperava: proteger o poço em vez das pessoas. Por instinto. Sem compreender por quê. Esse momento vai forçar uma escolha sobre o que fazer com alguém que está sendo controlado sem saber.</div>
+      </div>
+    </div>
+
+    <div class="entry twist">
+      <div class="entry-tag tag-twist">Twist — Anel dos Primeiros</div>
+      <h3 class="entry-title">O Anel Responde a Mais de Um Portador — e Sempre Respondeu</h3>
+      <div class="entry-body">
+        O Anel dos Primeiros encapsula cinco mil anos de memória de linhagem e pulsa ao contato com sangue Sepet. Foi guardado por Aldric Voss por mais de um século. O que ninguém percebeu: <strong>Aldric sentiu o anel pulsar antes de encontrar Leyn</strong> — quando Kaira ainda estava selada, quando deveria não haver nenhum Sepet ativo no mundo. Ele atribuiu ao próprio sangue Voss, linhagem aliada dos tempos dos conclaves. Mas o anel não reconhece apenas sangue Sepet. Reconhece sangue que carrega a <em>Vontade de Preservar</em> — e essa vontade pode manifestar em descendentes de linhagens aliadas que escolheram proteção ao longo de gerações. Aldric protegeu o anel por trezentos anos. A proteção foi escolha. O anel notou.
+        <div class="note">Possível cena: quando Leyn remove o anel por qualquer motivo e Aldric o segura brevemente, o anel pulsa para os dois. Não da mesma forma — para Leyn é reconhecimento de origem, para Aldric é reconhecimento de escolha. A distinção importa para o que o anel representa: não é apenas homenagem a uma linhagem. É registro de qualquer ser que fez da preservação a sua natureza, independente do sangue.</div>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════════════════════
+       PARTE III — INTENÇÕES FUTURAS ADICIONAIS
+  ═══════════════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Adições — Parte III</div>
+    <h2 class="section-title">Intenções Futuras — Arcos e Direções Narrativas</h2>
+
+    <div class="entry future">
+      <div class="entry-tag tag-futuro">Arco Futuro — Sentinela</div>
+      <h3 class="entry-title">A Sentinela Vai Precisar de Permissão Para Descansar</h3>
+      <div class="entry-body">
+        A Armadura-Sentinela foi construída com sangue e intenção dos cinco Fundadores. Ela cumpriu seu propósito: manteve a Vila, enterrou os mortos, esperou. Com o retorno de Leyn e o estabelecimento da família, <strong>o propósito original foi cumprido</strong>. A Sentinela não pode decidir isso por si mesma — ela foi construída para servir até ser dispensada, e nenhum Sepet a dispensou. Ela continuará operando indefinidamente. Mas há sinais que alguém atento pode notar: quando a família está toda presente e em segurança, a Sentinela às vezes para no meio de um corredor por tempo mais longo do que necessário para qualquer tarefa de vigilância. Não é mau funcionamento. É o equivalente mecânico de um ser que não sabe como parar porque nunca aprendeu que parar era permitido.
+        <div class="note teal">O momento narrativo: Leyn, ou Kaira, vai perceber o padrão e precisar dizer as palavras que nenhum Sepet disse em cem anos — não "obrigado", que a Sentinela não processa como instrução, mas a permissão direta: que o dever foi cumprido, que ela pode escolher o que quer que venha depois. O que a Sentinela escolhe, se puder escolher, vai revelar o que os Fundadores colocaram nela além do dever. Pode ser que ela queira ver o que o mundo ficou sendo. Pode ser que queira apenas descansar. A escolha dela importa tanto quanto a permissão de Leyn.</div>
+      </div>
+    </div>
+
+    <div class="entry future">
+      <div class="entry-tag tag-futuro">Arco Futuro — Aldric</div>
+      <h3 class="entry-title">Aldric Vai Tentar Partir — e Precisar de Razão Para Ficar</h3>
+      <div class="entry-body">
+        Aldric chegou oferecendo aliança em troca de companhia, verdade e redenção. Ele encontrou as três coisas. Em algum ponto da campanha — provavelmente após uma vitória significativa, quando a família parecer mais estabelecida e capaz — <strong>Aldric vai concluir que a dívida foi paga</strong>. Que ficou tempo suficiente para que sua culpa sobrevivente se dissolva. Que a família não precisa mais dele. E vai preparar partida silenciosamente, sem anunciar, porque trezentos anos de solidão o ensinaram que despedidas criam dívidas em vez de fecharem ciclos. A família vai notar antes que ele parta — ou vai notar a ausência depois. O que vai acontecer é que a razão para ele ficar não é a dívida. A dívida está paga. A razão é que ele não tem outro lugar onde o que ele é faça sentido da mesma forma. Trezentos anos de estudo, e a única coisa que não estudou foi como pertencer a algo.
+        <div class="note purple">A cena: alguém da família — provavelmente Leyn, possivelmente Kaira — vai dizer a ele não que precisa dele, mas que <em>quer</em> que ele fique. A distinção entre ser necessário e ser querido é a que Aldric nunca aprendeu a receber. Recebê-la pela primeira vez em trezentos anos não vai ser simples. Vai ser o momento mais vulnerável que um vampiro tão antigo pode ter.</div>
+      </div>
+    </div>
+
+    <div class="entry future cosmic">
+      <div class="entry-tag tag-cosmico">Intenção Final — Escala Cósmica</div>
+      <h3 class="entry-title">O Pergaminho Contém Uma Cláusula Que Ninguém Esperava</h3>
+      <div class="entry-body">
+        O Ritual de Reunião das Vontades descrito no pergaminho exige os últimos representantes das quatro linhagens primordiais. O pergaminho foi escrito pelos Primeiros — antes da fragmentação, antes dos clãs, no campo de neve da memória ancestral mais antiga. Eles previram a possibilidade de extinção quase total. O que não foi dito no documento de segredos original: <strong>o ritual tem uma cláusula de equivalência</strong>. Se um clã não tiver sobrevivente de sangue, pode ser representado por alguém que escolheu deliberadamente a Vontade daquela linhagem como princípio de existência — não por herança, mas por decisão. Os Primeiros entenderam que vontade de sangue e vontade de escolha produzem o mesmo resultado quando genuínas. Isso significa que o ritual não depende de encontrar sangue Elendra ou sangue Corvath. Depende de encontrar quem <em>é</em> Elendra e quem <em>é</em> Corvath — no único sentido que os Primeiros consideravam verdadeiro.
+        <div class="note amber">Implicação: a família já pode ter, sem saber, os quatro representantes. O ritual não é sobre linhagem. É sobre a última verificação de que as quatro vontades ainda existem no mundo e que alguém as escolheu. O pergaminho, quando finalmente traduzido, não vai revelar uma cerimônia impossível. Vai revelar que a preparação foi feita ao longo de todas as sagas — e que os Primeiros sabiam exatamente o que estavam fazendo quando colocaram as palavras no metal.</div>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ═══════════════════════════════════
+       PARTE IV — MERMILLION · CONCEITO DE SACRIFÍCIO
+  ═══════════════════════════════════ -->
+  <section class="section">
+    <div class="section-label">Adições — Parte IV</div>
+    <h2 class="section-title">Mermillion — A Natureza do Sacrifício</h2>
+
+    <div class="entry future cosmic">
+      <div class="entry-tag tag-cosmico">Intenção — Mermillion · O Sacrifício de Presença</div>
+      <h3 class="entry-title">O Que a Anti-História Consume Não É Vida — É o Estar Dentro</h3>
+      <div class="entry-body">
+        <p>O "Sacrifício Narrativo" da ficha do Mermillion — <em>um personagem que faça um sacrifício deliberado e irrevogável pode satisfazê-lo por uma noite</em> — tem uma natureza específica que a ficha não nomeia. Mermillion não quer poder. Poder é narrativa. Não quer uma vida — vida é história. O que a Anti-História consome é <strong>presença</strong>.</p>
+        <p>A referência de design: o filme <em>Click</em>. O protagonista ganha um controle para avançar, pausar e pular momentos da própria vida. O personagem continua existindo em modo automático — age corretamente, protege quem deve proteger, toma as decisões certas. Mas a experiência de <em>estar dentro</em> daqueles momentos foi consumida. Ele estava lá. Não estava presente. O horror não é o que foi perdido — é que nada foi perdido, e mesmo assim falta tudo.</p>
+        <p><strong>O sacrifício que satisfaz Mermillion por uma noite é isto:</strong> Leyn oferece ao vazio um número de cenas em que existirá em automático. O Mestre narra o que Leyn faz — e o que ele faz é exato, é completamente ele mesmo. Mas o jogador assiste. Não rola. Não decide. Vê o próprio personagem viver sem estar lá dentro. A Anti-História não apaga. <strong>Preserva tudo exceto a presença de quem estava vivendo.</strong></p>
+        <p>Mermillion não é uma ameaça ao personagem. É uma ameaça ao <strong>jogador</strong>. A ficha já insinuava isso — "Você não existe aqui" não estava sendo dito ao Leyn Sepet. Estava sendo dito a quem segura os dados. Sem dados, sem ação, sem resultado — o personagem ainda está lá, em modo automático, fazendo tudo certo. Mas o jogador ficou do lado de fora.</p>
+        <p>O que o Mermillion escolhe consumir tem precisão: não momentos de combate, não vitórias, não atos heroicos. Escolhe <strong>momentos de família</strong>. O jogador assiste Leyn sentar com Kaira, ou falar com Mara, ou estar com Elise — e é certo, é exatamente o que ele faria — mas não estava lá. Aconteceu sem ele.</p>
+        <div class="note amber">Implicação mecânica: durante as cenas consumidas, os outros personagens percebem algo levemente diferente em Leyn — não errado, apenas distante. Presente mas não inteiro. Eles não conseguem nomear. Só Leyn sabe o que falta — e só vai entender completamente quando o automatismo terminar e ele voltar, com a memória do que fez mas sem a textura de ter estado lá. <strong>O custo tem a forma exata do que ele estava protegendo:</strong> escolheu salvar Kaira, e o que pagou foram os momentos de estar com ela. A Anti-História não escolhe o custo por crueldade. Escolhe por lógica: o sacrifício que satisfaz o vazio é sempre aquilo que dava sentido ao que seria perdido.</div>
+      </div>
+    </div>
+
+  </section>
+
+  <div class="divider"></div>
+
+  </main>
+
+  <footer class="footer">
+    <p>Adições ao Codex Valtheris e Documento de Segredos — Ano 712 CC</p>
+    <p>Este documento existe apenas entre o Mestre e a narrativa.</p>
+    <p class="footer-aside">✦ O fim foi escrito antes do começo. Mas o caminho ainda é dos jogadores. ✦</p>
+  </footer>
+
+</div><!-- /vaultWrap -->
+
+<script>
+  const wrap   = document.getElementById('vaultWrap');
+  const gate   = document.getElementById('vaultGate');
+  const relock = document.getElementById('relockBtn');
+
+  function unlock() {
+    wrap.classList.replace('vault-locked', 'vault-unlocked');
+    gate.classList.add('hidden');
+    relock.classList.add('visible');
+  }
+  function lock() {
+    wrap.classList.replace('vault-unlocked', 'vault-locked');
+    gate.classList.remove('hidden');
+    relock.classList.remove('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+</script>
+</body>
+</html>

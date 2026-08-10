@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rahadin — Referência do Mestre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&family=UnifrakturMaguntia:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:       #040406;
+    --hollow:     #181420;
+
+    --shadow:     #201428;
+    --shadow-l:   #402848;
+    --shadow-d:   #0c0810;
+    --shadow-p:   #907098;
+
+    --crimson:    #580c10;
+    --crimson-l:  #9c1c20;
+    --crimson-d:  #1c0608;
+    --crimson-p:  #d05858;
+
+    --void2:      #1c1428;
+    --void2-l:    #383058;
+    --void2-d:    #0a0810;
+    --void2-p:    #8878b0;
+    --steel-l:    #506070;
+    --steel-d:    #0e1018;
+    --steel-p:    #8898a8;
+
+    --text:       #9088a0;
+    --text-dim:   #281e30;
+    --text-faint: #0e0c12;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:#040406;
+    background-image:
+      radial-gradient(ellipse 120% 50% at 50% -5%,#0e0814 0%,transparent 55%),
+      radial-gradient(ellipse 50% 60% at 90% 100%,#0a0610 0%,transparent 50%),
+      radial-gradient(ellipse 40% 60% at 10%  80%,#080612 0%,transparent 50%);
+    color:var(--text);
+    font-family:'EB Garamond',Georgia,serif;
+    font-size:17px;line-height:1.8;min-height:100vh;overflow-x:hidden
+  }
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.048'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:.68}
+
+  .top-bar{height:4px;background:linear-gradient(90deg,var(--shadow-d),var(--crimson-l),var(--void2-l),var(--crimson-l),var(--shadow-d));box-shadow:0 0 30px rgba(88,12,16,.6)}
+
+  header{position:relative;text-align:center;padding:80px 20px 70px;overflow:hidden}
+  header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(48,8,14,.16) 0%,transparent 65%);pointer-events:none}
+  header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--shadow-d),var(--crimson-d),transparent)}
+  .header-pulse{position:absolute;inset:0;background:radial-gradient(ellipse 60% 45% at 50% 45%,rgba(68,10,14,.06) 0%,transparent 70%);animation:breathe 10s ease-in-out infinite;pointer-events:none}
+  @keyframes breathe{0%,100%{opacity:.4}50%{opacity:1}}
+  .header-symbol{display:block;font-size:2.8rem;margin-bottom:18px;filter:drop-shadow(0 0 20px rgba(156,28,32,.7));animation:crest-pulse 8s ease-in-out infinite}
+  @keyframes crest-pulse{0%,100%{filter:drop-shadow(0 0 16px rgba(156,28,32,.6))}50%{filter:drop-shadow(0 0 30px rgba(200,40,44,.8))}}
+  .header-fraktur{font-family:'UnifrakturMaguntia',serif;font-size:clamp(2rem,7vw,4rem);line-height:1.05;margin-bottom:6px;background:linear-gradient(135deg,#907098 0%,#9c1c20 25%,#d05858 55%,#8878b0 85%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .header-eyebrow{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.45em;text-transform:uppercase;color:var(--text-faint);margin-bottom:18px}
+  .header-classification{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:var(--shadow-p);margin-bottom:10px;opacity:.8}
+  .header-title-sub{font-family:'Cinzel',serif;font-size:clamp(.85rem,2vw,1rem);letter-spacing:.18em;text-transform:uppercase;color:var(--steel-p);margin-bottom:8px}
+  .header-tagline{font-style:italic;color:#1c1020;font-size:1.05rem;max-width:580px;margin:0 auto 28px}
+  .header-crests{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px}
+  .crest-badge{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:4px 14px;border-radius:1px}
+  .crest-badge.shadow {border:1px solid var(--shadow-d); color:var(--shadow-p)}
+  .crest-badge.crimson{border:1px solid var(--crimson-d);color:var(--crimson-p)}
+  .crest-badge.void2  {border:1px solid var(--void2-d);  color:var(--void2-p)}
+  .crest-badge.steel  {border:1px solid var(--steel-d);  color:var(--steel-p)}
+
+  .divider{display:flex;align-items:center;gap:14px;max-width:940px;margin:0 auto;padding:40px 20px 48px}
+  .divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--shadow-d),var(--crimson-d),transparent)}
+  .divider-glyph{color:var(--crimson-l);font-size:1rem;opacity:.7}
+  .breadcrumb{max-width:940px;margin:0 auto;padding:20px 20px 0;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}
+  .breadcrumb span{color:var(--shadow-d);margin:0 6px}.breadcrumb .current{color:var(--crimson-p)}
+  main{max-width:940px;margin:0 auto;padding:0 20px 90px;display:flex;flex-direction:column}
+  section{margin-bottom:56px;animation:fade-in .5s ease both}
+  @keyframes fade-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  section:nth-child(1){animation-delay:.05s}section:nth-child(2){animation-delay:.10s}
+  section:nth-child(3){animation-delay:.15s}section:nth-child(4){animation-delay:.20s}
+  section:nth-child(5){animation-delay:.25s}section:nth-child(6){animation-delay:.30s}
+  section:nth-child(7){animation-delay:.35s}section:nth-child(8){animation-delay:.40s}section:nth-child(9){animation-delay:.45s}
+  p{margin-bottom:10px}p:last-child{margin-bottom:0}
+
+  .section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .section-icon{font-size:1.2rem;flex-shrink:0}
+  .section-icon.shadow {filter:drop-shadow(0 0 8px rgba(64,40,72,.5))}
+  .section-icon.crimson{filter:drop-shadow(0 0 8px rgba(156,28,32,.6))}
+  .section-icon.void2  {filter:drop-shadow(0 0 8px rgba(56,48,88,.5))}
+  .section-icon.steel  {filter:drop-shadow(0 0 8px rgba(80,96,112,.4))}
+  h2{font-family:'Cinzel',serif;font-size:.9rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+  h2.shadow {color:#907098;text-shadow:0 0 20px rgba(64,40,72,.3)}
+  h2.crimson{color:#d05858;text-shadow:0 0 18px rgba(156,28,32,.4)}
+  h2.void2  {color:#8878b0;text-shadow:0 0 18px rgba(56,48,88,.3)}
+  h2.steel  {color:#8898a8;text-shadow:0 0 16px rgba(80,96,112,.25)}
+  .section-line{flex:1;height:1px}
+  .section-line.shadow {background:linear-gradient(90deg,var(--shadow-d), rgba(16,8,22,.3), transparent)}
+  .section-line.crimson{background:linear-gradient(90deg,var(--crimson-d),rgba(22,6,8,.3),  transparent)}
+  .section-line.void2  {background:linear-gradient(90deg,var(--void2-d),  rgba(12,8,18,.3), transparent)}
+  .section-line.steel  {background:linear-gradient(90deg,var(--steel-d),  rgba(14,16,24,.3),transparent)}
+
+  .identity{position:relative;background:linear-gradient(145deg,rgba(10,8,14,.98) 0%,rgba(6,5,10,.99) 100%);border:1px solid rgba(44,20,56,.5);border-top:4px solid var(--shadow-d);border-bottom:3px solid var(--crimson-d);padding:32px 36px;margin-bottom:14px;overflow:hidden}
+  .identity::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0% 0%,rgba(56,20,64,.06) 0%,transparent 45%),radial-gradient(circle at 100% 0%,rgba(80,10,14,.04) 0%,transparent 45%);pointer-events:none}
+  .identity-corner{position:absolute;font-family:'Fira Code',monospace;font-size:.58rem;letter-spacing:.15em;color:var(--text-faint);opacity:.6}
+  .identity-corner.tl{top:10px;left:14px}.identity-corner.tr{top:10px;right:14px}
+  .identity-corner.bl{bottom:10px;left:14px}.identity-corner.br{bottom:10px;right:14px}
+  .monster-name{font-family:'UnifrakturMaguntia',serif;font-size:clamp(1.8rem,4vw,2.8rem);background:linear-gradient(135deg,#907098 0%,#9c1c20 30%,#d05858 65%,#8878b0 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;line-height:1.1}
+  .monster-epithet{font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:.2em;text-transform:uppercase;color:var(--crimson-p);opacity:.85;margin-bottom:14px}
+  .monster-type-line{margin-bottom:16px}
+  .monster-lore{font-style:italic;color:#9088a0;font-size:.97rem;border-left:2px solid var(--shadow-d);padding-left:16px;margin-top:14px;line-height:1.75}
+  .monster-lore+.monster-lore{border-left-color:var(--crimson-d);margin-top:10px}
+  .monster-lore.void2{border-left-color:var(--void2-d)}
+
+  .tag{display:inline-block;font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:2px 8px;border-radius:1px;margin-right:5px;margin-bottom:5px;vertical-align:middle}
+  .tag.elf    {border:1px solid #201428;color:#706080}
+  .tag.evil   {border:1px solid #280c10;color:#904050}
+  .tag.nd10   {border:1px solid #3a2808;color:#c09030}
+  .tag.medium {border:1px solid #201428;color:#706080}
+  .tag.chamber{border:1px solid var(--shadow-d);color:var(--shadow-p)}
+
+  .monster-vitals{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+  @media(max-width:600px){.monster-vitals{grid-template-columns:1fr 1fr}}
+  .mvital-card{background:rgba(8,6,12,.9);border:1px solid var(--hollow);border-radius:3px;padding:16px 14px;position:relative;overflow:hidden;text-align:center}
+  .mvital-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+  .mvital-card.shadow::after {background:linear-gradient(90deg,transparent,var(--shadow-l), transparent)}
+  .mvital-card.crimson::after{background:linear-gradient(90deg,transparent,var(--crimson-l),transparent)}
+  .mvital-card.void2::after  {background:linear-gradient(90deg,transparent,var(--void2-l),  transparent)}
+  .mvital-card.steel::after  {background:linear-gradient(90deg,transparent,var(--steel-l),  transparent)}
+  .mvital-label{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;display:block}
+  .mvital-value{font-family:'Cinzel Decorative',serif;font-size:2rem;line-height:1;display:block}
+  .mvital-value.shadow {color:var(--shadow-l); text-shadow:0 0 14px rgba(64,40,72,.4)}
+  .mvital-value.crimson{color:var(--crimson-l);text-shadow:0 0 14px rgba(156,28,32,.5)}
+  .mvital-value.void2  {color:var(--void2-l);  text-shadow:0 0 14px rgba(56,48,88,.4)}
+  .mvital-value.steel  {color:var(--steel-l);  text-shadow:0 0 12px rgba(80,96,112,.3)}
+  .mvital-note{font-size:.75rem;color:var(--text-dim);font-style:italic;margin-top:6px;display:block;line-height:1.4}
+
+  .two-col-monster{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  @media(max-width:600px){.two-col-monster{grid-template-columns:1fr}}
+  .cr-badge{display:flex;flex-direction:row;align-items:center;gap:20px;background:linear-gradient(135deg,rgba(16,8,22,.18),rgba(20,6,8,.12));border:1px solid rgba(44,20,56,.4);border-top:2px solid var(--crimson-l);border-bottom:2px solid var(--shadow-d);padding:14px 24px}
+  .cr-badge-label{font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.28em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;display:block}
+  .cr-badge-value{font-family:'Cinzel Decorative',serif;font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,var(--crimson-l),var(--shadow-l));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;display:block}
+  .cr-badge-note{font-family:'Fira Code',monospace;font-size:.6rem;color:var(--text-dim);margin-top:4px;letter-spacing:.06em;display:block}
+
+  .attr-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px}
+  @media(max-width:560px){.attr-grid{grid-template-columns:repeat(3,1fr)}}
+  .attr-box{background:rgba(6,5,10,.9);border:1px solid var(--hollow);padding:16px 10px;text-align:center;position:relative;overflow:hidden;transition:transform .2s}
+  .attr-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .attr-box.hi::before  {background:linear-gradient(90deg,transparent,var(--crimson-l),transparent)}
+  .attr-box.mid::before {background:linear-gradient(90deg,transparent,var(--shadow-l), transparent)}
+  .attr-box.void2::before{background:linear-gradient(90deg,transparent,var(--void2-l), transparent)}
+  .attr-box.lo::before  {background:linear-gradient(90deg,transparent,var(--steel-l),  transparent)}
+  .attr-box:hover{transform:translateY(-2px)}
+  .attr-name{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
+  .attr-value{font-family:'Fira Code',monospace;font-size:1.15rem;font-weight:500;color:var(--text);display:block;line-height:1}
+  .attr-value.hi   {color:var(--crimson-l)}
+  .attr-value.mid  {color:var(--shadow-l)}
+  .attr-value.void2{color:var(--void2-l)}
+  .attr-value.lo   {color:var(--steel-l)}
+  .attr-mod{font-family:'Fira Code',monospace;font-size:.8rem;color:var(--text-dim);display:block;margin-top:4px}
+  .attr-mod.hi  {color:var(--crimson-d)}
+  .attr-mod.mid {color:var(--shadow-d)}
+
+  .card{background:linear-gradient(135deg,rgba(10,8,14,.92) 0%,rgba(6,5,10,.96) 100%);border:1px solid var(--hollow);padding:20px 24px;margin-bottom:12px;position:relative;transition:box-shadow .3s}
+  .card.shadow {border-left:3px solid var(--shadow-d)}.card.shadow:hover {box-shadow:-4px 0 20px rgba(44,18,56,.2),0 4px 20px rgba(0,0,0,.6)}
+  .card.crimson{border-left:3px solid var(--crimson-d)}.card.crimson:hover{box-shadow:-4px 0 20px rgba(76,10,14,.2),0 4px 20px rgba(0,0,0,.6)}
+  .card.void2  {border-left:3px solid var(--void2-d)}.card.void2:hover  {box-shadow:-4px 0 20px rgba(34,24,64,.18),0 4px 20px rgba(0,0,0,.6)}
+  .card.steel  {border-left:3px solid var(--steel-d)}.card.steel:hover  {box-shadow:-4px 0 20px rgba(36,48,64,.16),0 4px 20px rgba(0,0,0,.6)}
+  .card-title{font-family:'Cinzel',serif;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+  .card-title.shadow {color:var(--shadow-p)}.card-title.crimson{color:var(--crimson-p)}
+  .card-title.void2  {color:var(--void2-p)}.card-title.steel  {color:var(--steel-p)}
+  .card p{font-size:.95rem;color:#908898;line-height:1.76}
+
+  .trait{display:grid;grid-template-columns:3px 1fr;gap:0 14px;margin-bottom:10px}
+  .tier-bar{border-radius:2px}
+  .trait-content{background:rgba(6,5,10,.78);border:1px solid var(--hollow);padding:14px 16px}
+  .trait-name{font-family:'Cinzel',serif;font-size:.74rem;letter-spacing:.1em;font-weight:900;color:var(--shadow-p);margin-bottom:5px}
+  .trait-name .sub{font-style:italic;font-weight:400;color:var(--text-dim);font-family:'EB Garamond',serif;font-size:.9rem;letter-spacing:0;text-transform:none}
+  .trait-content p{font-size:.92rem;color:#908898;line-height:1.72}
+  .trait-content p strong{color:var(--shadow-p)}
+
+  /* Coro da Morte — destaque especial */
+  .coro-block{background:rgba(6,2,8,.97);border:1px solid rgba(80,12,16,.5);border-top:3px solid var(--crimson-l);padding:22px 26px;margin:14px 0;position:relative;overflow:hidden}
+  .coro-block::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(88,12,16,.08) 0%,transparent 60%);pointer-events:none}
+  .coro-title{font-family:'Cinzel',serif;font-size:.82rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--crimson-p);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .coro-block p{font-size:.94rem;color:#908898;line-height:1.76}
+  .coro-block strong{color:var(--crimson-p)}
+
+  /* Spell rows */
+  .spell-block{background:rgba(6,5,10,.88);border:1px solid var(--hollow);padding:14px 18px;margin-bottom:8px}
+  .spell-freq{font-family:'Cinzel',serif;font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--void2-p);margin-bottom:5px;display:block}
+  .spell-block p{font-style:italic;color:#908898;font-size:.92rem;line-height:1.7}
+
+  .action{background:linear-gradient(135deg,rgba(10,8,14,.9) 0%,rgba(6,5,10,.95) 100%);border:1px solid var(--hollow);padding:14px 18px;margin-bottom:8px;transition:box-shadow .25s}
+  .action.crimson{border-bottom:2px solid var(--crimson-d)}.action.crimson:hover{box-shadow:0 2px 16px rgba(76,10,14,.15)}
+  .action.shadow {border-bottom:2px solid var(--shadow-d)}.action.shadow:hover {box-shadow:0 2px 16px rgba(44,18,56,.14)}
+  .action.void2  {border-bottom:2px solid var(--void2-d)}.action.void2:hover  {box-shadow:0 2px 16px rgba(34,24,64,.14)}
+  .action-name{font-family:'Cinzel',serif;font-size:.76rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  .action-name.crimson{color:var(--crimson-p)}.action-name.shadow{color:var(--shadow-p)}.action-name.void2{color:var(--void2-p)}
+  .action p{font-size:.92rem;color:#908898;line-height:1.72}
+  .action strong{color:var(--shadow-p)}
+
+  .table-wrap{margin:10px 0;border:1px solid var(--hollow);overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  thead tr{background:rgba(6,5,10,.98);border-bottom:2px solid var(--shadow-d)}
+  thead th{font-family:'Cinzel',serif;font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--crimson-p);padding:9px 14px;text-align:left}
+  tbody tr{border-bottom:1px solid rgba(14,12,18,.9);transition:background .12s}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr:nth-child(even){background:rgba(255,255,255,.012)}
+  tbody tr:hover{background:rgba(44,18,56,.07)}
+  td{padding:8px 14px;vertical-align:top;color:#908898}
+  td:first-child{font-family:'Cinzel',serif;font-size:.84rem;color:var(--text)}
+
+  .mono{font-family:'Fira Code',monospace;font-size:.78rem}
+  .mono.crimson{color:var(--crimson-l)}.mono.shadow{color:var(--shadow-l)}.mono.void2{color:var(--void2-l)}
+
+  .callout{border-left:3px solid;padding:14px 18px;margin:12px 0;font-style:italic;font-size:.92rem;line-height:1.75}
+  .callout strong{font-style:normal;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;display:block;margin-bottom:3px}
+  .callout.shadow {background:rgba(16,8,22,.16); border-color:var(--shadow); color:#908898}.callout.shadow  strong{color:var(--shadow-l)}
+  .callout.crimson{background:rgba(22,4,6,.16);  border-color:var(--crimson);color:#908898}.callout.crimson strong{color:var(--crimson-l)}
+  .callout.void2  {background:rgba(12,8,18,.16); border-color:var(--void2);  color:#908898}.callout.void2   strong{color:var(--void2-l)}
+
+  mark        {background:rgba(64,40,72,.18);color:var(--shadow-p); border-radius:1px;padding:0 2px}
+  mark.crimson{background:rgba(156,28,32,.18);color:var(--crimson-p)}
+  mark.void2  {background:rgba(56,48,88,.17); color:var(--void2-p)}
+
+  .sep{height:1px;background:linear-gradient(90deg,transparent,var(--shadow-d),var(--crimson-d),transparent);margin:18px 0;opacity:.5}
+
+  /* TRAITS TRIO */
+  .traits-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+  @media(max-width:600px){.traits-trio{grid-template-columns:1fr}}
+  .trio-card{background:rgba(6,5,10,.9);border:1px solid var(--hollow);padding:16px 14px;position:relative;overflow:hidden}
+  .trio-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .trio-card.ideal  ::before{background:linear-gradient(90deg,transparent,var(--void2-l), transparent)}
+  .trio-card.vinculo::before{background:linear-gradient(90deg,transparent,var(--shadow-l), transparent)}
+  .trio-card.defeito::before{background:linear-gradient(90deg,transparent,var(--crimson-l),transparent)}
+  .trio-label{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:8px}
+  .trio-card.ideal   .trio-label{color:var(--void2-p)}
+  .trio-card.vinculo .trio-label{color:var(--shadow-p)}
+  .trio-card.defeito .trio-label{color:var(--crimson-p)}
+  .trio-card p{font-size:.88rem;color:#908898;line-height:1.7;font-style:italic}
+
+  .san-table{width:100%;border-collapse:collapse;font-size:.88rem;border:1px solid var(--hollow)}
+  .san-table thead tr{background:rgba(6,5,10,.98);border-bottom:2px solid var(--shadow-d)}
+  .san-table thead th{font-family:'Cinzel',serif;font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--crimson-p);padding:9px 14px;text-align:left}
+  .san-table tbody tr{border-bottom:1px solid rgba(14,12,18,.9);transition:background .12s}
+  .san-table tbody tr:last-child{border-bottom:none}
+  .san-table tbody tr:hover{background:rgba(44,18,56,.07)}
+  .san-table td{padding:8px 14px;vertical-align:top;color:#908898;font-size:.88rem}
+  .san-table .situation{font-style:italic;color:var(--text)}
+  .san-table .pass{color:var(--void2-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem}
+  .san-table .fail{color:var(--crimson-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem;font-weight:600}
+  .san-table .cd{color:var(--shadow-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem}
+
+  footer{text-align:center;padding:40px 20px;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}
+  footer span{color:var(--shadow-d);margin:0 6px}
+  #top-btn{position:fixed;bottom:28px;right:28px;width:42px;height:42px;background:rgba(4,4,6,.97);border:1px solid var(--shadow-d);color:var(--shadow-l);font-size:1.2rem;line-height:42px;text-align:center;text-decoration:none;transition:border-color .2s,color .2s;z-index:100; opacity:0; pointer-events:none; transition: opacity .25s, border-color .2s, color .2s;}
+  #top-btn:hover{border-color:var(--crimson-l);color:var(--crimson-p)}
+  #top-btn.visible { opacity: 1; pointer-events: all; }
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--void)}::-webkit-scrollbar-thumb{background:var(--shadow-d);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--crimson-l)}
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+<div class="top-bar"></div>
+<nav class="breadcrumb" aria-label="Trilha de navegação">Curse of Strahd &nbsp;/&nbsp; Castelo Ravenloft <span>›</span> <span class="current">Rahadin — Referência do Mestre</span></nav>
+
+<header>
+  <div class="header-pulse"></div>
+  <span class="header-symbol">🗡️</span>
+  <p class="header-eyebrow">Curse of Strahd &nbsp;⸸&nbsp; Elfo das Sombras &nbsp;⸸&nbsp; Mordomo Eterno de Ravenloft</p>
+  <p class="header-classification">⬥ Humanoide Médio (Elfo) &nbsp;·&nbsp; Leal e Mau &nbsp;·&nbsp; ND 10 ⬥</p>
+  <h1 class="header-fraktur">Rahadin</h1>
+  <p class="header-title-sub">Mordomo de Strahd — O Carrasco — Quinhentos Anos de Lealdade Absoluta</p>
+  <p class="header-tagline">"Eu matei milhares de homens. Vou matar mais milhares para preservar o legado de von Zarovich."</p>
+  <div class="header-crests">
+    <span class="crest-badge shadow">🗡️ Mordomo · ND 10</span>
+    <span class="crest-badge crimson">💀 Coro da Morte</span>
+    <span class="crest-badge void2">🌫 Conjuração Inata</span>
+    <span class="crest-badge steel">🌿 Máscara da Natureza</span>
+  </div>
+</header>
+
+<div class="divider"><div class="divider-line"></div><span class="divider-glyph">🗡️</span><div class="divider-line"></div></div>
+
+<main>
+
+  <!-- IDENTIDADE -->
+  <section id="identidade">
+    <div class="section-header"><span class="section-icon shadow">🗡️</span><h2 class="shadow">Identidade &amp; Lore</h2><div class="section-line shadow"></div></div>
+    <div class="identity">
+      <div class="identity-corner tl">HUMANOIDE MÉDIO (ELFO) · LEAL E MAU</div>
+      <div class="identity-corner tr">NÍVEL DE DESAFIO 10 · 5.900 XP</div>
+      <div class="identity-corner bl">CURSE OF STRAHD · CASTELO RAVENLOFT</div>
+      <div class="identity-corner br">MORDOMO ETERNO DE STRAHD</div>
+      <div class="monster-name">Rahadin</div>
+      <div class="monster-epithet">⬥ O Servo Eterno — O Carrasco dos Elfos das Sombras ⬥</div>
+      <div class="monster-type-line">
+        <span class="tag elf">Elfo das Sombras</span>
+        <span class="tag evil">Leal e Mau</span>
+        <span class="tag medium">Médio</span>
+        <span class="tag nd10">ND 10</span>
+        <span class="tag chamber">Mordomo</span>
+      </div>
+      <p class="monster-lore">Rahadin, o mordomo elfo das sombras do Castelo Ravenloft, serviu a família de Strahd fielmente durante quase quinhentos anos. É o servo eterno de Strahd, um antigo companheiro de armas, e um guerreiro cruel que já matou milhares de pessoas em sua vida. Quando os elfos das sombras se recusaram a jurar lealdade ao rei Barov, Rahadin ajudou a conquistá-los — obliterando a linhagem real. Os poucos que sobreviveram foram subjugados ou forçados a viver entre os Vistanis.</p>
+      <p class="monster-lore">Depois que Barov morreu, Rahadin continuou como um dos generais de Strahd. Quando as guerras terminaram, Strahd trouxe magos e artesãos para Barovia e nomeou Rahadin administrador de seu castelo. Rahadin teve o prazer de fazer o que Strahd lhe ordenava — incutindo o terror nos empregados do castelo com rotineiro flagelo àqueles que não cumprissem os deveres de seus exigentes padrões.</p>
+      <p class="monster-lore void2"><strong>Carrasco.</strong> Quando Patrina Velikovna tentou seduzir Strahd, Strahd irou-se pelos elfos das sombras. Depois de obter o corpo de Patrina e sepultá-lo nas criptas de Ravenloft, enviou Rahadin para puni-los. Rahadin matou as elfas para que o clã não pudesse se reproduzir. Ele também <strong>cortou as orelhas do irmão de Patrina, Kasimir</strong>, que orquestrou o apedrejamento — a mutilação que Kasimir ainda carrega séculos depois.</p>
+      <p class="monster-lore" style="border-left-color:var(--steel-d);font-size:11px;opacity:.75">⚙ Ancestralidade Féerica: vantagem em TRs vs. encantamento; magia não pode fazê-lo dormir. Máscara da Natureza: pode se esconder quando levemente obscurecido (folhagem, chuva, neve, névoa). Conjuração Inata: INT. 3/dia: montaria fantasmagórica, passo nebuloso; 1/dia: arma mágica, dificultar detecção. Percepção passiva 21. Idiomas: Comum, Élfico.</p>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section id="stats">
+    <div class="section-header"><span class="section-icon crimson">📋</span><h2 class="crimson">Estatísticas Base</h2><div class="section-line crimson"></div></div>
+    <div class="monster-vitals">
+      <div class="mvital-card shadow"><span class="mvital-label">Classe de Armadura</span><span class="mvital-value shadow">18</span><span class="mvital-note">Couro batido</span></div>
+      <div class="mvital-card crimson"><span class="mvital-label">Pontos de Vida</span><span class="mvital-value crimson">135</span><span class="mvital-note">18d8 + 54</span></div>
+      <div class="mvital-card void2"><span class="mvital-label">Deslocamento</span><span class="mvital-value void2">10,5 m</span><span class="mvital-note">Mais rápido que humanos</span></div>
+      <div class="mvital-card steel"><span class="mvital-label">Percepção Passiva</span><span class="mvital-value steel">21</span><span class="mvital-note">Visão no escuro 18 m</span></div>
+    </div>
+    <div class="two-col-monster">
+      <div class="cr-badge">
+        <div><span class="cr-badge-label">Challenge Rating</span><span class="cr-badge-value">10</span><span class="cr-badge-note">5.900 XP</span></div>
+        <div style="border-left:1px solid rgba(44,20,56,.3);padding-left:20px;">
+          <span class="cr-badge-label">Furtividade</span>
+          <span class="cr-badge-value" style="font-size:1.5rem;">+14</span>
+          <span class="cr-badge-note">Maior do módulo</span>
+        </div>
+      </div>
+      <div class="card crimson" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:center;">
+        <div class="card-title crimson">CA 18 com Couro Batido — A Destreza que Explica Tudo</div>
+        <p style="font-size:.9rem;">DES 22 (+6) em couro batido = CA 18. Furtividade +14 é a mais alta de qualquer NPC do CoS. Percepção passiva 21 significa que <mark class="crimson">ele detecta o grupo antes de ser detectado em quase todos os cenários.</mark></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ATRIBUTOS -->
+  <div class="two-col-monster" style="align-items:start;gap:14px;margin-bottom:56px;">
+  <section id="atributos" style="margin-bottom:0;">
+    <div class="section-header"><span class="section-icon void2">◆</span><h2 class="void2">Atributos</h2><div class="section-line void2"></div></div>
+    <div class="attr-grid">
+      <div class="attr-box lo">   <div class="attr-name">For</div><span class="attr-value lo">14</span>  <span class="attr-mod lo">+2</span></div>
+      <div class="attr-box hi">   <div class="attr-name">Des</div><span class="attr-value hi">22</span>  <span class="attr-mod hi">+6</span></div>
+      <div class="attr-box mid">  <div class="attr-name">Con</div><span class="attr-value mid">17</span> <span class="attr-mod mid">+3</span></div>
+      <div class="attr-box void2"><div class="attr-name">Int</div><span class="attr-value void2">15</span><span class="attr-mod mid">+2</span></div>
+      <div class="attr-box mid">  <div class="attr-name">Sab</div><span class="attr-value mid">16</span> <span class="attr-mod mid">+3</span></div>
+      <div class="attr-box hi">   <div class="attr-name">Car</div><span class="attr-value hi">18</span>  <span class="attr-mod hi">+4</span></div>
+    </div>
+    <div class="callout shadow" style="margin-top:4px;">
+      <strong>DES 22 — O Maior Modificador de DES do Módulo</strong> +6 base + proficiência +4 = <mark>+10 para atingir com a cimitarra</mark>. Três ataques por turno a +10 = consistência devastadora. CAR 18 e Intimidação +12 refletem séculos de presença aterrorizante.
+    </div>
+  </section>
+  <section id="proficiencias" style="margin-bottom:0;">
+    <div class="section-header"><span class="section-icon shadow">🎲</span><h2 class="shadow">Proficiências-Chave</h2><div class="section-line shadow"></div></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Perícia/Campo</th><th>Valor</th></tr></thead>
+        <tbody>
+          <tr><td>Furtividade</td><td><span class="mono crimson">+14</span> <span style="font-size:.8rem;color:var(--text-dim)">— maior do módulo</span></td></tr>
+          <tr><td>Intimidação</td><td><span class="mono shadow">+12</span></td></tr>
+          <tr><td>Percepção</td><td><span class="mono void2">+11</span></td></tr>
+          <tr><td>Enganação</td><td><span class="mono shadow">+8</span></td></tr>
+          <tr><td>Intuição</td><td><span class="mono void2">+7</span></td></tr>
+          <tr><td>TR Constituição</td><td><span class="mono crimson">+7</span></td></tr>
+          <tr><td>TR Sabedoria</td><td><span class="mono crimson">+7</span></td></tr>
+          <tr><td>Percepção Passiva</td><td><span class="mono">21</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  </div>
+
+  <!-- CORO DA MORTE — DESTAQUE -->
+  <section id="coro">
+    <div class="section-header"><span class="section-icon crimson">💀</span><h2 class="crimson">Coro da Morte — A Mecânica Central</h2><div class="section-line crimson"></div></div>
+
+    <div class="coro-block">
+      <div class="coro-title">💀 Coro da Morte — Aura Passiva + Ação Bônus Ativa</div>
+      <p>Rahadin é uma criatura tão terrível que qualquer criatura que fique a menos de <strong>3 metros</strong> dele pode ouvir os gritos das <strong>milhares de pessoas</strong> que ele matou. Ele não pode ouvi-los, nem seria assombrado por eles se pudesse. O único com que ele se importa é Strahd von Zarovich, por quem ele teria prazer em dar a vida.</p>
+      <p style="margin-top:12px;"><strong>Como Ação Bônus:</strong> Rahadin pode forçar todas as criaturas que possam ouvir os gritos a realizar um <strong>Teste de Resistência de Sabedoria CD 16</strong>. Cada criatura sofre <strong>16 (3d10) de dano psíquico</strong> em uma falha, ou metade em um sucesso.</p>
+    </div>
+
+    <div class="callout crimson">
+      <strong>Coro da Morte — O que Muda no Combate</strong> Rahadin tem uma Ação Bônus de dano psíquico em área (3 metros) que pode usar todo turno — além de seus três ataques de ação. Criaturas que falhem no TR sofrem <mark class="crimson">16 de dano psíquico sem gastar a ação principal</mark>. Um grupo que se junte no corpo a corpo contra Rahadin recebe dano psíquico automático a cada turno além dos ataques. O grupo precisa lutar espalhado — o que o favorece, pois seus ataques não se dividem por área.
+    </div>
+  </section>
+
+  <!-- TRAÇOS -->
+  <section id="tracos">
+    <div class="section-header"><span class="section-icon void2">✧</span><h2 class="void2">Traços Especiais</h2><div class="section-line void2"></div></div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--void2-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Máscara da Natureza <span class="sub">(Passivo — Furtividade em Luz Fraca)</span></div>
+        <p>Rahadin pode tentar se esconder mesmo quando está apenas <strong>levemente obscurecido</strong> por folhagem, chuva forte, neve caindo, névoa ou outro fenômeno natural. Combinado com Furtividade +14 e Percepção passiva 21, Rahadin pode monitorar o grupo de dentro de uma névoa baroviana sem jamais ser detectado — e escolher exatamente quando e onde atacar.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--shadow-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Conjuração Inata <span class="sub">(Inteligência — 3/Dia e 1/Dia)</span></div>
+        <p><strong>3/Dia:</strong> <em>Montaria Fantasmagórica</em> (cavalo espectral de 240 m/round — fuga ou deslocamento extraordinário), <em>Passo Nebuloso</em> (teletransporte de 9 m como ação bônus — reposicionamento instantâneo).<br>
+        <strong>1/Dia:</strong> <em>Arma Mágica</em> (cimitarra se torna mágica +3 por 1 hora — ignora resistências), <em>Dificultar Detecção</em> (imperceptível à magia de rastreamento por 8 horas).</p>
+      </div>
+    </div>
+
+    <div class="callout void2">
+      <strong>Passo Nebuloso + Ataques — A Combinação Mais Perigosa</strong> Rahadin usa Passo Nebuloso (bônus) para teletransportar 9 m até um alvo específico, realiza três ataques de cimitarra (ação), depois usa Coro da Morte (bônus — embora ambos sejam ação bônus, Passo Nebuloso pode ser usado no início do turno antes dos ataques). Na prática: ele reaparece ao lado do alvo mais vulnerável, ataca três vezes, e o Coro da Morte pune qualquer um que esteja no raio de 3 metros. <mark>Não há posição segura contra Rahadin.</mark>
+    </div>
+  </section>
+
+  <!-- AÇÕES -->
+  <section id="acoes">
+    <div class="section-header"><span class="section-icon crimson">⚔</span><h2 class="crimson">Ações</h2><div class="section-line crimson"></div></div>
+
+    <div class="action shadow">
+      <div class="action-name shadow">Ataques Múltiplos</div>
+      <p>Rahadin ataca <strong>três vezes</strong> com sua cimitarra, ou <strong>duas vezes</strong> com seus dardos envenenados.</p>
+    </div>
+    <div class="action crimson">
+      <div class="action-name crimson">Cimitarra <span style="font-family:'Fira Code',monospace;font-size:.6rem;color:var(--shadow-p);font-weight:400;">(+10 para atingir)</span></div>
+      <p><em>Ataque Corpo-a-Corpo:</em> <strong>+10 para atingir</strong>, alcance 1,5 m, um alvo. Acerto: <strong>9 (1d6 + 6)</strong> de dano cortante. Três ataques por turno = média de <strong>27 de dano por round</strong> se todos acertam.</p>
+    </div>
+    <div class="action void2">
+      <div class="action-name void2">Dardo Envenenado <span style="font-family:'Fira Code',monospace;font-size:.6rem;color:var(--shadow-p);font-weight:400;">(+10 para atingir)</span></div>
+      <p><em>Ataque à Distância:</em> <strong>+10 para atingir</strong>, alcance 6/18 m, um alvo. Acerto: <strong>8 (1d4 + 6)</strong> de dano perfurante + <strong>5 (2d4)</strong> de dano de veneno. Dois ataques por turno a distância = <strong>média de 26 de dano</strong> + dano de veneno. Útil quando o grupo tenta manter distância.</p>
+    </div>
+
+    <div class="sep"></div>
+    <div class="callout shadow">
+      <strong>Turno Completo — Coro + Três Cimitarras</strong> Ação: três cimitarras = ~27 de dano cortante. Ação Bônus: Coro da Morte = <mark class="crimson">16 de dano psíquico em cada criatura a 3 metros que falhe no TR CD 16</mark>. Com um grupo de 4 pessoas em luta corpo a corpo, o Coro pode adicionar 64 de dano psíquico distribuído em bônus. Rahadin é um dos NPCs com maior potencial de dano por turno de qualquer NPC humanóide do CoS.
+    </div>
+  </section>
+
+  <!-- TRAÇOS DE PERSONAGEM -->
+  <section id="personalidade">
+    <div class="section-header"><span class="section-icon shadow">🎭</span><h2 class="shadow">Traços de Personagem</h2><div class="section-line shadow"></div></div>
+    <div class="traits-trio">
+      <div class="trio-card ideal">
+        <span class="trio-label">Ideal</span>
+        <p>"A lealdade é tudo."</p>
+      </div>
+      <div class="trio-card vinculo">
+        <span class="trio-label">Vínculo</span>
+        <p>"Sou filho do rei Barov von Zarovich, e servirei seu filho — meu irmão e meu senhor — para sempre."</p>
+      </div>
+      <div class="trio-card defeito">
+        <span class="trio-label">Defeito</span>
+        <p>"Eu matei milhares de homens. Vou matar mais milhares para preservar o legado de von Zarovich."</p>
+      </div>
+    </div>
+    <div class="callout shadow">
+      <strong>Rahadin vs. Kasimir — O Encontro que Carrega Séculos</strong> Rahadin cortou as orelhas de Kasimir pessoalmente. Kasimir vive com essa mutilação há séculos. Se o grupo incluir Kasimir como aliado, um encontro com Rahadin não é apenas combate — é o momento em que dois séculos de trauma e culpa e raiva compartilham o mesmo espaço. <mark>Rahadin não se importa com Kasimir além do que Strahd ordena sobre ele.</mark> Isso é, para Kasimir, possivelmente mais perturbador do que o ódio seria.
+    </div>
+  </section>
+
+  <!-- NOTAS DO MESTRE -->
+  <section id="notas">
+    <div class="section-header"><span class="section-icon steel">🧠</span><h2 class="steel">Como Rodar — Notas do Mestre</h2><div class="section-line steel"></div></div>
+    <div class="card crimson">
+      <div class="card-title crimson">Rahadin como Perseguidor</div>
+      <p>Rahadin não espera o grupo vir ao castelo — ele vai atrás deles. Se Strahd decidir que o grupo é uma ameaça, Rahadin é quem é enviado para eliminá-los — usando Montaria Fantasmagórica para cobrir distâncias, Dificultar Detecção para que não o localizem magicamente, e Máscara da Natureza + Furtividade +14 para aparecer exatamente quando o grupo estiver descansando ou ocupado com outro encontro. <mark class="crimson">Rahadin é o motivo pelo qual nenhuma localização em Barovia é permanentemente segura.</mark></p>
+    </div>
+    <div class="card void2">
+      <div class="card-title void2">O Coro como Roleplay</div>
+      <p>Antes de usar o Coro mecanicamente, descreva o que os personagens ouvem: vozes sobrepostas de homens, mulheres e crianças em agonia, centenas de gritos simultâneos vindos de dentro do espaço ao redor de Rahadin. Isso é tudo real — são as memórias dos mortos que ele fez. Rahadin <em>não ouve nada</em>. Essa assimetria é horror puro.</p>
+    </div>
+    <div class="card shadow">
+      <div class="card-title shadow">Em Valtheris</div>
+      <p>Rahadin é o que acontece quando a lealdade absoluta substitui completamente o julgamento moral. Ele não é cruel por prazer — é cruel porque Strahd ordena, e Strahd é tudo. Para Leyn, que negocia com forças além da morte e carrega um Contrato que define os limites de sua existência, Rahadin é o espelho mais perturbador: o que você se torna quando a lealdade a uma entidade substitui qualquer outra consideração.</p>
+    </div>
+  </section>
+
+  <!-- SANIDADE -->
+  <section id="sanidade">
+    <div class="section-header"><span class="section-icon crimson">🌑</span><h2 class="crimson">Dano de Sanidade — Regra Opcional</h2><div class="section-line crimson"></div></div>
+    <table class="san-table">
+      <thead><tr><th>Situação</th><th>Sucesso (SAB)</th><th>Falha (SAB)</th><th>CD</th></tr></thead>
+      <tbody>
+        <tr><td class="situation">Primeiro encontro com Rahadin — perceber que um elfo de aparência comum carrega o peso de quinhentos anos de violência</td><td class="pass">—</td><td class="fail">1d4</td><td class="cd">CD 11</td></tr>
+        <tr><td class="situation">Ouvir o Coro da Morte pela primeira vez — as vozes de milhares sobrepostas, todas em agonia simultânea</td><td class="pass">1d4</td><td class="fail">2d6</td><td class="cd">CD 16</td></tr>
+        <tr><td class="situation">Descobrir que Rahadin foi quem cortou as orelhas de Kasimir pessoalmente — e que fez isso sem hesitação</td><td class="pass">1d4</td><td class="fail">1d8</td><td class="cd">CD 13</td></tr>
+        <tr><td class="situation">Rahadin é derrotado mas escapa usando Passo Nebuloso — o grupo percebe que a batalha não terminou, apenas foi adiada</td><td class="pass">—</td><td class="fail">1d6</td><td class="cd">CD 12</td></tr>
+        <tr><td class="situation">Rahadin recusa-se a defender sua própria vida quando ordenado por Strahd a recuar — demonstrando que sua existência não tem valor para ele além do serviço</td><td class="pass">1d6</td><td class="fail">2d8</td><td class="cd">CD 15</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+<div style="max-width:940px;margin:0 auto;padding:0 20px;"><div class="divider" style="padding:0;margin-bottom:0;"><div class="divider-line"></div><span class="divider-glyph">🗡️</span><div class="divider-line"></div></div></div>
+<div class="top-bar" style="margin-top:0;"></div>
+<footer>Rahadin <span>⸸</span> Mordomo Eterno de Strahd <span>⸸</span> Curse of Strahd</footer>
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+<script>document.getElementById('top-btn').addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});window.addEventListener('scroll',function(){document.getElementById('top-btn').classList.toggle('visible',window.scrollY>400);});</script>
+</body>
+</html>

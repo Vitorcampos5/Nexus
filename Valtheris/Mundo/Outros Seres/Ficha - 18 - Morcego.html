@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morcego — Apêndice D · Valtheris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:          #050408;
+    --hollow:        #181620;
+
+    --dusk:          #2a2040;
+    --dusk-light:    #483878;
+    --dusk-dim:      #0c0a18;
+    --dusk-pale:     #9888c8;
+
+    --cave-light:    #504860;
+    --cave-dim:      #0e0c14;
+    --cave-pale:     #807890;
+
+
+    --echo:          #483858;
+    --echo-light:    #706080;
+    --echo-dim:      #140e18;
+    --echo-pale:     #a090b0;
+
+    --text:          #706880;
+    --text-dim:      #282038;
+    --text-faint:    #0c0a14;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--void);
+    background-image:
+      radial-gradient(ellipse 120% 50% at 50% -5%, #080618 0%, transparent 55%),
+      radial-gradient(ellipse 50%  60% at 90% 100%, #060408 0%, transparent 50%),
+      radial-gradient(ellipse 40%  60% at 10%  80%, #08060e 0%, transparent 50%);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 17px; line-height: 1.8;
+    min-height: 100vh; overflow-x: hidden;
+  }
+
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"); pointer-events: none; z-index: 999; opacity: .65; }
+
+  .top-bar { height: 4px; background: linear-gradient(90deg, var(--dusk-dim), var(--dusk-light), var(--echo-light), var(--dusk-light), var(--dusk-dim)); box-shadow: 0 0 30px rgba(72,56,120,.5); }
+
+  header { position: relative; text-align: center; padding: 80px 20px 70px; overflow: hidden; }
+  header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(42,32,64,.12) 0%, transparent 65%), radial-gradient(ellipse 40% 30% at 50% 60%, rgba(30,24,50,.08) 0%, transparent 70%); pointer-events: none; }
+  .header-pulse { position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--dusk-dim), var(--echo-dim), var(--dusk-dim), transparent); }
+  .header-symbol { display: block; font-size: 2.2rem; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(72,56,120,.6)); }
+  .header-eyebrow { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .45em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 18px; }
+  .header-classification { font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .25em; text-transform: uppercase; color: var(--dusk-pale); margin-bottom: 10px; opacity: .8; }
+  .header-title-sub { font-family: 'Cinzel', serif; font-size: clamp(.85rem, 2vw, 1rem); letter-spacing: .18em; text-transform: uppercase; color: var(--echo-pale); margin-bottom: 8px; }
+  .header-fraktur { font-family: 'Cinzel Decorative', serif; font-size: clamp(2rem, 6vw, 3.6rem); font-weight: 900; line-height: 1.1; margin-bottom: 16px; background: linear-gradient(135deg, var(--dusk-light) 0%, var(--echo-light) 40%, var(--dusk-pale) 70%, var(--cave-pale) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .header-tagline { font-family: 'EB Garamond', serif; font-style: italic; font-size: clamp(.9rem, 2.2vw, 1.08rem); color: #282038; letter-spacing: .06em; margin-top: 8px; }
+  .header-crests { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 24px; }
+  .crest-badge { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; padding: 5px 14px; border-radius: 1px; }
+  .crest-badge.dusk { border: 1px solid var(--dusk-dim);  color: var(--dusk-light);  background: rgba(10,8,18,.4); }
+  .crest-badge.cave { border: 1px solid var(--cave-dim);  color: var(--cave-light);  background: rgba(12,10,16,.3); }
+  .crest-badge.echo { border: 1px solid var(--echo-dim);  color: var(--echo-light);  background: rgba(14,10,18,.3); }
+  .crest-badge.wing { border: 1px solid #181628;          color: #504870;            background: rgba(8,8,14,.3); }
+
+  .divider { display: flex; align-items: center; gap: 14px; padding: 0 20px; max-width: 860px; margin: 0 auto 24px; }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--dusk-dim), var(--echo-dim), transparent); }
+  .divider-glyph { font-family: 'Cinzel', serif; font-size: .7rem; color: var(--dusk-dim); }
+
+  main { max-width: 860px; margin: 0 auto; padding: 0 20px 90px; display: flex; flex-direction: column; gap: 0; position: relative; z-index: 1; }
+
+  section { margin-bottom: 56px; animation: fade-in .5s ease both; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  section:nth-child(1)  { animation-delay: .05s; }
+  section:nth-child(2)  { animation-delay: .12s; }
+  section:nth-child(3)  { animation-delay: .18s; }
+  section:nth-child(4)  { animation-delay: .24s; }
+  section:nth-child(5)  { animation-delay: .30s; }
+  section:nth-child(6)  { animation-delay: .36s; }
+  section:nth-child(7)  { animation-delay: .42s; }
+
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .section-icon { font-size: 1.1rem; }
+  .section-icon.dusk { filter: drop-shadow(0 0 8px rgba(72,56,120,.7)); }
+  .section-icon.cave { filter: drop-shadow(0 0 8px rgba(80,72,96,.4)); }
+  .section-icon.echo { filter: drop-shadow(0 0 8px rgba(112,96,128,.5)); }
+  h2 { font-family: 'Cinzel', serif; font-size: .9rem; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; }
+  h2.dusk { color: var(--dusk-light); text-shadow: 0 0 18px rgba(72,56,120,.4); }
+  h2.cave { color: var(--cave-light); text-shadow: 0 0 18px rgba(80,72,96,.25); }
+  h2.echo { color: var(--echo-light); text-shadow: 0 0 18px rgba(112,96,128,.3); }
+  .section-line { flex: 1; height: 1px; }
+  .section-line.dusk { background: linear-gradient(90deg, var(--dusk-dim), rgba(36,28,56,.3), transparent); }
+  .section-line.cave { background: linear-gradient(90deg, var(--cave-dim), rgba(26,22,34,.3), transparent); }
+  .section-line.echo { background: linear-gradient(90deg, var(--echo-dim), rgba(34,26,40,.3), transparent); }
+
+  .identity { position: relative; background: rgba(6,5,10,.92); border: 1px solid rgba(36,28,58,.3); padding: 44px 32px 36px; text-align: center; margin-bottom: 28px; }
+  .identity::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--dusk-dim), var(--echo-dim), transparent); }
+  .identity::after  { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--cave-dim), transparent); }
+  .identity-corner { position: absolute; font-family: 'Cinzel', serif; font-size: .48rem; letter-spacing: .22em; text-transform: uppercase; color: var(--dusk-dim); }
+  .identity-corner.tl { top: 10px; left: 14px; }
+  .identity-corner.tr { top: 10px; right: 14px; }
+  .identity-corner.bl { bottom: 10px; left: 14px; }
+  .identity-corner.br { bottom: 10px; right: 14px; }
+  .monster-name { font-family: 'Cinzel Decorative', serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 900; line-height: 1.1; margin-bottom: 10px; background: linear-gradient(135deg, var(--dusk-light), var(--echo-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .monster-epithet { font-family: 'EB Garamond', serif; font-style: italic; font-size: 1rem; color: var(--dusk-dim); letter-spacing: .06em; margin-bottom: 16px; }
+  .monster-type-line { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 20px; }
+  .monster-lore { font-style: italic; color: #706880; font-size: .97rem; border-left: 2px solid var(--dusk-dim); padding-left: 16px; margin-top: 14px; line-height: 1.75; text-align: left; }
+  .monster-lore + .monster-lore { border-left-color: var(--echo-dim); margin-top: 10px; }
+
+  .tag { display: inline-block; font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .18em; text-transform: uppercase; padding: 2px 8px; border-radius: 1px; margin-right: 4px; margin-bottom: 4px; vertical-align: middle; }
+  .tag.dnd      { border: 1px solid #503808; color: #c09030; }
+  .tag.lore     { border: 1px solid #1e1830; color: var(--dusk-pale); }
+  .tag.hb       { border: 1px solid #1a3020; color: #508060; }
+  .tag.tiny     { border: 1px solid #161428; color: var(--cave-light); }
+  .tag.cr0      { border: 1px solid #201828; color: var(--echo-light); }
+  .tag.familiar { border: 1px solid #2a2008; color: #a08848; }
+  .tag.echo     { border: 1px solid #201828; color: var(--echo-pale); }
+  .tag-a { font-family: 'Fira Code', monospace; font-size: .6rem; padding: 1px 7px; margin-left: 6px; border-radius: 1px; vertical-align: middle; }
+  .tag-a.dusk { border: 1px solid var(--dusk-dim); color: var(--dusk-pale); }
+  .tag-a.echo { border: 1px solid var(--echo-dim); color: var(--echo-pale); }
+
+  .monster-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  @media (max-width: 600px) { .monster-vitals { grid-template-columns: 1fr 1fr; } }
+  .mvital-card { background: rgba(6,5,10,.88); border: 1px solid rgba(28,22,46,.3); border-radius: 3px; padding: 16px 14px; position: relative; overflow: hidden; text-align: center; }
+  .mvital-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+  .mvital-card.dusk::after { background: linear-gradient(90deg, transparent, var(--dusk-light), transparent); }
+  .mvital-card.cave::after { background: linear-gradient(90deg, transparent, var(--cave-light), transparent); }
+  .mvital-card.echo::after { background: linear-gradient(90deg, transparent, var(--echo-light), transparent); }
+  .mvital-label { font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+  .mvital-value { font-family: 'Cinzel Decorative', serif; font-size: 2rem; line-height: 1; display: block; }
+  .mvital-value.dusk { color: var(--dusk-light); text-shadow: 0 0 20px rgba(72,56,120,.5); }
+  .mvital-value.cave { color: var(--cave-light); text-shadow: 0 0 14px rgba(80,72,96,.3); }
+  .mvital-value.echo { color: var(--echo-light); text-shadow: 0 0 16px rgba(112,96,128,.4); }
+  .mvital-note { font-size: .75rem; color: var(--text-dim); font-style: italic; margin-top: 6px; display: block; line-height: 1.4; }
+
+  .two-col-monster { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 600px) { .two-col-monster { grid-template-columns: 1fr; } }
+  .cr-badge { display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(18,14,32,.14), rgba(22,18,34,.12)); border: 1px solid rgba(36,28,58,.3); border-top: 2px solid var(--dusk-light); border-bottom: 2px solid var(--echo-dim); padding: 14px 24px; text-align: center; }
+  .cr-badge-label { font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .28em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; display: block; }
+  .cr-badge-value { font-family: 'Cinzel Decorative', serif; font-size: 2.2rem; font-weight: 900; background: linear-gradient(135deg, var(--dusk-light), var(--echo-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; display: block; }
+  .cr-badge-note { font-family: 'Fira Code', monospace; font-size: .6rem; color: var(--text-dim); margin-top: 4px; letter-spacing: .06em; display: block; }
+
+  .card { background: rgba(6,5,10,.90); border: 1px solid var(--hollow); padding: 20px 24px; margin-bottom: 10px; position: relative; overflow: hidden; }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .card.dusk::before { background: linear-gradient(90deg, transparent, var(--dusk-dim), transparent); }
+  .card.echo::before { background: linear-gradient(90deg, transparent, var(--echo-dim), transparent); }
+  .card-title { font-family: 'Cinzel', serif; font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 10px; }
+  .card-title.dusk { color: var(--dusk-pale); }
+  .card-title.echo { color: var(--echo-pale); }
+  .card p { font-size: .94rem; color: #606070; line-height: 1.75; }
+  .card strong { color: var(--cave-pale); }
+
+  .trait { display: grid; grid-template-columns: 3px 1fr; gap: 0 14px; margin-bottom: 10px; }
+  .tier-bar { border-radius: 2px; }
+  .trait-content { background: rgba(6,5,10,.78); border: 1px solid var(--hollow); padding: 14px 16px; }
+  .trait-name { font-family: 'Cinzel', serif; font-size: .74rem; letter-spacing: .1em; font-weight: 900; color: var(--dusk-pale); margin-bottom: 5px; }
+  .trait-name .sub { font-style: italic; font-weight: 400; color: var(--text-dim); font-family: 'EB Garamond', serif; font-size: .9rem; letter-spacing: 0; text-transform: none; }
+  .trait-content p { font-size: .92rem; color: #606070; line-height: 1.72; }
+  .trait-content p strong { color: var(--cave-pale); }
+
+  .action { background: rgba(6,5,10,.88); border: 1px solid var(--hollow); padding: 14px 18px; margin-bottom: 8px; transition: border-bottom-color .2s; }
+  .action.dusk { border-bottom: 2px solid var(--dusk-dim); }
+  .action.dusk:hover { border-bottom-color: var(--dusk-light); }
+  .action-name { font-family: 'Cinzel', serif; font-size: .76rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+  .action-name.dusk { color: var(--dusk-light); }
+  .action p { font-size: .92rem; color: #606070; line-height: 1.72; }
+  .action strong { color: var(--cave-pale); }
+
+  .attr-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 14px; }
+  @media (max-width: 500px) { .attr-grid { grid-template-columns: repeat(3, 1fr); } }
+  .attr-box { background: rgba(5,4,9,.92); border: 1px solid var(--hollow); padding: 16px 10px; text-align: center; position: relative; overflow: hidden; }
+  .attr-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; }
+  .attr-box.max::before  { background: linear-gradient(90deg, transparent, var(--echo-light),  transparent); }
+  .attr-box.high::before { background: linear-gradient(90deg, transparent, var(--dusk-light),  transparent); }
+  .attr-box.mid::before  { background: linear-gradient(90deg, transparent, var(--cave-light),  transparent); }
+  .attr-box.low::before  { background: linear-gradient(90deg, transparent, #c05050,            transparent); }
+  .attr-name { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+  .attr-value { display: block; font-family: 'Fira Code', monospace; font-size: 1.4rem; font-weight: 500; line-height: 1; color: var(--text); }
+  .attr-value.max  { color: var(--echo-light); }
+  .attr-value.high { color: var(--dusk-light); }
+  .attr-value.mid  { color: var(--cave-light); }
+  .attr-value.low  { color: #c05050; }
+  .attr-mod { display: block; font-family: 'Cinzel', serif; font-size: .62rem; margin-top: 4px; color: var(--text-dim); }
+  .attr-mod.max  { color: var(--echo-dim); }
+  .attr-mod.high { color: var(--dusk-dim); }
+  .attr-mod.mid  { color: var(--cave-dim); }
+  .attr-mod.neg  { color: #803030; }
+
+  .sep { height: 1px; background: linear-gradient(90deg, transparent, var(--dusk-dim), var(--echo-dim), transparent); margin: 18px 0; opacity: .5; }
+
+  .table-wrap { margin: 12px 0; border: 1px solid var(--hollow); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  thead tr { background: rgba(6,5,10,.98); border-bottom: 2px solid var(--dusk-dim); }
+  thead th { font-family: 'Cinzel', serif; font-size: .64rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--echo-pale); padding: 9px 14px; text-align: left; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid rgba(16,14,22,.9); transition: background .12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:nth-child(even) { background: rgba(255,255,255,.012); }
+  tbody tr:hover { background: rgba(36,28,58,.08); }
+  td { padding: 8px 14px; vertical-align: top; color: #606070; }
+  td:first-child { font-family: 'Cinzel', serif; font-size: .84rem; color: var(--text); white-space: nowrap; }
+  .mono      { font-family: 'Fira Code', monospace; font-size: .78rem; color: var(--echo-pale); }
+  .mono.dusk { color: var(--dusk-light); }
+  .mono.echo { color: var(--echo-light); }
+  .mono.cave { color: var(--cave-light); }
+
+  .callout { border-left: 3px solid; padding: 14px 18px; margin: 12px 0; font-style: italic; font-size: .92rem; line-height: 1.75; }
+  .callout strong { font-style: normal; font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .1em; display: block; margin-bottom: 3px; }
+  .callout.tip  { background: rgba(14,10,24,.15); border-color: var(--dusk);  color: #606070; }
+  .callout.tip strong  { color: var(--dusk-light); }
+  .callout.echo { background: rgba(18,14,26,.14); border-color: var(--echo);  color: #606070; }
+  .callout.echo strong { color: var(--echo-light); }
+
+  mark       { background: rgba(72,56,120,.18); color: var(--dusk-pale);  border-radius: 1px; padding: 0 2px; }
+  mark.echo  { background: rgba(112,96,128,.15); color: var(--echo-pale); }
+  mark.cave  { background: rgba(80,72,96,.13);   color: var(--cave-pale); }
+
+  .hl       { color: var(--dusk-light);  font-weight: 600; }
+  .hl-dusk  { color: var(--dusk-light);  font-weight: 600; }
+  .hl-echo  { color: var(--echo-light);  font-weight: 600; }
+  .hl-cave  { color: var(--cave-light);  font-weight: 600; }
+  .hl-red   { color: #c05050; font-weight: 600; }
+
+  .recharge      { font-family: 'Fira Code', monospace; font-size: .62rem; border: 1px solid var(--dusk-dim); color: var(--dusk-light); padding: 1px 7px; margin-left: 8px; vertical-align: middle; }
+  .recharge.rare { border-color: var(--echo-dim); color: var(--echo-light); }
+  .cost-badge    { font-family: 'Fira Code', monospace; font-size: .6rem; padding: 1px 7px; margin-left: 6px; border: 1px solid var(--cave-dim); color: var(--cave-pale); vertical-align: middle; }
+
+  /* ══ ECOLOCALIZAÇÃO VISUAL ══ */
+  .echo-display { background: rgba(6,5,10,.88); border: 1px solid rgba(36,28,58,.4); border-left: 3px solid var(--dusk-dim); padding: 20px 24px; margin-bottom: 10px; }
+  .echo-title { font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: var(--echo-pale); margin-bottom: 12px; }
+  .echo-range { font-family: 'Cinzel Decorative', serif; font-size: 2.4rem; color: var(--dusk-light); text-shadow: 0 0 20px rgba(72,56,120,.5); display: block; line-height: 1; margin-bottom: 6px; }
+  .echo-note { font-family: 'Fira Code', monospace; font-size: .7rem; color: var(--text-dim); }
+
+  /* ══ COMPARATIVO FAMILIARIZÁVEIS ══ */
+  .familiar-compare { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  @media (max-width: 560px) { .familiar-compare { grid-template-columns: 1fr; } }
+  .fc-card { background: rgba(6,5,10,.85); border: 1px solid var(--hollow); padding: 12px 14px; text-align: center; }
+  .fc-emoji { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+  .fc-name { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; display: block; }
+  .fc-stat { font-family: 'Fira Code', monospace; font-size: .76rem; color: var(--echo-pale); display: block; margin-bottom: 2px; }
+  .fc-note { font-size: .8rem; color: #505060; font-style: italic; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--void); }
+  ::-webkit-scrollbar-thumb { background: var(--dusk-dim); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--dusk-light); }
+
+  .breadcrumb { max-width: 860px; margin: 0 auto; padding: 20px 20px 0; font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+  .breadcrumb span { color: var(--dusk-dim); margin: 0 6px; }
+  .breadcrumb .current { color: var(--dusk-light); }
+  footer { text-align: center; padding: 40px 20px; font-family: 'Cinzel', serif; font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+  footer span { color: var(--dusk-dim); margin: 0 6px; }
+  #top-btn { position: fixed; bottom: 28px; right: 28px; width: 42px; height: 42px; background: rgba(6,5,10,.95); border: 1px solid var(--dusk-dim); color: var(--dusk-light); font-size: 1.2rem; line-height: 42px; text-align: center; text-decoration: none; opacity: 0; pointer-events: none;
+    transition: border-color .2s, color .2s, opacity .3s; z-index: 100; }
+  #top-btn.visible { opacity: 1; pointer-events: auto; }
+  #top-btn:hover { border-color: var(--echo-light); color: var(--echo-light); }
+  #atributos, #perfil { margin-bottom: 0; }
+  .monster-lore.mec-note { border-left-color: var(--echo-dim); font-size: 11px; opacity: .75; font-style: italic; }
+  .card.flex-center { display: flex; flex-direction: column; justify-content: center; margin-bottom: 0; }
+  .text-sm { font-size: .9rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    section { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+<nav class="breadcrumb" aria-label="Caminho de navegação">Valtheris &nbsp;/&nbsp; Apêndice D <span>›</span> <span class="current">18 — Morcego</span></nav>
+
+<header>
+  <div class="header-pulse"></div>
+  <span class="header-symbol">🦇</span>
+  <p class="header-eyebrow">Apêndice D &nbsp;⬥&nbsp; 18 / 31 &nbsp;⬥&nbsp; Além do Véu da Carne</p>
+  <p class="header-classification">⬥ Besta Minúscula · Imparcial ⬥</p>
+  <h1 class="header-fraktur">Morcego</h1>
+  <p class="header-title-sub">Familiar — Sentinela da Escuridão Absoluta</p>
+  <p class="header-tagline">"Não precisa ver. Escuta a forma das coisas."</p>
+  <div class="header-crests">
+    <span class="crest-badge dusk">🦇 Familiar</span>
+    <span class="crest-badge echo">🔊 Ecolocalização 18 m</span>
+    <span class="crest-badge cave">🌙 Visão no Escuro 18 m</span>
+    <span class="crest-badge wing">ND 0 · 10 XP</span>
+  </div>
+</header>
+
+<div class="divider"><div class="divider-line"></div><span class="divider-glyph">⬥</span><div class="divider-line"></div></div>
+
+<main>
+
+<!-- ══ IDENTIDADE ══ -->
+<section id="identidade">
+  <div class="section-header">
+    <span class="section-icon dusk">🦇</span>
+    <h2 class="dusk">Identidade</h2>
+    <div class="section-line dusk"></div>
+  </div>
+  <div class="identity">
+    <div class="identity-corner tl">BESTA MINÚSCULA · IMPARCIAL</div>
+    <div class="identity-corner tr">NÍVEL DE DESAFIO 0 · 10 XP</div>
+    <div class="identity-corner bl">APÊNDICE D · 18 / 31</div>
+    <div class="identity-corner br">FICHA · BESTIÁRIO</div>
+    <div class="monster-name">Morcego</div>
+    <div class="monster-epithet">⬥ Familiar — Sentinela da Escuridão Absoluta ⬥</div>
+    <div class="monster-type-line">
+      <span class="tag dnd">D&D 5e</span>
+      <span class="tag lore">Besta</span>
+      <span class="tag hb">Imparcial</span>
+      <span class="tag tiny">Minúsculo</span>
+      <span class="tag cr0">ND 0</span>
+      <span class="tag familiar">Familiar</span>
+      <span class="tag echo">Ecolocalização</span>
+    </div>
+    <p class="monster-lore">O Morcego ocupa um nicho único entre os familiares do Apêndice D: é o único com <strong>Ecolocalização</strong> — um sentido que funciona independentemente de luz e que não pode ser bloqueado por escuridão mágica. Onde a Coruja tem Visão no Escuro de 36 m e Visão Aguçada visual, o Morcego tem Ecolocalização de 18 m que opera por som, não por luz. Isso o torna o único familiar imune à escuridão completa — seja natural ou mágica.</p>
+    <p class="monster-lore">A limitação da Ecolocalização é seu ponto cego: qualquer estado de <em>ensurdecido</em> (Deafened) desativa completamente o sentido. O Morcego também perde a Ecolocalização em silêncio anormal — uma zona de Silêncio mágico o cega efetivamente. Na prática, isso significa que o Morcego é incomparável em ambientes de escuridão normal, mas vulnerável em zonas de silêncio.</p>
+    <p class="monster-lore mec-note">
+      ⚙ Nota Mecânica — Tipo: Besta Minúscula (Apêndice D · 18/31). Ecolocalização: o morcego não pode usar sua Percepção às Cegas enquanto estiver ensurdecido. A Percepção às Cegas de 18 m funciona em escuridão total — inclusive mágica — mas requer que o morcego possa emitir e receber sons. Em zonas de Silêncio, a Ecolocalização falha. PV 1, dano 1 — nunca deve combater. Como familiar, compartilhar seus sentidos dá ao conjurador Percepção às Cegas de 18 m em escuridão absoluta.
+    </p>
+  </div>
+</section>
+
+<!-- ══ ESTATÍSTICAS BASE ══ -->
+<section id="stats">
+  <div class="section-header">
+    <span class="section-icon echo">⚔</span>
+    <h2 class="echo">Estatísticas Base</h2>
+    <div class="section-line echo"></div>
+  </div>
+  <div class="monster-vitals">
+    <div class="mvital-card cave">
+      <span class="mvital-label">Classe de Armadura</span>
+      <span class="mvital-value cave">12</span>
+      <span class="mvital-note">Iniciativa +2 · DEX 15</span>
+    </div>
+    <div class="mvital-card dusk">
+      <span class="mvital-label">Pontos de Vida</span>
+      <span class="mvital-value dusk">1</span>
+      <span class="mvital-note">1d4 − 1</span>
+    </div>
+    <div class="mvital-card echo">
+      <span class="mvital-label">Voo</span>
+      <span class="mvital-value echo">9 m</span>
+      <span class="mvital-note">1,5 m no chão</span>
+    </div>
+    <div class="mvital-card dusk">
+      <span class="mvital-label">Ecolocalização</span>
+      <span class="mvital-value dusk">18 m</span>
+      <span class="mvital-note">+ Visão no Escuro 18 m</span>
+    </div>
+  </div>
+  <div class="two-col-monster">
+    <div class="cr-badge" style="flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;padding:16px 24px;">
+      <div>
+        <span class="cr-badge-label">Challenge Rating</span>
+        <span class="cr-badge-value">0</span>
+        <span class="cr-badge-note">10 XP</span>
+      </div>
+      <div style="border-left:1px solid rgba(36,28,58,.3);padding-left:20px;">
+        <span class="cr-badge-label">Proficiência</span>
+        <span class="cr-badge-value" style="font-size:1.6rem;">+2</span>
+        <span class="cr-badge-note">CR 0</span>
+      </div>
+    </div>
+    <div class="card dusk flex-center">
+      <div class="card-title dusk">Escala de Ameaça</div>
+      <p class="text-sm">Zero como adversário. Como familiar em <span class="hl-echo">escuridão absoluta</span>, insubstituível — Ecolocalização funciona onde todos os outros familiares ficam cegos. A única limitação é o silêncio mágico.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ATRIBUTOS + SENTIDOS (two-col) ══ -->
+<div class="two-col-monster" style="align-items:start;gap:14px;margin-bottom:56px;">
+<section id="atributos">
+  <div class="section-header">
+    <span class="section-icon cave">◆</span>
+    <h2 class="cave">Atributos</h2>
+    <div class="section-line cave"></div>
+  </div>
+  <div class="attr-grid">
+    <div class="attr-box low"><div class="attr-name">For</div><span class="attr-value low">2</span><span class="attr-mod neg">−4</span></div>
+    <div class="attr-box high"><div class="attr-name">Des</div><span class="attr-value high">15</span><span class="attr-mod high">+2</span></div>
+    <div class="attr-box low"><div class="attr-name">Con</div><span class="attr-value low">8</span><span class="attr-mod neg">−1</span></div>
+    <div class="attr-box low"><div class="attr-name">Int</div><span class="attr-value low">2</span><span class="attr-mod neg">−4</span></div>
+    <div class="attr-box max"><div class="attr-name">Sab</div><span class="attr-value max">12</span><span class="attr-mod max">+1</span></div>
+    <div class="attr-box low"><div class="attr-name">Car</div><span class="attr-value low">4</span><span class="attr-mod neg">−3</span></div>
+  </div>
+  <div class="callout tip">
+    <strong>Nota sobre os Atributos</strong> SAB 12 — idêntico às aves familiares — sustenta a Percepção +3. DEX 15 explica a CA 12 e a agilidade de voo. FOR 2 é o menor do bestiário ao lado do Corvo (FOR 2) — incapaz de carregar qualquer objeto. CON 8 resulta em PV 1 (1d4−1 mínimo 1).
+  </div>
+</section>
+<section id="perfil">
+  <div class="section-header">
+    <span class="section-icon echo">🎲</span>
+    <h2 class="echo">Sentidos &amp; Idiomas</h2>
+    <div class="section-line echo"></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+      <tbody>
+        <tr><td>Percepção</td><td><span class="mono dusk">+3</span></td></tr>
+        <tr><td>Percepção Passiva</td><td><span class="mono">11</span></td></tr>
+        <tr><td>Percepção às Cegas</td><td><span class="mono echo">18 m</span> <span style="color:var(--text-dim);font-size:.82rem;">(Ecolocalização)</span></td></tr>
+        <tr><td>Visão no Escuro</td><td><span class="mono dusk">18 m</span></td></tr>
+        <tr><td>Voo</td><td><span class="mono cave">9 m</span> <span style="color:var(--text-dim);font-size:.82rem;">(mais lento das aves)</span></td></tr>
+        <tr><td>Idiomas</td><td style="color:var(--text-dim);font-size:.88rem;">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+</div>
+
+<!-- ══ TRAÇOS ESPECIAIS ══ -->
+<section id="tracos">
+  <div class="section-header">
+    <span class="section-icon dusk">✧</span>
+    <h2 class="dusk">Traços Especiais</h2>
+    <div class="section-line dusk"></div>
+  </div>
+
+  <div class="echo-display">
+    <div class="echo-title">🔊 Ecolocalização em Destaque</div>
+    <span class="echo-range">18 m</span>
+    <div class="echo-note">Percepção às Cegas · Funciona em escuridão total e mágica · Falha se ensurdecido ou em zona de Silêncio</div>
+  </div>
+
+  <div class="trait">
+    <div class="tier-bar" style="background:linear-gradient(180deg,var(--dusk-light),var(--dusk-dim));"></div>
+    <div class="trait-content">
+      <div class="trait-name">Ecolocalização <span class="sub">(Passivo — Som, não Luz)</span></div>
+      <p>O morcego tem <strong>Percepção às Cegas de 18 m</strong> — funciona em escuridão total, incluindo escuridão criada por magia como <em>Escuridão</em>. Não precisa de luz para perceber seu entorno dentro deste raio. A limitação crítica: o morcego <strong>não pode usar este sentido enquanto estiver ensurdecido</strong>. Qualquer efeito de silêncio ou ensurdecimento desativa completamente a Ecolocalização.</p>
+    </div>
+  </div>
+  <div class="trait">
+    <div class="tier-bar" style="background:linear-gradient(180deg,var(--echo-light),var(--echo-dim));"></div>
+    <div class="trait-content">
+      <div class="trait-name">Sentido Aguçado <span class="sub">(Passivo — Audição)</span></div>
+      <p>O morcego tem <strong>vantagem em testes de Sabedoria (Percepção) que dependam de audição</strong>. Combinado com Ecolocalização, o Morcego é o melhor detector por som do Apêndice D — e o único que não apenas detecta por audição, mas percebe o entorno espacialmente por ela.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ AÇÕES ══ -->
+<section id="acoes">
+  <div class="section-header">
+    <span class="section-icon cave">⚔</span>
+    <h2 class="cave">Ações</h2>
+    <div class="section-line cave"></div>
+  </div>
+  <div class="action dusk">
+    <div class="action-name dusk">Mordida</div>
+    <p><em>Ataque Corpo-a-Corpo com Arma:</em> <strong>+0 para atingir</strong>, alcance 1,5 m, um alvo. Acerto: <strong>1</strong> de dano perfurante.</p>
+  </div>
+  <div class="sep"></div>
+  <div class="callout tip">
+    <strong>Nunca deve combater</strong> Bônus +0, dano 1, PV 1. O Morcego morre instantaneamente para qualquer ataque. Seu único papel é de sentido e reconhecimento — jamais como combatente.
+  </div>
+</section>
+
+<!-- ══ COMPARATIVO FAMILIARES NOTURNOS ══ -->
+<section id="comparativo">
+  <div class="section-header">
+    <span class="section-icon echo">⚖</span>
+    <h2 class="echo">Familiares Noturnos — Morcego, Coruja, Gato</h2>
+    <div class="section-line echo"></div>
+  </div>
+
+  <div class="familiar-compare">
+    <div class="fc-card">
+      <span class="fc-emoji">🦇</span>
+      <span class="fc-name">Morcego</span>
+      <span class="fc-stat">Ecolocalização 18 m</span>
+      <span class="fc-stat">Visão no Escuro 18 m</span>
+      <span class="fc-stat">Voo 9 m (lento)</span>
+      <span class="fc-note">Melhor em escuridão absoluta e mágica. Falha no silêncio.</span>
+    </div>
+    <div class="fc-card">
+      <span class="fc-emoji">🦉</span>
+      <span class="fc-name">Coruja</span>
+      <span class="fc-stat">Visão no Escuro 36 m</span>
+      <span class="fc-stat">Percepção +3 + Vantagem (visão)</span>
+      <span class="fc-stat">Voo 18 m + Voo Rasante</span>
+      <span class="fc-note">Melhor em escuridão normal e distância. Cega na escuridão mágica.</span>
+    </div>
+    <div class="fc-card">
+      <span class="fc-emoji">🐱</span>
+      <span class="fc-name">Gato</span>
+      <span class="fc-stat">Visão no Escuro 18 m</span>
+      <span class="fc-stat">Furtividade +4</span>
+      <span class="fc-stat">Deslocamento terrestre 9 m</span>
+      <span class="fc-note">Melhor em estruturas fechadas. Sem voo. Audição com vantagem.</span>
+    </div>
+  </div>
+
+  <div class="callout echo">
+    <strong>Quando o Morcego Supera a Coruja</strong> Em zonas de <em>Escuridão</em> mágica — criada pelo próprio Bruxo ou por um inimigo — a Coruja fica completamente cega. O Morcego não. Com Ecolocalização ativa, o Morcego <mark>enxerga através de qualquer escuridão mágica</mark>, tornando-se o único familiar que pode operar dentro de uma zona de Escuridão e fornecer informações ao conjurador que a criou. A combinação Bruxo + <em>Escuridão</em> + familiar Morcego é mecanicamente devastadora: o Bruxo opera cego para inimigos, mas com percepção total via familiar.
+  </div>
+</section>
+
+</main>
+
+<footer>Valtheris <span>›</span> Apêndice D <span>›</span> <span style="color:var(--dusk-dim);">18 — Morcego</span></footer>
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+<script>
+(function() {
+  const btn = document.getElementById('top-btn');
+  btn.addEventListener('click', function(e) {
+    e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  window.addEventListener('scroll', function() {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>

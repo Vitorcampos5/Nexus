@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tiamat — Rainha dos Dragões Cromáticos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:          #04030a;
+    --parchment:    #07050e;
+    --fog:          #1a1428;
+
+    --red:          #d43020;
+    --red-light:    #f05030;
+    --red-dim:      #601008;
+
+    --blue:         #3070d0;
+    --blue-light:   #5090f0;
+    --blue-dim:     #102060;
+
+    --green:        #30a040;
+    --green-light:  #50d060;
+    --green-dim:    #0c4018;
+
+    --black-h:      #a08030;
+    --black-light:  #d0b050;
+    --black-dim:    #503808;
+
+    --white-h:      #80b8d8;
+    --white-light:  #b0d8f8;
+    --white-dim:    #204858;
+
+    --gold:         #c89020;
+    --gold-light:   #e8b840;
+    --gold-dim:     #604408;
+    --gold-pale:    #d4aa60;
+
+    --sanity:       #3a6b8a;
+    --sanity-light: #5a9bba;
+
+    --text:         #c0b8d0;
+    --text-dim:     #605878;
+    --text-faint:   #241e34;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--ink);
+    background-image:
+      radial-gradient(ellipse 140% 55% at 50% -8%, #140408 0%, transparent 55%),
+      radial-gradient(ellipse 60%  60% at 95% 100%, #040208 0%, transparent 50%),
+      radial-gradient(ellipse 45%  70% at 5%  85%,  #080408 0%, transparent 50%),
+      radial-gradient(ellipse 50%  50% at 50%  60%,  #0c0810 0%, transparent 45%);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 17px; line-height: 1.8;
+    min-height: 100vh; overflow-x: hidden;
+  }
+
+  /* grain */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 999; opacity: .6;
+  }
+
+  /* ══ 5-COLOR BAR ══ */
+  .chromatic-bar {
+    height: 4px;
+    background: linear-gradient(90deg,
+      var(--black-h) 0%, var(--blue) 20%, var(--green) 40%,
+      var(--red) 60%, var(--white-h) 80%, var(--black-h) 100%);
+    box-shadow:
+      0 0 20px rgba(212,48,32,.3),
+      0 0 40px rgba(48,160,64,.15),
+      0 0 40px rgba(48,112,208,.15);
+  }
+
+  /* ══ BREADCRUMB ══ */
+  .breadcrumb {
+    max-width: 900px; margin: 0 auto; padding: 20px 20px 0;
+    font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint);
+  }
+  .breadcrumb span { color: var(--gold-dim); margin: 0 6px; }
+  .breadcrumb .current { color: var(--gold-light); }
+
+  /* ══ HEADER ══ */
+  header {
+    position: relative; text-align: center;
+    padding: 80px 20px 70px; overflow: hidden;
+  }
+  header::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 100% 70% at 50% 50%,
+        rgba(180,30,20,.07) 0%, rgba(48,112,208,.05) 30%,
+        rgba(48,160,64,.04) 60%, transparent 80%);
+  }
+  header::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg,
+      transparent, var(--black-dim), var(--blue-dim),
+      var(--green-dim), var(--red-dim), var(--white-dim), transparent);
+    box-shadow: 0 0 40px rgba(180,30,20,.25), 0 0 60px rgba(48,112,208,.15);
+  }
+
+  .header-pulse {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 50% 40%, rgba(180,30,20,.06) 0%, transparent 70%);
+    animation: divine-breathe 10s ease-in-out infinite; pointer-events: none;
+  }
+  @keyframes divine-breathe {
+    0%,100% { opacity: .4; transform: scale(1); }
+    50%      { opacity: 1;  transform: scale(1.05); }
+  }
+
+  .header-symbol {
+    display: block; font-size: 3.4rem; margin-bottom: 18px;
+    filter:
+      drop-shadow(0 0 16px rgba(180,30,20,.6))
+      drop-shadow(0 0 40px rgba(48,112,208,.4))
+      drop-shadow(0 0 60px rgba(48,160,64,.3));
+    animation: tiamat-pulse 8s ease-in-out infinite;
+  }
+  @keyframes tiamat-pulse {
+    0%,100% {
+      filter: drop-shadow(0 0 14px rgba(180,30,20,.5)) drop-shadow(0 0 35px rgba(48,112,208,.3)) drop-shadow(0 0 50px rgba(48,160,64,.2));
+      transform: scale(1);
+    }
+    33% {
+      filter: drop-shadow(0 0 30px rgba(180,30,20,.8)) drop-shadow(0 0 60px rgba(176,144,32,.5)) drop-shadow(0 0 80px rgba(128,184,216,.4));
+      transform: scale(1.06);
+    }
+    66% { transform: scale(.98); }
+  }
+
+  .header-eyebrow { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .45em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 18px; }
+  .header-classification { font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .25em; text-transform: uppercase; color: var(--gold-pale); margin-bottom: 10px; opacity: .85; }
+
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(2rem, 7vw, 4rem); font-weight: 900; line-height: 1.05; margin-bottom: 6px;
+    background: linear-gradient(135deg,
+      #f0a840 0%, #e05030 20%, #5090f0 40%, #50d060 55%,
+      #d0b050 70%, #b0d8f8 85%, #f0a840 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(180,30,20,.25));
+  }
+  .header-title-sub { font-family: 'Cinzel', serif; font-size: clamp(.85rem, 2.5vw, 1.1rem); letter-spacing: .18em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .header-tagline { font-style: italic; color: #604840; font-size: 1.05rem; max-width: 560px; margin: 0 auto 32px; }
+
+  .five-heads { display: flex; justify-content: center; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+  .head-badge { font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; padding: 4px 14px; border-radius: 1px; }
+  .head-badge.black { border: 1px solid var(--black-dim); color: var(--black-light); }
+  .head-badge.blue  { border: 1px solid var(--blue-dim);  color: var(--blue-light); }
+  .head-badge.green { border: 1px solid var(--green-dim); color: var(--green-light); }
+  .head-badge.red   { border: 1px solid var(--red-dim);   color: var(--red-light); }
+  .head-badge.white { border: 1px solid var(--white-dim); color: var(--white-light); }
+
+  /* ══ WARNING BANNER ══ */
+  .warning-banner { max-width: 900px; margin: 0 auto 0; padding: 0 20px; }
+  .warning-banner-inner {
+    background: rgba(100,30,0,.18); border: 1px solid var(--red-dim);
+    border-left: 4px solid var(--red-light); padding: 16px 24px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .warning-icon { font-size: 1.4rem; flex-shrink: 0; line-height: 1.6; }
+  .warning-text { font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .08em; color: #d08050; line-height: 1.7; }
+  .warning-text strong { color: var(--red-light); letter-spacing: .15em; display: block; margin-bottom: 4px; }
+
+  /* ══ DIVIDER ══ */
+  .divider { display: flex; align-items: center; gap: 14px; max-width: 900px; margin: 0 auto; padding: 40px 20px 48px; }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--red-dim), var(--gold-dim), var(--blue-dim), transparent); }
+  .divider-glyph { color: var(--gold); font-size: 1.1rem; opacity: .8; }
+
+  /* ══ PORTRAIT STACK ══ */
+  .portrait-wrapper { max-width: 900px; margin: 0 auto 0; padding: 0 20px; display: flex; justify-content: center; }
+  .portrait-stack { position: relative; width: 100%; height: 340px; }
+  .portrait-slot {
+    position: absolute; inset: 0; border-radius: 4px; overflow: hidden;
+    transition: transform 0.55s cubic-bezier(.34,1.28,.64,1), box-shadow 0.4s ease, filter 0.4s;
+  }
+  .portrait-slot img { width: 100%; height: 100%; object-fit: cover; display: block; transition: filter 0.4s; }
+  #slotDragon img { object-position: center 25%; }
+  #slotHuman img  { object-position: center 10%; }
+  .portrait-slot.front {
+    z-index: 2; cursor: default;
+    transform: translateX(0) translateY(0) rotate(0deg);
+    border: 1px solid rgba(120,30,30,.45);
+    box-shadow: 0 0 60px rgba(120,0,0,.6), 0 0 120px rgba(10,0,20,.95), inset 0 0 40px rgba(80,0,120,.25);
+  }
+  .portrait-slot.back {
+    z-index: 1; cursor: pointer;
+    transform: translateX(12px) translateY(8px) rotate(2deg);
+    border: 1px solid rgba(180,130,20,.3);
+    box-shadow: 0 4px 28px rgba(0,0,0,.7);
+    filter: brightness(0.55) saturate(0.7);
+  }
+  .portrait-slot.back:hover {
+    filter: brightness(0.78) saturate(0.9);
+    transform: translateX(14px) translateY(6px) rotate(2deg);
+    transition: transform 0.2s ease, filter 0.2s ease;
+    box-shadow: 0 0 30px rgba(180,130,20,.25), 0 4px 28px rgba(0,0,0,.7);
+  }
+  .portrait-slot.back::after {
+    content: '↺'; position: absolute; bottom: 12px; right: 14px;
+    font-size: .9rem; color: rgba(180,130,20,.5); opacity: 0;
+    transition: opacity 0.3s; pointer-events: none; z-index: 5;
+  }
+  .portrait-slot.back:hover::after { opacity: 1; }
+  .portrait-fade-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 120px;
+    background: linear-gradient(to top, rgba(5,4,8,1) 0%, rgba(20,5,30,.8) 40%, rgba(40,0,0,.4) 70%, transparent 100%);
+    pointer-events: none;
+  }
+  .portrait-fade-top {
+    position: absolute; top: 0; left: 0; right: 0; height: 60px;
+    background: linear-gradient(to bottom, rgba(10,0,20,.85), rgba(40,0,0,.3), transparent);
+    pointer-events: none;
+  }
+  .portrait-chromatic {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(0,120,255,.08), transparent 40%),
+      radial-gradient(circle at 80% 20%, rgba(0,255,120,.06), transparent 40%),
+      radial-gradient(circle at 50% 80%, rgba(255,0,0,.12), transparent 50%);
+    pointer-events: none;
+  }
+  .portrait-caption { position: absolute; bottom: 18px; left: 0; right: 0; text-align: center; pointer-events: none; }
+  .portrait-caption span {
+    font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .4em; text-transform: uppercase;
+    background: linear-gradient(90deg, #7a00ff, #ff003c, #00d4ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; opacity: .75;
+  }
+
+  /* ══ LAYOUT ══ */
+  main { max-width: 900px; margin: 0 auto; padding: 0 20px 90px; display: flex; flex-direction: column; gap: 0; }
+  section { margin-bottom: 56px; animation: fade-in .5s ease both; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  section:nth-child(1)  { animation-delay: .05s; }
+  section:nth-child(2)  { animation-delay: .10s; }
+  section:nth-child(3)  { animation-delay: .15s; }
+  section:nth-child(4)  { animation-delay: .20s; }
+  section:nth-child(5)  { animation-delay: .25s; }
+  section:nth-child(6)  { animation-delay: .30s; }
+  section:nth-child(7)  { animation-delay: .35s; }
+  section:nth-child(8)  { animation-delay: .40s; }
+  section:nth-child(9)  { animation-delay: .45s; }
+  section:nth-child(10) { animation-delay: .50s; }
+  section:nth-child(11) { animation-delay: .55s; }
+  section:nth-child(12) { animation-delay: .60s; }
+  section:nth-child(13) { animation-delay: .65s; }
+
+  /* ══ SECTION HEADER ══ */
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .section-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .section-icon.red   { filter: drop-shadow(0 0 8px rgba(212,48,32,.6)); }
+  .section-icon.blue  { filter: drop-shadow(0 0 8px rgba(48,112,208,.6)); }
+  .section-icon.gold  { filter: drop-shadow(0 0 8px rgba(200,144,32,.6)); }
+  .section-icon.san   { filter: drop-shadow(0 0 8px rgba(58,107,138,.5)); }
+  .section-icon.chrom { filter: drop-shadow(0 0 8px rgba(200,144,32,.4)) drop-shadow(0 0 16px rgba(48,160,64,.3)); }
+
+  h2 { font-family: 'Cinzel', serif; font-size: .9rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+  h2.red   { color: #e06040; text-shadow: 0 0 20px rgba(180,40,20,.3); }
+  h2.blue  { color: #70a0e0; text-shadow: 0 0 20px rgba(48,112,208,.3); }
+  h2.gold  { color: #d4aa40; text-shadow: 0 0 20px rgba(200,144,32,.3); }
+  h2.san   { color: #7ab8d8; text-shadow: 0 0 18px rgba(58,107,138,.3); }
+  h2.chrom { color: #d0a850; text-shadow: 0 0 20px rgba(200,144,32,.25); }
+
+  .section-line { flex: 1; height: 1px; }
+  .section-line.red   { background: linear-gradient(90deg, var(--red-dim), rgba(48,112,208,.2), transparent); }
+  .section-line.blue  { background: linear-gradient(90deg, var(--blue-dim), rgba(48,160,64,.2), transparent); }
+  .section-line.gold  { background: linear-gradient(90deg, rgba(140,90,10,.6), rgba(180,40,20,.2), transparent); }
+  .section-line.san   { background: linear-gradient(90deg, rgba(58,107,138,.5), rgba(90,155,186,.2), transparent); }
+  .section-line.chrom { background: linear-gradient(90deg, var(--red-dim), var(--blue-dim), var(--green-dim), transparent); }
+
+  p { margin-bottom: 10px; } p:last-child { margin-bottom: 0; }
+
+  /* ══ IDENTITY ══ */
+  .identity {
+    position: relative;
+    background: linear-gradient(145deg, rgba(18,10,14,.98) 0%, rgba(8,4,10,.99) 100%);
+    border: 1px solid rgba(120,60,20,.5);
+    border-top: 4px solid transparent;
+    border-image: linear-gradient(90deg, var(--black-h), var(--blue), var(--green), var(--red), var(--white-h)) 1;
+    border-bottom: 3px solid var(--gold-dim);
+    padding: 32px 36px; margin-bottom: 14px; overflow: hidden;
+  }
+  .identity::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 0%   0%,   rgba(180,40,20,.07) 0%, transparent 45%),
+      radial-gradient(circle at 100% 0%,   rgba(48,112,208,.06) 0%, transparent 45%),
+      radial-gradient(circle at 0%   100%, rgba(48,160,64,.05) 0%, transparent 45%),
+      radial-gradient(circle at 100% 100%, rgba(176,144,32,.06) 0%, transparent 45%),
+      radial-gradient(circle at 50%  50%,  rgba(128,184,216,.04) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .identity-corner { position: absolute; font-family: 'Fira Code', monospace; font-size: .6rem; letter-spacing: .15em; color: var(--text-faint); opacity: .6; }
+  .identity-corner.tl { top: 10px; left: 14px; }
+  .identity-corner.tr { top: 10px; right: 14px; }
+  .identity-corner.bl { bottom: 10px; left: 14px; }
+  .identity-corner.br { bottom: 10px; right: 14px; }
+
+  .monster-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 900;
+    background: linear-gradient(135deg, #f0b840 0%, #e05030 25%, #5090f0 50%, #50d060 70%, #d0b050 85%, #b0d8f8 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 4px;
+  }
+  .monster-epithet { font-family: 'Cinzel', serif; font-size: .82rem; letter-spacing: .2em; text-transform: uppercase; color: var(--gold-pale); opacity: .85; margin-bottom: 14px; }
+  .monster-type-line { margin-bottom: 16px; }
+  .monster-lore { font-style: italic; color: #706050; font-size: .97rem; border-left: 2px solid var(--red-dim); padding-left: 16px; margin-top: 14px; line-height: 1.75; }
+  .monster-lore + .monster-lore { border-left-color: var(--blue-dim); margin-top: 10px; }
+
+  /* ══ TAGS ══ */
+  .tag { display: inline-block; font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .18em; text-transform: uppercase; padding: 2px 8px; border-radius: 1px; margin-right: 5px; margin-bottom: 5px; vertical-align: middle; }
+  .tag.fiend  { border: 1px solid #602010; color: #c06040; }
+  .tag.devil  { border: 1px solid #601008; color: #c04030; }
+  .tag.evil   { border: 1px solid #502010; color: #a05030; }
+  .tag.cr30   { border: 1px solid #705010; color: #d0a030; }
+  .tag.garg   { border: 1px solid #503010; color: #a07040; }
+  .tag.divine { border: 1px solid #604010; color: #c09030; }
+
+  /* ══ MONSTER VITALS ══ */
+  .monster-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  @media (max-width: 600px) { .monster-vitals { grid-template-columns: 1fr 1fr; } }
+  .mvital-card { background: rgba(10,6,18,.85); border: 1px solid rgba(80,40,140,.3); border-radius: 3px; padding: 16px 14px; position: relative; overflow: hidden; text-align: center; }
+  .mvital-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+  .mvital-card.red::after   { background: linear-gradient(90deg, transparent, var(--red-light), transparent); }
+  .mvital-card.blue::after  { background: linear-gradient(90deg, transparent, var(--blue-light), transparent); }
+  .mvital-card.gold::after  { background: linear-gradient(90deg, transparent, var(--gold-light), transparent); }
+  .mvital-card.san::after   { background: linear-gradient(90deg, transparent, var(--sanity-light), transparent); }
+  .mvital-label { font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+  .mvital-value { font-family: 'Cinzel Decorative', serif; font-size: 2rem; line-height: 1; display: block; }
+  .mvital-value.red  { color: var(--red-light);    text-shadow: 0 0 20px rgba(200,60,0,.4); }
+  .mvital-value.blue { color: var(--blue-light);   text-shadow: 0 0 20px rgba(48,112,208,.4); }
+  .mvital-value.gold { color: var(--gold-light);   text-shadow: 0 0 16px rgba(200,160,20,.3); }
+  .mvital-note { font-size: .75rem; color: var(--text-dim); font-style: italic; margin-top: 6px; display: block; line-height: 1.4; }
+  .mvital-pips { display: flex; gap: 6px; justify-content: center; margin: 8px 0 4px; }
+  .mvital-pip { width: 18px; height: 18px; border: 2px solid var(--gold); border-radius: 50%; background: rgba(180,120,10,.2); box-shadow: 0 0 8px rgba(180,120,10,.3); animation: pip-pulse 3s ease-in-out infinite; }
+  .mvital-pip:nth-child(2) { animation-delay: .6s; }
+  .mvital-pip:nth-child(3) { animation-delay: 1.2s; }
+  .mvital-pip:nth-child(4) { animation-delay: 1.8s; }
+  .mvital-pip:nth-child(5) { animation-delay: 2.4s; }
+  @keyframes pip-pulse {
+    0%,100% { background: rgba(180,120,10,.2); box-shadow: 0 0 8px rgba(180,120,10,.3); }
+    50%      { background: rgba(180,120,10,.4); box-shadow: 0 0 16px rgba(180,120,10,.6); }
+  }
+
+  /* ══ CR BADGE ══ */
+  .cr-badge {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, rgba(100,40,0,.14), rgba(48,60,150,.1));
+    border: 1px solid rgba(212,48,32,.4);
+    border-top: 2px solid var(--red-light);
+    border-bottom: 2px solid var(--blue-dim);
+    padding: 14px 24px; text-align: center;
+  }
+  .cr-badge-label { font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .28em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+  .cr-badge-value {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.2rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--red-light), var(--gold-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1;
+  }
+  .cr-badge-note { font-family: 'Fira Code', monospace; font-size: .6rem; color: var(--text-dim); margin-top: 4px; letter-spacing: .06em; }
+
+  /* ══ TWO-COL MONSTER ══ */
+  .two-col-monster { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 600px) { .two-col-monster { grid-template-columns: 1fr; } }
+
+  /* ══ LEGENDARY RESISTANCE BAR ══ */
+  .leg-res-bar { display: flex; gap: 10px; align-items: center; padding: 14px 20px; background: rgba(8,4,16,.85); border: 1px solid var(--fog); border-left: 3px solid var(--gold); margin-bottom: 12px; }
+  .leg-res-label { font-family: 'Cinzel', serif; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gold-pale); flex-shrink: 0; }
+  .leg-res-pips { display: flex; gap: 8px; }
+  .pip { width: 22px; height: 22px; border: 2px solid var(--gold); border-radius: 50%; background: rgba(180,120,10,.2); box-shadow: 0 0 8px rgba(180,120,10,.3); animation: pip-pulse 3s ease-in-out infinite; }
+  .pip:nth-child(2) { animation-delay: .6s; }
+  .pip:nth-child(3) { animation-delay: 1.2s; }
+  .pip:nth-child(4) { animation-delay: 1.8s; }
+  .pip:nth-child(5) { animation-delay: 2.4s; }
+  .leg-res-note { font-size: .84rem; color: var(--text-dim); font-style: italic; }
+
+  /* ══ ATTR GRID ══ */
+  .attr-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 14px; }
+  @media (max-width: 560px) { .attr-grid { grid-template-columns: repeat(3, 1fr); } }
+  .attr-box { background: rgba(6,3,8,.9); border: 1px solid var(--fog); padding: 16px 10px; text-align: center; position: relative; overflow: hidden; transition: transform .2s; }
+  .attr-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .attr-box.max::before  { background: linear-gradient(90deg, transparent, var(--red-light), transparent); }
+  .attr-box.high::before { background: linear-gradient(90deg, transparent, var(--gold-light), transparent); }
+  .attr-box.mid::before  { background: linear-gradient(90deg, transparent, var(--blue-light), transparent); }
+  .attr-box:hover { transform: translateY(-2px); }
+  .attr-name { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .attr-value { font-family: 'Fira Code', monospace; font-size: 1.15rem; font-weight: 500; color: var(--text); display: block; line-height: 1; }
+  .attr-value.max  { color: var(--red-light); }
+  .attr-value.high { color: var(--gold-light); }
+  .attr-value.mid  { color: var(--blue-light); }
+  .attr-mod { font-family: 'Fira Code', monospace; font-size: .8rem; color: #a09068; display: block; margin-top: 4px; }
+  .attr-mod.max  { color: var(--red-light); }
+  .attr-mod.high { color: var(--gold-light); }
+  .attr-mod.mid  { color: var(--blue-light); }
+
+  /* ══ TABLE ══ */
+  .table-wrap { margin: 12px 0; border: 1px solid var(--fog); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  thead tr { background: rgba(16,10,26,.97); border-bottom: 2px solid var(--red-dim); }
+  thead th { font-family: 'Cinzel', serif; font-size: .64rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--gold-pale); padding: 9px 14px; text-align: left; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid rgba(35,28,46,.9); transition: background .12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:nth-child(even) { background: rgba(255,255,255,.012); }
+  tbody tr:hover { background: rgba(180,50,20,.06); }
+  td { padding: 8px 14px; vertical-align: top; color: #b8b0cc; }
+  td:first-child { font-family: 'Cinzel', serif; font-size: .84rem; color: var(--text); white-space: nowrap; }
+  .mono { font-family: 'Fira Code', monospace; font-size: .78rem; color: var(--gold-pale); }
+  .mono.red  { color: var(--red-light); }
+  .mono.blue { color: var(--blue-light); }
+  .mono.san  { color: var(--sanity-light); }
+
+  /* ══ IMUNIDADES ══ */
+  .imun-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .imun-tag { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .14em; text-transform: uppercase; padding: 3px 10px; border-radius: 1px; }
+  .imun-tag.fire     { border: 1px solid var(--red-dim);   color: var(--red-light); }
+  .imun-tag.cold     { border: 1px solid var(--white-dim); color: var(--white-light); }
+  .imun-tag.acid     { border: 1px solid var(--black-dim); color: var(--black-light); }
+  .imun-tag.lightning{ border: 1px solid var(--blue-dim);  color: var(--blue-light); }
+  .imun-tag.poison   { border: 1px solid var(--green-dim); color: var(--green-light); }
+  .imun-tag.nonmag   { border: 1px solid #403020; color: #907050; }
+  .imun-tag.cond     { border: 1px solid #302030; color: #806080; }
+
+  /* ══ CARDS ══ */
+  .card { background: linear-gradient(135deg, rgba(18,10,14,.92) 0%, rgba(8,4,10,.96) 100%); border: 1px solid var(--fog); padding: 20px 24px; margin-bottom: 12px; position: relative; transition: box-shadow .3s; }
+  .card.red   { border-left: 3px solid var(--red-dim); }
+  .card.red:hover   { box-shadow: -4px 0 20px rgba(180,40,20,.2), 0 4px 20px rgba(0,0,0,.6); }
+  .card.blue  { border-left: 3px solid var(--blue-dim); }
+  .card.blue:hover  { box-shadow: -4px 0 20px rgba(48,112,208,.2), 0 4px 20px rgba(0,0,0,.6); }
+  .card.gold  { border-left: 3px solid var(--gold-dim); }
+  .card.gold:hover  { box-shadow: -4px 0 20px rgba(180,130,20,.2), 0 4px 20px rgba(0,0,0,.6); }
+  .card.green { border-left: 3px solid var(--green-dim); }
+  .card.green:hover { box-shadow: -4px 0 20px rgba(48,160,64,.18), 0 4px 20px rgba(0,0,0,.6); }
+  .card.white { border-left: 3px solid var(--white-dim); }
+  .card.white:hover { box-shadow: -4px 0 18px rgba(128,184,216,.18), 0 4px 20px rgba(0,0,0,.6); }
+  .card.san   { border-left: 3px solid var(--sanity); }
+  .card.san:hover   { box-shadow: -4px 0 20px rgba(58,107,138,.25), 0 4px 20px rgba(0,0,0,.6); }
+  .card-title { font-family: 'Cinzel', serif; font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 10px; }
+  .card-title.red   { color: var(--red-light); }
+  .card-title.blue  { color: var(--blue-light); }
+  .card-title.gold  { color: var(--gold-light); }
+  .card-title.green { color: var(--green-light); }
+  .card-title.white { color: var(--white-light); }
+  .card-title.black { color: var(--black-light); }
+  .card-title.san   { color: var(--sanity-light); }
+
+  /* ══ TRAITS ══ */
+  .trait { display: grid; grid-template-columns: 3px 1fr; gap: 0 14px; margin-bottom: 10px; }
+  .trait-bar { border-radius: 2px; }
+  .trait-content { background: rgba(10,5,12,.75); border: 1px solid var(--fog); padding: 14px 16px; }
+  .trait-name { font-family: 'Cinzel', serif; font-size: .74rem; letter-spacing: .1em; font-weight: 900; color: #d0b888; margin-bottom: 5px; }
+  .trait-name .sub { font-style: italic; font-weight: 400; color: var(--text-dim); font-family: 'EB Garamond', serif; font-size: .9rem; letter-spacing: 0; text-transform: none; }
+  .trait-content p { font-size: .92rem; color: #9090a0; }
+  .trait-content strong { color: #c0b080; }
+
+  /* ══ BREATH GRID ══ */
+  .breath-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 600px) { .breath-grid { grid-template-columns: 1fr; } }
+  .breath-card { border: 1px solid var(--fog); padding: 16px 20px; position: relative; transition: box-shadow .3s; overflow: hidden; background: rgba(10,5,12,.9); }
+  .breath-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .breath-card.red::before   { background: linear-gradient(90deg, transparent, var(--red), transparent); }
+  .breath-card.blue::before  { background: linear-gradient(90deg, transparent, var(--blue), transparent); }
+  .breath-card.green::before { background: linear-gradient(90deg, transparent, var(--green), transparent); }
+  .breath-card.black::before { background: linear-gradient(90deg, transparent, var(--black-h), transparent); }
+  .breath-card.white::before { background: linear-gradient(90deg, transparent, var(--white-h), transparent); }
+  .breath-card.red:hover   { box-shadow: 0 -3px 20px rgba(180,40,20,.25), 0 4px 20px rgba(0,0,0,.6); }
+  .breath-card.blue:hover  { box-shadow: 0 -3px 20px rgba(48,112,208,.25), 0 4px 20px rgba(0,0,0,.6); }
+  .breath-card.green:hover { box-shadow: 0 -3px 20px rgba(48,160,64,.22), 0 4px 20px rgba(0,0,0,.6); }
+  .breath-card.black:hover { box-shadow: 0 -3px 20px rgba(176,144,32,.22), 0 4px 20px rgba(0,0,0,.6); }
+  .breath-card.white:hover { box-shadow: 0 -3px 20px rgba(128,184,216,.22), 0 4px 20px rgba(0,0,0,.6); }
+  .breath-head { font-family: 'Cinzel', serif; font-size: .72rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .breath-head.red   { color: var(--red-light); }
+  .breath-head.blue  { color: var(--blue-light); }
+  .breath-head.green { color: var(--green-light); }
+  .breath-head.black { color: var(--black-light); }
+  .breath-head.white { color: var(--white-light); }
+  .breath-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .breath-dot.red   { background: var(--red);     box-shadow: 0 0 8px var(--red); }
+  .breath-dot.blue  { background: var(--blue);    box-shadow: 0 0 8px var(--blue); }
+  .breath-dot.green { background: var(--green);   box-shadow: 0 0 8px var(--green); }
+  .breath-dot.black { background: var(--black-h); box-shadow: 0 0 8px var(--black-h); }
+  .breath-dot.white { background: var(--white-h); box-shadow: 0 0 8px var(--white-h); }
+  .breath-card p { font-size: .88rem; color: #808090; margin-bottom: 4px; }
+  .breath-card strong { color: #b0b098; }
+  .breath-card.full { grid-column: 1 / -1; }
+
+  /* ══ ACTIONS ══ */
+  .action { background: rgba(8,4,10,.88); border: 1px solid var(--fog); padding: 16px 20px; margin-bottom: 8px; transition: border-bottom-color .2s; }
+  .action.red   { border-bottom: 2px solid var(--red-dim); }
+  .action.red:hover   { border-bottom-color: var(--red-light); }
+  .action.gold  { border-bottom: 2px solid var(--gold-dim); }
+  .action.gold:hover  { border-bottom-color: var(--gold-light); }
+  .action.blue  { border-bottom: 2px solid var(--blue-dim); }
+  .action.blue:hover  { border-bottom-color: var(--blue-light); }
+  .action.legendary { border-bottom: 2px solid var(--gold); }
+  .action.legendary:hover { border-bottom-color: var(--gold-light); }
+  .action.lair  { border-bottom: 2px solid #3a4a1a; }
+  .action.lair:hover  { border-bottom-color: #70a030; }
+  .action-name { font-family: 'Cinzel', serif; font-size: .76rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+  .action-name.red    { color: #e06040; }
+  .action-name.gold   { color: var(--gold-pale); }
+  .action-name.blue   { color: var(--blue-light); }
+  .action-name.legend { color: var(--gold-light); }
+  .action-name.lair   { color: #90c050; }
+  .action p { font-size: .92rem; color: #808090; }
+  .action p strong { color: #b0a880; font-weight: 600; }
+  .recharge { font-family: 'Fira Code', monospace; font-size: .62rem; border: 1px solid var(--red-dim); color: var(--red-light); padding: 1px 7px; margin-left: 8px; vertical-align: middle; }
+  .recharge.rare { border-color: var(--blue-dim); color: var(--blue-light); }
+  .cost-badge { font-family: 'Fira Code', monospace; font-size: .6rem; padding: 1px 7px; margin-left: 6px; border: 1px solid var(--gold); color: var(--gold-pale); vertical-align: middle; }
+  .tag-a { font-family: 'Fira Code', monospace; font-size: .6rem; padding: 1px 7px; margin-left: 6px; border-radius: 1px; vertical-align: middle; }
+  .tag-a.san  { border: 1px solid var(--sanity); color: var(--sanity-light); }
+  .tag-a.div  { border: 1px solid var(--gold-dim); color: var(--gold-pale); }
+  .tag-a.chrom{ border: 1px solid rgba(160,100,30,.5); color: var(--gold-pale); }
+
+  /* ══ CALLOUTS ══ */
+  .callout { border-left: 3px solid; padding: 14px 18px; margin: 12px 0; font-style: italic; font-size: .92rem; line-height: 1.75; }
+  .callout strong { font-style: normal; font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .1em; display: block; margin-bottom: 3px; }
+  .callout.red    { border-color: var(--red-dim);  background: rgba(100,15,8,.14);   color: #c89060; }
+  .callout.red strong   { color: var(--red-light); }
+  .callout.blue   { border-color: var(--blue-dim); background: rgba(20,40,100,.1);   color: #90a8d8; }
+  .callout.blue strong  { color: var(--blue-light); }
+  .callout.gold   { border-color: var(--gold);     background: rgba(160,120,10,.09); color: #c8b880; }
+  .callout.gold strong  { color: var(--gold-light); }
+  .callout.san    { border-color: var(--sanity);   background: rgba(20,50,80,.12);   color: #8abac8; }
+  .callout.san strong   { color: var(--sanity-light); }
+  .callout.tip    { border-color: #3a7a5a; background: rgba(40,100,70,.09); color: #90c0a8; }
+  .callout.tip strong   { color: #60b890; }
+  .callout.danger { border-color: var(--red); background: rgba(80,10,8,.2); color: #a06050; }
+  .callout.danger strong { color: var(--red-light); }
+
+  /* ══ SAN GRID ══ */
+  .san-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  @media (max-width: 540px) { .san-grid { grid-template-columns: 1fr; } }
+  .san-box { background: rgba(6,14,24,.9); border: 1px solid rgba(58,107,138,.3); border-top: 2px solid var(--sanity); padding: 16px 14px; text-align: center; transition: border-top-color .2s; }
+  .san-box:hover { border-top-color: var(--sanity-light); }
+  .san-box-label { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; color: #4a8aaa; margin-bottom: 4px; }
+  .san-box-dice  { font-family: 'Fira Code', monospace; font-size: 1.1rem; color: var(--sanity-light); display: block; line-height: 1.2; }
+  .san-box-cd    { font-family: 'Fira Code', monospace; font-size: .7rem; color: var(--text-dim); margin-top: 3px; }
+  .san-box-sub   { font-size: .76rem; color: var(--text-dim); font-style: italic; margin-top: 3px; }
+
+  /* ══ CINCO MENTES ══ */
+  .mind-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  @media (max-width: 600px) { .mind-grid { grid-template-columns: 1fr; } }
+  .mind-card { display: grid; grid-template-columns: 4px 1fr; gap: 0 14px; }
+  .mind-bar { border-radius: 2px; }
+  .mind-content { background: rgba(10,5,12,.8); border: 1px solid var(--fog); padding: 14px 18px; }
+  .mind-head { font-family: 'Cinzel', serif; font-size: .72rem; letter-spacing: .12em; font-weight: 900; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .mind-head .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .mind-content p { font-size: .9rem; color: #808090; line-height: 1.7; }
+  .mind-content strong { font-weight: 600; color: #c0b080; }
+
+  /* ══ FORA DO AVERNUS — PHASE GRID ══ */
+  .phase-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  @media (max-width: 600px) { .phase-grid { grid-template-columns: 1fr; } }
+  .phase-card { background: rgba(10,5,12,.85); border: 1px solid var(--fog); border-top: 2px solid var(--red-dim); padding: 14px 16px; }
+  .phase-title { font-family: 'Cinzel', serif; font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--gold-pale); margin-bottom: 8px; display: block; }
+  .phase-card p { font-size: .88rem; color: #808090; }
+  .phase-card strong { color: #b0a880; }
+
+  /* ══ FORM DIVIDER ══ */
+  .form-divider { display: flex; align-items: center; gap: 14px; margin: 30px 0 24px; }
+  .form-divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); }
+  .form-divider-label { font-family: 'Cinzel', serif; font-size: .62rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gold); padding: 4px 16px; border: 1px solid var(--gold-dim); background: rgba(8,4,10,.95); }
+
+  /* ══ SEP ══ */
+  .sep { height: 1px; background: linear-gradient(90deg, transparent, var(--red-dim), var(--blue-dim), transparent); margin: 20px 0; opacity: .6; }
+
+  /* ══ HIGHLIGHTS ══ */
+  .hl      { color: var(--gold-light); font-weight: 600; }
+  .hl-red  { color: var(--red-light);  font-weight: 600; }
+  .hl-blue { color: var(--blue-light); font-weight: 600; }
+  .hl-san  { color: var(--sanity-light); }
+  mark     { background: rgba(200,80,0,.15); color: var(--red-light); padding: .1em .3em; border-radius: 2px; }
+  mark.b   { background: rgba(48,112,208,.15); color: var(--blue-light); }
+  mark.san { background: rgba(58,107,138,.18); color: var(--sanity-light); }
+  mark.g   { background: rgba(201,168,76,.14); color: var(--gold-light); }
+
+  /* ══ FOOTER ══ */
+  footer { text-align: center; padding: 40px 20px 60px; font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .28em; text-transform: uppercase; color: var(--text-faint); }
+  footer span { color: var(--gold-dim); margin: 0 6px; }
+
+  /* ══ SCROLLBAR ══ */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--ink); }
+  ::-webkit-scrollbar-thumb { background: var(--red-dim); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--red-light); }
+
+  /* ══ TOP BTN ══ */
+  #top-btn {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    width: 36px; height: 36px; background: var(--parchment); border: 1px solid var(--fog);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-dim); font-size: .9rem; text-decoration: none;
+    transition: all .2s; z-index: 100; opacity:0; pointer-events:none; transition: opacity .25s, border-color .2s, color .2s;}
+  #top-btn:hover { border-color: var(--red-dim); color: var(--red-light); }
+  #top-btn.visible { opacity: 1; pointer-events: all; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="chromatic-bar"></div>
+
+<nav class="breadcrumb" aria-label="Trilha de navegação">
+  Rise of Tiamat / Fizban's Treasury of Dragons <span>›</span> <span class="current">Tiamat — Rainha dos Dragões Cromáticos · Leal e Mau</span>
+</nav>
+
+<header>
+  <div class="header-pulse"></div>
+  <span class="header-symbol">🐉</span>
+  <p class="header-eyebrow">Além do Véu da Carne &nbsp;⸸&nbsp; Bestiário Lendário</p>
+  <p class="header-classification">⬥ Entidade Divina &nbsp;·&nbsp; Gargantuesco &nbsp;·&nbsp; Leal e Mau &nbsp;·&nbsp; Nível de Desafio 30 ⬥</p>
+  <h1>Tiamat</h1>
+  <p class="header-title-sub">Rainha dos Dragões Cromáticos</p>
+  <p class="header-tagline">Cinco cabeças. Cinco mortes. Uma vontade.</p>
+  <div class="five-heads">
+    <span class="head-badge black">⬛ Negra — Ácido</span>
+    <span class="head-badge blue">🔵 Azul — Elétrico</span>
+    <span class="head-badge green">🟢 Verde — Veneno</span>
+    <span class="head-badge red">🔴 Vermelha — Fogo</span>
+    <span class="head-badge white">⬜ Branca — Frio</span>
+  </div>
+</header>
+
+<div class="warning-banner">
+  <div class="warning-banner-inner">
+    <span class="warning-icon">⚠</span>
+    <div class="warning-text">
+      <strong>Aviso ao GM — Leia Antes de Usar</strong>
+      Tiamat não é um combate convencional — é uma <em>corrida narrativa</em>. Com 615 PV, CA 25, cinco baforadas independentes e Imunidade Mágica Limitada, um confronto direto destrói grupos de nível 15–20 em poucos turnos. O objetivo correto é interromper o ritual de invocação antes da Consolidação Completa (Turno 9). A diferença entre vitória e aniquilação é o quanto os jogadores entendem isso antes de rolar o primeiro dado.
+    </div>
+  </div>
+</div>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <span class="divider-glyph">✦</span>
+  <div class="divider-line"></div>
+</div>
+
+<!-- PORTRAIT STACK -->
+<div class="portrait-wrapper">
+  <div class="portrait-stack" id="portraitStack">
+    <!-- ATRÁS — Forma Humana -->
+    <div class="portrait-slot back" id="slotHuman" onclick="swapPortraits()">
+      <img src="Perfil - Tiamat (Forma Humana).png" alt="Tiamat — Forma Humana">
+      <div class="portrait-fade-bottom"></div>
+      <div class="portrait-fade-top"></div>
+    </div>
+    <!-- FRENTE — Forma Dragão -->
+    <div class="portrait-slot front" id="slotDragon">
+      <img src="Perfil - Tiamat.png" alt="Tiamat">
+      <div class="portrait-fade-bottom"></div>
+      <div class="portrait-fade-top"></div>
+      <div class="portrait-chromatic"></div>
+      <div class="portrait-caption">
+        <span>Tiamat · "A Rainha do Crepúsculo Cromático" · Entidade Divina </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══════════════════════════════
+       IDENTIDADE
+  ══════════════════════════════ -->
+  <section id="identidade">
+    <div class="section-header">
+      <span class="section-icon gold">🐉</span>
+      <h2 class="gold">Identidade</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="identity">
+      <span class="identity-corner tl">DIVINDADE DRACONICA · LEAL E MAU</span>
+      <span class="identity-corner tr">GARGANTUESCO · NÍVEL DE DESAFIO 30 · 155.000 XP</span>
+      <span class="identity-corner bl">THE RISE OF TIAMAT · FIZBAN'S TREASURY</span>
+      <span class="identity-corner br">FICHA · BESTIARIO</span>
+
+      <div class="monster-name">Tiamat</div>
+      <div class="monster-epithet">⬥ A Rainha Maligna — Mãe dos Dragões Cromáticos — O Dragão do Caos ⬥</div>
+
+      <div class="monster-type-line">
+        <span class="tag fiend">Corruptor</span>
+        <span class="tag devil">Diabo</span>
+        <span class="tag evil">Leal e Mau</span>
+        <span class="tag garg">Gargantuesco</span>
+        <span class="tag cr30">CR 30</span>
+        <span class="tag divine">Entidade Divina</span>
+      </div>
+
+      <p class="monster-lore">
+        Tiamat é a rainha e deusa dos dragões malignos, aprisionada no Avernus — o primeiro plano dos
+        Nove Infernos — após uma guerra cósmica contra seu eterno rival, Bahamut. Sua forma verdadeira
+        manifesta cinco cabeças de dragão, cada uma representando um tipo distinto de dragão cromático,
+        cada uma capaz de devastar exércitos sozinha. Não são ornamentos: são cinco personalidades,
+        cinco estratégias, cinco formas de morte agindo como uma única vontade.
+      </p>
+      <p class="monster-lore">
+        Ela não entra no plano material por acidente. Sua presença exige ritual, devoção e sacrifício
+        em escala civilizacional. Quando Tiamat aparece, não é um encontro — é o fim de uma era.
+        Os Wyrmspeakers e o Culto do Dragão passaram gerações tentando libertá-la. Os jogadores que
+        chegam até esse confronto não estão jogando uma aventura comum. Estão tentando impedir o apocalipse.
+      </p>
+      <p class="monster-lore" style="border-left-color: var(--blue-dim); font-size: 11px; opacity: 0.75; font-style: italic;">
+        ⚙ Escala — Gargantuesco (Grimório de Valtheris). Em forma verdadeira: ~8m no quadril, ~15m com as cinco cabeças erguidas. Comprimento total ~45m do focinho à ponta da cauda, envergadura ~60m em voo. Em forma humanóide, comprime tudo isso numa silhueta humana de feições simétricas demais para serem completamente confortáveis — e cinco íris de cores impossíveis que não deixam de notar.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       ESTATÍSTICAS BASE
+  ══════════════════════════════ -->
+  <section id="stats">
+    <div class="section-header">
+      <span class="section-icon red">⚔</span>
+      <h2 class="red">Estatísticas Base</h2>
+      <div class="section-line red"></div>
+    </div>
+
+    <div class="monster-vitals">
+      <div class="mvital-card red">
+        <span class="mvital-label">Pontos de Vida</span>
+        <span class="mvital-value red">615</span>
+        <span class="mvital-note">30d20 + 300 · Armadura Natural</span>
+      </div>
+      <div class="mvital-card red">
+        <span class="mvital-label">Classe de Armadura</span>
+        <span class="mvital-value red">25</span>
+        <span class="mvital-note">Armadura Natural · Iniciativa +0</span>
+      </div>
+      <div class="mvital-card blue">
+        <span class="mvital-label">Velocidade</span>
+        <span class="mvital-value blue">18m</span>
+        <span class="mvital-note">Voo 36m · Nadar 18m</span>
+      </div>
+      <div class="mvital-card gold">
+        <span class="mvital-label">Resist. Lendária</span>
+        <div class="mvital-pips">
+          <div class="mvital-pip"></div>
+          <div class="mvital-pip"></div>
+          <div class="mvital-pip"></div>
+          <div class="mvital-pip"></div>
+          <div class="mvital-pip"></div>
+        </div>
+        <span class="mvital-note">5 / dia · uma por cabeça · falha → escolhe passar</span>
+      </div>
+    </div>
+
+    <div class="two-col-monster">
+      <div class="cr-badge" style="flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;padding:16px 24px;">
+        <div>
+          <span class="cr-badge-label">Challenge Rating</span>
+          <span class="cr-badge-value">30</span>
+          <span class="cr-badge-note">155.000 XP</span>
+        </div>
+        <div style="border-left:1px solid rgba(212,48,32,.3);padding-left:20px;">
+          <span class="cr-badge-label">Proficiência</span>
+          <span class="cr-badge-value" style="font-size:1.6rem;">+9</span>
+          <span class="cr-badge-note">CR 30</span>
+        </div>
+      </div>
+      <div class="card red" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:center;">
+        <div class="card-title red">Escala de Ameaça</div>
+        <p style="font-size:.9rem;">Tiamat em pleno poder destrói grupos de nível 15–20 em poucos turnos. O confronto correto é uma <span class="hl-red">corrida narrativa</span> — interromper o ritual antes da Consolidação Completa (Turno 9+).</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       ATRIBUTOS + PROFICIÊNCIAS (two-col)
+  ══════════════════════════════ -->
+  <div class="two-col-monster" style="align-items:start;gap:14px;margin-bottom:56px;">
+
+    <section id="atributos" style="margin-bottom:0;">
+      <div class="section-header">
+        <span class="section-icon blue">◆</span>
+        <h2 class="blue">Atributos</h2>
+        <div class="section-line blue"></div>
+      </div>
+
+      <div class="attr-grid">
+        <div class="attr-box max">
+          <div class="attr-name">Força</div>
+          <span class="attr-value max">30</span>
+          <span class="attr-mod max">+10</span>
+        </div>
+        <div class="attr-box">
+          <div class="attr-name">Destreza</div>
+          <span class="attr-value">10</span>
+          <span class="attr-mod">+0</span>
+        </div>
+        <div class="attr-box max">
+          <div class="attr-name">Constituição</div>
+          <span class="attr-value max">30</span>
+          <span class="attr-mod max">+10</span>
+        </div>
+        <div class="attr-box high">
+          <div class="attr-name">Inteligência</div>
+          <span class="attr-value high">26</span>
+          <span class="attr-mod high">+8</span>
+        </div>
+        <div class="attr-box high">
+          <div class="attr-name">Sabedoria</div>
+          <span class="attr-value high">26</span>
+          <span class="attr-mod high">+8</span>
+        </div>
+        <div class="attr-box mid">
+          <div class="attr-name">Carisma</div>
+          <span class="attr-value mid">28</span>
+          <span class="attr-mod mid">+9</span>
+        </div>
+      </div>
+
+      <div class="callout blue" style="margin-top:4px;">
+        <strong>Nota sobre os Atributos</strong> FOR e CON 30 representam o teto absoluto. INT e SAB altas refletem uma mente divina e estratégica — Tiamat <em>planeja</em> antes de atacar. Carisma elevado alimenta tanto a Presença Aterradora quanto a Conjuração Inata.
+      </div>
+    </section>
+
+    <section id="proficiencias" style="margin-bottom:0;">
+      <div class="section-header">
+        <span class="section-icon gold">🎲</span>
+        <h2 class="gold">Proficiências, Sentidos &amp; Imunidades</h2>
+        <div class="section-line gold"></div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Campo</th><th>Valor</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Salvaguardas</td>
+              <td><span class="mono red">FOR +19 &nbsp;·&nbsp; DES +9 &nbsp;·&nbsp; SAB +17</span></td>
+            </tr>
+            <tr>
+              <td>Perícias</td>
+              <td><span class="mono">Arcanismo +17 &nbsp;·&nbsp; Percepção +26 (maestria) &nbsp;·&nbsp; Religião +17</span></td>
+            </tr>
+            <tr>
+              <td>Sentidos</td>
+              <td>
+                Visão no Escuro 72m &nbsp;·&nbsp; Visão Verdadeira 36m<br>
+                <span style="color:var(--text-dim);font-size:.86rem;">Percepção Passiva 36</span>
+              </td>
+            </tr>
+            <tr>
+              <td>Idiomas</td>
+              <td>Comum, Dracônico, Infernal</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card gold" style="margin-bottom:8px;">
+        <div class="card-title gold">Imunidades a Dano</div>
+        <div class="imun-grid">
+          <span class="imun-tag fire">🔥 Fogo</span>
+          <span class="imun-tag cold">❄️ Frio</span>
+          <span class="imun-tag acid">🟡 Ácido</span>
+          <span class="imun-tag lightning">⚡ Elétrico</span>
+          <span class="imun-tag poison">🟢 Veneno</span>
+          <span class="imun-tag nonmag">Cortante / Perfurante / Concussão não-mágico</span>
+        </div>
+      </div>
+      <div class="card red">
+        <div class="card-title red">Imunidades a Condições</div>
+        <div class="imun-grid">
+          <span class="imun-tag cond">Cegada</span>
+          <span class="imun-tag cond">Encantada</span>
+          <span class="imun-tag cond">Ensurdecida</span>
+          <span class="imun-tag cond">Amedrontada</span>
+          <span class="imun-tag cond">Envenenada</span>
+          <span class="imun-tag cond">Atordoada</span>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- end two-col atributos+prof -->
+
+
+  <!-- ══════════════════════════════
+       TRAÇOS ESPECIAIS
+  ══════════════════════════════ -->
+  <section id="tracos">
+    <div class="section-header">
+      <span class="section-icon gold">✧</span>
+      <h2 class="gold">Traços Especiais</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--red-light),var(--red-dim));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Presença Aterradora <span class="sub">(Passivo — Aura 60m)</span></div>
+        <p>Cada criatura, à escolha de Tiamat, que esteja a até <strong>60m</strong> e esteja ciente de sua presença deve ser bem-sucedida num <span class="hl-san">TR de Sabedoria CD 26</span> ou ficará <span class="hl-red">Amedrontada por 1 minuto</span>. A criatura pode repetir o teste ao final de cada turno. Criaturas bem-sucedidas ficam imunes por 24 horas.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--gold-light),var(--gold-dim));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Resistência Lendária <span class="sub">(5/Dia — Uma por Cabeça)</span></div>
+        <p>Se Tiamat falhar num teste de resistência, ela pode escolher ser <strong>bem-sucedida</strong> em vez disso. Ela possui <strong>cinco usos por dia</strong> — um para cada cabeça. Cada mente que ainda esteja intacta pode negar um efeito de forma independente. Quando o último uso é gasto, todas as cinco cabeças já cederam uma vez — e não cedem mais.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--blue-light),var(--blue-dim));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Imunidade Mágica Limitada</div>
+        <p>A não ser que escolha ser afetada, Tiamat <strong>não pode ser afetada por magias de 6º nível ou inferior</strong>. Ela tem vantagem em testes de resistência contra magias de 7º nível ou superior. Conjuradores que tentam controlá-la tornam-se prioridade imediata da cabeça azul.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,#c0a020,#604808);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Múltiplas Cabeças <span class="sub">(Passivo)</span></div>
+        <p>Tiamat pode ter <strong>uma reação por turno</strong> em vez de apenas uma por rodada — ou seja, pode usar uma reação ao final de cada turno de outra criatura. Ela também tem vantagem em testes de resistência contra ser cegada, encantada, ensurdecida, amedrontada, atordoada ou inconsciente. Se ela falhar um teste contra atordoamento, <strong>uma de suas ações lendárias não gastas é consumida no lugar</strong>.</p>
+      </div>
+    </div>
+
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,#9040c0,#401060);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Desincorporação <span class="sub">(Passivo)</span></div>
+        <p>Quando Tiamat cai para 0 PV ou morre, seu corpo é destruído — mas sua essência viaja de volta para seu domínio nos Nove Infernos. Ela é temporariamente incapaz de assumir forma física no plano material. <em>Ela não pode ser destruída permanentemente fora do Avernus.</em> Qualquer "vitória" de combate é apenas um adiamento.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--blue-light),var(--blue-dim));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Conjuração Inata <span class="sub">(3/Dia)</span></div>
+        <p>Tiamat pode conjurar magias divinas inatamente. <strong>CD de resistência de magia 26.</strong> Sua habilidade de conjuração é Carisma. O GM determina as magias disponíveis com base no arco narrativo — funções de controle de campo e devastação em área são as mais thematicamente coerentes.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,#c89020,#604408);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Armas Mágicas <span class="sub">(Passivo)</span></div>
+        <p>Todos os ataques de Tiamat são considerados <strong>mágicos</strong> para fins de superar resistências e imunidades a dano não-mágico.</p>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ══════════════════════════════
+       CINCO MENTES
+  ══════════════════════════════ -->
+  <section id="cinco-mentes">
+    <div class="section-header">
+      <span class="section-icon chrom">🧠</span>
+      <h2 class="chrom">As Cinco Mentes</h2>
+      <div class="section-line chrom"></div>
+    </div>
+
+    <div class="callout gold">
+      <strong>Nota ao GM</strong> — Tiamat não é uma mente única controlando cinco bocas. É cinco personalidades distintas que coexistem num corpo compartilhado, tomando decisões em conjunto e às vezes em conflito. Em combate, isso se reflete em padrões de ataque distintos por cabeça. Em roleplay, cada cabeça reage diferentemente ao mesmo estímulo — o que torna negociação, intimidação e persuasão extraordinariamente complexos: convencer uma não convence as outras.
+    </div>
+
+    <div class="mind-grid">
+
+      <div class="mind-card">
+        <div class="mind-bar" style="background:linear-gradient(180deg,var(--red-light),var(--red-dim));"></div>
+        <div class="mind-content">
+          <div class="mind-head" style="color:var(--red-light);">
+            <span class="dot" style="background:var(--red);box-shadow:0 0 8px var(--red);"></span>
+            Cabeça Vermelha — O Orgulho
+          </div>
+          <p><strong>Personalidade:</strong> A mais vocal. A primeira a reagir. Governa pelo orgulho e pela raiva — não impulsiva, mas intensa. Ataca alvos que a desafiaram diretamente ou que demonstraram arrogância suficiente para ser considerada um insulto pessoal.</p>
+          <p style="margin-top:6px;"><strong>Mecânica:</strong> Quando um personagem acerta um crítico em Tiamat, a cabeça vermelha <em>prioriza aquele alvo</em> nos próximos 2 turnos — mesmo que não seja o alvo mais estratégico. Orgulho antes de estratégia.</p>
+        </div>
+      </div>
+
+      <div class="mind-card">
+        <div class="mind-bar" style="background:linear-gradient(180deg,var(--blue-light),var(--blue-dim));"></div>
+        <div class="mind-content">
+          <div class="mind-head" style="color:var(--blue-light);">
+            <span class="dot" style="background:var(--blue);box-shadow:0 0 8px var(--blue);"></span>
+            Cabeça Azul — A Estratégia
+          </div>
+          <p><strong>Personalidade:</strong> A mais fria. Calcula antes de agir. Identifica ameaças reais versus ruído de combate e guia as outras cabeças para alvos prioritários. Detesta ineficiência.</p>
+          <p style="margin-top:6px;"><strong>Mecânica:</strong> Tiamat nunca usa baforadas aleatoriamente — a cabeça azul distribui para maximizar cobertura. Conjuradores e portadores de itens divinos são identificados na primeira rodada e marcados como prioridade imediata.</p>
+        </div>
+      </div>
+
+      <div class="mind-card">
+        <div class="mind-bar" style="background:linear-gradient(180deg,var(--green-light),var(--green-dim));"></div>
+        <div class="mind-content">
+          <div class="mind-head" style="color:var(--green-light);">
+            <span class="dot" style="background:var(--green);box-shadow:0 0 8px var(--green);"></span>
+            Cabeça Verde — A Manipulação
+          </div>
+          <p><strong>Personalidade:</strong> A mais paciente. Observa o grupo procurando divisões, fraquezas emocionais e conflitos internos. Fala de forma calculada para criar discórdia — sussurrando ameaças e revelações nos momentos certos.</p>
+          <p style="margin-top:6px;"><strong>Mecânica:</strong> Baforada venenosa — cone de 21m, TR Constituição CD 27, 77 (22d6) de dano venenoso.</p>
+        </div>
+      </div>
+
+      <div class="mind-card">
+        <div class="mind-bar" style="background:linear-gradient(180deg,var(--white-light),var(--white-dim));"></div>
+        <div class="mind-content">
+          <div class="mind-head" style="color:var(--white-light);">
+            <span class="dot" style="background:var(--white-h);box-shadow:0 0 8px var(--white-h);"></span>
+            Cabeça Branca — O Instinto
+          </div>
+          <p><strong>Personalidade:</strong> A mais simples e a mais direta. Opera por instinto puro — sem análise, sem manipulação. Reage ao movimento, ao barulho, à presença de calor vivo. É a cabeça que ataca primeiro quando o grupo tenta uma aproximação furtiva.</p>
+          <p style="margin-top:6px;"><strong>Mecânica:</strong> A cabeça branca tem <strong>Tremorsense 18m</strong> independente dos outros sentidos de Tiamat. Personagens invisíveis <span class="hl-red">não têm vantagem</span> contra ataques desta cabeça especificamente.</p>
+        </div>
+      </div>
+
+      <div class="mind-card" style="grid-column: 1 / -1;">
+        <div class="mind-bar" style="background:linear-gradient(180deg,var(--black-light),var(--black-dim));"></div>
+        <div class="mind-content">
+          <div class="mind-head" style="color:var(--black-light);">
+            <span class="dot" style="background:var(--black-h);box-shadow:0 0 8px var(--black-h);"></span>
+            Cabeça Negra — O Ressentimento
+          </div>
+          <p><strong>Personalidade:</strong> A mais amarga. Carrega o peso de eras de aprisionamento, de abandono, de tudo que foi tirado. Não ataca com raiva — ataca com a frieza de algo que decidiu que não há nada mais a perder. É a cabeça que atinge mais forte quando Tiamat está abaixo de metade dos PV.</p>
+          <p style="margin-top:6px;"><strong>Mecânica:</strong> Quando Tiamat cai abaixo de <strong>307 PV (metade)</strong>, a cabeça negra entra em modo de devastação — o dano de ácido de todas as mordidas e baforadas aumenta em <mark>+2d8</mark>, e a cabeça negra prioriza criaturas que já estejam feridas. A fome de ver outros no mesmo estado que ela.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       AS CINCO BAFORADAS
+  ══════════════════════════════ -->
+  <section id="baforadas">
+    <div class="section-header">
+      <span class="section-icon chrom">🔥</span>
+      <h2 class="chrom">As Cinco Baforadas</h2>
+      <div class="section-line chrom"></div>
+    </div>
+
+    <div class="card gold" style="margin-bottom:16px;">
+      <div class="card-title gold">Recarga Independente <span class="recharge">Recarrega 5–6</span></div>
+      <p>Cada baforada recarrega independentemente no início do turno de Tiamat com um resultado de <strong>5–6</strong> no d6. Todas as cinco podem estar disponíveis ao mesmo tempo — e são usadas como Ações Lendárias (Custo 2), não como parte do Multiatacar.</p>
+    </div>
+
+    <div class="breath-grid">
+      <div class="breath-card black">
+        <div class="breath-head black">
+          <span class="breath-dot black"></span>
+          Cabeça Negra — Ácido
+        </div>
+        <p><strong>Linha</strong> de 36m × 1,5m</p>
+        <p>TR Destreza <strong>CD 27</strong></p>
+        <p>Dano: <mark><strong>15d8</strong> ácido</mark> · metade se passar</p>
+        <p style="margin-top:6px;font-style:italic;color:var(--text-dim);font-size:.85rem;">+2d8 ácido bônus abaixo de 307 PV</p>
+      </div>
+
+      <div class="breath-card blue">
+        <div class="breath-head blue">
+          <span class="breath-dot blue"></span>
+          Cabeça Azul — Elétrico
+        </div>
+        <p><strong>Linha</strong> de 36m × 1,5m</p>
+        <p>TR Destreza <strong>CD 27</strong></p>
+        <p>Dano: <mark class="b"><strong>16d10</strong> elétrico</mark> · metade se passar</p>
+      </div>
+
+      <div class="breath-card green">
+        <div class="breath-head green">
+          <span class="breath-dot green"></span>
+          Cabeça Verde — Veneno
+        </div>
+        <p><strong>Cone</strong> de 21m</p>
+        <p>TR Constituição <strong>CD 27</strong></p>
+        <p>Dano: <mark><strong>77 (22d6)</strong> venenoso</mark> · metade se passar</p>
+      </div>
+
+      <div class="breath-card red">
+        <div class="breath-head red">
+          <span class="breath-dot red"></span>
+          Cabeça Vermelha — Fogo
+        </div>
+        <p><strong>Cone</strong> de 21m</p>
+        <p>TR Destreza <strong>CD 27</strong></p>
+        <p>Dano: <mark><strong>91 (26d6)</strong> fogo</mark> · metade se passar</p>
+      </div>
+
+      <div class="breath-card white full">
+        <div class="breath-head white">
+          <span class="breath-dot white"></span>
+          Cabeça Branca — Frio
+        </div>
+        <p><strong>Cone</strong> de 21m &nbsp;·&nbsp; TR Destreza <strong>CD 27</strong> &nbsp;·&nbsp; Dano: <mark class="b"><strong>72 (16d8)</strong> frio</mark> (metade se passar)</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       AÇÕES
+  ══════════════════════════════ -->
+  <section id="acoes">
+    <div class="section-header">
+      <span class="section-icon red">⚡</span>
+      <h2 class="red">Ações</h2>
+      <div class="section-line red"></div>
+    </div>
+
+    <div class="callout red">
+      <strong>Multiataques</strong> Tiamat pode usar sua <span class="hl-red">Presença Aterradora</span> e então realiza <span class="hl-red">3 ataques por turno:</span> dois com Garras e um com Cauda. As baforadas são usadas exclusivamente como Ações Lendárias (Custo 2) — não integram o Multiatacar.
+    </div>
+
+    <div class="action red">
+      <div class="action-name red">Multiatacar</div>
+      <p><strong>Sequência padrão:</strong> Presença Aterradora + Garra + Garra + Cauda. As cinco baforadas permanecem reservadas para Ações Lendárias — usá-las em conjunto com o Multiatacar é o que torna Tiamat verdadeiramente devastadora em rodadas completas.</p>
+    </div>
+
+    <div class="action gold">
+      <div class="action-name gold">Mordida <span style="font-size:.7rem;color:var(--text-dim);font-weight:400;">(por cabeça)</span></div>
+      <p><strong>Ataque Corpo a Corpo.</strong> <span class="mono red">+19 para acertar</span>, alcance 6m, um alvo. <strong>Acerto:</strong> <mark>14 (4d6) de dano perfurante</mark> + <mark>14 (4d6) de dano do tipo da cabeça</mark> (ácido, elétrico, veneno, fogo ou frio).</p>
+      <p style="margin-top:8px;font-style:italic;color:var(--text-dim);font-size:.88rem;">O tipo de dano adicional reflete qual cabeça está mordendo — cada cabeça produz seu próprio elemento: <strong>vermelha → fogo · azul → elétrico · verde → veneno · negra → ácido · branca → frio.</strong></p>
+    </div>
+
+    <div class="action blue">
+      <div class="action-name blue">Garra</div>
+      <p><strong>Ataque Corpo a Corpo.</strong> <span class="mono blue">+19 para acertar</span>, alcance 4,5m, um alvo. <strong>Acerto:</strong> <mark class="b">24 (4d6 + 10) de dano cortante.</mark></p>
+    </div>
+
+    <div class="action blue">
+      <div class="action-name blue">Cauda</div>
+      <p><strong>Ataque Corpo a Corpo.</strong> <span class="mono blue">+19 para acertar</span>, alcance 7,5m, um alvo. <strong>Acerto:</strong> <mark class="b">28 (4d8 + 10) de dano de concussão.</mark></p>
+    </div>
+
+    <div class="action gold">
+      <div class="action-name gold">Presença Aterradora</div>
+      <p>Cada criatura à escolha de Tiamat, a até <strong>60m</strong>, TR de Sabedoria <strong>CD 26</strong>. Ao falhar: <span class="hl-red">Amedrontado por 1 minuto</span>, repetindo o teste ao final de cada turno. Imunes por 24h se passarem.</p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       REAÇÕES & AÇÕES LENDÁRIAS
+  ══════════════════════════════ -->
+  <section id="lendarias">
+    <div class="section-header">
+      <span class="section-icon gold">↺</span>
+      <h2 class="gold">Reações &amp; Ações Lendárias</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="card red" style="margin-bottom:14px;">
+      <div class="card-title red">Reação — Cabeças Múltiplas</div>
+      <p><strong>Gatilho:</strong> Uma criatura em alcance corpo a corpo sai do espaço de ameaça de Tiamat sem usar a ação de Recuar. <strong>Resposta:</strong> Tiamat pode usar <span class="hl-red">uma reação por turno de criatura</span> (não apenas uma por rodada), permitindo ataques de oportunidade em cada turno de outra criatura. Não há forma segura de recuar da zona corpo a corpo sem a ação de Recuar.</p>
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="leg-res-bar">
+      <div class="leg-res-label">Resistência Lendária</div>
+      <div class="leg-res-pips">
+        <div class="pip"></div>
+        <div class="pip"></div>
+        <div class="pip"></div>
+        <div class="pip"></div>
+        <div class="pip"></div>
+      </div>
+      <div class="leg-res-note">5 usos · uma por cabeça · falha vira sucesso</div>
+    </div>
+
+    <div class="callout gold">
+      <strong>Ações Lendárias — Pool de 5 por Rodada, Uma por Cabeça</strong> Tiamat possui um pool de <strong>5 ações lendárias</strong> por rodada — uma para cada cabeça. Ao final do turno de <em>cada</em> outra criatura, ela pode usar <strong>uma única ação lendária</strong> (ou gastar o custo equivalente em pontos). Não pode usar a mesma opção duas vezes consecutivas. Recupera todo o pool ao iniciar o próprio turno. Com um grupo de 5 jogadores, isso significa que cada cabeça pode agir uma vez por rodada — nenhuma fica ociosa.
+    </div>
+
+    <div class="action legendary">
+      <div class="action-name legend">Mordida <span class="cost-badge">Custo 1</span></div>
+      <p>Tiamat faz um ataque de Mordida com qualquer uma das cinco cabeças.</p>
+    </div>
+
+    <div class="action legendary">
+      <div class="action-name legend">Baforada <span class="cost-badge">Custo 2</span> <span class="tag-a chrom">Cromático</span></div>
+      <p>Tiamat usa uma de suas baforadas disponíveis. Com cinco baforadas independentes recarregando em 5–6, a cabeça azul distribui linhas (ácido, elétrico) para alvos espalhados e cones (veneno, fogo, frio) para grupos agrupados. Em uma rodada ideal, Tiamat usa o Multiatacar <em>e</em> todas as ações lendárias em baforadas — o que é normalmente letal para qualquer grupo sem preparação extensiva.</p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       AÇÕES DE COVIL
+  ══════════════════════════════ -->
+  <div class="form-divider">
+    <div class="form-divider-line"></div>
+    <div class="form-divider-label">Ações de Covil — Avernus</div>
+    <div class="form-divider-line"></div>
+  </div>
+
+  <section id="covil">
+    <div class="section-header">
+      <span class="section-icon red">🌋</span>
+      <h2 class="red">Ações de Covil</h2>
+      <div class="section-line red"></div>
+    </div>
+
+    <div class="card red" style="margin-bottom:14px;">
+      <div class="card-title red">Iniciativa 20 (empate — perde)</div>
+      <p>Quando Tiamat está em seu covil no Avernus, pode usar ações de covil na contagem de iniciativa 20. Ela não pode usar a mesma ação de covil duas rodadas seguidas. Fora do Avernus, estas ações ficam disponíveis apenas na Fase 3 (Consolidação Completa, Turno 9+), adaptadas ao ambiente local.</p>
+    </div>
+
+    <div class="action lair">
+      <div class="action-name lair">Tempestade de Chamas</div>
+      <p>Magmas e chamas explodem do chão. Cada criatura numa área de <strong>6 × 6m</strong> escolhida por Tiamat deve ter êxito num <span class="hl">TR de Destreza CD 26</span> ou sofrer <mark>35 (10d6) de dano de fogo.</mark></p>
+    </div>
+
+    <div class="action lair">
+      <div class="action-name lair">Chuva Cromática</div>
+      <p>Uma chuva de energia cromática cai sobre uma área de <strong>9m de raio</strong>. Criaturas na área sofrem <mark>21 (6d6) de dano de tipo aleatório</mark> — ácido, frio, elétrico, fogo ou veneno — a cada rodada que permanecerem. O tipo varia por rodada, impedindo planejamento simples de resistência.</p>
+    </div>
+
+    <div class="action lair">
+      <div class="action-name lair">Tremor Infernal</div>
+      <p>O chão racha em linhas de <strong>18m</strong> escolhidas por Tiamat. Criaturas na linha devem ter êxito num <span class="hl">TR de Destreza CD 26</span> ou cair Prostradas e sofrer <mark>14 (4d6) de dano de concussão.</mark></p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       FORMA HUMANÓIDE
+  ══════════════════════════════ -->
+  <div class="form-divider">
+    <div class="form-divider-line"></div>
+    <div class="form-divider-label">Forma Humanóide — Avatar de Carne</div>
+    <div class="form-divider-line"></div>
+  </div>
+
+  <section id="forma-humanoide">
+    <div class="section-header">
+      <span class="section-icon gold">👁</span>
+      <h2 class="gold">Forma Humanóide</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="card gold" style="margin-bottom:14px;">
+      <div class="card-title gold">Change Shape — Limitações e Propósito</div>
+      <p>Tiamat pode assumir a forma de uma humanóide de aparência humana ou élfica como ação. Esta não é uma transformação completa — é uma <strong>compressão de presença</strong>. Ela mantém inteligência, memórias e capacidades mentais plenas. Em forma humanóide, perde acesso às baforadas, ao Multiatacar e à Presença Aterradora — mas mantém todas as imunidades e resistências.</p>
+      <p style="margin-top:8px;">Esta forma é usada quase exclusivamente para observação e manipulação de longa distância. <em>Ela nunca usa Change Shape para evitar combate.</em> Se atacada em forma humanóide, retorna à forma verdadeira como reação gratuita.</p>
+    </div>
+
+    <div class="card blue">
+      <div class="card-title blue">Aparência — O Que os Outros Percebem</div>
+      <p>A forma humanóide de Tiamat é imponente — altura acima da média, feições simétricas demais para serem completamente confortáveis. Os olhos são o detalhe que falha no disfarce: <strong>cinco íris de cores diferentes</strong> — âmbar, azul elétrico, verde-ácido, vermelho-brasa e branco-gélido — que mudam dependendo de qual cabeça está dominando a consciência no momento.</p>
+      <p style="margin-top:8px;">Em locais escuros, as veias dos braços pulsam levemente com as cinco cores. Animais, crianças e criaturas com Sabedoria 20+ percebem automaticamente que algo está fundamentalmente errado — sem necessidade de teste.</p>
+    </div>
+
+
+    <div class="callout tip">
+      <strong>Para Valtheris</strong> — Introduzir Tiamat em forma humanóide antes de revelar quem ela é cria um dos ganchos mais eficientes possíveis. Uma mulher de olhos impossíveis que aparece sempre nos momentos errados, que sabe coisas que não deveria, que nunca responde perguntas diretamente mas sempre faz as perguntas certas. O momento de revelação — quando os cinco olhos se tornam cinco cabeças — deve ser o tipo de coisa que os jogadores não esquecem.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       FORA DO AVERNUS
+  ══════════════════════════════ -->
+  <div class="form-divider">
+    <div class="form-divider-line"></div>
+    <div class="form-divider-label">Consolidação — Presença no Plano Material</div>
+    <div class="form-divider-line"></div>
+  </div>
+
+  <section id="fora-avernus">
+    <div class="section-header">
+      <span class="section-icon red">🌍</span>
+      <h2 class="red">Fora do Avernus</h2>
+      <div class="section-line red"></div>
+    </div>
+
+    <div class="callout danger">
+      <strong>Mecânica Central</strong> — Tiamat não existe no plano material da mesma forma que existe no Avernus. Quando invocada ou libertada, ela passa por um processo de consolidação gradual. Quanto mais tempo permanece, mais completa e mais perigosa se torna. Mas a consolidação pode ser interrompida — e esse é o único caminho para a vitória.
+    </div>
+
+    <div class="phase-grid">
+      <div class="phase-card">
+        <span class="phase-title">⚠ Fase 1 — Recém-Invocada (Turnos 1–3)</span>
+        <p>Tiamat manifesta-se com <strong>75% dos PV máximos (461 PV)</strong>. Imunidade Mágica reduzida para magias de 4º nível ou inferior. Baforadas disponíveis mas com recarga apenas em 6. Presença Aterradora ativa mas com CD reduzida para <strong>CD 20</strong>.</p>
+      </div>
+      <div class="phase-card">
+        <span class="phase-title">⚡ Fase 2 — Parcialmente Consolidada (Turnos 4–8)</span>
+        <p>PV completos restaurados. CD volta a 26. Baforadas recarregam normalmente (5–6). Ela começa a distorcer o ambiente — temperatura, luz, gravitação leve ao redor.</p>
+      </div>
+      <div class="phase-card">
+        <span class="phase-title">🔥 Fase 3 — Consolidação Completa (Turno 9+)</span>
+        <p>Todas as estatísticas em pleno funcionamento. O ambiente ao redor torna-se extensão dela — ações de covil disponíveis mesmo fora do Avernus, adaptadas ao local. É aqui que ela se torna ameaça de extinção civilizacional.</p>
+      </div>
+      <div class="phase-card">
+        <span class="phase-title">🌅 Condições de Encerramento</span>
+        <p>Diferente de Mermillion, Tiamat <strong>não desaparece com o amanhecer</strong>. Ela permanece até ser derrotada ou até o ritual ser desfeito. Reduzida a 0 PV, é banida de volta ao Avernus — não destruída. Pode ser reinvocada.</p>
+      </div>
+    </div>
+
+    <div class="card gold">
+      <div class="card-title gold">Se Libertada — Não Invocada</div>
+      <p>Se Tiamat sair do Avernus por escolha própria — não por ritual forçado — as fases de consolidação não se aplicam. Ela manifesta-se em pleno poder imediatamente. A diferença é fundamental: <em>invocação é extração forçada; libertação é saída voluntária.</em> Um ser que sai por vontade própria chega inteiro.</p>
+      <p style="margin-top:8px;font-style:italic;color:var(--text-dim);font-size:.9rem;">Esta distinção é especialmente relevante para narrativas onde alguém tenta libertá-la em vez de invocá-la — como o Culto do Dragão nas campanhas onde o objetivo é abrir o portal de dentro.</p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       DANO DE SANIDADE
+  ══════════════════════════════ -->
+  <div class="form-divider">
+    <div class="form-divider-line"></div>
+    <div class="form-divider-label">Sistema de Sanidade — Híbrido CoC</div>
+    <div class="form-divider-line"></div>
+  </div>
+
+  <section id="sanidade">
+    <div class="section-header">
+      <span class="section-icon san">🌑</span>
+      <h2 class="san">Dano de Sanidade</h2>
+      <div class="section-line san"></div>
+    </div>
+
+    <div class="callout san">
+      <strong>Formato — Sucesso / Falha na Salvaguarda de SAB</strong> O primeiro valor é a perda mínima (ao <em>passar</em> na salvaguarda). O segundo é a perda total (ao <em>falhar</em>). O horror de Tiamat é diferente do horror de Mermillion — Mermillion corrói a sanidade pela ausência de propósito, algo que a mente não consegue catalogar. Tiamat corrói pela <em>presença</em> de algo grande demais para ser contido numa percepção mortal. Cinco mentes. Cinco vozes. Cinco mortes simultâneas. É demais para um único eu processar.
+    </div>
+
+    <div class="san-grid">
+      <div class="san-box">
+        <div class="san-box-label">Ao Avistar ao Longe</div>
+        <span class="san-box-dice">1d4 / 2d8</span>
+        <div class="san-box-cd">CD SAB 16</div>
+        <div class="san-box-sub">Silhueta de cinco pescoços no horizonte</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Ao Avistar de Perto</div>
+        <span class="san-box-dice">2d8 / 3d10</span>
+        <div class="san-box-cd">CD SAB 20</div>
+        <div class="san-box-sub">Dentro do raio de aura, forma completa visível</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Ao Estar em Combate</div>
+        <span class="san-box-dice">2d10 / 4d10</span>
+        <div class="san-box-cd">CD SAB 24</div>
+        <div class="san-box-sub">Dentro de 30m, alvo direto das cinco cabeças</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Ao Ver Aliado Morrer</div>
+        <span class="san-box-dice">2d8 / 4d8</span>
+        <div class="san-box-cd">CD SAB 20</div>
+        <div class="san-box-sub">Morte causada diretamente por ela</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Trauma Residual</div>
+        <span class="san-box-dice">1d8 / 2d10</span>
+        <div class="san-box-cd">CD SAB 18</div>
+        <div class="san-box-sub">Ao sobreviver ao encontro — teste na manhã seguinte</div>
+      </div>
+    </div>
+
+    <div class="card san">
+      <div class="card-title san">As Cinco Vozes — Efeito Especial</div>
+      <p>Personagens que falharem na salvaguarda de SAN em combate com Tiamat por <strong>10 ou mais abaixo da CD</strong> não ficam apenas Amedrontados — eles <em>ouvem uma das cinco vozes com clareza</em>. O GM determina qual cabeça fala e o que diz, baseado na personalidade daquela mente. Esta voz persiste como eco por <strong>1d4 dias</strong>, causando desvantagem em testes de Concentração.</p>
+      <p style="margin-top:8px;">Personagens com <strong>SAN abaixo de 30%</strong> que estejam dentro do alcance da Presença Aterradora <span class="hl-red">falham automaticamente</span> na salvaguarda — suas defesas psíquicas já estão comprometidas demais para resistir.</p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       COMPORTAMENTO & COMO RODAR
+  ══════════════════════════════ -->
+  <section id="notas">
+    <div class="section-header">
+      <span class="section-icon gold">🧠</span>
+      <h2 class="gold">Comportamento &amp; Como Rodar</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="card red">
+      <div class="card-title red">Tiamat Não é um Combate</div>
+      <p>Com 615 PV, CA 25, 5 baforadas independentes e Imunidade Mágica Limitada, Tiamat em combate direto destrói grupos de nível 15–20 em poucos turnos. O confronto correto é uma <span class="hl-red">corrida narrativa</span> — os jogadores precisam interromper o ritual que a mantém no plano material antes que ela se consolide completamente.</p>
+      <p style="margin-top:8px;font-size:.88rem;color:var(--text-dim);font-style:italic;">Diferente de Mermillion, que é um evento de sobrevivência pura, Tiamat <em>pode</em> ser derrotada — mas apenas sob as condições certas, no momento certo, com a preparação certa. A diferença entre uma derrota e um aniquilamento é o quanto o grupo entende isso antes do encontro.</p>
+    </div>
+
+    <div class="card blue">
+      <div class="card-title blue">Alvos Prioritários</div>
+      <p>Tiamat é estratégica, não irracional. A cabeça azul distribui prioridades desde a primeira rodada:</p>
+      <ul style="list-style:none;padding:0;margin-top:8px;">
+        <li style="padding:5px 0;border-bottom:1px solid rgba(48,112,208,.2);">— Conjuradores e portadores de itens sagrados a Bahamut são identificados imediatamente como ameaça real.</li>
+        <li style="padding:5px 0;border-bottom:1px solid rgba(48,112,208,.2);">— Criaturas interferindo no ritual de invocação (ou tentando desfazê-lo) recebem a próxima baforada disponível.</li>
+        <li style="padding:5px 0;border-bottom:1px solid rgba(48,112,208,.2);">— A cabeça vermelha prioriza quem acertou o último crítico — orgulho antes de estratégia.</li>
+        <li style="padding:5px 0;">— A cabeça negra abaixo de 307 PV foca em criaturas já feridas — a fome de ver outros no mesmo estado que ela.</li>
+      </ul>
+    </div>
+
+    <div class="card green">
+      <div class="card-title green">Baforadas em Combate</div>
+      <p>Com cinco baforadas independentes recarregando em 5–6, Tiamat idealmente usa Multiatacar <em>e</em> baforadas em ações lendárias na mesma rodada. Use linhas (ácido, elétrico) para alvos espalhados e cones (veneno, fogo, frio) para grupos agrupados. A cabeça azul nunca desperdiça AoE em um único alvo se há possibilidade de cobrir múltiplos.</p>
+    </div>
+
+    <div class="callout tip">
+      <strong>Dica de Atmosfera</strong> — Antes de Tiamat aparecer visualmente, o céu muda de cor. Cinco sombras se projetam do portal — cada uma de um ângulo diferente, cada uma imensurável. Depois, um rugido que não é um: são cinco, simultâneos, em frequências diferentes, que se somam até os personagens sentirem no peito. Quando ela emerge, o mundo parece menor. Não mais perigoso. Apenas... menor.
+    </div>
+  </section>
+
+
+</main>
+
+<div style="max-width:900px; margin:0 auto; padding:0 20px 0;">
+  <div class="chromatic-bar" style="margin:0;"></div>
+</div>
+
+<footer>
+  Tiamat <span>⸸</span> Rainha dos Dragões Cromáticos <span>⸸</span> Rise of Tiamat · Fizban's Treasury of Dragons
+</footer>
+
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+
+<script>
+(function() {
+  var topBtn = document.getElementById('top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    window.addEventListener('scroll', function() {
+      topBtn.classList.toggle('visible', window.scrollY > 400);
+    });
+  }
+})();
+
+function swapPortraits() {
+  var stack  = document.getElementById('portraitStack');
+  var front  = stack.querySelector('.portrait-slot.front');
+  var back   = stack.querySelector('.portrait-slot.back');
+  if (!front || !back) return;
+
+  front.style.transition = 'transform 0.45s cubic-bezier(.4,0,.2,1), box-shadow 0.4s, filter 0.4s';
+  back.style.transition  = 'transform 0.55s cubic-bezier(.34,1.28,.64,1), box-shadow 0.4s, filter 0.4s';
+
+  front.classList.replace('front', 'back');
+  front.onclick = swapPortraits;
+
+  back.classList.replace('back', 'front');
+  back.onclick = null;
+}
+</script>
+
+</body>
+</html>

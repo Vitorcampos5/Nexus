@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homem-Corvo — Referência do Mestre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&family=UnifrakturMaguntia:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:       #030406;
+    --hollow:     #181820;
+    --feather-l:  #484868;
+    --feather-d:  #0a0a14;
+    --feather-p:  #9090c0;
+
+    --iri:        #203050;
+    --iri-l:      #3860a0;
+    --iri-d:      #080e18;
+    --iri-p:      #80b0e0;
+
+    --violet:     #301848;
+    --violet-l:   #603090;
+    --violet-d:   #0e0818;
+    --violet-p:   #b070e0;
+
+    --gold:       #584010;
+    --gold-l:     #a07820;
+    --gold-d:     #1a1006;
+    --gold-p:     #d0a840;
+
+    --praga:      #402020;
+    --praga-l:    #804040;
+    --praga-d:    #140a0a;
+    --praga-p:    #c08080;
+
+    --text:       #9090b0;
+    --text-dim:   #404060;
+    --text-faint: #14141e;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background-color:var(--void);
+    background-image:
+      radial-gradient(ellipse 120% 50% at 50% -5%,#080a14 0%,transparent 55%),
+      radial-gradient(ellipse 50% 60% at 92% 100%,#060810 0%,transparent 50%),
+      radial-gradient(ellipse 40% 60% at 8%  80%, #060810 0%,transparent 50%);
+    color:var(--text);
+    font-family:'EB Garamond',Georgia,serif;
+    font-size:17px;line-height:1.8;min-height:100vh;overflow-x:hidden
+  }
+  body::before{
+    content:'';position:fixed;inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none;z-index:999;opacity:.65
+  }
+
+  .top-bar{height:4px;background:linear-gradient(90deg,var(--feather-d),var(--iri-l),var(--violet-l),var(--iri-l),var(--feather-d));box-shadow:0 0 30px rgba(56,96,160,.4)}
+
+  /* HEADER */
+  header{position:relative;text-align:center;padding:80px 20px 70px;overflow:hidden}
+  header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(32,48,80,.1) 0%,transparent 65%);pointer-events:none}
+  header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--feather-d),var(--gold-d),var(--feather-d),transparent)}
+  .header-pulse{position:absolute;inset:0;background:radial-gradient(ellipse 60% 45% at 50% 45%,rgba(56,96,160,.06) 0%,transparent 70%);animation:breathe 10s ease-in-out infinite;pointer-events:none}
+  @keyframes breathe{0%,100%{opacity:.4}50%{opacity:1}}
+  .header-symbol{display:block;font-size:2.8rem;margin-bottom:18px;filter:drop-shadow(0 0 18px rgba(96,128,200,.5));animation:crest-pulse 8s ease-in-out infinite}
+  @keyframes crest-pulse{0%,100%{filter:drop-shadow(0 0 14px rgba(72,96,168,.4))}50%{filter:drop-shadow(0 0 28px rgba(96,128,200,.7))}}
+  .header-fraktur{font-family:'UnifrakturMaguntia',serif;font-size:clamp(2rem,7vw,4rem);line-height:1.05;margin-bottom:6px;background:linear-gradient(135deg,#9090c0 0%,#80b0e0 30%,#b070e0 60%,#d0a840 90%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 30px rgba(56,96,160,.2))}
+  .header-eyebrow{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.45em;text-transform:uppercase;color:var(--text-faint);margin-bottom:18px}
+  .header-classification{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:var(--feather-p);margin-bottom:10px;opacity:.8}
+  .header-title-sub{font-family:'Cinzel',serif;font-size:clamp(.85rem,2vw,1rem);letter-spacing:.18em;text-transform:uppercase;color:var(--gold-p);margin-bottom:8px}
+  .header-tagline{font-style:italic;color:#2a2a3a;font-size:1.05rem;max-width:560px;margin:0 auto 28px}
+  .header-crests{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px}
+  .crest-badge{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:4px 14px;border-radius:1px}
+  .crest-badge.iri    {border:1px solid var(--iri-d);    color:var(--iri-p)}
+  .crest-badge.violet {border:1px solid var(--violet-d); color:var(--violet-p)}
+  .crest-badge.gold   {border:1px solid var(--gold-d);   color:var(--gold-p)}
+  .crest-badge.praga  {border:1px solid var(--praga-d);  color:var(--praga-p)}
+
+  /* LAYOUT */
+  .divider{display:flex;align-items:center;gap:14px;max-width:940px;margin:0 auto;padding:40px 20px 48px}
+  .divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--feather-d),var(--iri-d),transparent)}
+  .divider-glyph{color:var(--iri-l);font-size:1rem;opacity:.7}
+  .breadcrumb{max-width:940px;margin:0 auto;padding:20px 20px 0;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}
+  .breadcrumb span{color:var(--feather-d);margin:0 6px}.breadcrumb .current{color:var(--iri-p)}
+  main{max-width:940px;margin:0 auto;padding:0 20px 90px;display:flex;flex-direction:column}
+  section{margin-bottom:56px;animation:fade-in .5s ease both}
+  @keyframes fade-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  section:nth-child(1){animation-delay:.05s}section:nth-child(2){animation-delay:.10s}
+  section:nth-child(3){animation-delay:.15s}section:nth-child(4){animation-delay:.20s}
+  section:nth-child(5){animation-delay:.25s}section:nth-child(6){animation-delay:.30s}
+  section:nth-child(7){animation-delay:.35s}section:nth-child(8){animation-delay:.40s}section:nth-child(9){animation-delay:.45s}
+  p{margin-bottom:10px}p:last-child{margin-bottom:0}
+
+  /* SECTION HEADERS */
+  .section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .section-icon{font-size:1.2rem;flex-shrink:0}
+  .section-icon.iri   {filter:drop-shadow(0 0 8px rgba(56,96,160,.5))}
+  .section-icon.violet{filter:drop-shadow(0 0 8px rgba(96,48,144,.4))}
+  .section-icon.gold  {filter:drop-shadow(0 0 8px rgba(160,120,32,.4))}
+  .section-icon.praga {filter:drop-shadow(0 0 8px rgba(128,64,64,.4))}
+  h2{font-family:'Cinzel',serif;font-size:.9rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+  h2.iri   {color:#80b0e0;text-shadow:0 0 20px rgba(56,96,160,.3)}
+  h2.violet{color:#b070e0;text-shadow:0 0 18px rgba(96,48,144,.3)}
+  h2.gold  {color:#c09840;text-shadow:0 0 18px rgba(160,120,32,.25)}
+  h2.praga {color:#c08080;text-shadow:0 0 18px rgba(128,64,64,.3)}
+  .section-line{flex:1;height:1px}
+  .section-line.iri   {background:linear-gradient(90deg,var(--iri-d),  rgba(14,20,36,.3),transparent)}
+  .section-line.violet{background:linear-gradient(90deg,var(--violet-d),rgba(14,8,24,.3), transparent)}
+  .section-line.gold  {background:linear-gradient(90deg,var(--gold-d),  rgba(26,16,6,.3), transparent)}
+  .section-line.praga {background:linear-gradient(90deg,var(--praga-d), rgba(20,10,10,.3),transparent)}
+
+  /* IDENTITY */
+  .identity{position:relative;background:linear-gradient(145deg,rgba(10,12,22,.98) 0%,rgba(6,8,16,.99) 100%);border:1px solid rgba(40,48,80,.5);border-top:4px solid var(--feather-d);border-bottom:3px solid var(--gold-d);padding:32px 36px;margin-bottom:14px;overflow:hidden}
+  .identity::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0% 0%,rgba(56,96,160,.06) 0%,transparent 45%),radial-gradient(circle at 100% 0%,rgba(96,48,144,.04) 0%,transparent 45%);pointer-events:none}
+  .identity-corner{position:absolute;font-family:'Fira Code',monospace;font-size:.58rem;letter-spacing:.15em;color:var(--text-faint);opacity:.6}
+  .identity-corner.tl{top:10px;left:14px}.identity-corner.tr{top:10px;right:14px}
+  .identity-corner.bl{bottom:10px;left:14px}.identity-corner.br{bottom:10px;right:14px}
+  .monster-name{font-family:'UnifrakturMaguntia',serif;font-size:clamp(1.8rem,4vw,2.8rem);background:linear-gradient(135deg,#9090c0 0%,#80b0e0 30%,#b070e0 65%,#d0a840 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;line-height:1.1}
+  .monster-epithet{font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-p);opacity:.85;margin-bottom:14px}
+  .monster-type-line{margin-bottom:16px}
+  .monster-lore{font-style:italic;color:#9090b0;font-size:.97rem;border-left:2px solid var(--iri-d);padding-left:16px;margin-top:14px;line-height:1.75}
+  .monster-lore+.monster-lore{border-left-color:var(--violet-d);margin-top:10px}
+  .monster-lore.gold{border-left-color:var(--gold-d)}
+
+  /* TAGS */
+  .tag{display:inline-block;font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:2px 8px;border-radius:1px;margin-right:5px;margin-bottom:5px;vertical-align:middle}
+  .tag.lycant {border:1px solid #1a2040;color:#6070a0}
+  .tag.meta   {border:1px solid #201830;color:#806090}
+  .tag.good   {border:1px solid #182030;color:#508090}
+  .tag.nd2    {border:1px solid #3a2808;color:#b08030}
+  .tag.medium {border:1px solid #181828;color:#606090}
+  .tag.praga  {border:1px solid var(--praga-d);color:var(--praga-p)}
+
+  /* VITALS */
+  .monster-vitals{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+  @media(max-width:600px){.monster-vitals{grid-template-columns:1fr 1fr}}
+  .mvital-card{background:rgba(8,10,20,.9);border:1px solid var(--hollow);border-radius:3px;padding:16px 14px;position:relative;overflow:hidden;text-align:center}
+  .mvital-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+  .mvital-card.iri::after   {background:linear-gradient(90deg,transparent,var(--iri-l),   transparent)}
+  .mvital-card.violet::after{background:linear-gradient(90deg,transparent,var(--violet-l),transparent)}
+  .mvital-card.gold::after  {background:linear-gradient(90deg,transparent,var(--gold-l),  transparent)}
+  .mvital-card.praga::after {background:linear-gradient(90deg,transparent,var(--praga-l), transparent)}
+  .mvital-label{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;display:block}
+  .mvital-value{font-family:'Cinzel Decorative',serif;font-size:2rem;line-height:1;display:block}
+  .mvital-value.iri   {color:var(--iri-l);   text-shadow:0 0 18px rgba(56,96,160,.4)}
+  .mvital-value.violet{color:var(--violet-l);text-shadow:0 0 16px rgba(96,48,144,.4)}
+  .mvital-value.gold  {color:var(--gold-l);  text-shadow:0 0 14px rgba(160,120,32,.3)}
+  .mvital-value.praga {color:var(--praga-l); text-shadow:0 0 14px rgba(128,64,64,.3)}
+  .mvital-note{font-size:.75rem;color:var(--text-dim);font-style:italic;margin-top:6px;display:block;line-height:1.4}
+
+  /* CR / TWO COL */
+  .two-col-monster{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  @media(max-width:600px){.two-col-monster{grid-template-columns:1fr}}
+  .cr-badge{display:flex;flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;background:linear-gradient(135deg,rgba(20,28,50,.14),rgba(24,12,36,.12));border:1px solid rgba(56,72,120,.4);border-top:2px solid var(--iri-l);border-bottom:2px solid var(--gold-d);padding:14px 24px;text-align:left}
+  .cr-badge-label{font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.28em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;display:block}
+  .cr-badge-value{font-family:'Cinzel Decorative',serif;font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,var(--iri-l),var(--violet-l));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;display:block}
+  .cr-badge-note{font-family:'Fira Code',monospace;font-size:.6rem;color:var(--text-dim);margin-top:4px;letter-spacing:.06em;display:block}
+
+  /* ATTR GRID */
+  .attr-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px}
+  @media(max-width:560px){.attr-grid{grid-template-columns:repeat(3,1fr)}}
+  .attr-box{background:rgba(6,8,18,.9);border:1px solid var(--hollow);padding:16px 10px;text-align:center;position:relative;overflow:hidden;transition:transform .2s}
+  .attr-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .attr-box.hi::before {background:linear-gradient(90deg,transparent,var(--iri-l),   transparent)}
+  .attr-box.mid::before{background:linear-gradient(90deg,transparent,var(--violet-l),transparent)}
+  .attr-box.lo::before {background:linear-gradient(90deg,transparent,var(--feather-l),transparent)}
+  .attr-box:hover{transform:translateY(-2px)}
+  .attr-name{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
+  .attr-value{font-family:'Fira Code',monospace;font-size:1.15rem;font-weight:500;color:var(--text);display:block;line-height:1}
+  .attr-value.hi {color:var(--iri-l)}
+  .attr-value.mid{color:var(--violet-l)}
+  .attr-value.lo {color:var(--feather-l)}
+  .attr-mod{font-family:'Fira Code',monospace;font-size:.8rem;color:var(--text-dim);display:block;margin-top:4px}
+  .attr-mod.hi {color:var(--iri-l)}
+  .attr-mod.mid{color:var(--violet-l)}
+
+  /* CARDS */
+  .card{background:linear-gradient(135deg,rgba(10,12,24,.92) 0%,rgba(6,8,18,.96) 100%);border:1px solid var(--hollow);padding:20px 24px;margin-bottom:12px;position:relative;transition:box-shadow .3s}
+  .card.iri   {border-left:3px solid var(--iri-d)}.card.iri:hover   {box-shadow:-4px 0 20px rgba(40,72,128,.2),0 4px 20px rgba(0,0,0,.6)}
+  .card.violet{border-left:3px solid var(--violet-d)}.card.violet:hover{box-shadow:-4px 0 20px rgba(72,32,112,.18),0 4px 20px rgba(0,0,0,.6)}
+  .card.gold  {border-left:3px solid var(--gold-d)}.card.gold:hover  {box-shadow:-4px 0 20px rgba(120,90,16,.16),0 4px 20px rgba(0,0,0,.6)}
+  .card.praga {border-left:3px solid var(--praga-d)}.card.praga:hover {box-shadow:-4px 0 20px rgba(100,32,32,.18),0 4px 20px rgba(0,0,0,.6)}
+  .card-title{font-family:'Cinzel',serif;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+  .card-title.iri   {color:var(--iri-p)}
+  .card-title.violet{color:var(--violet-p)}
+  .card-title.gold  {color:var(--gold-p)}
+  .card-title.praga {color:var(--praga-p)}
+  .card p{font-size:.95rem;color:#8090b0;line-height:1.76}
+
+  /* TRAIT */
+  .trait{display:grid;grid-template-columns:3px 1fr;gap:0 14px;margin-bottom:10px}
+  .tier-bar{border-radius:2px}
+  .trait-content{background:rgba(6,8,18,.78);border:1px solid var(--hollow);padding:14px 16px}
+  .trait-name{font-family:'Cinzel',serif;font-size:.74rem;letter-spacing:.1em;font-weight:900;color:var(--iri-p);margin-bottom:5px}
+  .trait-name .sub{font-style:italic;font-weight:400;color:var(--text-dim);font-family:'EB Garamond',serif;font-size:.9rem;letter-spacing:0;text-transform:none}
+  .trait-content p{font-size:.92rem;color:#8090b0;line-height:1.72}
+  .trait-content p strong{color:var(--iri-p)}
+
+  /* FORMA GRID — três formas */
+  .forma-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}
+  @media(max-width:600px){.forma-grid{grid-template-columns:1fr}}
+  .forma-card{background:rgba(6,8,18,.9);border:1px solid var(--hollow);padding:20px 18px;position:relative;overflow:hidden}
+  .forma-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+  .f-human::before {background:linear-gradient(90deg,transparent,var(--iri-l),   transparent)}
+  .f-hybrid::before{background:linear-gradient(90deg,transparent,var(--violet-l),transparent)}
+  .f-crow::before  {background:linear-gradient(90deg,transparent,var(--feather-l),transparent)}
+  .forma-icon{font-size:1.8rem;display:block;margin-bottom:8px;filter:drop-shadow(0 0 8px rgba(80,120,200,.4))}
+  .forma-title{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;display:block}
+  .f-human  .forma-title{color:var(--iri-p)}
+  .f-hybrid .forma-title{color:var(--violet-p)}
+  .f-crow   .forma-title{color:var(--feather-p)}
+  .forma-card p{font-size:.88rem;color:#8090b0;line-height:1.7}
+  .forma-card ul{padding-left:16px;color:#8090b0;font-size:.88rem;line-height:1.8}
+  .forma-card li{margin-bottom:4px}
+
+  /* ACTIONS */
+  .action{background:linear-gradient(135deg,rgba(10,12,24,.9) 0%,rgba(6,8,18,.95) 100%);border:1px solid var(--hollow);padding:14px 18px;margin-bottom:8px;transition:box-shadow .25s}
+  .action.iri   {border-bottom:2px solid var(--iri-d)}.action.iri:hover   {box-shadow:0 2px 16px rgba(40,72,128,.15)}
+  .action.violet{border-bottom:2px solid var(--violet-d)}.action.violet:hover{box-shadow:0 2px 16px rgba(72,32,112,.14)}
+  .action.gold  {border-bottom:2px solid var(--gold-d)}.action.gold:hover  {box-shadow:0 2px 16px rgba(120,90,16,.14)}
+  .action.praga {border-bottom:2px solid var(--praga-d)}.action.praga:hover {box-shadow:0 2px 16px rgba(100,32,32,.14)}
+  .action-name{font-family:'Cinzel',serif;font-size:.76rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  .action-name.iri   {color:var(--iri-p)}
+  .action-name.violet{color:var(--violet-p)}
+  .action-name.gold  {color:var(--gold-p)}
+  .action-name.praga {color:var(--praga-p)}
+  .action p{font-size:.92rem;color:#8090b0;line-height:1.72}
+  .action strong{color:var(--iri-p)}
+
+  /* TABLE */
+  .table-wrap{margin:10px 0;border:1px solid var(--hollow);overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  thead tr{background:rgba(6,8,18,.98);border-bottom:2px solid var(--iri-d)}
+  thead th{font-family:'Cinzel',serif;font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-p);padding:9px 14px;text-align:left;white-space:nowrap}
+  tbody tr{border-bottom:1px solid rgba(16,18,28,.9);transition:background .12s}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr:nth-child(even){background:rgba(255,255,255,.01)}
+  tbody tr:hover{background:rgba(40,56,100,.07)}
+  td{padding:8px 14px;vertical-align:top;color:#8090b0}
+  td:first-child{font-family:'Cinzel',serif;font-size:.84rem;color:var(--text)}
+
+  .mono{font-family:'Fira Code',monospace;font-size:.78rem}
+  .mono.iri   {color:var(--iri-l)}
+  .mono.violet{color:var(--violet-l)}
+  .mono.gold  {color:var(--gold-l)}
+  .mono.praga {color:var(--praga-l)}
+
+  /* CALLOUT */
+  .callout{border-left:3px solid;padding:14px 18px;margin:12px 0;font-style:italic;font-size:.92rem;line-height:1.75}
+  .callout strong{font-style:normal;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;display:block;margin-bottom:3px}
+  .callout.iri   {background:rgba(16,24,48,.15);border-color:var(--iri);   color:#8090b0}.callout.iri    strong{color:var(--iri-l)}
+  .callout.violet{background:rgba(22,10,36,.15);border-color:var(--violet);color:#8090b0}.callout.violet strong{color:var(--violet-l)}
+  .callout.gold  {background:rgba(28,18,6,.15); border-color:var(--gold);  color:#8090b0}.callout.gold   strong{color:var(--gold-l)}
+  .callout.praga {background:rgba(28,8,8,.14);  border-color:var(--praga); color:#8090b0}.callout.praga  strong{color:var(--praga-l)}
+
+  mark        {background:rgba(56,96,160,.16);color:var(--iri-p);border-radius:1px;padding:0 2px}
+  mark.violet {background:rgba(96,48,144,.15);color:var(--violet-p)}
+  mark.gold   {background:rgba(140,110,20,.15);color:var(--gold-p)}
+  mark.praga  {background:rgba(128,48,48,.15); color:var(--praga-p)}
+
+  .sep{height:1px;background:linear-gradient(90deg,transparent,var(--iri-d),var(--gold-d),transparent);margin:18px 0;opacity:.5}
+
+  /* SAN TABLE */
+  .san-table{width:100%;border-collapse:collapse;font-size:.88rem;border:1px solid var(--hollow)}
+  .san-table thead tr{background:rgba(6,8,18,.98);border-bottom:2px solid var(--iri-d)}
+  .san-table thead th{font-family:'Cinzel',serif;font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-p);padding:9px 14px;text-align:left}
+  .san-table tbody tr{border-bottom:1px solid rgba(16,18,28,.9);transition:background .12s}
+  .san-table tbody tr:last-child{border-bottom:none}
+  .san-table tbody tr:hover{background:rgba(40,56,100,.07)}
+  .san-table td{padding:8px 14px;vertical-align:top;color:#8090b0;font-size:.88rem}
+  .san-table .situation{font-style:italic;color:var(--text)}
+  .san-table .pass{color:var(--iri-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem}
+  .san-table .fail{color:var(--praga-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem;font-weight:600}
+  .san-table .cd{color:var(--gold-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem}
+
+  footer{text-align:center;padding:40px 20px;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}
+  footer span{color:var(--feather-d);margin:0 6px}
+  #top-btn{position:fixed;bottom:28px;right:28px;width:42px;height:42px;background:rgba(3,4,6,.97);border:1px solid var(--iri-d);color:var(--iri-l);font-size:1.2rem;line-height:42px;text-align:center;text-decoration:none;transition:border-color .2s,color .2s;z-index:100; opacity:0; pointer-events:none; transition: opacity .25s, border-color .2s, color .2s;}
+  #top-btn:hover{border-color:var(--gold-l);color:var(--gold-p)}
+  #top-btn.visible { opacity: 1; pointer-events: all; }
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--void)}::-webkit-scrollbar-thumb{background:var(--iri-d);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--iri-l)}
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+<nav class="breadcrumb" aria-label="Trilha de navegação">
+  Curse of Strahd &nbsp;/&nbsp; Barovia <span>›</span> <span class="current">Homem-Corvo — Referência do Mestre</span>
+</nav>
+
+<header>
+  <div class="header-pulse"></div>
+  <span class="header-symbol">🪶</span>
+  <p class="header-eyebrow">Curse of Strahd &nbsp;⸸&nbsp; Licantropo Secreto &nbsp;⸸&nbsp; A Praga da Raiva — Caso Único</p>
+  <p class="header-classification">⬥ Humanoide Médio (Metamorfo) &nbsp;·&nbsp; Leal e Bom &nbsp;·&nbsp; Nível de Desafio 2 ⬥</p>
+  <h1 class="header-fraktur">Homem-Corvo</h1>
+  <p class="header-title-sub">Licantropo Secreto — Guardião das Sombras de Barovia</p>
+  <p class="header-tagline">"Entre todos os portadores da Praga da Raiva, o Homem-Corvo é a prova de que nem toda transmissão produz destruição."</p>
+  <div class="header-crests">
+    <span class="crest-badge iri">🪶 Metamorfo · 3 Formas</span>
+    <span class="crest-badge violet">🎭 Mimetismo</span>
+    <span class="crest-badge gold">✨ Leal e Bom</span>
+    <span class="crest-badge praga">🩸 Praga Transmissível CD 10</span>
+  </div>
+</header>
+
+<div class="divider"><div class="divider-line"></div><span class="divider-glyph">🪶</span><div class="divider-line"></div></div>
+
+<main>
+
+  <!-- IDENTIDADE -->
+  <section id="identidade">
+    <div class="section-header">
+      <span class="section-icon iri">🪶</span>
+      <h2 class="iri">Identidade &amp; Lore</h2>
+      <div class="section-line iri"></div>
+    </div>
+
+    <div class="identity">
+      <div class="identity-corner tl">HUMANOIDE MÉDIO (HUMANO, METAMORFO) · LEAL E BOM</div>
+      <div class="identity-corner tr">NÍVEL DE DESAFIO 2 · 450 XP</div>
+      <div class="identity-corner bl">CURSE OF STRAHD · APÊNDICE D</div>
+      <div class="identity-corner br">A PRAGA DA RAIVA — CASO ÚNICO</div>
+      <div class="monster-name">Homem-Corvo</div>
+      <div class="monster-epithet">⬥ O Licantropo que Escolheu o Bem — Guardião Secreto de Barovia ⬥</div>
+      <div class="monster-type-line">
+        <span class="tag lycant">Licantropo</span>
+        <span class="tag meta">Metamorfo</span>
+        <span class="tag good">Leal e Bom</span>
+        <span class="tag medium">Médio</span>
+        <span class="tag nd2">ND 2</span>
+        <span class="tag praga">Praga da Raiva</span>
+      </div>
+      <p class="monster-lore">Homens-corvos são licantropos secretos e extraordinariamente cautelosos, que confiam uns nos outros mas desconfiam de todos os outros. Embora habilidosos ao se misturarem à sociedade, mantêm-se bem reservados, respeitam as leis locais e se esforçam para fazer o bem sempre que possível. Em Barovia, onde criaturas malignas dominam, os Homens-corvos operam como a única rede de resistência genuinamente organizada — coletando informações, escondendo itens mágicos de mãos malignas e prestando auxílio discreto aos aventureiros que demonstram intenções honestas.</p>
+      <p class="monster-lore">Organizam-se em <strong>castas de 7 a 12 indivíduos</strong>. São relutantes em fazer ataques de mordida em forma de corvo por medo de espalhar sua maldição àqueles que não merecem ou abusariam disso. Essa contenção é o que os distingue de todos os outros licantropos em Barovia — e em Valtheris.</p>
+      <p class="monster-lore gold"><strong>Colecionadores Caridosos.</strong> Homens-corvos gostam de colecionar bugigangas e quinquilharias brilhantes. Compartilham riquezas com os necessitados e, nas formas humanoides, dão modestamente dinheiro à caridade. Tomam medidas para manter itens mágicos fora de mãos malignas, ocultando-os em esconderijos secretos.</p>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section id="stats">
+    <div class="section-header">
+      <span class="section-icon gold">📋</span>
+      <h2 class="gold">Estatísticas Base</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="monster-vitals">
+      <div class="mvital-card iri">
+        <span class="mvital-label">Classe de Armadura</span>
+        <span class="mvital-value iri">12</span>
+        <span class="mvital-note">Todas as formas</span>
+      </div>
+      <div class="mvital-card violet">
+        <span class="mvital-label">Pontos de Vida</span>
+        <span class="mvital-value violet">31</span>
+        <span class="mvital-note">7d8</span>
+      </div>
+      <div class="mvital-card iri">
+        <span class="mvital-label">Deslocamento</span>
+        <span class="mvital-value iri">9 m</span>
+        <span class="mvital-note">Voo 15 m (corvo / híbrido)</span>
+      </div>
+      <div class="mvital-card gold">
+        <span class="mvital-label">Percepção Passiva</span>
+        <span class="mvital-value gold">16</span>
+        <span class="mvital-note">Percepção +6</span>
+      </div>
+    </div>
+
+    <div class="two-col-monster">
+      <div class="cr-badge">
+        <div>
+          <span class="cr-badge-label">Challenge Rating</span>
+          <span class="cr-badge-value">2</span>
+          <span class="cr-badge-note">450 XP</span>
+        </div>
+        <div style="border-left:1px solid rgba(40,56,100,.3);padding-left:20px;">
+          <span class="cr-badge-label">Alinhamento</span>
+          <span class="cr-badge-value" style="font-size:1.3rem;color:var(--iri-l);-webkit-text-fill-color:var(--iri-l);">Leal e Bom</span>
+          <span class="cr-badge-note">único entre licantropos do CoS</span>
+        </div>
+      </div>
+      <div class="card iri" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:center;">
+        <div class="card-title iri">O Aliado que os Aventureiros Não Esperavam</div>
+        <p style="font-size:.9rem;">O Homem-Corvo é o <mark>único licantropo de alinhamento bom</mark> em Curse of Strahd. Em Barovia onde tudo conspira contra os aventureiros, descobrir essa rede secreta é um divisor de águas — mas eles só se revelam quando confiam completamente.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ATRIBUTOS -->
+  <div class="two-col-monster" style="align-items:start;gap:14px;margin-bottom:56px;">
+  <section id="atributos" style="margin-bottom:0;">
+    <div class="section-header">
+      <span class="section-icon iri">◆</span>
+      <h2 class="iri">Atributos</h2>
+      <div class="section-line iri"></div>
+    </div>
+    <div class="attr-grid">
+      <div class="attr-box lo"><div class="attr-name">For</div><span class="attr-value lo">10</span><span class="attr-mod">+0</span></div>
+      <div class="attr-box hi"><div class="attr-name">Des</div><span class="attr-value hi">15</span><span class="attr-mod hi">+2</span></div>
+      <div class="attr-box lo"><div class="attr-name">Con</div><span class="attr-value lo">11</span><span class="attr-mod">+0</span></div>
+      <div class="attr-box mid"><div class="attr-name">Int</div><span class="attr-value mid">13</span><span class="attr-mod mid">+1</span></div>
+      <div class="attr-box hi"><div class="attr-name">Sab</div><span class="attr-value hi">15</span><span class="attr-mod hi">+2</span></div>
+      <div class="attr-box hi"><div class="attr-name">Car</div><span class="attr-value hi">14</span><span class="attr-mod hi">+2</span></div>
+    </div>
+    <div class="callout iri" style="margin-top:4px;">
+      <strong>Perfil de um Sobrevivente Inteligente</strong> Sem força bruta — DEX, SAB e CAR são os atributos dominantes. O Homem-Corvo sobrevive em Barovia não pela força, mas pela astúcia, percepção e capacidade de se misturar. Percepção +6 (Passiva 16) torna difícil surpreendê-lo.
+    </div>
+  </section>
+
+  <section id="proficiencias" style="margin-bottom:0;">
+    <div class="section-header">
+      <span class="section-icon gold">🎲</span>
+      <h2 class="gold">Proficiências, Sentidos &amp; Imunidades</h2>
+      <div class="section-line gold"></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+        <tbody>
+          <tr><td>Perícias</td><td><span class="mono iri">Intuição +4 &nbsp;·&nbsp; Percepção +6</span></td></tr>
+          <tr><td>Imunidade a Dano</td><td>Concussão, Cortante, Perfurante de não-mágico não-prateado</td></tr>
+          <tr><td>Sentidos</td><td>Percepção passiva 16</td></tr>
+          <tr><td>Idiomas</td><td>Comum (não pode falar na forma de corvo)</td></tr>
+          <tr><td>ND</td><td><span class="mono gold">2 (450 XP)</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  </div>
+
+  <!-- TRÊS FORMAS -->
+  <section id="formas">
+    <div class="section-header">
+      <span class="section-icon violet">🎭</span>
+      <h2 class="violet">As Três Formas</h2>
+      <div class="section-line violet"></div>
+    </div>
+
+    <div class="forma-grid">
+      <div class="forma-card f-human">
+        <span class="forma-icon">🧍</span>
+        <span class="forma-title">Forma Humana</span>
+        <p>Aparência completamente humana. Acesso a Ataques Múltiplos, Espada Curta e Besta de Mão. Pode falar normalmente. Deslocamento terrestre 9 m. É a forma social e de infiltração — permite viver entre humanos sem despertar suspeita.</p>
+      </div>
+      <div class="forma-card f-hybrid">
+        <span class="forma-icon">🦅</span>
+        <span class="forma-title">Forma Híbrida</span>
+        <p>Humano com características de corvo — penas, olhos, bico parcial. Acesso a <em>todos</em> os ataques: Bico, Espada Curta e Besta de Mão. Voo 15 m. Bico transmite a maldição. A forma mais versátil em combate.</p>
+      </div>
+      <div class="forma-card f-crow">
+        <span class="forma-icon">🐦‍⬛</span>
+        <span class="forma-title">Forma de Corvo</span>
+        <p>Corvo comum — imperceptível na névoa de Barovia. Voo 15 m. Apenas o Bico como ataque (1 de dano perfurante). Ideal para reconhecimento, espionagem e transmissão de mensagens. A forma mais discreta.</p>
+      </div>
+    </div>
+
+    <div class="callout violet">
+      <strong>Metamorfo — Regra da Transformação</strong> O Homem-Corvo usa sua <strong>ação</strong> para se transformar em qualquer das três formas. Estatísticas são idênticas em todas as formas — apenas o tamanho e o deslocamento mudam. Qualquer equipamento vestido não se transforma junto. Retorna à forma humanoide se morrer. <mark class="violet">Não é possível surpreender o Mestre com "qual forma está sendo usada"</mark> — o Homem-Corvo sempre tem contexto para a escolha.
+    </div>
+  </section>
+
+  <!-- TRAÇOS -->
+  <section id="tracos">
+    <div class="section-header">
+      <span class="section-icon iri">✧</span>
+      <h2 class="iri">Traços Especiais</h2>
+      <div class="section-line iri"></div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--violet-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Mimetismo <span class="sub">(Passivo)</span></div>
+        <p>O Homem-Corvo pode imitar sons simples que ouviu — como uma pessoa sussurrando, um bebê chorando, ou um animal crocitando. Uma criatura que ouça os sons pode dizer que são imitações com uma jogada de <strong>Sabedoria (Intuição) bem-sucedida contra CD 10</strong>. Táticas: imitar vozes de aliados para atrair inimigos, criar distrações sonoras, alertar colegas com sons codificados.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--iri-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Imunidade a Dano Não-Mágico Não-Prateado <span class="sub">(Passivo — Como Todos os Licantropos)</span></div>
+        <p>Compartilha a imunidade padrão dos licantropos: dano de concussão, cortante e perfurante de ataques não mágicos não feitos com armas de prata é completamente ignorado. Em combate de autodefesa, isso torna o Homem-Corvo significativamente mais durável do que seus 31 PV sugerem.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- AÇÕES -->
+  <section id="acoes">
+    <div class="section-header">
+      <span class="section-icon gold">⚔</span>
+      <h2 class="gold">Ações</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="action iri">
+      <div class="action-name iri">Ataques Múltiplos <span style="font-family:'Fira Code',monospace;font-size:.6rem;color:var(--feather-p);font-weight:400;">(Somente Forma Humana ou Híbrida)</span></div>
+      <p>O Homem-Corvo realiza <strong>dois ataques com arma</strong>, um dos quais pode ser com sua Besta de Mão.</p>
+    </div>
+
+    <div class="action praga">
+      <div class="action-name praga">Bico <span style="font-family:'Fira Code',monospace;font-size:.6rem;color:var(--praga-p);font-weight:400;">(Somente Forma de Corvo ou Híbrida — Transmite Maldição)</span></div>
+      <p><em>Ataque Corpo-a-Corpo com Arma:</em> <strong>+4 para atingir</strong>, alcance 1,5 m, um alvo. Acerto: <strong>1 de dano perfurante</strong> (forma de corvo) ou <strong>4 (1d4 + 2)</strong> de dano perfurante (forma híbrida).</p>
+      <p style="margin-top:8px;">Se o alvo for humanoide, deve ser bem-sucedido num <strong>Teste de Resistência de Constituição CD 10</strong> ou ficará amaldiçoado com a licantropia dos Homens-corvos. <em>É por isso que eles evitam usar o Bico</em> — não querem transmitir a maldição sem consentimento.</p>
+    </div>
+
+    <div class="action iri">
+      <div class="action-name iri">Espada Curta <span style="font-family:'Fira Code',monospace;font-size:.6rem;color:var(--feather-p);font-weight:400;">(Somente Forma Humanoide ou Híbrida)</span></div>
+      <p><em>Ataque Corpo-a-Corpo com Arma:</em> <strong>+4 para atingir</strong>, alcance 1,5 m, um alvo. Acerto: <strong>5 (1d6 + 2)</strong> de dano perfurante.</p>
+    </div>
+
+    <div class="action violet">
+      <div class="action-name violet">Besta de Mão <span style="font-family:'Fira Code',monospace;font-size:.6rem;color:var(--feather-p);font-weight:400;">(Somente Forma Humanoide ou Híbrida)</span></div>
+      <p><em>Ataque à Distância com Arma:</em> <strong>+4 para atingir</strong>, alcance 9/18 m, um alvo. Acerto: <strong>5 (1d6 + 2)</strong> de dano perfurante.</p>
+    </div>
+
+    <div class="sep"></div>
+    <div class="callout gold">
+      <strong>Por Que Raramente Usam o Bico</strong> A CD 10 do Bico é a mais baixa de qualquer transmissão licantrópica do CoS — mas os Homens-corvos tratam isso com o maior cuidado. <mark class="gold">Eles não querem criar licantropos involuntários.</mark> A maldição que transmitem produz Homens-corvos — e a eles interessa que novos membros escolham aderir, não que sejam forçados. O Bico é reservado para autodefesa extrema.
+    </div>
+  </section>
+
+  <!-- PRAGA DA RAIVA — CONEXÃO VALTHERIS -->
+  <section id="praga">
+    <div class="section-header">
+      <span class="section-icon praga">🩸</span>
+      <h2 class="praga">A Praga da Raiva — O Caso Único</h2>
+      <div class="section-line praga"></div>
+    </div>
+
+    <div class="card praga">
+      <div class="card-title praga">Por que o Homem-Corvo é Diferente de Todos os Outros</div>
+      <p>No espectro da Praga da Raiva documentado no Codex Valtheris, todos os casos produzem raiva, descontrole ou colapso cognitivo progressivo. O Homem-Corvo é a anomalia: <mark class="praga">licantropia transmissível que produz controle, não descontrole.</mark> A razão possível está no tipo de genética envolvida — pássaro, não canídeo. O código genético aviário não carrega a memória predatória dos gnolls que fundamenta a Praga da Raiva clássica.</p>
+    </div>
+
+    <div class="card iri">
+      <div class="card-title iri">Implicações para Valtheris</div>
+      <p>Se um Homem-Corvo chegar a Valtheris, a Igreja do Sol Agonizante enfrentará uma categoria que seu sistema não comporta: um licantropo leal e bom, que transmite sua condição com cuidado e consentimento implícito, que opera como guardião do bem em vez de ameaça ao equilíbrio. A "Praga da Raiva" como categoria genérica simplesmente não descreve o que é um Homem-Corvo. Isso pode forçar uma revisão doutrinária — ou uma negação violenta da evidência.</p>
+    </div>
+
+    <div class="callout praga">
+      <strong>O que Acontece se um PC for Mordido sem Passar no TR</strong> O personagem fica amaldiçoado com a licantropia dos Homens-corvos. Diferente do Loup Garou (destruição em 24h), o processo é gradual. O Homem-Corvo que causou a transmissão normalmente busca o afetado para explicar o que aconteceu e oferecer orientação — é parte da ética da casta. <mark>Um Remover Maldição antes do próximo amanhecer cura completamente.</mark> Depois disso, a transformação começa a se consolidar.
+    </div>
+  </section>
+
+  <!-- COMO RODAR -->
+  <section id="notas">
+    <div class="section-header">
+      <span class="section-icon gold">🧠</span>
+      <h2 class="gold">Como Rodar — Notas do Mestre</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="card iri">
+      <div class="card-title iri">Como Encontrá-los</div>
+      <p>Homens-corvos normalmente se revelam apenas após testes extensos de confiança. Podem aparecer como corvos observando o grupo, como estalajadeiros ou comerciantes que oferecem ajuda discreta, ou como transeuntes que passam informações codificadas. A Taberna Sangue de Uva em Vallaki é um ponto de encontro documentado no módulo — Urwin Martikov é um Homem-Corvo.</p>
+    </div>
+
+    <div class="card violet">
+      <div class="card-title violet">O que Eles Querem</div>
+      <p>Querem que Strahd seja destruído — ao contrário de Vladimir, eles apóiam ativamente os aventureiros. Fornecem informações sobre o castelo, localização de itens, movimentos de criaturas servas de Strahd. Em troca, querem discrição: que a existência deles como licantropos não seja revelada publicamente.</p>
+    </div>
+
+    <div class="card gold">
+      <div class="card-title gold">Casta e Hierarquia</div>
+      <p>Cada casta de 7-12 indivíduos opera de forma relativamente autônoma. Os Martikovs (família que administra o Vinhedo do Mago e da Uva e a Taberna em Vallaki) são a casta mais conhecida. Decisões importantes são tomadas coletivamente — não há um líder único.</p>
+    </div>
+  </section>
+
+  <!-- SANIDADE -->
+  <section id="sanidade">
+    <div class="section-header">
+      <span class="section-icon violet">🌑</span>
+      <h2 class="violet">Dano de Sanidade — Regra Opcional</h2>
+      <div class="section-line violet"></div>
+    </div>
+
+    <div class="card violet" style="margin-bottom:14px;">
+      <div class="card-title violet">O Horror Invertido</div>
+      <p>Com os Homens-corvos, o dano de sanidade não vem do medo — vem da <em>esperança inesperada</em>. Em Barovia onde tudo é ameaça, descobrir aliados genuínos pode ser tão desestabilizante quanto encontrar inimigos. O horror invertido: a percepção de que havia bondade aqui o tempo todo, e de quanto ela precisou se esconder para sobreviver.</p>
+    </div>
+
+    <table class="san-table">
+      <thead>
+        <tr><th>Situação</th><th>Sucesso (SAB)</th><th>Falha (SAB)</th><th>CD</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="situation">Ver um corvo aparentemente comum transformar-se em humano na frente do grupo</td>
+          <td class="pass">—</td><td class="fail">1d4</td><td class="cd">CD 10</td>
+        </tr>
+        <tr>
+          <td class="situation">Descobrir que o estalajadeiro amigável com quem conversaram por dias é um licantropo</td>
+          <td class="pass">—</td><td class="fail">1d6</td><td class="cd">CD 12</td>
+        </tr>
+        <tr>
+          <td class="situation">Um PC é mordido pelo Bico e descobre que pode virar Homem-Corvo</td>
+          <td class="pass">1d4</td><td class="fail">1d8</td><td class="cd">CD 14</td>
+        </tr>
+        <tr>
+          <td class="situation">Perceber a escala da rede secreta de Homens-corvos — quantos havia o tempo todo</td>
+          <td class="pass">1d4</td><td class="fail">1d6</td><td class="cd">CD 13</td>
+        </tr>
+        <tr>
+          <td class="situation">Um Homem-Corvo morre protegendo o grupo — revelando a forma de corvo ao morrer</td>
+          <td class="pass">1d6</td><td class="fail">2d6</td><td class="cd">CD 15</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<div style="max-width:940px;margin:0 auto;padding:0 20px;">
+  <div class="divider" style="padding:0;margin-bottom:0;">
+    <div class="divider-line"></div><span class="divider-glyph">🪶</span><div class="divider-line"></div>
+  </div>
+</div>
+<div class="top-bar" style="margin-top:0;"></div>
+
+<footer>
+  Homem-Corvo <span>⸸</span> Licantropo Secreto <span>⸸</span> Curse of Strahd
+</footer>
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+<script>
+document.getElementById('top-btn').addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});window.addEventListener('scroll',function(){document.getElementById('top-btn').classList.toggle('visible',window.scrollY>400);});
+</script>
+</body>
+</html>

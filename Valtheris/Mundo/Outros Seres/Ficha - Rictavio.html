@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rictavio — Referência do Mestre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&family=UnifrakturMaguntia:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:     #050406;
+    --hollow:   #1a1818;
+
+    --amber:    #5a3c08;
+    --amber-l:  #a07018;
+    --amber-d:  #1a1006;
+    --amber-p:  #d0a030;
+
+    --sage:     #1a3020;
+    --sage-l:   #305840;
+    --sage-d:   #080e0a;
+    --sage-p:   #70a870;
+
+    --silver:   #304050;
+    --silver-l: #588098;
+    --silver-d: #0e1820;
+    --silver-p: #90b8d0;
+
+    --curse:    #481020;
+    --curse-l:  #882038;
+    --curse-d:  #180810;
+    --curse-p:  #c06070;
+
+    --text:     #a09880;
+    --text-dim: #302820;
+    --text-faint:#120e08;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:#050406;
+    background-image:
+      radial-gradient(ellipse 120% 50% at 50% -5%,#140e06 0%,transparent 55%),
+      radial-gradient(ellipse 50% 60% at 90% 100%,#100c06 0%,transparent 50%),
+      radial-gradient(ellipse 40% 60% at 10%  80%,#0e1008 0%,transparent 50%);
+    color:var(--text);
+    font-family:'EB Garamond',Georgia,serif;
+    font-size:17px;line-height:1.8;min-height:100vh;overflow-x:hidden
+  }
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:.65}
+
+  .top-bar{height:4px;background:linear-gradient(90deg,var(--amber-d),var(--amber-l),var(--sage-l),var(--amber-l),var(--amber-d));box-shadow:0 0 30px rgba(90,60,8,.5)}
+  .ally-stripe{height:2px;background:linear-gradient(90deg,transparent,var(--sage-d),var(--silver-d),transparent);opacity:.8}
+
+  header{position:relative;text-align:center;padding:80px 20px 70px;overflow:hidden}
+  header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(60,40,8,.14) 0%,transparent 65%);pointer-events:none}
+  header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--amber-d),var(--sage-d),transparent)}
+  .header-pulse{position:absolute;inset:0;background:radial-gradient(ellipse 60% 45% at 50% 45%,rgba(80,56,8,.06) 0%,transparent 70%);animation:breathe 12s ease-in-out infinite;pointer-events:none}
+  @keyframes breathe{0%,100%{opacity:.4}50%{opacity:1}}
+  .header-symbol{display:block;font-size:2.8rem;margin-bottom:18px;filter:drop-shadow(0 0 20px rgba(160,112,24,.6));animation:crest-pulse 10s ease-in-out infinite}
+  @keyframes crest-pulse{0%,100%{filter:drop-shadow(0 0 16px rgba(160,112,24,.5))}50%{filter:drop-shadow(0 0 28px rgba(200,148,32,.7))}}
+  .header-fraktur{font-family:'UnifrakturMaguntia',serif;font-size:clamp(2rem,7vw,4rem);line-height:1.05;margin-bottom:6px;background:linear-gradient(135deg,#d0a030 0%,#a07018 25%,#70a870 55%,#90b8d0 85%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .header-eyebrow{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.45em;text-transform:uppercase;color:var(--text-faint);margin-bottom:18px}
+  .header-classification{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:var(--amber-p);margin-bottom:10px;opacity:.8}
+  .header-title-sub{font-family:'Cinzel',serif;font-size:clamp(.85rem,2vw,1rem);letter-spacing:.18em;text-transform:uppercase;color:var(--silver-p);margin-bottom:8px}
+  .header-tagline{font-style:italic;color:#1e1406;font-size:1.05rem;max-width:580px;margin:0 auto 28px}
+  .ally-badge{display:inline-block;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;border:1px solid var(--amber-d);color:var(--amber-l);padding:4px 18px;margin-bottom:12px}
+  .header-crests{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px}
+  .crest-badge{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:4px 14px;border-radius:1px}
+  .crest-badge.amber {border:1px solid var(--amber-d); color:var(--amber-p)}
+  .crest-badge.sage  {border:1px solid var(--sage-d);  color:var(--sage-p)}
+  .crest-badge.silver{border:1px solid var(--silver-d);color:var(--silver-p)}
+  .crest-badge.curse {border:1px solid var(--curse-d); color:var(--curse-p)}
+
+  .divider{display:flex;align-items:center;gap:14px;max-width:940px;margin:0 auto;padding:40px 20px 48px}
+  .divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--amber-d),var(--sage-d),transparent)}
+  .divider-glyph{color:var(--amber-l);font-size:1rem;opacity:.7}
+  .breadcrumb{max-width:940px;margin:0 auto;padding:20px 20px 0;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}
+  .breadcrumb span{color:var(--amber-d);margin:0 6px}.breadcrumb .current{color:var(--amber-p)}
+  main{max-width:940px;margin:0 auto;padding:0 20px 90px;display:flex;flex-direction:column}
+  section{margin-bottom:56px;animation:fade-in .5s ease both}
+  @keyframes fade-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  section:nth-child(1){animation-delay:.05s}section:nth-child(2){animation-delay:.10s}
+  section:nth-child(3){animation-delay:.15s}section:nth-child(4){animation-delay:.20s}
+  section:nth-child(5){animation-delay:.25s}section:nth-child(6){animation-delay:.30s}
+  section:nth-child(7){animation-delay:.35s}section:nth-child(8){animation-delay:.40s}section:nth-child(9){animation-delay:.45s}
+  p{margin-bottom:10px}p:last-child{margin-bottom:0}
+
+  .section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .section-icon{font-size:1.2rem;flex-shrink:0}
+  .section-icon.amber {filter:drop-shadow(0 0 8px rgba(160,112,24,.5))}
+  .section-icon.sage  {filter:drop-shadow(0 0 8px rgba(48,88,64,.4))}
+  .section-icon.silver{filter:drop-shadow(0 0 8px rgba(88,128,152,.4))}
+  .section-icon.curse {filter:drop-shadow(0 0 8px rgba(136,32,56,.4))}
+  h2{font-family:'Cinzel',serif;font-size:.9rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+  h2.amber {color:#d0a030;text-shadow:0 0 20px rgba(160,112,24,.35)}
+  h2.sage  {color:#70a870;text-shadow:0 0 18px rgba(48,88,64,.3)}
+  h2.silver{color:#90b8d0;text-shadow:0 0 18px rgba(88,128,152,.3)}
+  h2.curse {color:#c06070;text-shadow:0 0 18px rgba(136,32,56,.3)}
+  .section-line{flex:1;height:1px}
+  .section-line.amber {background:linear-gradient(90deg,var(--amber-d), rgba(26,16,6,.3), transparent)}
+  .section-line.sage  {background:linear-gradient(90deg,var(--sage-d),  rgba(8,14,10,.3), transparent)}
+  .section-line.silver{background:linear-gradient(90deg,var(--silver-d),rgba(14,24,32,.3),transparent)}
+  .section-line.curse {background:linear-gradient(90deg,var(--curse-d), rgba(22,8,16,.3), transparent)}
+
+  /* IDENTITY */
+  .identity{position:relative;background:linear-gradient(145deg,rgba(12,10,6,.98) 0%,rgba(8,6,4,.99) 100%);border:1px solid rgba(56,40,8,.5);border-top:4px solid var(--amber-d);border-bottom:3px solid var(--sage-d);padding:32px 36px;margin-bottom:14px;overflow:hidden}
+  .identity::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0% 0%,rgba(80,56,8,.06) 0%,transparent 45%),radial-gradient(circle at 100% 0%,rgba(40,72,40,.04) 0%,transparent 45%);pointer-events:none}
+  .identity-corner{position:absolute;font-family:'Fira Code',monospace;font-size:.58rem;letter-spacing:.15em;color:var(--text-faint);opacity:.6}
+  .identity-corner.tl{top:10px;left:14px}.identity-corner.tr{top:10px;right:14px}
+  .identity-corner.bl{bottom:10px;left:14px}.identity-corner.br{bottom:10px;right:14px}
+  .ally-flag{display:inline-block;font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;border:1px solid var(--amber-d);color:var(--amber-l);padding:2px 12px;margin-bottom:12px}
+  .monster-name{font-family:'UnifrakturMaguntia',serif;font-size:clamp(1.8rem,4vw,2.8rem);background:linear-gradient(135deg,#d0a030 0%,#a07018 30%,#70a870 65%,#90b8d0 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;line-height:1.1}
+  .monster-epithet{font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:.2em;text-transform:uppercase;color:var(--amber-p);opacity:.85;margin-bottom:14px}
+  .monster-type-line{margin-bottom:16px}
+  .monster-lore{font-style:italic;color:#a09880;font-size:.97rem;border-left:2px solid var(--amber-d);padding-left:16px;margin-top:14px;line-height:1.75}
+  .monster-lore+.monster-lore{border-left-color:var(--sage-d);margin-top:10px}
+  .monster-lore.curse{border-left-color:var(--curse-d)}
+
+  .tag{display:inline-block;font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:2px 8px;border-radius:1px;margin-right:5px;margin-bottom:5px;vertical-align:middle}
+  .tag.human  {border:1px solid #301808;color:#907050}
+  .tag.good   {border:1px solid #182030;color:#508090}
+  .tag.nd5    {border:1px solid #3a2808;color:#c09030}
+  .tag.medium {border:1px solid #281808;color:#806050}
+  .tag.disfarce{border:1px solid var(--amber-d);color:var(--amber-p)}
+  .tag.hunter {border:1px solid var(--sage-d);color:var(--sage-p)}
+
+  .monster-vitals{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+  @media(max-width:600px){.monster-vitals{grid-template-columns:1fr 1fr}}
+  .mvital-card{background:rgba(10,8,4,.9);border:1px solid var(--hollow);border-radius:3px;padding:16px 14px;position:relative;overflow:hidden;text-align:center}
+  .mvital-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+  .mvital-card.amber::after {background:linear-gradient(90deg,transparent,var(--amber-l), transparent)}
+  .mvital-card.sage::after  {background:linear-gradient(90deg,transparent,var(--sage-l),  transparent)}
+  .mvital-card.silver::after{background:linear-gradient(90deg,transparent,var(--silver-l),transparent)}
+  .mvital-card.curse::after {background:linear-gradient(90deg,transparent,var(--curse-l), transparent)}
+  .mvital-label{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;display:block}
+  .mvital-value{font-family:'Cinzel Decorative',serif;font-size:2rem;line-height:1;display:block}
+  .mvital-value.amber {color:var(--amber-l); text-shadow:0 0 14px rgba(160,112,24,.4)}
+  .mvital-value.sage  {color:var(--sage-l);  text-shadow:0 0 14px rgba(48,88,64,.4)}
+  .mvital-value.silver{color:var(--silver-l);text-shadow:0 0 12px rgba(88,128,152,.3)}
+  .mvital-value.curse {color:var(--curse-l); text-shadow:0 0 12px rgba(136,32,56,.3)}
+  .mvital-note{font-size:.75rem;color:var(--text-dim);font-style:italic;margin-top:6px;display:block;line-height:1.4}
+
+  .two-col-monster{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  @media(max-width:600px){.two-col-monster{grid-template-columns:1fr}}
+  .cr-badge{display:flex;flex-direction:row;align-items:center;gap:20px;background:linear-gradient(135deg,rgba(20,14,4,.18),rgba(14,18,10,.12));border:1px solid rgba(56,40,8,.4);border-top:2px solid var(--amber-l);border-bottom:2px solid var(--sage-d);padding:14px 24px}
+  .cr-badge-label{font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.28em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;display:block}
+  .cr-badge-value{font-family:'Cinzel Decorative',serif;font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,var(--amber-l),var(--sage-l));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;display:block}
+  .cr-badge-note{font-family:'Fira Code',monospace;font-size:.6rem;color:var(--text-dim);margin-top:4px;letter-spacing:.06em;display:block}
+
+  .attr-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px}
+  @media(max-width:560px){.attr-grid{grid-template-columns:repeat(3,1fr)}}
+  .attr-box{background:rgba(8,6,3,.9);border:1px solid var(--hollow);padding:16px 10px;text-align:center;position:relative;overflow:hidden;transition:transform .2s}
+  .attr-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .attr-box.hi::before  {background:linear-gradient(90deg,transparent,var(--amber-l), transparent)}
+  .attr-box.mid::before {background:linear-gradient(90deg,transparent,var(--sage-l),  transparent)}
+  .attr-box.lo::before  {background:linear-gradient(90deg,transparent,var(--silver-l),transparent)}
+  .attr-box.neg::before {background:linear-gradient(90deg,transparent,#706868,        transparent)}
+  .attr-box:hover{transform:translateY(-2px)}
+  .attr-name{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
+  .attr-value{font-family:'Fira Code',monospace;font-size:1.15rem;font-weight:500;color:var(--text);display:block;line-height:1}
+  .attr-value.hi {color:var(--amber-l)}
+  .attr-value.mid{color:var(--sage-l)}
+  .attr-value.lo {color:var(--silver-l)}
+  .attr-value.neg{color:#706868}
+  .attr-mod{font-family:'Fira Code',monospace;font-size:.8rem;color:var(--text-dim);display:block;margin-top:4px}
+  .attr-mod.hi {color:var(--amber-d)}
+  .attr-mod.neg{color:#504848}
+
+  .card{background:linear-gradient(135deg,rgba(12,10,5,.92) 0%,rgba(8,6,3,.96) 100%);border:1px solid var(--hollow);padding:20px 24px;margin-bottom:12px;position:relative;transition:box-shadow .3s}
+  .card.amber {border-left:3px solid var(--amber-d)}.card.amber:hover {box-shadow:-4px 0 20px rgba(80,56,8,.2),0 4px 20px rgba(0,0,0,.6)}
+  .card.sage  {border-left:3px solid var(--sage-d)}.card.sage:hover  {box-shadow:-4px 0 20px rgba(32,64,36,.18),0 4px 20px rgba(0,0,0,.6)}
+  .card.silver{border-left:3px solid var(--silver-d)}.card.silver:hover{box-shadow:-4px 0 20px rgba(36,56,72,.16),0 4px 20px rgba(0,0,0,.6)}
+  .card.curse {border-left:3px solid var(--curse-d)}.card.curse:hover {box-shadow:-4px 0 20px rgba(80,18,32,.18),0 4px 20px rgba(0,0,0,.6)}
+  .card-title{font-family:'Cinzel',serif;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+  .card-title.amber {color:var(--amber-p)}.card-title.sage{color:var(--sage-p)}
+  .card-title.silver{color:var(--silver-p)}.card-title.curse{color:var(--curse-p)}
+  .card p{font-size:.95rem;color:#908878;line-height:1.76}
+
+  .trait{display:grid;grid-template-columns:3px 1fr;gap:0 14px;margin-bottom:10px}
+  .tier-bar{border-radius:2px}
+  .trait-content{background:rgba(8,6,3,.78);border:1px solid var(--hollow);padding:14px 16px}
+  .trait-name{font-family:'Cinzel',serif;font-size:.74rem;letter-spacing:.1em;font-weight:900;color:var(--amber-p);margin-bottom:5px}
+  .trait-name .sub{font-style:italic;font-weight:400;color:var(--text-dim);font-family:'EB Garamond',serif;font-size:.9rem;letter-spacing:0;text-transform:none}
+  .trait-content p{font-size:.92rem;color:#908878;line-height:1.72}
+  .trait-content p strong{color:var(--amber-p)}
+
+  /* SPELL LIST */
+  .spell-levels{display:flex;flex-direction:column;gap:6px;margin:12px 0}
+  .spell-row{display:grid;grid-template-columns:110px 1fr;gap:0;border:1px solid var(--hollow);overflow:hidden}
+  .spell-level-badge{background:rgba(8,6,3,.95);padding:10px 14px;display:flex;flex-direction:column;justify-content:center;align-items:center;border-right:2px solid var(--amber-d);flex-shrink:0}
+  .spell-level-num{font-family:'Cinzel Decorative',serif;font-size:1.3rem;line-height:1;color:var(--amber-l);display:block;text-shadow:0 0 10px rgba(160,112,24,.4)}
+  .spell-level-slots{font-family:'Fira Code',monospace;font-size:.6rem;color:var(--text-dim);display:block;margin-top:3px}
+  .spell-list{background:rgba(10,8,4,.88);padding:10px 14px;font-style:italic;color:#908878;font-size:.88rem;line-height:1.7;display:flex;align-items:center}
+  .spell-row.cantrip .spell-level-badge{border-right-color:var(--sage-d)}
+  .spell-row.cantrip .spell-level-num{color:var(--sage-l);font-size:1rem}
+
+  .action{background:linear-gradient(135deg,rgba(12,10,5,.9) 0%,rgba(8,6,3,.95) 100%);border:1px solid var(--hollow);padding:14px 18px;margin-bottom:8px;transition:box-shadow .25s}
+  .action.amber {border-bottom:2px solid var(--amber-d)}.action.amber:hover {box-shadow:0 2px 16px rgba(80,56,8,.15)}
+  .action.silver{border-bottom:2px solid var(--silver-d)}.action.silver:hover{box-shadow:0 2px 16px rgba(36,56,72,.14)}
+  .action-name{font-family:'Cinzel',serif;font-size:.76rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  .action-name.amber {color:var(--amber-p)}.action-name.silver{color:var(--silver-p)}
+  .action p{font-size:.92rem;color:#908878;line-height:1.72}
+  .action strong{color:var(--amber-p)}
+
+  .table-wrap{margin:10px 0;border:1px solid var(--hollow);overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  thead tr{background:rgba(8,6,3,.98);border-bottom:2px solid var(--amber-d)}
+  thead th{font-family:'Cinzel',serif;font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--amber-p);padding:9px 14px;text-align:left}
+  tbody tr{border-bottom:1px solid rgba(18,14,8,.9);transition:background .12s}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr:nth-child(even){background:rgba(255,255,255,.012)}
+  tbody tr:hover{background:rgba(56,40,8,.07)}
+  td{padding:8px 14px;vertical-align:top;color:#908878}
+  td:first-child{font-family:'Cinzel',serif;font-size:.84rem;color:var(--text)}
+
+  .mono{font-family:'Fira Code',monospace;font-size:.78rem}
+  .mono.amber {color:var(--amber-l)}.mono.sage{color:var(--sage-l)}.mono.silver{color:var(--silver-l)}
+
+  .callout{border-left:3px solid;padding:14px 18px;margin:12px 0;font-style:italic;font-size:.92rem;line-height:1.75}
+  .callout strong{font-style:normal;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;display:block;margin-bottom:3px}
+  .callout.amber {background:rgba(22,14,4,.17);border-color:var(--amber); color:#908878}.callout.amber  strong{color:var(--amber-l)}
+  .callout.sage  {background:rgba(10,20,10,.16);border-color:var(--sage);  color:#908878}.callout.sage   strong{color:var(--sage-l)}
+  .callout.silver{background:rgba(8,16,26,.15); border-color:var(--silver);color:#908878}.callout.silver strong{color:var(--silver-l)}
+  .callout.curse {background:rgba(22,4,12,.16); border-color:var(--curse); color:#908878}.callout.curse  strong{color:var(--curse-l)}
+
+  mark        {background:rgba(160,112,24,.17);color:var(--amber-p); border-radius:1px;padding:0 2px}
+  mark.sage   {background:rgba(48,88,64,.18);  color:var(--sage-p)}
+  mark.silver {background:rgba(88,128,152,.16);color:var(--silver-p)}
+  mark.curse  {background:rgba(136,32,56,.16); color:var(--curse-p)}
+
+  /* IDENTIDADE DUPLA */
+  .dual-id{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+  @media(max-width:600px){.dual-id{grid-template-columns:1fr}}
+  .id-card{background:rgba(8,6,3,.9);border:1px solid var(--hollow);padding:18px 20px;position:relative;overflow:hidden}
+  .id-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+  .id-card.van  ::before{background:linear-gradient(90deg,transparent,var(--sage-l),  transparent)}
+  .id-card.rict ::before{background:linear-gradient(90deg,transparent,var(--amber-l), transparent)}
+  .id-label{font-family:'Cinzel',serif;font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;display:block;margin-bottom:8px}
+  .id-card.van  .id-label{color:var(--sage-p)}
+  .id-card.rict .id-label{color:var(--amber-p)}
+  .id-card p{font-size:.9rem;color:#908878;line-height:1.72}
+
+  /* TRAITS TRIO */
+  .traits-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+  @media(max-width:600px){.traits-trio{grid-template-columns:1fr}}
+  .trio-card{background:rgba(8,6,3,.9);border:1px solid var(--hollow);padding:16px 14px;position:relative;overflow:hidden}
+  .trio-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .trio-card.ideal  ::before{background:linear-gradient(90deg,transparent,var(--sage-l),  transparent)}
+  .trio-card.vinculo::before{background:linear-gradient(90deg,transparent,var(--silver-l),transparent)}
+  .trio-card.defeito::before{background:linear-gradient(90deg,transparent,var(--curse-l), transparent)}
+  .trio-label{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:8px}
+  .trio-card.ideal   .trio-label{color:var(--sage-p)}
+  .trio-card.vinculo .trio-label{color:var(--silver-p)}
+  .trio-card.defeito .trio-label{color:var(--curse-p)}
+  .trio-card p{font-size:.88rem;color:#908878;line-height:1.7;font-style:italic}
+
+  .sep{height:1px;background:linear-gradient(90deg,transparent,var(--amber-d),var(--sage-d),transparent);margin:18px 0;opacity:.5}
+
+  .san-table{width:100%;border-collapse:collapse;font-size:.88rem;border:1px solid var(--hollow)}
+  .san-table thead tr{background:rgba(8,6,3,.98);border-bottom:2px solid var(--amber-d)}
+  .san-table thead th{font-family:'Cinzel',serif;font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--amber-p);padding:9px 14px;text-align:left}
+  .san-table tbody tr{border-bottom:1px solid rgba(18,14,8,.9);transition:background .12s}
+  .san-table tbody tr:last-child{border-bottom:none}
+  .san-table tbody tr:hover{background:rgba(56,40,8,.07)}
+  .san-table td{padding:8px 14px;vertical-align:top;color:#908878;font-size:.88rem}
+  .san-table .situation{font-style:italic;color:var(--text)}
+  .san-table .pass{color:var(--sage-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem}
+  .san-table .fail{color:var(--curse-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem;font-weight:600}
+  .san-table .cd{color:var(--amber-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem}
+
+  footer{text-align:center;padding:40px 20px;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}
+  footer span{color:var(--amber-d);margin:0 6px}
+  #top-btn{position:fixed;bottom:28px;right:28px;width:42px;height:42px;background:rgba(5,4,4,.97);border:1px solid var(--amber-d);color:var(--amber-l);font-size:1.2rem;line-height:42px;text-align:center;text-decoration:none;transition:border-color .2s,color .2s;z-index:100; opacity:0; pointer-events:none; transition: opacity .25s, border-color .2s, color .2s;}
+  #top-btn:hover{border-color:var(--sage-l);color:var(--sage-p)}
+  #top-btn.visible { opacity: 1; pointer-events: all; }
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--void)}::-webkit-scrollbar-thumb{background:var(--amber-d);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--amber-l)}
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+<div class="top-bar"></div>
+<div class="ally-stripe"></div>
+<nav class="breadcrumb" aria-label="Trilha de navegação">Curse of Strahd &nbsp;/&nbsp; Barovia <span>›</span> <span class="current">Rictavio (Rudolph van Richten) — Referência do Mestre</span></nav>
+
+<header>
+  <div class="header-pulse"></div>
+  <span class="header-symbol">🎪</span>
+  <p class="header-eyebrow">Curse of Strahd &nbsp;⸸&nbsp; Disfarce de Bardo &nbsp;⸸&nbsp; Caçador de Vampiros Lendário</p>
+  <p class="header-classification">⬥ Humanoide Médio (Humano) &nbsp;·&nbsp; Leal e Bom &nbsp;·&nbsp; ND 5 ⬥</p>
+  <div class="ally-badge">⬥ NPC ALIADO POTENCIAL — LEAL E BOM ⬥</div>
+  <h1 class="header-fraktur">Rictavio</h1>
+  <p class="header-title-sub">Disfarce de Rudolph van Richten — Caçador de Vampiros — Clérigo de 9º Nível</p>
+  <p class="header-tagline">"Eu sou amaldiçoado. Assim, nunca vou ter paz."</p>
+  <div class="header-crests">
+    <span class="crest-badge amber">🎪 Bardo Disfarçado · ND 5</span>
+    <span class="crest-badge sage">⚔ Matador de Mortos-Vivos</span>
+    <span class="crest-badge silver">✨ Clérigo Nível 9</span>
+    <span class="crest-badge curse">💀 Maldição Vistani</span>
+  </div>
+</header>
+
+<div class="divider"><div class="divider-line"></div><span class="divider-glyph">🎪</span><div class="divider-line"></div></div>
+
+<main>
+
+  <!-- IDENTIDADE DUPLA -->
+  <section id="identidade">
+    <div class="section-header"><span class="section-icon amber">🎪</span><h2 class="amber">Identidade Dupla — O Homem por Trás do Disfarce</h2><div class="section-line amber"></div></div>
+
+    <div class="dual-id">
+      <div class="id-card rict">
+        <span class="id-label">🎪 A Máscara — Rictavio</span>
+        <p>Um meio-elfo bardo espalhafatoso com um macaco de estimação no ombro. Chegou a Barovia num vagão carnavalesco e assumiu uma torre abandonada no Lago Baratok antes de entrar em Vallaki. Diz ser um carnavalesco em busca de atores, deliciando moradores com histórias de terras distantes. Chapéu de disfarce oculta sua aparência real. Anel de proteção mental protege seus pensamentos.</p>
+      </div>
+      <div class="id-card van">
+        <span class="id-label">🩸 A Verdade — Rudolph van Richten</span>
+        <p>Um lendário caçador de vampiros humano, estudioso e médico. Casou-se com Ingrid, tiveram um filho — Erasmus — que foi roubado por um Vistani e vendido a um vampiro. Van Richten encontrou Erasmus tarde demais: já era uma cria vampírica que implorou para ser destruída. Ele atendeu o desejo do filho. Depois de vingar-se de todos os envolvidos, tomou para si a vida de caçar monstros malignos.</p>
+      </div>
+    </div>
+
+    <div class="identity">
+      <div class="identity-corner tl">HUMANOIDE MÉDIO (HUMANO) · LEAL E BOM</div>
+      <div class="identity-corner tr">NÍVEL DE DESAFIO 5 · 1.800 XP</div>
+      <div class="identity-corner bl">CURSE OF STRAHD · BAROVIA / VALLAKI</div>
+      <div class="identity-corner br">DISFARCE ATIVO — CHAPÉU DE DISFARCE</div>
+      <div class="ally-flag">⬥ NPC ALIADO POTENCIAL ⬥</div>
+      <div class="monster-name">Rictavio</div>
+      <div class="monster-epithet">⬥ A Mentira que Protege — O Caçador que Envelhece Sozinho ⬥</div>
+      <div class="monster-type-line">
+        <span class="tag human">Humano</span>
+        <span class="tag good">Leal e Bom</span>
+        <span class="tag medium">Médio</span>
+        <span class="tag nd5">ND 5</span>
+        <span class="tag disfarce">Disfarçado</span>
+        <span class="tag hunter">Caçador</span>
+      </div>
+      <p class="monster-lore">Van Richten veio a Barovia para matar Strahd von Zarovich, o maior vampiro de todos. Estudou Strahd há anos e sabe que não pode confiar no melhor vampiro em um confronto direto — precisa aguardar o momento certo para atacar. Tem evidências de que Strahd hiberna periodicamente em seu caixão, às vezes por anos, quando tudo está quieto no reino. Enquanto aguarda seu tempo, esconde-se com o chapéu de disfarce.</p>
+      <p class="monster-lore">Van Richten também quer apanhar o maior número possível de espiões de Strahd, começando pelos malignos Vistanis. Está tentando aprender mais sobre os Guardiões da Pena — a rede de Homens-corvos — enquanto tenta não expor a sociedade secreta ao inimigo comum.</p>
+      <p class="monster-lore curse"><strong>A Maldição.</strong> Uma maldição Vistani colocada sobre van Richten há muito tempo traz desgraça para aqueles com quem ele faz amizade. Consequentemente, ele acredita que há muito risco de exposição. Trabalha sozinho. Se ameaçado de ser desmascarado, retira-se para sua torre ou algum canto silencioso do domínio de Strahd. Não sabe que Ezmerelda chegou a Barovia — mas se souber, fará tudo para protegê-la sem colocar seus planos em perigo.</p>
+      <p class="monster-lore" style="border-left-color:var(--sage-d);font-size:11px;opacity:.75">⚙ Clérigo de 9º nível (Sabedoria), CD 15, +7 para atingir. TR Con +4, Sab +7. Equipamento especial: chapéu de disfarce (oculta aparência real), anel de proteção mental (pensamentos protegidos), pergaminho de magia reviver os mortos. Percepção passiva 17. Idiomas: Abissal, Comum, Élfico, Infernal.</p>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section id="stats">
+    <div class="section-header"><span class="section-icon sage">📋</span><h2 class="sage">Estatísticas Base</h2><div class="section-line sage"></div></div>
+    <div class="monster-vitals">
+      <div class="mvital-card amber"><span class="mvital-label">Classe de Armadura</span><span class="mvital-value amber">12</span><span class="mvital-note">Armadura de couro</span></div>
+      <div class="mvital-card sage"><span class="mvital-label">Pontos de Vida</span><span class="mvital-value sage">77</span><span class="mvital-note">14d8 + 14</span></div>
+      <div class="mvital-card silver"><span class="mvital-label">Deslocamento</span><span class="mvital-value silver">9 m</span><span class="mvital-note">Terrestre</span></div>
+      <div class="mvital-card amber"><span class="mvital-label">Percepção Passiva</span><span class="mvital-value amber">17</span><span class="mvital-note">Percepção +7</span></div>
+    </div>
+    <div class="two-col-monster">
+      <div class="cr-badge">
+        <div><span class="cr-badge-label">Challenge Rating</span><span class="cr-badge-value">5</span><span class="cr-badge-note">1.800 XP</span></div>
+        <div style="border-left:1px solid rgba(56,40,8,.3);padding-left:20px;">
+          <span class="cr-badge-label">Nível Conjurador</span>
+          <span class="cr-badge-value" style="font-size:1.5rem;">9</span>
+          <span class="cr-badge-note">Clérigo — Sabedoria</span>
+        </div>
+      </div>
+      <div class="card amber" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:center;">
+        <div class="card-title amber">ND 5 Enganoso — o Pergaminho Muda Tudo</div>
+        <p style="font-size:.9rem;">Van Richten carrega um pergaminho de <em>Reviver os Mortos</em> — um feitiço de 5º nível que custa 500 po em componentes. <mark>Em cenas narrativas cruciais, esse pergaminho pode ser o item mais importante de todo o módulo.</mark></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ATRIBUTOS + PERÍCIAS -->
+  <div class="two-col-monster" style="align-items:start;gap:14px;margin-bottom:56px;">
+  <section id="atributos" style="margin-bottom:0;">
+    <div class="section-header"><span class="section-icon amber">◆</span><h2 class="amber">Atributos</h2><div class="section-line amber"></div></div>
+    <div class="attr-grid">
+      <div class="attr-box neg"><div class="attr-name">For</div><span class="attr-value neg">9</span> <span class="attr-mod neg">−1</span></div>
+      <div class="attr-box lo"> <div class="attr-name">Des</div><span class="attr-value lo">12</span><span class="attr-mod lo">+1</span></div>
+      <div class="attr-box lo"> <div class="attr-name">Con</div><span class="attr-value lo">13</span><span class="attr-mod lo">+1</span></div>
+      <div class="attr-box mid"><div class="attr-name">Int</div><span class="attr-value mid">16</span><span class="attr-mod mid">+3</span></div>
+      <div class="attr-box hi"> <div class="attr-name">Sab</div><span class="attr-value hi">18</span><span class="attr-mod hi">+4</span></div>
+      <div class="attr-box mid"><div class="attr-name">Car</div><span class="attr-value mid">16</span><span class="attr-mod mid">+3</span></div>
+    </div>
+    <div class="callout amber" style="margin-top:4px;">
+      <strong>SAB 18 — A Sabedoria de uma Vida Inteira de Perda</strong> SAB 18 em van Richten é acumulada — décadas rastreando monstros, perdendo a família, carregando culpa. A Percepção passiva 17 e Intuição +7 significam que ele quase nunca é surpreendido emocionalmente. <mark>FOR 9</mark> confirma que ele não é um guerreiro — é um estudioso que aprendeu a matar com precisão.
+    </div>
+  </section>
+  <section id="pericias" style="margin-bottom:0;">
+    <div class="section-header"><span class="section-icon sage">🎲</span><h2 class="sage">Proficiências-Chave</h2><div class="section-line sage"></div></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Perícia / Campo</th><th>Valor</th></tr></thead>
+        <tbody>
+          <tr><td>Arcanismo</td><td><span class="mono amber">+9</span></td></tr>
+          <tr><td>Intuição</td><td><span class="mono amber">+7</span></td></tr>
+          <tr><td>Medicina</td><td><span class="mono sage">+7</span></td></tr>
+          <tr><td>Percepção</td><td><span class="mono sage">+7</span></td></tr>
+          <tr><td>Prestidigitação</td><td><span class="mono silver">+4</span></td></tr>
+          <tr><td>Religião</td><td><span class="mono silver">+6</span></td></tr>
+          <tr><td>TR Constituição</td><td><span class="mono amber">+4</span></td></tr>
+          <tr><td>TR Sabedoria</td><td><span class="mono amber">+7</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  </div>
+
+  <!-- TRAÇOS ESPECIAIS -->
+  <section id="tracos">
+    <div class="section-header"><span class="section-icon sage">✧</span><h2 class="sage">Traços Especiais</h2><div class="section-line sage"></div></div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--sage-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Matador de Mortos-Vivos <span class="sub">(Passivo — +10 de Dano vs. Mortos-Vivos)</span></div>
+        <p>Quando van Richten atinge um morto-vivo com um ataque com arma, os mortos-vivos sofrem um <strong>dano extra de 10 (3d6)</strong> do tipo da arma. Isso transforma a Espada-Bengala (4 de dano base) num ataque de <strong>até 22 de dano</strong> contra vampiros, zumbis e qualquer morto-vivo. Contra Strahd especificamente — o alvo final — isso é <mark class="sage">dano médio de 14 por ataque</mark>, dois ataques por ação, potencialmente suficiente para fazer diferença.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--amber-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Equipamento Especial <span class="sub">(Chapéu de Disfarce, Anel de Proteção Mental, Pergaminho)</span></div>
+        <p><strong>Chapéu de Disfarce:</strong> Oculta a aparência real de van Richten — enquanto usa o chapéu, parece ser um meio-elfo bardo espalhafatoso. A ilusão é completa ao toque e visão. Remover o chapéu ou ser desmascarado por <em>Visão da Verdade</em> revela o caçador de vampiros idoso por baixo.<br>
+        <strong>Anel de Proteção Mental:</strong> Seus pensamentos estão protegidos — feitiços de leitura mental, <em>detectar pensamentos</em> e magias similares falham contra ele automaticamente.<br>
+        <strong>Pergaminho de Reviver os Mortos:</strong> Um feitiço de 5º nível que pode trazer de volta criaturas mortas há até 10 dias. Van Richten carrega isso há décadas — uma ferramenta de último recurso que ele nunca precisou usar da forma que esperava.</p>
+      </div>
+    </div>
+
+    <div class="callout curse">
+      <strong>A Maldição Vistani — Por Que Ele Trabalha Sozinho</strong> Uma maldição colocada sobre van Richten por uma vidente Vistani (em resposta à destruição da família do Barão Metus) traz desgraça a <mark class="curse">qualquer pessoa que se aproxime dele e de quem ele faça amizade</mark>. Van Richten acredita nisso profundamente. Por isso trabalha sozinho, mantém distância de Ezmerelda mesmo sabendo que ela está em Barovia, e recusa alianças duradouras. Se o grupo tentar estabelecer uma parceria genuína com ele, essa maldição é o obstáculo narrativo central.
+    </div>
+  </section>
+
+  <!-- FEITIÇOS -->
+  <section id="feiticos">
+    <div class="section-header"><span class="section-icon silver">✨</span><h2 class="silver">Feitiços — Clérigo Nível 9 (Sabedoria)</h2><div class="section-line silver"></div></div>
+    <div class="spell-levels">
+      <div class="spell-row cantrip">
+        <div class="spell-level-badge"><span class="spell-level-num">✦</span><span class="spell-level-slots">Truques</span></div>
+        <div class="spell-list"><em>consertar, luz, orientação, taumaturgia</em></div>
+      </div>
+      <div class="spell-row">
+        <div class="spell-level-badge"><span class="spell-level-num">1</span><span class="spell-level-slots">4 espaços</span></div>
+        <div class="spell-list"><em>curar ferimentos, detectar o bem e mal, proteção contra o bem e mal, santuário</em></div>
+      </div>
+      <div class="spell-row">
+        <div class="spell-level-badge"><span class="spell-level-num">2</span><span class="spell-level-slots">3 espaços</span></div>
+        <div class="spell-list"><em>augúrio, proteção contra veneno, restauração menor</em></div>
+      </div>
+      <div class="spell-row">
+        <div class="spell-level-badge"><span class="spell-level-num">3</span><span class="spell-level-slots">3 espaços</span></div>
+        <div class="spell-list"><em>círculo mágico, falar com os mortos, remover maldição</em></div>
+      </div>
+      <div class="spell-row">
+        <div class="spell-level-badge"><span class="spell-level-num">4</span><span class="spell-level-slots">3 espaços</span></div>
+        <div class="spell-list"><em>movimentação livre, proteção contra a morte</em></div>
+      </div>
+      <div class="spell-row">
+        <div class="spell-level-badge"><span class="spell-level-num">5</span><span class="spell-level-slots">1 espaço</span></div>
+        <div class="spell-list"><em>dissipar o bem e o mal</em></div>
+      </div>
+    </div>
+    <div class="callout silver">
+      <strong>Arsenal Anti-Vampiro — O Clérigo que Existe para Isso</strong>
+      <span style="font-style:normal;font-size:.9rem;display:block;margin-top:6px;">
+        <strong style="color:var(--sage-l)">Proteção contra o Bem e Mal (1°):</strong> vampiros não podem encantar, amedrontar ou possuir o alvo protegido. &nbsp;|&nbsp;
+        <strong style="color:var(--amber-l)">Círculo Mágico (3°):</strong> vampiros não podem entrar voluntariamente na área. &nbsp;|&nbsp;
+        <strong style="color:var(--silver-l)">Dissipar o Bem e o Mal (5°):</strong> envia criaturas extraplanares/mortos-vivos de volta ao plano nativo ou encerra encantamentos. &nbsp;|&nbsp;
+        <strong style="color:var(--curse-l)">Remover Maldição (3°):</strong> relevante tanto para os personagens quanto — ironicamente — para a própria maldição de van Richten, se ele aceitar ajuda.
+      </span>
+    </div>
+  </section>
+
+  <!-- AÇÕES -->
+  <section id="acoes">
+    <div class="section-header"><span class="section-icon amber">⚔</span><h2 class="amber">Ações</h2><div class="section-line amber"></div></div>
+    <div class="action amber">
+      <div class="action-name amber">Ataques Múltiplos</div>
+      <p>Van Richten realiza <strong>dois ataques</strong> com sua Espada-Bengala.</p>
+    </div>
+    <div class="action silver">
+      <div class="action-name silver">Espada-Bengala <span style="font-family:'Fira Code',monospace;font-size:.6rem;color:var(--amber-p);font-weight:400;">(+4 para atingir — Prata ou Madeira)</span></div>
+      <p><em>Ataque Corpo-a-Corpo:</em> <strong>+4 para atingir</strong>, alcance 1,5 m, um alvo. Acerto: <strong>4 (1d6 + 1)</strong> de dano de concussão (bengala de madeira) ou dano perfurante (espada de prata). Contra mortos-vivos: +10 (3d6) de dano adicional. A lâmina de prata supera resistências de licantropos; o dano extra transforma a bengala num instrumento de destruição especializada.</p>
+    </div>
+    <div class="sep"></div>
+    <div class="callout sage">
+      <strong>Dois Ataques com Matador de Mortos-Vivos — O Dano Real</strong> Sem mortos-vivos: dois ataques de 4 de dano = ~8/round. Com mortos-vivos: dois ataques de 14 de dano médio = <mark class="sage">~28/round contra vampiros, zumbis e similares</mark>. Para um clérigo de ND 5, esse é um nível de dano especializado que rivaliza com guerreiros de nível equivalente — mas apenas contra a categoria de inimigos que van Richten passou décadas estudando.
+    </div>
+  </section>
+
+  <!-- TRAÇOS DE PERSONAGEM -->
+  <section id="personalidade">
+    <div class="section-header"><span class="section-icon curse">🎭</span><h2 class="curse">Traços de Personagem</h2><div class="section-line curse"></div></div>
+    <div class="traits-trio">
+      <div class="trio-card ideal">
+        <span class="trio-label">Ideal</span>
+        <p>"O mal não pode passar em branco."</p>
+      </div>
+      <div class="trio-card vinculo">
+        <span class="trio-label">Vínculo</span>
+        <p>"Para proteger os que amo, devo mantê-los distantes e escondidos dos meus inimigos."</p>
+      </div>
+      <div class="trio-card defeito">
+        <span class="trio-label">Defeito</span>
+        <p>"Eu sou amaldiçoado. Assim, nunca vou ter paz."</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOTAS DO MESTRE -->
+  <section id="notas">
+    <div class="section-header"><span class="section-icon sage">🧠</span><h2 class="sage">Como Rodar — Notas do Mestre</h2><div class="section-line sage"></div></div>
+    <div class="card amber">
+      <div class="card-title amber">Quando Revelar a Identidade</div>
+      <p>Van Richten funciona melhor quando a revelação ocorre organicamente — quando o grupo já o conhece como Rictavio e tem alguma relação com ele. O momento ideal é quando o grupo está em perigo e ele intervém de forma que não faz sentido para um simples bardo, ou quando encontra Ezmerelda. <mark>Nunca revele cedo demais</mark> — o disfarce é a fonte de toda a tensão narrativa do personagem.</p>
+    </div>
+    <div class="card sage">
+      <div class="card-title sage">O Pergaminho de Reviver os Mortos</div>
+      <p>Van Richten carrega este pergaminho como ferramenta de último recurso. Se o grupo perder um membro permanentemente em Barovia — onde a morte tem peso real — van Richten tem o meio de reverter isso. Mas ele não vai oferecer facilmente: usar o pergaminho exige que ele confie no grupo o suficiente para revelar que o tem, e <mark class="sage">confiança é exatamente o que a maldição Vistani o impede de dar.</mark></p>
+    </div>
+    <div class="card curse">
+      <div class="card-title curse">Van Richten e Ezmerelda — O Reencontro</div>
+      <p>Van Richten não sabe que Ezmerelda está em Barovia. Quando descobrir, fará tudo para protegê-la sem se aproximar — incluindo manipular o grupo de aventureiros para servirem de intermediários. O reencontro entre os dois, quando acontecer, é uma das cenas mais emocionalmente carregadas do módulo: um homem que ensinou tudo o que sabe a uma pessoa e depois foi embora para protegê-la, e a mulher que veio seguir seus passos mesmo assim.</p>
+    </div>
+    <div class="card silver">
+      <div class="card-title silver">Em Valtheris</div>
+      <p>Van Richten é alguém que escolheu transformar a pior perda imaginável — a morte do filho pela própria mão — em propósito. Não em paz, mas em propósito. Para Leyn, que morreu duas vezes e carrega o peso de um Contrato existencial, van Richten representa uma forma diferente de responder ao peso de continuar existindo depois do inaceitável: não pela negação, mas pela direção. A maldição que o isola é ao mesmo tempo sua proteção e sua prisão — e ele escolheu aceitar ambas.</p>
+    </div>
+  </section>
+
+  <!-- SANIDADE -->
+  <section id="sanidade">
+    <div class="section-header"><span class="section-icon curse">🌑</span><h2 class="curse">Dano de Sanidade — Regra Opcional</h2><div class="section-line curse"></div></div>
+    <table class="san-table">
+      <thead><tr><th>Situação</th><th>Sucesso (SAB)</th><th>Falha (SAB)</th><th>CD</th></tr></thead>
+      <tbody>
+        <tr><td class="situation">Descobrir que o bardo excêntrico com o macaco é Rudolph van Richten, o mais famoso caçador de vampiros do mundo</td><td class="pass">1d4</td><td class="fail">1d6</td><td class="cd">CD 12</td></tr>
+        <tr><td class="situation">Van Richten conta a história de Erasmus — o filho que implorou para ser destruído, e o pai que atendeu</td><td class="pass">1d6</td><td class="fail">2d8</td><td class="cd">CD 16</td></tr>
+        <tr><td class="situation">Perceber que van Richten recusa ajuda do grupo porque a maldição Vistani poderia matá-los</td><td class="pass">1d4</td><td class="fail">1d8</td><td class="cd">CD 13</td></tr>
+        <tr><td class="situation">Van Richten revela o pergaminho de Reviver os Mortos — e o grupo percebe o que ele carregou sozinho todos esses anos</td><td class="pass">1d6</td><td class="fail">2d6</td><td class="cd">CD 15</td></tr>
+        <tr><td class="situation">O reencontro entre van Richten e Ezmerelda — e o grupo percebe a magnitude do que ele sacrificou para mantê-la segura</td><td class="pass">1d8</td><td class="fail">3d8</td><td class="cd">CD 17</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+<div style="max-width:940px;margin:0 auto;padding:0 20px;"><div class="divider" style="padding:0;margin-bottom:0;"><div class="divider-line"></div><span class="divider-glyph">🎪</span><div class="divider-line"></div></div></div>
+<div class="top-bar" style="margin-top:0;"></div>
+<footer>Rictavio &nbsp;/&nbsp; Rudolph van Richten <span>⸸</span> Caçador de Vampiros <span>⸸</span> Curse of Strahd</footer>
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+<script>document.getElementById('top-btn').addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});window.addEventListener('scroll',function(){document.getElementById('top-btn').classList.toggle('visible',window.scrollY>400);});</script>
+</body>
+</html>

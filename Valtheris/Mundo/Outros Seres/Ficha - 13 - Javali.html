@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Javali — Apêndice D · Valtheris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060508;
+    --hollow:       #1e1c22;
+
+    --tusk:         #806040;
+    --tusk-light:   #b89060;
+    --tusk-dim:     #281e10;
+    --tusk-pale:    #e0c898;
+
+    --bristle-light:#705848;
+    --bristle-dim:  #180e08;
+    --bristle-pale: #a08070;
+
+    --mud:          #503818;
+    --mud-light:    #806030;
+    --mud-dim:      #1a1008;
+    --mud-pale:     #c09050;
+
+    --gore:         #6a1818;
+    --gore-light:   #a02828;
+    --gore-dim:     #220808;
+    --gore-pale:    #d06060;
+
+    --text:         #907868;
+    --text-dim:     #382818;
+    --text-faint:   #120c06;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--void);
+    background-image:
+      radial-gradient(ellipse 120% 50% at 50% -5%, #0e0a08 0%, transparent 55%),
+      radial-gradient(ellipse 50%  60% at 90% 100%, #080608 0%, transparent 50%),
+      radial-gradient(ellipse 40%  60% at 10%  80%, #0a0a06 0%, transparent 50%);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 17px; line-height: 1.8;
+    min-height: 100vh; overflow-x: hidden;
+  }
+
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E"); pointer-events: none; z-index: 999; opacity: .6; }
+
+  .top-bar { height: 4px; background: linear-gradient(90deg, var(--tusk-dim), var(--tusk-light), var(--gore-light), var(--tusk-light), var(--tusk-dim)); box-shadow: 0 0 30px rgba(184,144,96,.4); }
+
+  header { position: relative; text-align: center; padding: 80px 20px 70px; overflow: hidden; }
+  header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(128,96,64,.10) 0%, transparent 65%), radial-gradient(ellipse 40% 30% at 50% 60%, rgba(80,56,24,.07) 0%, transparent 70%); pointer-events: none; }
+  .header-pulse { position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--tusk-dim), var(--gore-dim), var(--tusk-dim), transparent); }
+  .header-symbol { display: block; font-size: 2.2rem; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(184,144,96,.5)); }
+  .header-eyebrow { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .45em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 18px; }
+  .header-classification { font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .25em; text-transform: uppercase; color: var(--tusk-pale); margin-bottom: 10px; opacity: .8; }
+  .header-title-sub { font-family: 'Cinzel', serif; font-size: clamp(.85rem, 2vw, 1rem); letter-spacing: .18em; text-transform: uppercase; color: var(--bristle-pale); margin-bottom: 8px; }
+  .header-fraktur { font-family: 'Cinzel Decorative', serif; font-size: clamp(2rem, 6vw, 3.6rem); font-weight: 900; line-height: 1.1; margin-bottom: 16px; background: linear-gradient(135deg, var(--tusk-light) 0%, var(--gore-light) 40%, var(--tusk-pale) 70%, var(--mud-light) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .header-tagline { font-family: 'EB Garamond', serif; font-style: italic; font-size: clamp(.9rem, 2.2vw, 1.08rem); color: #382818; letter-spacing: .06em; margin-top: 8px; }
+  .header-crests { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 24px; }
+  .crest-badge { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; padding: 5px 14px; border-radius: 1px; }
+  .crest-badge.tusk    { border: 1px solid var(--tusk-dim);    color: var(--tusk-light);    background: rgba(22,16,8,.4); }
+  .crest-badge.bristle { border: 1px solid var(--bristle-dim); color: var(--bristle-light); background: rgba(16,10,6,.3); }
+  .crest-badge.gore    { border: 1px solid var(--gore-dim);    color: var(--gore-light);    background: rgba(22,6,6,.3); }
+  .crest-badge.mud     { border: 1px solid var(--mud-dim);     color: var(--mud-light);     background: rgba(18,12,4,.3); }
+
+  .divider { display: flex; align-items: center; gap: 14px; padding: 0 20px; max-width: 860px; margin: 0 auto 24px; }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--tusk-dim), var(--gore-dim), transparent); }
+  .divider-glyph { font-family: 'Cinzel', serif; font-size: .7rem; color: var(--tusk-dim); }
+
+  main { max-width: 860px; margin: 0 auto; padding: 0 20px 90px; display: flex; flex-direction: column; gap: 0; position: relative; z-index: 1; }
+
+  section { margin-bottom: 56px; animation: fade-in .5s ease both; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  section:nth-child(1)  { animation-delay: .05s; }
+  section:nth-child(2)  { animation-delay: .12s; }
+  section:nth-child(3)  { animation-delay: .18s; }
+  section:nth-child(4)  { animation-delay: .24s; }
+  section:nth-child(5)  { animation-delay: .30s; }
+  section:nth-child(6)  { animation-delay: .36s; }
+  section:nth-child(7)  { animation-delay: .42s; }
+
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .section-icon { font-size: 1.1rem; }
+  .section-icon.tusk    { filter: drop-shadow(0 0 8px rgba(184,144,96,.6)); }
+  .section-icon.bristle { filter: drop-shadow(0 0 8px rgba(112,88,72,.5)); }
+  .section-icon.gore    { filter: drop-shadow(0 0 8px rgba(160,40,40,.5)); }
+  .section-icon.mud     { filter: drop-shadow(0 0 8px rgba(128,96,48,.4)); }
+  h2 { font-family: 'Cinzel', serif; font-size: .9rem; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; }
+  h2.tusk    { color: var(--tusk-light);    text-shadow: 0 0 18px rgba(184,144,96,.3); }
+  h2.bristle { color: var(--bristle-light); text-shadow: 0 0 18px rgba(112,88,72,.25); }
+  h2.gore    { color: var(--gore-light);    text-shadow: 0 0 18px rgba(160,40,40,.3); }
+  h2.mud     { color: var(--mud-light);     text-shadow: 0 0 18px rgba(128,96,48,.25); }
+  .section-line { flex: 1; height: 1px; }
+  .section-line.tusk    { background: linear-gradient(90deg, var(--tusk-dim),    rgba(56,40,18,.3), transparent); }
+  .section-line.bristle { background: linear-gradient(90deg, var(--bristle-dim), rgba(32,20,12,.3), transparent); }
+  .section-line.gore    { background: linear-gradient(90deg, var(--gore-dim),    rgba(48,14,14,.3), transparent); }
+  .section-line.mud     { background: linear-gradient(90deg, var(--mud-dim),     rgba(36,24,8,.3),  transparent); }
+
+  .identity { position: relative; background: rgba(8,6,10,.92); border: 1px solid rgba(68,48,24,.3); padding: 44px 32px 36px; text-align: center; margin-bottom: 28px; }
+  .identity::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--tusk-dim), var(--gore-dim), transparent); }
+  .identity::after  { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--mud-dim), transparent); }
+  .identity-corner { position: absolute; font-family: 'Cinzel', serif; font-size: .48rem; letter-spacing: .22em; text-transform: uppercase; color: var(--tusk-dim); }
+  .identity-corner.tl { top: 10px; left: 14px; }
+  .identity-corner.tr { top: 10px; right: 14px; }
+  .identity-corner.bl { bottom: 10px; left: 14px; }
+  .identity-corner.br { bottom: 10px; right: 14px; }
+  .monster-name { font-family: 'Cinzel Decorative', serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 900; line-height: 1.1; margin-bottom: 10px; background: linear-gradient(135deg, var(--tusk-light), var(--gore-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .monster-epithet { font-family: 'EB Garamond', serif; font-style: italic; font-size: 1rem; color: var(--tusk-dim); letter-spacing: .06em; margin-bottom: 16px; }
+  .monster-type-line { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 20px; }
+  .monster-lore { font-style: italic; color: #907868; font-size: .97rem; border-left: 2px solid var(--tusk-dim); padding-left: 16px; margin-top: 14px; line-height: 1.75; text-align: left; }
+  .monster-lore + .monster-lore { border-left-color: var(--gore-dim); margin-top: 10px; }
+
+  .tag { display: inline-block; font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .18em; text-transform: uppercase; padding: 2px 8px; border-radius: 1px; margin-right: 4px; margin-bottom: 4px; vertical-align: middle; }
+  .tag.dnd     { border: 1px solid #503808; color: #c09030; }
+  .tag.lore    { border: 1px solid #402e14; color: var(--tusk-pale); }
+  .tag.hb      { border: 1px solid #1a3020; color: #508060; }
+  .tag.med     { border: 1px solid #2a1e10; color: var(--bristle-light); }
+  .tag.cr-half { border: 1px solid #3a1a08; color: var(--gore-light); }
+  .tag.charge  { border: 1px solid #2a1408; color: var(--mud-light); }
+  .tag-a { font-family: 'Fira Code', monospace; font-size: .6rem; padding: 1px 7px; margin-left: 6px; border-radius: 1px; vertical-align: middle; }
+  .tag-a.tusk { border: 1px solid var(--tusk-dim); color: var(--tusk-pale); }
+  .tag-a.gore { border: 1px solid var(--gore-dim); color: var(--gore-pale); }
+
+  .monster-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  @media (max-width: 600px) { .monster-vitals { grid-template-columns: 1fr 1fr; } }
+  .mvital-card { background: rgba(8,6,10,.88); border: 1px solid rgba(56,40,18,.3); border-radius: 3px; padding: 16px 14px; position: relative; overflow: hidden; text-align: center; }
+  .mvital-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+  .mvital-card.tusk::after    { background: linear-gradient(90deg, transparent, var(--tusk-light),    transparent); }
+  .mvital-card.gore::after    { background: linear-gradient(90deg, transparent, var(--gore-light),    transparent); }
+  .mvital-card.bristle::after { background: linear-gradient(90deg, transparent, var(--bristle-light), transparent); }
+  .mvital-card.mud::after     { background: linear-gradient(90deg, transparent, var(--mud-light),     transparent); }
+  .mvital-label { font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+  .mvital-value { font-family: 'Cinzel Decorative', serif; font-size: 2rem; line-height: 1; display: block; }
+  .mvital-value.tusk    { color: var(--tusk-light);    text-shadow: 0 0 18px rgba(184,144,96,.4); }
+  .mvital-value.gore    { color: var(--gore-light);    text-shadow: 0 0 18px rgba(160,40,40,.4); }
+  .mvital-value.bristle { color: var(--bristle-light); text-shadow: 0 0 14px rgba(112,88,72,.3); }
+  .mvital-value.mud     { color: var(--mud-light);     text-shadow: 0 0 16px rgba(128,96,48,.3); }
+  .mvital-note { font-size: .75rem; color: var(--text-dim); font-style: italic; margin-top: 6px; display: block; line-height: 1.4; }
+
+  .two-col-monster { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 600px) { .two-col-monster { grid-template-columns: 1fr; } }
+  .cr-badge { display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(36,22,8,.14), rgba(40,10,10,.12)); border: 1px solid rgba(68,48,24,.3); border-top: 2px solid var(--tusk-light); border-bottom: 2px solid var(--gore-dim); padding: 14px 24px; text-align: center; }
+  .cr-badge-label { font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .28em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; display: block; }
+  .cr-badge-value { font-family: 'Cinzel Decorative', serif; font-size: 2.2rem; font-weight: 900; background: linear-gradient(135deg, var(--tusk-light), var(--gore-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; display: block; }
+  .cr-badge-note { font-family: 'Fira Code', monospace; font-size: .6rem; color: var(--text-dim); margin-top: 4px; letter-spacing: .06em; display: block; }
+
+  .card { background: rgba(8,6,10,.90); border: 1px solid var(--hollow); padding: 20px 24px; margin-bottom: 10px; position: relative; overflow: hidden; }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .card.tusk::before    { background: linear-gradient(90deg, transparent, var(--tusk-dim),    transparent); }
+  .card.gore::before    { background: linear-gradient(90deg, transparent, var(--gore-dim),    transparent); }
+  .card.bristle::before { background: linear-gradient(90deg, transparent, var(--bristle-dim), transparent); }
+  .card-title { font-family: 'Cinzel', serif; font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 10px; }
+  .card-title.tusk    { color: var(--tusk-pale); }
+  .card-title.gore    { color: var(--gore-pale); }
+  .card-title.bristle { color: var(--bristle-pale); }
+  .card p { font-size: .94rem; color: #806858; line-height: 1.75; }
+  .card strong { color: var(--tusk-pale); }
+
+  .trait { display: grid; grid-template-columns: 3px 1fr; gap: 0 14px; margin-bottom: 10px; }
+  .tier-bar { border-radius: 2px; }
+  .trait-content { background: rgba(8,6,10,.78); border: 1px solid var(--hollow); padding: 14px 16px; }
+  .trait-name { font-family: 'Cinzel', serif; font-size: .74rem; letter-spacing: .1em; font-weight: 900; color: var(--tusk-pale); margin-bottom: 5px; }
+  .trait-name .sub { font-style: italic; font-weight: 400; color: var(--text-dim); font-family: 'EB Garamond', serif; font-size: .9rem; letter-spacing: 0; text-transform: none; }
+  .trait-content p { font-size: .92rem; color: #806858; line-height: 1.72; }
+  .trait-content p strong { color: var(--tusk-pale); }
+
+  .action { background: rgba(8,6,10,.88); border: 1px solid var(--hollow); padding: 14px 18px; margin-bottom: 8px; transition: border-bottom-color .2s; }
+  .action.gore { border-bottom: 2px solid var(--gore-dim); }
+  .action.gore:hover { border-bottom-color: var(--gore-light); }
+  .action-name { font-family: 'Cinzel', serif; font-size: .76rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+  .action-name.gore { color: var(--gore-light); }
+  .action p { font-size: .92rem; color: #806858; line-height: 1.72; }
+  .action strong { color: var(--tusk-pale); }
+
+  .attr-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 14px; }
+  @media (max-width: 500px) { .attr-grid { grid-template-columns: repeat(3, 1fr); } }
+  .attr-box { background: rgba(6,4,8,.92); border: 1px solid var(--hollow); padding: 16px 10px; text-align: center; position: relative; overflow: hidden; }
+  .attr-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; }
+  .attr-box.max::before  { background: linear-gradient(90deg, transparent, var(--gore-light),    transparent); }
+  .attr-box.high::before { background: linear-gradient(90deg, transparent, var(--tusk-light),    transparent); }
+  .attr-box.mid::before  { background: linear-gradient(90deg, transparent, var(--bristle-light), transparent); }
+  .attr-box.low::before  { background: linear-gradient(90deg, transparent, #c05050,              transparent); }
+  .attr-name { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+  .attr-value { display: block; font-family: 'Fira Code', monospace; font-size: 1.4rem; font-weight: 500; line-height: 1; color: var(--text); }
+  .attr-value.max  { color: var(--gore-light); }
+  .attr-value.high { color: var(--tusk-light); }
+  .attr-value.mid  { color: var(--bristle-light); }
+  .attr-value.low  { color: #c05050; }
+  .attr-mod { display: block; font-family: 'Cinzel', serif; font-size: .62rem; margin-top: 4px; color: var(--text-dim); }
+  .attr-mod.max  { color: var(--gore-dim); }
+  .attr-mod.high { color: var(--tusk-dim); }
+  .attr-mod.mid  { color: var(--bristle-dim); }
+  .attr-mod.neg  { color: #803030; }
+
+  .sep { height: 1px; background: linear-gradient(90deg, transparent, var(--tusk-dim), var(--gore-dim), transparent); margin: 18px 0; opacity: .5; }
+
+  .table-wrap { margin: 12px 0; border: 1px solid var(--hollow); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  thead tr { background: rgba(8,6,10,.98); border-bottom: 2px solid var(--tusk-dim); }
+  thead th { font-family: 'Cinzel', serif; font-size: .64rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--tusk-pale); padding: 9px 14px; text-align: left; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid rgba(22,16,10,.9); transition: background .12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:nth-child(even) { background: rgba(255,255,255,.012); }
+  tbody tr:hover { background: rgba(128,96,48,.07); }
+  td { padding: 8px 14px; vertical-align: top; color: #806858; }
+  td:first-child { font-family: 'Cinzel', serif; font-size: .84rem; color: var(--text); white-space: nowrap; }
+  .mono      { font-family: 'Fira Code', monospace; font-size: .78rem; color: var(--tusk-pale); }
+  .mono.tusk { color: var(--tusk-light); }
+  .mono.gore { color: var(--gore-light); }
+  .mono.mud  { color: var(--mud-light); }
+
+  .callout { border-left: 3px solid; padding: 14px 18px; margin: 12px 0; font-style: italic; font-size: .92rem; line-height: 1.75; }
+  .callout strong { font-style: normal; font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .1em; display: block; margin-bottom: 3px; }
+  .callout.tip  { background: rgba(24,16,6,.15); border-color: var(--tusk);  color: #806858; }
+  .callout.tip strong  { color: var(--tusk-light); }
+  .callout.gore { background: rgba(30,8,8,.15);  border-color: var(--gore);  color: #806050; }
+  .callout.gore strong { color: var(--gore-light); }
+  .callout.mud  { background: rgba(24,14,4,.14); border-color: var(--mud);   color: #706040; }
+  .callout.mud strong  { color: var(--mud-light); }
+
+  mark      { background: rgba(184,144,96,.16); color: var(--tusk-pale);  border-radius: 1px; padding: 0 2px; }
+  mark.gore { background: rgba(160,40,40,.15);  color: var(--gore-pale); }
+  mark.mud  { background: rgba(128,96,48,.14);  color: var(--mud-pale); }
+
+  .hl       { color: var(--tusk-light);  font-weight: 600; }
+  .hl-tusk  { color: var(--tusk-light);  font-weight: 600; }
+  .hl-gore  { color: var(--gore-light);  font-weight: 600; }
+  .hl-mud   { color: var(--mud-light);   font-weight: 600; }
+  .hl-red   { color: #c05050; font-weight: 600; }
+
+  .recharge      { font-family: 'Fira Code', monospace; font-size: .62rem; border: 1px solid var(--gore-dim); color: var(--gore-light); padding: 1px 7px; margin-left: 8px; vertical-align: middle; }
+  .recharge.rare { border-color: var(--tusk-dim); color: var(--tusk-light); }
+  .cost-badge    { font-family: 'Fira Code', monospace; font-size: .6rem; padding: 1px 7px; margin-left: 6px; border: 1px solid var(--mud-dim); color: var(--mud-pale); vertical-align: middle; }
+
+  /* ══ CARGA DIAGRAM ══ */
+  .charge-flow { display: flex; flex-direction: column; gap: 0; margin: 12px 0; }
+  .charge-step { display: grid; grid-template-columns: 28px 1fr; gap: 0 14px; align-items: start; }
+  .charge-num { font-family: 'Cinzel Decorative', serif; font-size: 1.2rem; color: var(--gore-light); text-align: center; padding-top: 2px; line-height: 1; }
+  .charge-body { background: rgba(8,6,10,.75); border: 1px solid var(--hollow); border-left: 2px solid var(--gore-dim); padding: 10px 14px; margin-bottom: 6px; }
+  .charge-body p { font-size: .88rem; color: #806858; line-height: 1.65; }
+  .charge-body strong { color: var(--tusk-pale); }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--void); }
+  ::-webkit-scrollbar-thumb { background: var(--tusk-dim); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--tusk-light); }
+
+  .breadcrumb { max-width: 860px; margin: 0 auto; padding: 20px 20px 0; font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+  .breadcrumb span { color: var(--tusk-dim); margin: 0 6px; }
+  .breadcrumb .current { color: var(--tusk-light); }
+  footer { text-align: center; padding: 40px 20px; font-family: 'Cinzel', serif; font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+  footer span { color: var(--tusk-dim); margin: 0 6px; }
+  #top-btn { position: fixed; bottom: 28px; right: 28px; width: 42px; height: 42px; background: rgba(8,6,10,.95); border: 1px solid var(--tusk-dim); color: var(--tusk-light); font-size: 1.2rem; line-height: 42px; text-align: center; text-decoration: none; opacity: 0; pointer-events: none;
+    transition: border-color .2s, color .2s, opacity .3s; z-index: 100; }
+  #top-btn.visible { opacity: 1; pointer-events: auto; }
+  #top-btn:hover { border-color: var(--gore-light); color: var(--gore-light); }
+  #atributos, #perfil { margin-bottom: 0; }
+  .monster-lore.mec-note { border-left-color: var(--gore-dim); font-size: 11px; opacity: .75; font-style: italic; }
+  .card.flex-center { display: flex; flex-direction: column; justify-content: center; margin-bottom: 0; }
+  .text-sm { font-size: .9rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    section { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+<nav class="breadcrumb" aria-label="Caminho de navegação">Valtheris &nbsp;/&nbsp; Apêndice D <span>›</span> <span class="current">13 — Javali</span></nav>
+
+<header>
+  <div class="header-pulse"></div>
+  <span class="header-symbol">🐗</span>
+  <p class="header-eyebrow">Apêndice D &nbsp;⬥&nbsp; 13 / 31 &nbsp;⬥&nbsp; Além do Véu da Carne</p>
+  <p class="header-classification">⬥ Besta Média · Imparcial ⬥</p>
+  <h1 class="header-fraktur">Javali</h1>
+  <p class="header-title-sub">Carga e Fúria — Predador Resiliente</p>
+  <p class="header-tagline">"Derruba primeiro. Pergunta depois. Nunca pergunta."</p>
+  <div class="header-crests">
+    <span class="crest-badge tusk">🐗 Carga · CD 11</span>
+    <span class="crest-badge gore">💢 Determinação</span>
+    <span class="crest-badge bristle">🛡 Besta Média</span>
+    <span class="crest-badge mud">ND 1/4 · 50 XP</span>
+  </div>
+</header>
+
+<div class="divider"><div class="divider-line"></div><span class="divider-glyph">⬥</span><div class="divider-line"></div></div>
+
+<main>
+
+<!-- ══ IDENTIDADE ══ -->
+<section id="identidade">
+  <div class="section-header">
+    <span class="section-icon tusk">🐗</span>
+    <h2 class="tusk">Identidade</h2>
+    <div class="section-line tusk"></div>
+  </div>
+  <div class="identity">
+    <div class="identity-corner tl">BESTA MÉDIA · IMPARCIAL</div>
+    <div class="identity-corner tr">NÍVEL DE DESAFIO 1/4 · 50 XP</div>
+    <div class="identity-corner bl">APÊNDICE D · 13 / 31</div>
+    <div class="identity-corner br">FICHA · BESTIÁRIO</div>
+    <div class="monster-name">Javali</div>
+    <div class="monster-epithet">⬥ Carga e Fúria — Predador Resiliente ⬥</div>
+    <div class="monster-type-line">
+      <span class="tag dnd">D&D 5e</span>
+      <span class="tag lore">Besta</span>
+      <span class="tag hb">Imparcial</span>
+      <span class="tag med">Médio</span>
+      <span class="tag cr-half">ND 1/4</span>
+      <span class="tag charge">Carga</span>
+    </div>
+    <p class="monster-lore">O Javali é a primeira besta de tamanho Médio com duas habilidades distintas no Apêndice D — e a primeira com <strong>Determinação</strong>: uma mecânica que permite ignorar a morte uma vez por combate. Quando um Javali é reduzido a 0 PV, ele realiza um teste de Constituição (CD igual ao dano recebido) — em caso de sucesso, permanece em 1 PV. Uma besta que literalmente se recusa a morrer na primeira oportunidade.</p>
+    <p class="monster-lore">A combinação de <strong>Carga</strong> (derruba alvo com CD 11 de Força) e <strong>Determinação</strong> cria um adversário de ND 1/4 que exige dois planos simultâneos: derrubar e segurar. Um Javali que Carrega, derruba, e então usa Presas contra o alvo caído pode matar um personagem de nível 1 com saúde reduzida em dois turnos — e sobreviver ao que deveria ser o golpe fatal com Determinação.</p>
+    <p class="monster-lore mec-note">
+      ⚙ Nota Mecânica — Tipo: Besta Média (Apêndice D · 13/31). Determinação funciona apenas uma vez por combate — se o Javali já foi reduzido a 0 PV e sobreviveu, o próximo acerto que o leve a 0 PV o mata normalmente. Carga exige pelo menos 4,5 m de movimento em linha reta antes do acerto. O alvo caído (Prono) concede vantagem em ataques corpo a corpo — o Javali explora isso automaticamente no turno seguinte se o alvo falhou no teste de Força.
+    </p>
+  </div>
+</section>
+
+<!-- ══ ESTATÍSTICAS BASE ══ -->
+<section id="stats">
+  <div class="section-header">
+    <span class="section-icon gore">⚔</span>
+    <h2 class="gore">Estatísticas Base</h2>
+    <div class="section-line gore"></div>
+  </div>
+  <div class="monster-vitals">
+    <div class="mvital-card bristle">
+      <span class="mvital-label">Classe de Armadura</span>
+      <span class="mvital-value bristle">11</span>
+      <span class="mvital-note">Iniciativa +0 · DEX 11</span>
+    </div>
+    <div class="mvital-card gore">
+      <span class="mvital-label">Pontos de Vida</span>
+      <span class="mvital-value gore">11</span>
+      <span class="mvital-note">2d8 + 2 · +Determinação</span>
+    </div>
+    <div class="mvital-card tusk">
+      <span class="mvital-label">Deslocamento</span>
+      <span class="mvital-value tusk">13 m</span>
+      <span class="mvital-note">Mais rápido que humanos</span>
+    </div>
+    <div class="mvital-card mud">
+      <span class="mvital-label">Percepção Passiva</span>
+      <span class="mvital-value mud">9</span>
+      <span class="mvital-note">Sem perícias treinadas</span>
+    </div>
+  </div>
+  <div class="two-col-monster">
+    <div class="cr-badge" style="flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;padding:16px 24px;">
+      <div>
+        <span class="cr-badge-label">Challenge Rating</span>
+        <span class="cr-badge-value">¼</span>
+        <span class="cr-badge-note">50 XP</span>
+      </div>
+      <div style="border-left:1px solid rgba(68,48,24,.3);padding-left:20px;">
+        <span class="cr-badge-label">Proficiência</span>
+        <span class="cr-badge-value" style="font-size:1.6rem;">+2</span>
+        <span class="cr-badge-note">CR 1/4</span>
+      </div>
+    </div>
+    <div class="card tusk flex-center">
+      <div class="card-title tusk">Escala de Ameaça</div>
+      <p class="text-sm">Subestimado pelo ND. <span class="hl-gore">Determinação</span> efetivamente dobra a durabilidade em combate. Em manada de 3–4, a carga inicial pode derrubar metade do grupo enquanto os restantes ainda estão de pé com PV efetivos de ~22.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ATRIBUTOS + SENTIDOS (two-col) ══ -->
+<div class="two-col-monster" style="align-items:start;gap:14px;margin-bottom:56px;">
+<section id="atributos">
+  <div class="section-header">
+    <span class="section-icon mud">◆</span>
+    <h2 class="mud">Atributos</h2>
+    <div class="section-line mud"></div>
+  </div>
+  <div class="attr-grid">
+    <div class="attr-box max"><div class="attr-name">For</div><span class="attr-value max">13</span><span class="attr-mod max">+1</span></div>
+    <div class="attr-box mid"><div class="attr-name">Des</div><span class="attr-value mid">11</span><span class="attr-mod mid">+0</span></div>
+    <div class="attr-box high"><div class="attr-name">Con</div><span class="attr-value high">12</span><span class="attr-mod high">+1</span></div>
+    <div class="attr-box low"><div class="attr-name">Int</div><span class="attr-value low">2</span><span class="attr-mod neg">−4</span></div>
+    <div class="attr-box mid"><div class="attr-name">Sab</div><span class="attr-value mid">9</span><span class="attr-mod neg">−1</span></div>
+    <div class="attr-box low"><div class="attr-name">Car</div><span class="attr-value low">5</span><span class="attr-mod neg">−3</span></div>
+  </div>
+  <div class="callout tip">
+    <strong>Nota sobre os Atributos</strong> CON 12 é o que alimenta Determinação — quanto mais alto o CON, mais provável que o teste CD (igual ao dano do golpe fatal) seja bem-sucedido. FOR 13 gera o bônus de ataque +3 nas Presas. SAB 9 confirma ausência de astúcia — o Javali age por instinto, nunca por estratégia.
+  </div>
+</section>
+<section id="perfil">
+  <div class="section-header">
+    <span class="section-icon bristle">🎲</span>
+    <h2 class="bristle">Sentidos &amp; Idiomas</h2>
+    <div class="section-line bristle"></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+      <tbody>
+        <tr><td>Perícias</td><td style="color:var(--text-dim);font-size:.88rem;">Nenhuma</td></tr>
+        <tr><td>Percepção Passiva</td><td><span class="mono">9</span></td></tr>
+        <tr><td>Deslocamento</td><td><span class="mono tusk">13 m</span> <span style="color:var(--text-dim);font-size:.82rem;">(supera humano médio)</span></td></tr>
+        <tr><td>Carga — distância mín.</td><td><span class="mono gore">4,5 m</span></td></tr>
+        <tr><td>Carga — CD derrubada</td><td><span class="mono gore">11</span> <span style="color:var(--text-dim);font-size:.82rem;">(Força)</span></td></tr>
+        <tr><td>Idiomas</td><td style="color:var(--text-dim);font-size:.88rem;">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+</div>
+
+<!-- ══ TRAÇOS ESPECIAIS ══ -->
+<section id="tracos">
+  <div class="section-header">
+    <span class="section-icon tusk">✧</span>
+    <h2 class="tusk">Traços Especiais</h2>
+    <div class="section-line tusk"></div>
+  </div>
+  <div class="trait">
+    <div class="tier-bar" style="background:linear-gradient(180deg,var(--gore-light),var(--gore-dim));"></div>
+    <div class="trait-content">
+      <div class="trait-name">Carga <span class="sub">(Passivo — Gatilho de Movimento)</span></div>
+      <p>Se o javali se mover pelo menos <strong>4,5 m em linha reta</strong> em direção de um alvo antes de atingi-lo com suas Presas, o alvo deve ser bem-sucedido num <strong>Teste de Resistência de Força CD 11</strong> ou cair no chão. Se o alvo cair, o javali pode realizar uma <strong>ação bônus para fazer outro ataque de Presas</strong> contra ele.</p>
+      <p style="margin-top:8px;">Alvo Prono recebe vantagem em ataques corpo a corpo do Javali no turno seguinte — efetivamente transformando uma única carga em duas presas consecutivas com vantagem na segunda.</p>
+    </div>
+  </div>
+  <div class="trait">
+    <div class="tier-bar" style="background:linear-gradient(180deg,var(--tusk-light),var(--tusk-dim));"></div>
+    <div class="trait-content">
+      <div class="trait-name">Determinação <span class="sub">(Passivo — Uma Vez por Combate)</span></div>
+      <p>Quando o javali seria reduzido a 0 pontos de vida, ele realiza um <strong>Teste de Constituição com CD igual ao dano recebido</strong>. Em caso de sucesso, o javali é, em vez disso, reduzido a <strong>1 ponto de vida</strong>. Funciona <strong>uma única vez por combate</strong> — a segunda vez que chegar a 0 PV, morre normalmente.</p>
+      <p style="margin-top:8px;">Com CON +1, o Javali tem aproximadamente 50% de chance de sobreviver a qualquer golpe que o levaria à morte — se o dano for 11 ou menos (2d10 médio a pleno). Contra dano alto único (12+), a chance cai, mas ainda existe.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ AÇÕES ══ -->
+<section id="acoes">
+  <div class="section-header">
+    <span class="section-icon gore">⚔</span>
+    <h2 class="gore">Ações</h2>
+    <div class="section-line gore"></div>
+  </div>
+  <div class="action gore">
+    <div class="action-name gore">Presas</div>
+    <p><em>Ataque Corpo-a-Corpo com Arma:</em> <strong>+3 para atingir</strong>, alcance 1,5 m, um alvo. Acerto: <strong>4 (1d6 + 1)</strong> de dano cortante.</p>
+  </div>
+  <div class="sep"></div>
+  <div class="callout gore">
+    <strong>Sequência de Carga Otimizada</strong> Turno 1: Move 4,5+ m → Presas (+3, 4 dano) → alvo falha CD 11 → cai Prono → Ação Bônus: Presas com vantagem (+3, 4 dano). Turno 2: alvo ainda Prono → Presas com vantagem. Total médio em dois turnos: <mark class="gore">~12 de dano</mark> com um único javali de ND 1/4. Em manada, esse número multiplica.
+  </div>
+</section>
+
+<!-- ══ MECÂNICA: CARGA ══ -->
+<section id="carga">
+  <div class="section-header">
+    <span class="section-icon mud">💢</span>
+    <h2 class="mud">Mecânica de Carga</h2>
+    <div class="section-line mud"></div>
+  </div>
+  <div class="charge-flow">
+    <div class="charge-step">
+      <div class="charge-num">1</div>
+      <div class="charge-body"><p><strong>Javali move 4,5 m+</strong> em linha reta em direção ao alvo. Com 13 m de deslocamento, há espaço para 8,5 m de movimento residual para posicionamento.</p></div>
+    </div>
+    <div class="charge-step">
+      <div class="charge-num">2</div>
+      <div class="charge-body"><p><strong>Presas (+3):</strong> acerto → <strong>4 (1d6+1)</strong> dano cortante. Alvo faz <strong>Teste de Força CD 11</strong> — falha = Prono.</p></div>
+    </div>
+    <div class="charge-step">
+      <div class="charge-num">3</div>
+      <div class="charge-body"><p><strong>Se Prono:</strong> Ação Bônus → Presas com <strong>vantagem</strong> (+3, 4 dano). Alvo Prono ainda recebe desvantagem em ataques contra o Javali.</p></div>
+    </div>
+    <div class="charge-step">
+      <div class="charge-num">4</div>
+      <div class="charge-body"><p><strong>Turno seguinte:</strong> alvo ainda Prono → Presas com vantagem normalmente. Se o Javali for atingido a 0 PV: <strong>Determinação</strong> (Teste CON). Sobrevive com 1 PV.</p></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>Valtheris <span>›</span> Apêndice D <span>›</span> <span style="color:var(--tusk-dim);">13 — Javali</span></footer>
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+<script>
+(function() {
+  const btn = document.getElementById('top-btn');
+  btn.addEventListener('click', function(e) {
+    e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  window.addEventListener('scroll', function() {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>

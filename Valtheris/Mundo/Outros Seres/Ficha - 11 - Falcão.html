@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Falcão — Apêndice D · Valtheris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #050608;
+    --hollow:       #161c22;
+
+    --sky:          #2a4870;
+    --sky-light:    #4878a8;
+    --sky-dim:      #0c1828;
+    --sky-pale:     #90c0e0;
+
+    --talon:        #805028;
+    --talon-light:  #b87840;
+    --talon-dim:    #281808;
+    --talon-pale:   #d8a868;
+
+    --wind-light:   #5888a0;
+    --wind-dim:     #101c24;
+    --wind-pale:    #88b8c8;
+
+    --gold:         #705820;
+    --gold-light:   #a88030;
+    --gold-dim:     #241c08;
+    --gold-pale:    #d0a848;
+
+    --text:         #7890a0;
+    --text-dim:     #283040;
+    --text-faint:   #0c1018;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--void);
+    background-image:
+      radial-gradient(ellipse 120% 50% at 50% -5%, #080c14 0%, transparent 55%),
+      radial-gradient(ellipse 50%  60% at 90% 100%, #060810 0%, transparent 50%),
+      radial-gradient(ellipse 40%  60% at 10%  80%, #08100e 0%, transparent 50%);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 17px; line-height: 1.8;
+    min-height: 100vh; overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 999; opacity: .55;
+  }
+
+  .top-bar { height: 4px; background: linear-gradient(90deg, var(--sky-dim), var(--sky-light), var(--talon-light), var(--sky-light), var(--sky-dim)); box-shadow: 0 0 30px rgba(72,120,168,.4); }
+
+  header { position: relative; text-align: center; padding: 80px 20px 70px; overflow: hidden; }
+  header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(42,72,112,.10) 0%, transparent 65%), radial-gradient(ellipse 40% 30% at 50% 60%, rgba(56,80,96,.07) 0%, transparent 70%); pointer-events: none; }
+  .header-pulse { position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--sky-dim), var(--talon-dim), var(--sky-dim), transparent); }
+  .header-symbol { display: block; font-size: 2.2rem; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(72,120,168,.5)); }
+  .header-eyebrow { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .45em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 18px; }
+  .header-classification { font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .25em; text-transform: uppercase; color: var(--sky-pale); margin-bottom: 10px; opacity: .8; }
+  .header-title-sub { font-family: 'Cinzel', serif; font-size: clamp(.85rem, 2vw, 1rem); letter-spacing: .18em; text-transform: uppercase; color: var(--talon-pale); margin-bottom: 8px; }
+  .header-fraktur { font-family: 'Cinzel Decorative', serif; font-size: clamp(2rem, 6vw, 3.6rem); font-weight: 900; line-height: 1.1; margin-bottom: 16px; background: linear-gradient(135deg, var(--sky-light) 0%, var(--talon-light) 40%, var(--sky-pale) 70%, var(--gold-light) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .header-tagline { font-family: 'EB Garamond', serif; font-style: italic; font-size: clamp(.9rem, 2.2vw, 1.08rem); color: #283040; letter-spacing: .06em; margin-top: 8px; }
+  .header-crests { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 24px; }
+  .crest-badge { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; padding: 5px 14px; border-radius: 1px; }
+  .crest-badge.sky   { border: 1px solid var(--sky-dim);   color: var(--sky-light);   background: rgba(10,20,36,.4); }
+  .crest-badge.talon { border: 1px solid var(--talon-dim); color: var(--talon-light); background: rgba(22,14,6,.3); }
+  .crest-badge.wind  { border: 1px solid var(--wind-dim);  color: var(--wind-light);  background: rgba(12,20,26,.3); }
+  .crest-badge.gold  { border: 1px solid var(--gold-dim);  color: var(--gold-light);  background: rgba(20,16,6,.3); }
+
+  .divider { display: flex; align-items: center; gap: 14px; padding: 0 20px; max-width: 860px; margin: 0 auto 24px; }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--sky-dim), var(--talon-dim), transparent); }
+  .divider-glyph { font-family: 'Cinzel', serif; font-size: .7rem; color: var(--sky-dim); }
+
+  main { max-width: 860px; margin: 0 auto; padding: 0 20px 90px; display: flex; flex-direction: column; gap: 0; position: relative; z-index: 1; }
+
+  section { margin-bottom: 56px; animation: fade-in .5s ease both; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  section:nth-child(1)  { animation-delay: .05s; }
+  section:nth-child(2)  { animation-delay: .12s; }
+  section:nth-child(3)  { animation-delay: .18s; }
+  section:nth-child(4)  { animation-delay: .24s; }
+  section:nth-child(5)  { animation-delay: .30s; }
+  section:nth-child(6)  { animation-delay: .36s; }
+  section:nth-child(7)  { animation-delay: .42s; }
+
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .section-icon { font-size: 1.1rem; }
+  .section-icon.sky   { filter: drop-shadow(0 0 8px rgba(72,120,168,.6)); }
+  .section-icon.talon { filter: drop-shadow(0 0 8px rgba(184,120,64,.5)); }
+  .section-icon.wind  { filter: drop-shadow(0 0 8px rgba(88,136,160,.4)); }
+  .section-icon.gold  { filter: drop-shadow(0 0 8px rgba(168,128,48,.5)); }
+  h2 { font-family: 'Cinzel', serif; font-size: .9rem; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; }
+  h2.sky   { color: var(--sky-light);   text-shadow: 0 0 18px rgba(72,120,168,.3); }
+  h2.talon { color: var(--talon-light); text-shadow: 0 0 18px rgba(184,120,64,.3); }
+  h2.wind  { color: var(--wind-light);  text-shadow: 0 0 18px rgba(88,136,160,.25); }
+  h2.gold  { color: var(--gold-light);  text-shadow: 0 0 18px rgba(168,128,48,.25); }
+  .section-line { flex: 1; height: 1px; }
+  .section-line.sky   { background: linear-gradient(90deg, var(--sky-dim),   rgba(28,50,80,.3),  transparent); }
+  .section-line.talon { background: linear-gradient(90deg, var(--talon-dim), rgba(50,32,12,.3),  transparent); }
+  .section-line.wind  { background: linear-gradient(90deg, var(--wind-dim),  rgba(28,44,56,.3),  transparent); }
+  .section-line.gold  { background: linear-gradient(90deg, var(--gold-dim),  rgba(44,34,10,.3),  transparent); }
+
+  .identity { position: relative; background: rgba(6,9,14,.92); border: 1px solid rgba(28,46,72,.3); padding: 44px 32px 36px; text-align: center; margin-bottom: 28px; }
+  .identity::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--sky-dim), var(--talon-dim), transparent); }
+  .identity::after  { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); }
+  .identity-corner { position: absolute; font-family: 'Cinzel', serif; font-size: .48rem; letter-spacing: .22em; text-transform: uppercase; color: var(--sky-dim); }
+  .identity-corner.tl { top: 10px; left: 14px; }
+  .identity-corner.tr { top: 10px; right: 14px; }
+  .identity-corner.bl { bottom: 10px; left: 14px; }
+  .identity-corner.br { bottom: 10px; right: 14px; }
+  .monster-name { font-family: 'Cinzel Decorative', serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 900; line-height: 1.1; margin-bottom: 10px; background: linear-gradient(135deg, var(--sky-light), var(--talon-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .monster-epithet { font-family: 'EB Garamond', serif; font-style: italic; font-size: 1rem; color: var(--sky-dim); letter-spacing: .06em; margin-bottom: 16px; }
+  .monster-type-line { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 20px; }
+  .monster-lore { font-style: italic; color: #7090a8; font-size: .97rem; border-left: 2px solid var(--sky-dim); padding-left: 16px; margin-top: 14px; line-height: 1.75; text-align: left; }
+  .monster-lore + .monster-lore { border-left-color: var(--talon-dim); margin-top: 10px; }
+
+  .tag { display: inline-block; font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .18em; text-transform: uppercase; padding: 2px 8px; border-radius: 1px; margin-right: 4px; margin-bottom: 4px; vertical-align: middle; }
+  .tag.dnd      { border: 1px solid #503808; color: #c09030; }
+  .tag.lore     { border: 1px solid #183050; color: var(--sky-pale); }
+  .tag.hb       { border: 1px solid #1a3020; color: #508060; }
+  .tag.tiny     { border: 1px solid #182030; color: var(--wind-light); }
+  .tag.cr0      { border: 1px solid #203040; color: var(--sky-light); }
+  .tag.familiar { border: 1px solid #302010; color: var(--gold-light); }
+  .tag.hunter   { border: 1px solid #2a1c08; color: var(--talon-light); }
+  .tag-a { font-family: 'Fira Code', monospace; font-size: .6rem; padding: 1px 7px; margin-left: 6px; border-radius: 1px; vertical-align: middle; }
+  .tag-a.sky   { border: 1px solid var(--sky-dim);   color: var(--sky-pale); }
+  .tag-a.talon { border: 1px solid var(--talon-dim); color: var(--talon-pale); }
+
+  .monster-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  @media (max-width: 600px) { .monster-vitals { grid-template-columns: 1fr 1fr; } }
+  .mvital-card { background: rgba(6,9,14,.88); border: 1px solid rgba(24,40,64,.3); border-radius: 3px; padding: 16px 14px; position: relative; overflow: hidden; text-align: center; }
+  .mvital-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+  .mvital-card.sky::after   { background: linear-gradient(90deg, transparent, var(--sky-light),   transparent); }
+  .mvital-card.talon::after { background: linear-gradient(90deg, transparent, var(--talon-light), transparent); }
+  .mvital-card.wind::after  { background: linear-gradient(90deg, transparent, var(--wind-light),  transparent); }
+  .mvital-card.gold::after  { background: linear-gradient(90deg, transparent, var(--gold-light),  transparent); }
+  .mvital-label { font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+  .mvital-value { font-family: 'Cinzel Decorative', serif; font-size: 2rem; line-height: 1; display: block; }
+  .mvital-value.sky   { color: var(--sky-light);   text-shadow: 0 0 20px rgba(72,120,168,.4); }
+  .mvital-value.talon { color: var(--talon-light); text-shadow: 0 0 16px rgba(184,120,64,.3); }
+  .mvital-value.wind  { color: var(--wind-light);  text-shadow: 0 0 16px rgba(88,136,160,.3); }
+  .mvital-value.gold  { color: var(--gold-light);  text-shadow: 0 0 16px rgba(168,128,48,.3); }
+  .mvital-note { font-size: .75rem; color: var(--text-dim); font-style: italic; margin-top: 6px; display: block; line-height: 1.4; }
+
+  .two-col-monster { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 600px) { .two-col-monster { grid-template-columns: 1fr; } }
+  .cr-badge { display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(18,30,50,.14), rgba(36,26,10,.12)); border: 1px solid rgba(28,46,72,.3); border-top: 2px solid var(--sky-light); border-bottom: 2px solid var(--gold-dim); padding: 14px 24px; text-align: center; }
+  .cr-badge-label { font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .28em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; display: block; }
+  .cr-badge-value { font-family: 'Cinzel Decorative', serif; font-size: 2.2rem; font-weight: 900; background: linear-gradient(135deg, var(--sky-light), var(--talon-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; display: block; }
+  .cr-badge-note { font-family: 'Fira Code', monospace; font-size: .6rem; color: var(--text-dim); margin-top: 4px; letter-spacing: .06em; display: block; }
+
+  .card { background: rgba(6,9,14,.90); border: 1px solid var(--hollow); padding: 20px 24px; margin-bottom: 10px; position: relative; overflow: hidden; }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .card.sky::before   { background: linear-gradient(90deg, transparent, var(--sky-dim),   transparent); }
+  .card.talon::before { background: linear-gradient(90deg, transparent, var(--talon-dim), transparent); }
+  .card.gold::before  { background: linear-gradient(90deg, transparent, var(--gold-dim),  transparent); }
+  .card-title { font-family: 'Cinzel', serif; font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 10px; }
+  .card-title.sky   { color: var(--sky-pale); }
+  .card-title.talon { color: var(--talon-pale); }
+  .card-title.gold  { color: var(--gold-pale); }
+  .card p { font-size: .94rem; color: #607888; line-height: 1.75; }
+  .card strong { color: var(--sky-pale); }
+
+  .trait { display: grid; grid-template-columns: 3px 1fr; gap: 0 14px; margin-bottom: 10px; }
+  .tier-bar { border-radius: 2px; }
+  .trait-content { background: rgba(6,9,14,.78); border: 1px solid var(--hollow); padding: 14px 16px; }
+  .trait-name { font-family: 'Cinzel', serif; font-size: .74rem; letter-spacing: .1em; font-weight: 900; color: var(--sky-pale); margin-bottom: 5px; }
+  .trait-name .sub { font-style: italic; font-weight: 400; color: var(--text-dim); font-family: 'EB Garamond', serif; font-size: .9rem; letter-spacing: 0; text-transform: none; }
+  .trait-content p { font-size: .92rem; color: #607888; line-height: 1.72; }
+  .trait-content p strong { color: var(--sky-pale); }
+
+  .action { background: rgba(6,9,14,.88); border: 1px solid var(--hollow); padding: 14px 18px; margin-bottom: 8px; transition: border-bottom-color .2s; }
+  .action.sky   { border-bottom: 2px solid var(--sky-dim); }
+  .action.sky:hover   { border-bottom-color: var(--sky-light); }
+  .action.talon { border-bottom: 2px solid var(--talon-dim); }
+  .action.talon:hover { border-bottom-color: var(--talon-light); }
+  .action-name { font-family: 'Cinzel', serif; font-size: .76rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+  .action-name.sky   { color: var(--sky-light); }
+  .action-name.talon { color: var(--talon-pale); }
+  .action p { font-size: .92rem; color: #607888; line-height: 1.72; }
+  .action strong { color: var(--sky-pale); }
+
+  .attr-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 14px; }
+  @media (max-width: 500px) { .attr-grid { grid-template-columns: repeat(3, 1fr); } }
+  .attr-box { background: rgba(5,8,12,.92); border: 1px solid var(--hollow); padding: 16px 10px; text-align: center; position: relative; overflow: hidden; }
+  .attr-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; }
+  .attr-box.max::before  { background: linear-gradient(90deg, transparent, var(--talon-light), transparent); }
+  .attr-box.high::before { background: linear-gradient(90deg, transparent, var(--sky-light),   transparent); }
+  .attr-box.mid::before  { background: linear-gradient(90deg, transparent, var(--wind-light),  transparent); }
+  .attr-box.low::before  { background: linear-gradient(90deg, transparent, #c05050,            transparent); }
+  .attr-name { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+  .attr-value { display: block; font-family: 'Fira Code', monospace; font-size: 1.4rem; font-weight: 500; line-height: 1; color: var(--text); }
+  .attr-value.max  { color: var(--talon-light); }
+  .attr-value.high { color: var(--sky-light); }
+  .attr-value.mid  { color: var(--wind-light); }
+  .attr-value.low  { color: #c05050; }
+  .attr-mod { display: block; font-family: 'Cinzel', serif; font-size: .62rem; margin-top: 4px; color: var(--text-dim); }
+  .attr-mod.max  { color: var(--talon-dim); }
+  .attr-mod.high { color: var(--sky-dim); }
+  .attr-mod.mid  { color: var(--wind-dim); }
+  .attr-mod.neg  { color: #803030; }
+
+  .sep { height: 1px; background: linear-gradient(90deg, transparent, var(--sky-dim), var(--talon-dim), transparent); margin: 18px 0; opacity: .5; }
+
+  .table-wrap { margin: 12px 0; border: 1px solid var(--hollow); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  thead tr { background: rgba(6,9,14,.98); border-bottom: 2px solid var(--sky-dim); }
+  thead th { font-family: 'Cinzel', serif; font-size: .64rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--talon-pale); padding: 9px 14px; text-align: left; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid rgba(16,22,30,.9); transition: background .12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:nth-child(even) { background: rgba(255,255,255,.012); }
+  tbody tr:hover { background: rgba(28,46,72,.07); }
+  td { padding: 8px 14px; vertical-align: top; color: #607888; }
+  td:first-child { font-family: 'Cinzel', serif; font-size: .84rem; color: var(--text); white-space: nowrap; }
+  .mono       { font-family: 'Fira Code', monospace; font-size: .78rem; color: var(--talon-pale); }
+  .mono.sky   { color: var(--sky-light); }
+  .mono.talon { color: var(--talon-light); }
+  .mono.gold  { color: var(--gold-light); }
+
+  .callout { border-left: 3px solid; padding: 14px 18px; margin: 12px 0; font-style: italic; font-size: .92rem; line-height: 1.75; }
+  .callout strong { font-style: normal; font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .1em; display: block; margin-bottom: 3px; }
+  .callout.tip   { background: rgba(16,24,40,.15); border-color: var(--sky);   color: #607888; }
+  .callout.tip strong   { color: var(--sky-light); }
+  .callout.talon { background: rgba(28,18,6,.14);  border-color: var(--talon); color: #706050; }
+  .callout.talon strong { color: var(--talon-light); }
+  .callout.gold  { background: rgba(26,20,6,.14);  border-color: var(--gold);  color: #706040; }
+  .callout.gold strong  { color: var(--gold-light); }
+
+  mark        { background: rgba(72,120,168,.16); color: var(--sky-pale);   border-radius: 1px; padding: 0 2px; }
+  mark.talon  { background: rgba(184,120,64,.14); color: var(--talon-pale); }
+  mark.gold   { background: rgba(168,128,48,.13); color: var(--gold-pale); }
+
+  .hl       { color: var(--sky-light);   font-weight: 600; }
+  .hl-sky   { color: var(--sky-light);   font-weight: 600; }
+  .hl-talon { color: var(--talon-light); font-weight: 600; }
+  .hl-gold  { color: var(--gold-light);  font-weight: 600; }
+  .hl-red   { color: #c05050; font-weight: 600; }
+
+  .recharge      { font-family: 'Fira Code', monospace; font-size: .62rem; border: 1px solid var(--sky-dim);   color: var(--sky-light);   padding: 1px 7px; margin-left: 8px; vertical-align: middle; }
+  .recharge.rare { border-color: var(--talon-dim); color: var(--talon-light); }
+  .cost-badge    { font-family: 'Fira Code', monospace; font-size: .6rem; padding: 1px 7px; margin-left: 6px; border: 1px solid var(--wind-dim); color: var(--wind-pale); vertical-align: middle; }
+
+  /* ══ FALCÃO vs CORUJA vs CORVO ══ */
+  .tri-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  @media (max-width: 560px) { .tri-grid { grid-template-columns: 1fr; } }
+  .tri-card { background: rgba(6,9,14,.85); border: 1px solid var(--hollow); padding: 14px 16px; }
+  .tri-label { font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid; display: flex; align-items: center; gap: 6px; }
+  .tri-label.falcao { color: var(--sky-pale);   border-bottom-color: var(--sky-dim); }
+  .tri-label.coruja { color: var(--wind-pale);  border-bottom-color: var(--wind-dim); }
+  .tri-label.corvo  { color: var(--gold-pale);  border-bottom-color: var(--gold-dim); }
+  .tri-card p { font-size: .86rem; color: #607888; line-height: 1.65; }
+  .tri-card strong { color: var(--text); }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--void); }
+  ::-webkit-scrollbar-thumb { background: var(--sky-dim); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--sky-light); }
+
+  .breadcrumb { max-width: 860px; margin: 0 auto; padding: 20px 20px 0; font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+  .breadcrumb span { color: var(--sky-dim); margin: 0 6px; }
+  .breadcrumb .current { color: var(--sky-light); }
+  footer { text-align: center; padding: 40px 20px; font-family: 'Cinzel', serif; font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+  footer span { color: var(--sky-dim); margin: 0 6px; }
+  #top-btn { position: fixed; bottom: 28px; right: 28px; width: 42px; height: 42px; background: rgba(6,9,14,.95); border: 1px solid var(--sky-dim); color: var(--sky-light); font-size: 1.2rem; line-height: 42px; text-align: center; text-decoration: none; opacity: 0; pointer-events: none;
+    transition: border-color .2s, color .2s, opacity .3s; z-index: 100; }
+  #top-btn.visible { opacity: 1; pointer-events: auto; }
+  #top-btn:hover { border-color: var(--talon-light); color: var(--talon-light); }
+  #atributos, #perfil { margin-bottom: 0; }
+  .monster-lore.mec-note { border-left-color: var(--talon-dim); font-size: 11px; opacity: .75; font-style: italic; }
+  .card.flex-center { display: flex; flex-direction: column; justify-content: center; margin-bottom: 0; }
+  .text-sm { font-size: .9rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    section { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+<nav class="breadcrumb" aria-label="Caminho de navegação">Valtheris &nbsp;/&nbsp; Apêndice D <span>›</span> <span class="current">11 — Falcão</span></nav>
+
+<header>
+  <div class="header-pulse"></div>
+  <span class="header-symbol">🦅</span>
+  <p class="header-eyebrow">Apêndice D &nbsp;⬥&nbsp; 11 / 31 &nbsp;⬥&nbsp; Além do Véu da Carne</p>
+  <p class="header-classification">⬥ Besta Minúscula · Imparcial ⬥</p>
+  <h1 class="header-fraktur">Falcão</h1>
+  <p class="header-title-sub">Familiar — Caçador do Horizonte</p>
+  <p class="header-tagline">"Vê a presa antes que ela saiba que é presa."</p>
+  <div class="header-crests">
+    <span class="crest-badge sky">🦅 Familiar</span>
+    <span class="crest-badge talon">👁 Visão Aguçada +3</span>
+    <span class="crest-badge wind">💨 Voo Rasante</span>
+    <span class="crest-badge gold">ND 0 · 10 XP</span>
+  </div>
+</header>
+
+<div class="divider"><div class="divider-line"></div><span class="divider-glyph">⬥</span><div class="divider-line"></div></div>
+
+<main>
+
+<!-- ══ IDENTIDADE ══ -->
+<section id="identidade">
+  <div class="section-header">
+    <span class="section-icon sky">🦅</span>
+    <h2 class="sky">Identidade</h2>
+    <div class="section-line sky"></div>
+  </div>
+  <div class="identity">
+    <div class="identity-corner tl">BESTA MINÚSCULA · IMPARCIAL</div>
+    <div class="identity-corner tr">NÍVEL DE DESAFIO 0 · 10 XP</div>
+    <div class="identity-corner bl">APÊNDICE D · 11 / 31</div>
+    <div class="identity-corner br">FICHA · BESTIÁRIO</div>
+    <div class="monster-name">Falcão</div>
+    <div class="monster-epithet">⬥ Familiar — Caçador do Horizonte ⬥</div>
+    <div class="monster-type-line">
+      <span class="tag dnd">D&D 5e</span>
+      <span class="tag lore">Besta</span>
+      <span class="tag hb">Imparcial</span>
+      <span class="tag tiny">Minúsculo</span>
+      <span class="tag cr0">ND 0</span>
+      <span class="tag familiar">Familiar</span>
+      <span class="tag hunter">Caçador</span>
+    </div>
+    <p class="monster-lore">O Falcão fecha o trio de aves do Apêndice D — e é o que ocupa o nicho do <strong>caçador diurno</strong>. Onde a Coruja domina a noite com Visão no Escuro e a Coruja tem Voo Rasante isolado, o Falcão combina <strong>Visão Aguçada</strong> com <strong>Voo Rasante</strong> ao mesmo tempo — tornando-o o familiar de reconhecimento mais seguro em condições de luz normal.</p>
+    <p class="monster-lore">Com Percepção +3 e vantagem em testes visuais, o Falcão tem a melhor percepção de qualquer familiar padrão no Apêndice D em condições de luz. Seu Voo Rasante — que, ao contrário da Coruja, funciona em <em>qualquer</em> movimento de voo, não apenas na retirada — e velocidade de voo de 18 m fazem dele um reconhecedor confiável em ambientes abertos e diurnos.</p>
+    <p class="monster-lore mec-note">
+      ⚙ Nota Mecânica — Tipo: Besta Minúscula (Apêndice D · 11/31). Voo Rasante: o Falcão não provoca ataques de oportunidade ao se mover — distinto da Coruja, cujo traço especifica apenas retirada de inimigos. O Falcão, ao contrário, nunca provoca ataques de oportunidade em nenhum movimento de voo. Sem Visão no Escuro — inutilizável para reconhecimento noturno. ND 0, PV 1, dano 1: jamais deve entrar em combate.
+    </p>
+  </div>
+</section>
+
+<!-- ══ ESTATÍSTICAS BASE ══ -->
+<section id="stats">
+  <div class="section-header">
+    <span class="section-icon talon">⚔</span>
+    <h2 class="talon">Estatísticas Base</h2>
+    <div class="section-line talon"></div>
+  </div>
+  <div class="monster-vitals">
+    <div class="mvital-card wind">
+      <span class="mvital-label">Classe de Armadura</span>
+      <span class="mvital-value wind">13</span>
+      <span class="mvital-note">Iniciativa +3 · DEX 16</span>
+    </div>
+    <div class="mvital-card sky">
+      <span class="mvital-label">Pontos de Vida</span>
+      <span class="mvital-value sky">1</span>
+      <span class="mvital-note">1d4 − 1</span>
+    </div>
+    <div class="mvital-card talon">
+      <span class="mvital-label">Deslocamento</span>
+      <span class="mvital-value talon">18 m</span>
+      <span class="mvital-note">Voo · 1,5 m no chão</span>
+    </div>
+    <div class="mvital-card gold">
+      <span class="mvital-label">Percepção Passiva</span>
+      <span class="mvital-value gold">13</span>
+      <span class="mvital-note">Percepção +3 + Vantagem</span>
+    </div>
+  </div>
+  <div class="two-col-monster">
+    <div class="cr-badge" style="flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;padding:16px 24px;">
+      <div>
+        <span class="cr-badge-label">Challenge Rating</span>
+        <span class="cr-badge-value">0</span>
+        <span class="cr-badge-note">10 XP</span>
+      </div>
+      <div style="border-left:1px solid rgba(28,46,72,.3);padding-left:20px;">
+        <span class="cr-badge-label">Proficiência</span>
+        <span class="cr-badge-value" style="font-size:1.6rem;">+2</span>
+        <span class="cr-badge-note">CR 0</span>
+      </div>
+    </div>
+    <div class="card sky flex-center">
+      <div class="card-title sky">Escala de Ameaça</div>
+      <p class="text-sm">Zero como adversário. Como familiar diurno, <span class="hl-talon">o melhor reconhecedor em campo aberto</span> — combinação única de Voo Rasante e vantagem em Percepção visual sem custo de uso.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ATRIBUTOS + SENTIDOS (two-col) ══ -->
+<div class="two-col-monster" style="align-items:start;gap:14px;margin-bottom:56px;">
+<section id="atributos">
+  <div class="section-header">
+    <span class="section-icon gold">◆</span>
+    <h2 class="gold">Atributos</h2>
+    <div class="section-line gold"></div>
+  </div>
+  <div class="attr-grid">
+    <div class="attr-box low"><div class="attr-name">For</div><span class="attr-value low">5</span><span class="attr-mod neg">−3</span></div>
+    <div class="attr-box max"><div class="attr-name">Des</div><span class="attr-value max">16</span><span class="attr-mod max">+3</span></div>
+    <div class="attr-box low"><div class="attr-name">Con</div><span class="attr-value low">8</span><span class="attr-mod neg">−1</span></div>
+    <div class="attr-box low"><div class="attr-name">Int</div><span class="attr-value low">2</span><span class="attr-mod neg">−4</span></div>
+    <div class="attr-box high"><div class="attr-name">Sab</div><span class="attr-value high">14</span><span class="attr-mod high">+2</span></div>
+    <div class="attr-box low"><div class="attr-name">Car</div><span class="attr-value low">6</span><span class="attr-mod neg">−2</span></div>
+  </div>
+  <div class="callout tip">
+    <strong>O Falcão tem DEX 16 — o mais alto entre os três familiares aviários.</strong> Isso explica a CA 13, melhor que Coruja (11) e Corvo (12). SAB 14 é o mais alto do trio — fundamenta a Percepção +3 com vantagem. DEX 16 também é o motivo pelo qual o Falcão tem o Voo Rasante mais abrangente: ágil o suficiente para nunca ser apanhado em nenhum movimento.
+  </div>
+</section>
+<section id="perfil">
+  <div class="section-header">
+    <span class="section-icon wind">🎲</span>
+    <h2 class="wind">Perícias &amp; Sentidos</h2>
+    <div class="section-line wind"></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+      <tbody>
+        <tr><td>Percepção</td><td><span class="mono sky">+3 + Vantagem</span></td></tr>
+        <tr><td>Percepção Passiva</td><td><span class="mono">13</span></td></tr>
+        <tr><td>Visão no Escuro</td><td style="color:var(--text-dim);font-size:.88rem;">— (não possui)</td></tr>
+        <tr><td>Deslocamento</td><td><span class="mono talon">Voo 18 m</span> · 1,5 m no chão</td></tr>
+        <tr><td>Voo Rasante</td><td><span class="mono gold">Todo movimento</span> <span style="color:var(--text-dim);font-size:.82rem;">(nunca provoca AO)</span></td></tr>
+        <tr><td>Idiomas</td><td style="color:var(--text-dim);font-size:.88rem;">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+</div>
+
+<!-- ══ TRAÇOS ESPECIAIS ══ -->
+<section id="tracos">
+  <div class="section-header">
+    <span class="section-icon sky">✧</span>
+    <h2 class="sky">Traços Especiais</h2>
+    <div class="section-line sky"></div>
+  </div>
+  <div class="trait">
+    <div class="tier-bar" style="background:linear-gradient(180deg,var(--talon-light),var(--talon-dim));"></div>
+    <div class="trait-content">
+      <div class="trait-name">Voo Rasante <span class="sub">(Passivo — Todo Movimento)</span></div>
+      <p>O falcão não provoca ataques de oportunidade ao voar. Diferente da Coruja, cujo traço especifica "ao voar para longe de um inimigo", o Falcão nunca provoca ataques de oportunidade em <strong>nenhum</strong> movimento de voo — incluindo aproximação. Isso torna o reconhecimento em alcance próximo ainda mais seguro.</p>
+    </div>
+  </div>
+  <div class="trait">
+    <div class="tier-bar" style="background:linear-gradient(180deg,var(--sky-light),var(--sky-dim));"></div>
+    <div class="trait-content">
+      <div class="trait-name">Visão Aguçada <span class="sub">(Passivo)</span></div>
+      <p>O falcão tem <strong>vantagem em testes de Sabedoria (Percepção) que dependam de visão</strong>. Com SAB +2 e proficiência +2, isso resulta em +3 no total com dois dados — o melhor resultado esperado de percepção visual do Apêndice D em condições de luz normal.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ AÇÕES ══ -->
+<section id="acoes">
+  <div class="section-header">
+    <span class="section-icon talon">⚔</span>
+    <h2 class="talon">Ações</h2>
+    <div class="section-line talon"></div>
+  </div>
+  <div class="action talon">
+    <div class="action-name talon">Garras</div>
+    <p><em>Ataque Corpo-a-Corpo com Arma:</em> <strong>+5 para atingir</strong>, alcance 1,5 m, um alvo. Acerto: <strong>1</strong> de dano cortante.</p>
+  </div>
+  <div class="sep"></div>
+  <div class="callout talon">
+    <strong>Bônus de Ataque +5</strong> DEX +3 + Proficiência +2 = +5 — o mais alto entre os três familiares aviários. O Falcão é o mais preciso do trio, mas o dano continua sendo 1. A distinção importa apenas na rara situação em que ele <em>precisa</em> atacar — o que nunca deveria acontecer voluntariamente.
+  </div>
+</section>
+
+<!-- ══ COMPARATIVO TRIO AVIÁRIO ══ -->
+<section id="comparativo">
+  <div class="section-header">
+    <span class="section-icon gold">⚖</span>
+    <h2 class="gold">Trio Aviário — Falcão, Coruja, Corvo</h2>
+    <div class="section-line gold"></div>
+  </div>
+  <div class="tri-grid">
+    <div class="tri-card">
+      <div class="tri-label falcao">🦅 Falcão</div>
+      <p>CA <strong>13</strong> · Voo <strong>18 m</strong><br>Percepção <strong>+3 + Vantagem</strong><br>Voo Rasante <strong>todo movimento</strong><br>Sem Visão no Escuro<br>Melhor para: <strong>dia, campo aberto</strong></p>
+    </div>
+    <div class="tri-card">
+      <div class="tri-label coruja">🦉 Coruja</div>
+      <p>CA <strong>11</strong> · Voo <strong>18 m</strong><br>Percepção <strong>+3 + Vantagem</strong><br>Voo Rasante <strong>só na retirada</strong><br>Visão no Escuro <strong>36 m</strong><br>Melhor para: <strong>noite, dungeon</strong></p>
+    </div>
+    <div class="tri-card">
+      <div class="tri-label corvo">🐦‍⬛ Corvo</div>
+      <p>CA <strong>12</strong> · Voo <strong>15 m</strong><br>Percepção <strong>+3</strong> (sem vantagem)<br>Imitação <strong>CD 10</strong><br>Sem Visão no Escuro<br>Melhor para: <strong>urbano, roleplay</strong></p>
+    </div>
+  </div>
+  <div class="card gold">
+    <div class="card-title gold">Veredicto Final — Quando Escolher o Falcão</div>
+    <p>Se a campanha é <mark>predominantemente diurna e em campo aberto</mark> — planícies, florestas, ruínas ao ar livre — o Falcão supera a Coruja. CA 13 mais robusta, Voo Rasante universal e DEX 16 fazem dele o familiar mais difícil de acertar e o mais ágil em manobra. O preço é a cegueira noturna: em qualquer masmorra ou campanha de horror, a Coruja permanece superior.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>Valtheris <span>›</span> Apêndice D <span>›</span> <span style="color:var(--sky-dim);">11 — Falcão</span></footer>
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+<script>
+(function() {
+  const btn = document.getElementById('top-btn');
+  btn.addEventListener('click', function(e) {
+    e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  window.addEventListener('scroll', function() {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>

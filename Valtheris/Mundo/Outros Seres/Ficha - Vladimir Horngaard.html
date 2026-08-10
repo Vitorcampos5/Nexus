@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vladimir Horngaard — Referência do Mestre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&family=UnifrakturMaguntia:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:        #04050a;
+    --hollow:      #1a1c28;
+
+    --silver:      #788090;
+    --silver-l:    #a8b4c4;
+    --silver-d:    #2a3040;
+    --silver-p:    #d0dce8;
+    --steel-d:     #182028;
+
+    --frost:       #304860;
+    --frost-l:     #5080a0;
+    --frost-d:     #0e1828;
+    --frost-p:     #90c0e0;
+
+    --gold:        #806020;
+    --gold-l:      #b09030;
+    --gold-d:      #302008;
+    --gold-p:      #d0b060;
+
+    --ven:         #702020;
+    --ven-l:       #a83030;
+    --ven-d:       #280c0c;
+    --ven-p:       #c87070;
+
+    --text:        #a0a8b8;
+    --text-dim:    #485060;
+    --text-faint:  #1e2028;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+
+  body{
+    background-color:var(--void);
+    background-image:
+      radial-gradient(ellipse 120% 50% at 50% -5%,#0a0c14 0%,transparent 55%),
+      radial-gradient(ellipse 50% 60% at 90% 100%,#080a10 0%,transparent 50%),
+      radial-gradient(ellipse 40% 60% at 10%  80%,#060810 0%,transparent 50%);
+    color:var(--text);
+    font-family:'EB Garamond',Georgia,serif;
+    font-size:17px;line-height:1.8;min-height:100vh;overflow-x:hidden
+  }
+  body::before{
+    content:'';position:fixed;inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none;z-index:999;opacity:.65
+  }
+
+  .top-bar{height:4px;background:linear-gradient(90deg,var(--steel-d),var(--silver-l),var(--gold-l),var(--silver-l),var(--steel-d));box-shadow:0 0 30px rgba(80,96,112,.4)}
+
+  /* HEADER */
+  header{position:relative;text-align:center;padding:80px 20px 70px;overflow:hidden}
+  header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(48,64,80,.1) 0%,transparent 65%);pointer-events:none}
+  header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--silver-d),var(--gold-d),var(--silver-d),transparent);box-shadow:0 0 40px rgba(80,96,112,.2)}
+
+  .header-pulse{position:absolute;inset:0;background:radial-gradient(ellipse 60% 45% at 50% 45%,rgba(80,96,112,.06) 0%,transparent 70%);animation:breathe 12s ease-in-out infinite;pointer-events:none}
+  @keyframes breathe{0%,100%{opacity:.4}50%{opacity:1}}
+
+  .header-symbol{display:block;font-size:2.8rem;margin-bottom:18px;filter:drop-shadow(0 0 16px rgba(120,128,144,.5));animation:crest-pulse 10s ease-in-out infinite}
+  @keyframes crest-pulse{0%,100%{filter:drop-shadow(0 0 14px rgba(120,128,144,.4));transform:scale(1)}50%{filter:drop-shadow(0 0 26px rgba(160,176,196,.6));transform:scale(1.04)}}
+
+  .header-fraktur{font-family:'UnifrakturMaguntia',serif;font-size:clamp(2rem,7vw,4rem);line-height:1.05;margin-bottom:6px;background:linear-gradient(135deg,#d0dce8 0%,#a8b4c4 25%,#b09030 55%,#708898 80%,#c0ccd8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 30px rgba(80,96,112,.25))}
+  .header-eyebrow{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.45em;text-transform:uppercase;color:var(--text-faint);margin-bottom:18px}
+  .header-classification{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:var(--silver-p);margin-bottom:10px;opacity:.8}
+  .header-title-sub{font-family:'Cinzel',serif;font-size:clamp(.85rem,2vw,1rem);letter-spacing:.18em;text-transform:uppercase;color:var(--gold-p);margin-bottom:8px}
+  .header-tagline{font-style:italic;color:#403840;font-size:1.05rem;max-width:540px;margin:0 auto 28px}
+  .header-crests{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:8px}
+  .crest-badge{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;padding:4px 14px;border-radius:1px}
+  .crest-badge.silver{border:1px solid var(--silver-d);color:var(--silver-p)}
+  .crest-badge.gold  {border:1px solid var(--gold-d);  color:var(--gold-p)}
+  .crest-badge.frost {border:1px solid var(--frost-d); color:var(--frost-p)}
+  .crest-badge.ven   {border:1px solid var(--ven-d);   color:var(--ven-p)}
+
+  /* LAYOUT */
+  .divider{display:flex;align-items:center;gap:14px;max-width:940px;margin:0 auto;padding:40px 20px 48px}
+  .divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--silver-d),var(--gold-d),transparent)}
+  .divider-glyph{color:var(--gold-l);font-size:1rem;opacity:.7}
+  .breadcrumb{max-width:940px;margin:0 auto;padding:20px 20px 0;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}
+  .breadcrumb span{color:var(--silver-d);margin:0 6px}
+  .breadcrumb .current{color:var(--silver-p)}
+  main{max-width:940px;margin:0 auto;padding:0 20px 90px;display:flex;flex-direction:column;gap:0}
+  section{margin-bottom:56px;animation:fade-in .5s ease both}
+  @keyframes fade-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  section:nth-child(1){animation-delay:.05s}section:nth-child(2){animation-delay:.10s}
+  section:nth-child(3){animation-delay:.15s}section:nth-child(4){animation-delay:.20s}
+  section:nth-child(5){animation-delay:.25s}section:nth-child(6){animation-delay:.30s}
+  section:nth-child(7){animation-delay:.35s}section:nth-child(8){animation-delay:.40s}
+
+  /* SECTION HEADERS */
+  .section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .section-icon{font-size:1.2rem;flex-shrink:0}
+  .section-icon.silver{filter:drop-shadow(0 0 8px rgba(160,176,196,.5))}
+  .section-icon.gold  {filter:drop-shadow(0 0 8px rgba(176,144,48,.4))}
+  .section-icon.frost {filter:drop-shadow(0 0 8px rgba(80,128,160,.4))}
+  .section-icon.ven   {filter:drop-shadow(0 0 8px rgba(160,48,48,.4))}
+  h2{font-family:'Cinzel',serif;font-size:.9rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+  h2.silver{color:#b0c0d0;text-shadow:0 0 20px rgba(120,136,160,.3)}
+  h2.gold  {color:#c09840;text-shadow:0 0 18px rgba(160,130,30,.25)}
+  h2.frost {color:#80b0d0;text-shadow:0 0 18px rgba(80,128,160,.3)}
+  h2.ven   {color:#c06060;text-shadow:0 0 18px rgba(160,48,48,.3)}
+  .section-line{flex:1;height:1px}
+  .section-line.silver{background:linear-gradient(90deg,var(--silver-d),rgba(40,60,80,.3),transparent)}
+  .section-line.gold  {background:linear-gradient(90deg,var(--gold-d),rgba(40,30,8,.3),transparent)}
+  .section-line.frost {background:linear-gradient(90deg,var(--frost-d),rgba(14,24,40,.3),transparent)}
+  .section-line.ven   {background:linear-gradient(90deg,var(--ven-d),rgba(36,12,12,.3),transparent)}
+  p{margin-bottom:10px}p:last-child{margin-bottom:0}
+
+  /* IDENTITY */
+  .identity{position:relative;background:linear-gradient(145deg,rgba(12,14,22,.98) 0%,rgba(6,8,14,.99) 100%);border:1px solid rgba(48,64,80,.5);border-top:4px solid var(--silver-d);border-bottom:3px solid var(--gold-d);padding:32px 36px;margin-bottom:14px;overflow:hidden}
+  .identity::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0% 0%,rgba(80,96,112,.06) 0%,transparent 45%),radial-gradient(circle at 100% 0%,rgba(80,60,20,.04) 0%,transparent 45%);pointer-events:none}
+  .identity-corner{position:absolute;font-family:'Fira Code',monospace;font-size:.6rem;letter-spacing:.15em;color:var(--text-faint);opacity:.6}
+  .identity-corner.tl{top:10px;left:14px}.identity-corner.tr{top:10px;right:14px}
+  .identity-corner.bl{bottom:10px;left:14px}.identity-corner.br{bottom:10px;right:14px}
+  .monster-name{font-family:'UnifrakturMaguntia',serif;font-size:clamp(1.8rem,4vw,2.8rem);background:linear-gradient(135deg,#d0dce8 0%,#a8b4c4 30%,#b09030 65%,#c0ccd8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;line-height:1.1}
+  .monster-epithet{font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-p);opacity:.85;margin-bottom:14px}
+  .monster-type-line{margin-bottom:16px}
+  .monster-lore{font-style:italic;color:#9098a8;font-size:.97rem;border-left:2px solid var(--silver-d);padding-left:16px;margin-top:14px;line-height:1.75}
+  .monster-lore+.monster-lore{border-left-color:var(--gold-d);margin-top:10px}
+
+  /* TAGS */
+  .tag{display:inline-block;font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:2px 8px;border-radius:1px;margin-right:5px;margin-bottom:5px;vertical-align:middle}
+  .tag.undead  {border:1px solid #282840;color:#7080a0}
+  .tag.revenant{border:1px solid #303848;color:#809098}
+  .tag.knight  {border:1px solid #304050;color:#70a0b8}
+  .tag.cr7     {border:1px solid #503808;color:#c09030}
+  .tag.medium  {border:1px solid #282840;color:#606090}
+  .tag.evil    {border:1px solid #3a1020;color:#906070}
+  .tag.silver  {border:1px solid var(--silver-d);color:var(--silver-p)}
+
+  /* VITALS */
+  .monster-vitals{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+  @media(max-width:600px){.monster-vitals{grid-template-columns:1fr 1fr}}
+  .mvital-card{background:rgba(8,10,18,.9);border:1px solid var(--hollow);border-radius:3px;padding:16px 14px;position:relative;overflow:hidden;text-align:center}
+  .mvital-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+  .mvital-card.silver::after{background:linear-gradient(90deg,transparent,var(--silver-l),transparent)}
+  .mvital-card.gold::after  {background:linear-gradient(90deg,transparent,var(--gold-l),  transparent)}
+  .mvital-card.frost::after {background:linear-gradient(90deg,transparent,var(--frost-l), transparent)}
+  .mvital-card.ven::after   {background:linear-gradient(90deg,transparent,var(--ven-l),   transparent)}
+  .mvital-label{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;display:block}
+  .mvital-value{font-family:'Cinzel Decorative',serif;font-size:2rem;line-height:1;display:block}
+  .mvital-value.silver{color:var(--silver-l);text-shadow:0 0 20px rgba(120,144,176,.4)}
+  .mvital-value.gold  {color:var(--gold-l);  text-shadow:0 0 16px rgba(160,130,30,.3)}
+  .mvital-value.frost {color:var(--frost-l); text-shadow:0 0 18px rgba(80,128,160,.4)}
+  .mvital-value.ven   {color:var(--ven-l);   text-shadow:0 0 16px rgba(160,48,48,.3)}
+  .mvital-note{font-size:.75rem;color:var(--text-dim);font-style:italic;margin-top:6px;display:block;line-height:1.4}
+
+  /* CR BADGE */
+  .two-col-monster{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  @media(max-width:600px){.two-col-monster{grid-template-columns:1fr}}
+  .cr-badge{display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(40,56,80,.14),rgba(48,36,8,.12));border:1px solid rgba(80,96,112,.4);border-top:2px solid var(--silver-l);border-bottom:2px solid var(--gold-d);padding:14px 24px;text-align:center}
+  .cr-badge-label{font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.28em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;display:block}
+  .cr-badge-value{font-family:'Cinzel Decorative',serif;font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,var(--silver-l),var(--gold-l));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;display:block}
+  .cr-badge-note{font-family:'Fira Code',monospace;font-size:.6rem;color:var(--text-dim);margin-top:4px;letter-spacing:.06em;display:block}
+
+  /* ATTR GRID */
+  .attr-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px}
+  @media(max-width:560px){.attr-grid{grid-template-columns:repeat(3,1fr)}}
+  .attr-box{background:rgba(6,8,14,.9);border:1px solid var(--hollow);padding:16px 10px;text-align:center;position:relative;overflow:hidden;transition:transform .2s}
+  .attr-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .attr-box.max::before {background:linear-gradient(90deg,transparent,var(--silver-l),transparent)}
+  .attr-box.high::before{background:linear-gradient(90deg,transparent,var(--gold-l),  transparent)}
+  .attr-box.mid::before {background:linear-gradient(90deg,transparent,var(--frost-l), transparent)}
+  .attr-box:hover{transform:translateY(-2px)}
+  .attr-name{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
+  .attr-value{font-family:'Fira Code',monospace;font-size:1.15rem;font-weight:500;color:var(--text);display:block;line-height:1}
+  .attr-value.max {color:var(--silver-l)}
+  .attr-value.high{color:var(--gold-l)}
+  .attr-value.mid {color:var(--frost-l)}
+  .attr-mod{font-family:'Fira Code',monospace;font-size:.8rem;color:#7080a0;display:block;margin-top:4px}
+  .attr-mod.max {color:var(--silver-l)}
+  .attr-mod.high{color:var(--gold-l)}
+  .attr-mod.mid {color:var(--frost-l)}
+
+  /* CARDS */
+  .card{background:linear-gradient(135deg,rgba(12,14,22,.92) 0%,rgba(6,8,14,.96) 100%);border:1px solid var(--hollow);padding:20px 24px;margin-bottom:12px;position:relative;transition:box-shadow .3s}
+  .card.silver{border-left:3px solid var(--silver-d)}.card.silver:hover{box-shadow:-4px 0 20px rgba(80,96,128,.2),0 4px 20px rgba(0,0,0,.6)}
+  .card.gold  {border-left:3px solid var(--gold-d)}.card.gold:hover  {box-shadow:-4px 0 20px rgba(120,90,16,.18),0 4px 20px rgba(0,0,0,.6)}
+  .card.frost {border-left:3px solid var(--frost-d)}.card.frost:hover {box-shadow:-4px 0 20px rgba(48,96,128,.2), 0 4px 20px rgba(0,0,0,.6)}
+  .card.ven   {border-left:3px solid var(--ven-d)}.card.ven:hover   {box-shadow:-4px 0 20px rgba(120,30,30,.18),0 4px 20px rgba(0,0,0,.6)}
+  .card-title{font-family:'Cinzel',serif;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+  .card-title.silver{color:var(--silver-p)}.card-title.gold{color:var(--gold-p)}.card-title.frost{color:var(--frost-p)}.card-title.ven{color:var(--ven-p)}
+  .card p{font-size:.95rem;color:#8090a0;line-height:1.76}
+
+  /* TRAIT */
+  .trait{display:grid;grid-template-columns:3px 1fr;gap:0 14px;margin-bottom:10px}
+  .tier-bar{border-radius:2px}
+  .trait-content{background:rgba(6,8,14,.78);border:1px solid var(--hollow);padding:14px 16px}
+  .trait-name{font-family:'Cinzel',serif;font-size:.74rem;letter-spacing:.1em;font-weight:900;color:var(--silver-p);margin-bottom:5px}
+  .trait-name .sub{font-style:italic;font-weight:400;color:var(--text-dim);font-family:'EB Garamond',serif;font-size:.9rem;letter-spacing:0;text-transform:none}
+  .trait-content p{font-size:.92rem;color:#8090a0;line-height:1.72}
+  .trait-content p strong{color:var(--silver-p)}
+
+  /* ACTIONS */
+  .action{background:linear-gradient(135deg,rgba(12,14,22,.9) 0%,rgba(6,8,14,.95) 100%);border:1px solid var(--hollow);padding:14px 18px;margin-bottom:8px;transition:box-shadow .25s}
+  .action.silver{border-bottom:2px solid var(--silver-d)}.action.silver:hover{box-shadow:0 2px 16px rgba(80,96,128,.15)}
+  .action.gold  {border-bottom:2px solid var(--gold-d)}.action.gold:hover  {box-shadow:0 2px 16px rgba(120,90,16,.15)}
+  .action.frost {border-bottom:2px solid var(--frost-d)}.action.frost:hover {box-shadow:0 2px 16px rgba(48,96,128,.15)}
+  .action.ven   {border-bottom:2px solid var(--ven-d)}.action.ven:hover   {box-shadow:0 2px 16px rgba(120,30,30,.15)}
+  .action-name{font-family:'Cinzel',serif;font-size:.76rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  .action-name.silver{color:var(--silver-p)}.action-name.gold{color:var(--gold-p)}.action-name.frost{color:var(--frost-p)}.action-name.ven{color:var(--ven-p)}
+  .action p{font-size:.92rem;color:#8090a0;line-height:1.72}
+  .action strong{color:var(--silver-p)}
+
+  /* TABLE */
+  .table-wrap{margin:10px 0;border:1px solid var(--hollow);overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  thead tr{background:rgba(6,8,14,.98);border-bottom:2px solid var(--silver-d)}
+  thead th{font-family:'Cinzel',serif;font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-p);padding:9px 14px;text-align:left;white-space:nowrap}
+  tbody tr{border-bottom:1px solid rgba(18,20,30,.9);transition:background .12s}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr:nth-child(even){background:rgba(255,255,255,.012)}
+  tbody tr:hover{background:rgba(48,64,96,.07)}
+  td{padding:8px 14px;vertical-align:top;color:#8090a0}
+  td:first-child{font-family:'Cinzel',serif;font-size:.84rem;color:var(--text);white-space:nowrap}
+
+  .mono{font-family:'Fira Code',monospace;font-size:.78rem}
+  .mono.silver{color:var(--silver-l)}.mono.gold{color:var(--gold-l)}.mono.frost{color:var(--frost-l)}.mono.ven{color:var(--ven-l)}
+
+  /* CALLOUT */
+  .callout{border-left:3px solid;padding:14px 18px;margin:12px 0;font-style:italic;font-size:.92rem;line-height:1.75}
+  .callout strong{font-style:normal;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;display:block;margin-bottom:3px}
+  .callout.silver{background:rgba(32,40,56,.15);border-color:var(--silver);color:#8090a0}.callout.silver strong{color:var(--silver-l)}
+  .callout.gold  {background:rgba(36,26,6,.15); border-color:var(--gold);  color:#8090a0}.callout.gold   strong{color:var(--gold-l)}
+  .callout.frost {background:rgba(12,20,36,.15);border-color:var(--frost); color:#8090a0}.callout.frost  strong{color:var(--frost-l)}
+  .callout.ven   {background:rgba(30,8,8,.15);  border-color:var(--ven);   color:#8090a0}.callout.ven    strong{color:var(--ven-l)}
+  .callout.danger{background:rgba(60,10,10,.14);border-color:#a83030;color:#8090a0}.callout.danger strong{color:#d06060}
+
+  mark       {background:rgba(100,128,160,.16);color:var(--silver-p);border-radius:1px;padding:0 2px}
+  mark.gold  {background:rgba(140,110,20,.15); color:var(--gold-p)}
+  mark.frost {background:rgba(60,100,140,.15); color:var(--frost-p)}
+  mark.ven   {background:rgba(140,30,30,.15);  color:var(--ven-p)}
+
+  .hl-silver{color:var(--silver-l);font-weight:600}.hl-gold{color:var(--gold-l);font-weight:600}
+  .hl-frost{color:var(--frost-l);font-weight:600}.hl-ven{color:var(--ven-l);font-weight:600}
+
+  .sep{height:1px;background:linear-gradient(90deg,transparent,var(--silver-d),var(--gold-d),transparent);margin:18px 0;opacity:.5}
+
+  /* SAN TABLE */
+  .san-table{width:100%;border-collapse:collapse;font-size:.88rem;border:1px solid var(--hollow)}
+  .san-table thead tr{background:rgba(6,8,14,.98);border-bottom:2px solid var(--silver-d)}
+  .san-table thead th{font-family:'Cinzel',serif;font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-p);padding:9px 14px;text-align:left}
+  .san-table tbody tr{border-bottom:1px solid rgba(18,20,30,.9);transition:background .12s}
+  .san-table tbody tr:last-child{border-bottom:none}
+  .san-table tbody tr:hover{background:rgba(48,64,96,.07)}
+  .san-table td{padding:8px 14px;vertical-align:top;color:#8090a0;font-size:.88rem}
+  .san-table .situation{font-style:italic;color:var(--text);max-width:340px}
+  .san-table .pass{color:var(--frost-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem}
+  .san-table .fail{color:var(--ven-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem;font-weight:600}
+  .san-table .cd{color:var(--gold-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem}
+
+  /* PHASE GRID (destruction steps) */
+  .phase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+  @media(max-width:600px){.phase-grid{grid-template-columns:1fr}}
+  .phase-card{background:rgba(6,8,14,.9);border:1px solid var(--hollow);padding:20px 18px;position:relative;overflow:hidden}
+  .phase-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+  .p1::before{background:linear-gradient(90deg,transparent,var(--silver-l),transparent)}
+  .p2::before{background:linear-gradient(90deg,transparent,var(--gold-l),transparent)}
+  .p3::before{background:linear-gradient(90deg,transparent,var(--ven-l),transparent)}
+  .phase-num{font-family:'Cinzel Decorative',serif;font-size:2rem;line-height:1;margin-bottom:6px}
+  .p1 .phase-num{color:var(--silver-l)}.p2 .phase-num{color:var(--gold-l)}.p3 .phase-num{color:var(--ven-l)}
+  .phase-title{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+  .p1 .phase-title{color:var(--silver-p)}.p2 .phase-title{color:var(--gold-p)}.p3 .phase-title{color:var(--ven-p)}
+  .phase-card p{font-size:.88rem;color:#8090a0;line-height:1.7}
+
+  /* PROF GRID */
+  .prof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px;margin-bottom:10px}
+  .prof-item{background:rgba(8,10,18,.8);border:1px solid var(--hollow);padding:8px 12px;display:flex;justify-content:space-between;align-items:center}
+  .prof-name{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
+  .prof-val {font-family:'Fira Code',monospace;font-size:.88rem;color:var(--gold-l)}
+
+  footer{text-align:center;padding:40px 20px;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}
+  footer span{color:var(--silver-d);margin:0 6px}
+  #top-btn{position:fixed;bottom:28px;right:28px;width:42px;height:42px;background:rgba(4,5,10,.95);border:1px solid var(--silver-d);color:var(--silver-l);font-size:1.2rem;line-height:42px;text-align:center;text-decoration:none;transition:border-color .2s,color .2s;z-index:100; opacity:0; pointer-events:none; transition: opacity .25s, border-color .2s, color .2s;}
+  #top-btn:hover{border-color:var(--gold-l);color:var(--gold-p)}
+  #top-btn.visible { opacity: 1; pointer-events: all; }
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--void)}::-webkit-scrollbar-thumb{background:var(--silver-d);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--silver-l)}
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+<nav class="breadcrumb" aria-label="Trilha de navegação">
+  Curse of Strahd &nbsp;/&nbsp; Barovia <span>›</span> <span class="current">Vladimir Horngaard — Referência do Mestre</span>
+</nav>
+
+<header>
+  <div class="header-pulse"></div>
+  <span class="header-symbol">⚔️</span>
+  <p class="header-eyebrow">Curse of Strahd &nbsp;⸸&nbsp; Ordem do Dragão de Prata &nbsp;⸸&nbsp; Ressurgido</p>
+  <p class="header-classification">⬥ Morto-Vivo Médio (Ressurgido) &nbsp;·&nbsp; Leal e Mau &nbsp;·&nbsp; Nível de Desafio 7 ⬥</p>
+  <h1 class="header-fraktur">Vladimir Horngaard</h1>
+  <p class="header-title-sub">Cavaleiro Ressurgido — Guardião do Ódio Eterno</p>
+  <p class="header-tagline">"A vingança é tudo que me resta."</p>
+  <div class="header-crests">
+    <span class="crest-badge silver">⚔ Ressurgido</span>
+    <span class="crest-badge gold">🐉 Ordem do Dragão de Prata</span>
+    <span class="crest-badge frost">🗡 Espada Grande +2</span>
+    <span class="crest-badge ven">🩸 Ódio por Strahd</span>
+  </div>
+</header>
+
+<div class="divider"><div class="divider-line"></div><span class="divider-glyph">✦</span><div class="divider-line"></div></div>
+
+<main>
+
+  <!-- IDENTIDADE -->
+  <section id="identidade">
+    <div class="section-header">
+      <span class="section-icon silver">⚔️</span>
+      <h2 class="silver">Identidade &amp; Lore</h2>
+      <div class="section-line silver"></div>
+    </div>
+
+    <div class="identity">
+      <div class="identity-corner tl">MORTO-VIVO MÉDIO (RESSURGIDO) · LEAL E MAU</div>
+      <div class="identity-corner tr">NÍVEL DE DESAFIO 7 · 2.900 XP</div>
+      <div class="identity-corner bl">CURSE OF STRAHD · CRIPTAS DO CASTELO RAVENLOFT</div>
+      <div class="identity-corner br">ORDEM DO DRAGÃO DE PRATA</div>
+      <div class="monster-name">Vladimir Horngaard</div>
+      <div class="monster-epithet">⬥ O Cavaleiro que Recusou o Descanso — Guardião do Tormento de Strahd ⬥</div>
+      <div class="monster-type-line">
+        <span class="tag undead">Morto-Vivo</span>
+        <span class="tag revenant">Ressurgido</span>
+        <span class="tag knight">Cavaleiro</span>
+        <span class="tag evil">Leal e Mau</span>
+        <span class="tag cr7">ND 7</span>
+        <span class="tag silver">Ordem do Dragão de Prata</span>
+      </div>
+      <p class="monster-lore">Vladimir Horngaard juntou-se à Ordem do Dragão de Prata ainda jovem, tornando-se rapidamente um dos cavaleiros mais devotos do fundador da Ordem — o dragão de prata Argynvost. Quando Strahd conquistou o vale, Vladimir lutou até o amargo fim, testemunhando Strahd matar seu companheiro e amado, Sir Godfrey Gwilym. A batalha conquistada, Strahd cercou Argynvost, que emergiu e lutou até sua morte. Com tanta perda e desgosto acumulados, Vladimir voltou como um ressurgido — movido não pela esperança de justiça, mas pelo ódio puro.</p>
+      <p class="monster-lore">A crueldade de Vladimir está no que ele <em>recusa fazer</em>: ele odeia Strahd profundamente, mas <strong>não vai destruí-lo</strong>. Em sua mente perturbada, destruir Strahd acabaria com o tormento do vampiro — e isso é a única coisa que Vladimir não quer dar a ele. Ele prefere que Strahd sofra para sempre preso em Barovia. Isso o torna um obstáculo para os aventureiros: ele não é aliado, não pode ser convencido a ajudá-los a derrotar Strahd, e qualquer tentativa de argumentar logicamente é tratada como ofensa pessoal.</p>
+      <p class="monster-lore" style="border-left-color:var(--gold-d)">
+        <strong>Ideal:</strong> <em>"A vingança é tudo que me resta."</em><br>
+        <strong>Vínculo:</strong> <em>"Eu jurei fidelidade à Ordem do Dragão de Prata. Embora a ordem tenha sido quebrada, minha fidelidade nunca morrerá."</em><br>
+        <strong>Defeito:</strong> <em>"Destruir Strahd acabaria com o tormento do vampiro, e isso é algo que nunca permitirei."</em>
+      </p>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section id="stats">
+    <div class="section-header">
+      <span class="section-icon gold">📋</span>
+      <h2 class="gold">Estatísticas Base</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="monster-vitals">
+      <div class="mvital-card silver">
+        <span class="mvital-label">Classe de Armadura</span>
+        <span class="mvital-value silver">17</span>
+        <span class="mvital-note">Meia armadura</span>
+      </div>
+      <div class="mvital-card ven">
+        <span class="mvital-label">Pontos de Vida</span>
+        <span class="mvital-value ven">192</span>
+        <span class="mvital-note">Ressurgido modificado</span>
+      </div>
+      <div class="mvital-card frost">
+        <span class="mvital-label">Deslocamento</span>
+        <span class="mvital-value frost">9 m</span>
+        <span class="mvital-note">Terrestre</span>
+      </div>
+      <div class="mvital-card gold">
+        <span class="mvital-label">Bônus de Proficiência</span>
+        <span class="mvital-value gold">+3</span>
+        <span class="mvital-note">ND 7</span>
+      </div>
+    </div>
+
+    <div class="two-col-monster">
+      <div class="cr-badge" style="flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;padding:16px 24px;">
+        <div>
+          <span class="cr-badge-label">Challenge Rating</span>
+          <span class="cr-badge-value">7</span>
+          <span class="cr-badge-note">2.900 XP</span>
+        </div>
+        <div style="border-left:1px solid rgba(80,96,112,.3);padding-left:20px;">
+          <span class="cr-badge-label">Tipo</span>
+          <span class="cr-badge-value" style="font-size:1.4rem;">Ressurgido</span>
+          <span class="cr-badge-note">Modificado</span>
+        </div>
+      </div>
+      <div class="card silver" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:center;">
+        <div class="card-title silver">Base Mecânica</div>
+        <p style="font-size:.9rem;">Vladimir usa as estatísticas de um <strong>Ressurgido</strong> (Manual dos Monstros) com as modificações listadas no livro: CA 17, PV 192, alinhamento Leal e Mau, empunha espada grande +2.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ATRIBUTOS + PROFICIÊNCIAS -->
+  <div class="two-col-monster" style="align-items:start;gap:14px;margin-bottom:56px;">
+  <section id="atributos" style="margin-bottom:0;">
+    <div class="section-header">
+      <span class="section-icon frost">◆</span>
+      <h2 class="frost">Atributos</h2>
+      <div class="section-line frost"></div>
+    </div>
+    <div class="attr-grid">
+      <div class="attr-box max"> <div class="attr-name">For</div><span class="attr-value max">18</span> <span class="attr-mod max">+4</span></div>
+      <div class="attr-box mid"> <div class="attr-name">Des</div><span class="attr-value mid">14</span> <span class="attr-mod mid">+2</span></div>
+      <div class="attr-box max"> <div class="attr-name">Con</div><span class="attr-value max">18</span> <span class="attr-mod max">+4</span></div>
+      <div class="attr-box high"><div class="attr-name">Int</div><span class="attr-value high">13</span><span class="attr-mod high">+1</span></div>
+      <div class="attr-box max"> <div class="attr-name">Sab</div><span class="attr-value max">16</span> <span class="attr-mod max">+3</span></div>
+      <div class="attr-box max"> <div class="attr-name">Car</div><span class="attr-value max">18</span> <span class="attr-mod max">+4</span></div>
+    </div>
+    <div class="callout gold" style="margin-top:4px;">
+      <strong>Nota sobre os Atributos</strong> As estatísticas base são de um Ressurgido padrão. A força de Vladimir vem não de poder sobrenatural, mas de cinco séculos de treinamento marcial combinados com a tenacidade da não-morte. Ele é um cavaleiro, não uma criatura mágica — sua ameaça é a de um guerreiro que não cansa, não sente dor e não recua.
+    </div>
+  </section>
+
+  <section id="proficiencias" style="margin-bottom:0;">
+    <div class="section-header">
+      <span class="section-icon gold">🎲</span>
+      <h2 class="gold">Proficiências, Sentidos &amp; Imunidades</h2>
+      <div class="section-line gold"></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+        <tbody>
+          <tr><td>Salvaguardas</td><td><span class="mono silver">FOR +7 &nbsp;·&nbsp; CON +7 &nbsp;·&nbsp; SAB +6</span></td></tr>
+          <tr><td>Perícias</td><td><span class="mono">Atletismo +7 · Intimidação +7 · Percepção +6</span></td></tr>
+          <tr><td>Imunidades a Dano</td><td>Veneno, Psíquico</td></tr>
+          <tr><td>Resistências a Dano</td><td>Necrótico, Psíquico</td></tr>
+          <tr><td>Imunidades a Condição</td><td>Encantado, Exaustão, Amedrontado, Paralisado, Envenenado, Atordoado</td></tr>
+          <tr><td>Sentidos</td><td>Visão no escuro 18 m &nbsp;·&nbsp; Percepção Passiva 16</td></tr>
+          <tr><td>Idiomas</td><td>Comum, Dracônico</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  </div>
+
+  <!-- TRAÇOS -->
+  <section id="tracos">
+    <div class="section-header">
+      <span class="section-icon silver">✧</span>
+      <h2 class="silver">Traços Especiais</h2>
+      <div class="section-line silver"></div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--ven-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Rejuvenescimento <span class="sub">(Traço do Ressurgido)</span></div>
+        <p>Se Vladimir for destruído, ele ressurge em seu caixão em <strong>24 horas</strong> com 1 PV — a menos que seu propósito seja cumprido ou que <em>Ressurreição Maior</em> seja lançada sobre seus restos. O propósito de Vladimir é manter Strahd sofrendo vivo — ironicamente impossível de cumprir enquanto Strahd existir. <strong>Vladimir não pode ser destruído permanentemente enquanto Strahd estiver vivo.</strong></p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--silver-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Rastreador Vingativo <span class="sub">(Passivo)</span></div>
+        <p>Vladimir sabe instintivamente a localização de qualquer criatura que o tenha ferido nas últimas <strong>24 horas</strong> — incluindo criaturas em outros planos. Não pode ser perdido por magia de ocultamento de localização. Um grupo que fira Vladimir e fuja deve saber que ele sabe exatamente onde estão e está se dirigindo lá.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--gold-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Imunidade ao Domínio <span class="sub">(Passivo)</span></div>
+        <p>Vladimir é <strong>imune ao poder de domínio de Strahd</strong> sobre Barovia. Strahd não pode comandá-lo, influenciá-lo magicamente ou usar seus poderes de domínio sobre o vale para afetá-lo. Esta imunidade é o motivo pelo qual Vladimir ainda existe em Barovia — Strahd o tolera porque não pode removê-lo.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--frost-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Olhar Apavorante <span class="sub">(Ação)</span></div>
+        <p>Vladimir fixa o olhar em uma criatura a até <strong>9 metros</strong>. O alvo faz TR de Sabedoria <strong>CD 15</strong>: em falha, fica <strong>paralisado por 1 minuto</strong>. O alvo pode repetir o TR ao fim de cada turno. Uma criatura bem-sucedida é imune ao Olhar de Vladimir por 24 horas. A frieza absoluta de cinco séculos de ódio concentrado — não há terror, apenas vácuo.</p>
+      </div>
+    </div>
+
+    <div class="callout ven">
+      <strong>O Paradoxo de Vladimir — Por Que Ele Não Pode Descansar</strong> Vladimir não pode ser destruído enquanto Strahd viver — porque destruir Strahd cumpriria seu propósito (vingança) e permitiria que descansasse. Mas ele <em>não quer</em> que Strahd morra. Ele quer que sofra. Esse loop lógico o prende em Barovia indefinidamente. <mark>Os aventureiros que tentam convencê-lo a colaborar estão pedindo que ele abandone a única coisa que o mantém em pé.</mark>
+    </div>
+  </section>
+
+  <!-- AÇÕES -->
+  <section id="acoes">
+    <div class="section-header">
+      <span class="section-icon ven">⚔</span>
+      <h2 class="ven">Ações</h2>
+      <div class="section-line ven"></div>
+    </div>
+
+    <div class="action silver">
+      <div class="action-name silver">Ataques Múltiplos</div>
+      <p>Vladimir realiza <strong>dois ataques</strong> com sua Espada Grande +2.</p>
+    </div>
+
+    <div class="action gold">
+      <div class="action-name gold">Espada Grande +2 <span style="font-family:'Fira Code',monospace;font-size:.62rem;color:var(--silver-p);font-weight:400;">(+9 para atingir)</span></div>
+      <p><em>Ataque Corpo-a-Corpo com Arma:</em> <strong>+9 para atingir</strong>, alcance 1,5 m, um alvo. Acerto: <strong>20 (4d6 + 6)</strong> de dano cortante.</p>
+      <p style="margin-top:8px;font-style:italic;font-size:.9rem;color:var(--text-dim);">A espada tem um punho esculpido com asas de dragão de prata e um pomo em forma de cabeça de dragão com uma opala negra entre os dentes — artefato da Ordem do Dragão de Prata.</p>
+    </div>
+
+    <div class="action ven">
+      <div class="action-name ven">Espada Grande +2 <span style="font-family:'Fira Code',monospace;font-size:.62rem;color:var(--ven-p);font-weight:400;">(contra Strahd — dano extra)</span></div>
+      <p>Quando Vladimir atinge <strong>Strahd von Zarovich</strong> especificamente, causa <strong>14 (4d6)</strong> de dano cortante adicional por ataque, além do dano normal. Vladimir causou mais dano a Strahd do que qualquer outra criatura em Barovia — e nunca usou isso para matá-lo.</p>
+    </div>
+
+    <div class="action frost">
+      <div class="action-name frost">Olhar Apavorante <span style="font-family:'Fira Code',monospace;font-size:.62rem;color:var(--frost-p);font-weight:400;">(Ação)</span></div>
+      <p>Um alvo a até 9 m faz TR de Sabedoria <strong>CD 15</strong> ou fica <strong>paralisado por 1 minuto</strong> (TR repetido ao fim de cada turno). Imunidade por 24h após sucesso.</p>
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="callout silver">
+      <strong>Dano Total por Round — Com Ambos os Ataques</strong> Dois ataques de 20 de dano cada = <mark>média de 40 de dano por round</mark> em condições normais. Contra Strahd: dois ataques de 34 cada = <mark class="ven">média de 68 de dano por round</mark> — o suficiente para reduzir Strahd a 0 PV em 3-4 rounds. Vladimir tem a ferramenta para matar Strahd. Escolhe não usá-la.
+    </div>
+  </section>
+
+  <!-- COMO RODAR -->
+  <section id="notas">
+    <div class="section-header">
+      <span class="section-icon gold">🧠</span>
+      <h2 class="gold">Como Rodar — Notas do Mestre</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="card silver">
+      <div class="card-title silver">Onde Encontrá-lo</div>
+      <p>Vladimir é encontrado no <strong>Salão dos Cavaleiros</strong> dentro do Castelo Argynvostholt (K-Área). Ele reside ali com os espíritos de seus irmãos cavaleiros, todos ressurgidos como ele, unidos pelo mesmo ódio. Ele não sai a menos que seja provocado — ou que os aventureiros tentem algo que ameace sua vigília.</p>
+    </div>
+
+    <div class="card gold">
+      <div class="card-title gold">O que Ele Quer dos Aventureiros</div>
+      <p>Nada. Vladimir não quer ser salvo, não quer aliados, não quer que Strahd seja destruído. Se os aventureiros chegam com a intenção de usar a Ordem do Dragão de Prata como recurso contra Strahd, Vladimir é um obstáculo absoluto. A única coisa que pode mudar isso está ligada ao crânio de Argynvost — mas mesmo assim, Vladimir resiste à ideia de que seu sofrimento possa terminar.</p>
+    </div>
+
+    <div class="card frost">
+      <div class="card-title frost">A Redençao de Argynvost</div>
+      <p>O módulo oferece um caminho: se os aventureiros recuperarem o crânio de Argynvost e o colocarem de volta na Torre do Farol de Argynvostholt, o espírito do dragão de prata pode descansar — e com ele, Vladimir e todos os cavaleiros da Ordem finalmente encontrariam paz. Isso não destrói Vladimir: o liberta. É a resolução mais misericordiosa disponível.</p>
+    </div>
+
+    <div class="card ven">
+      <div class="card-title ven">Vladimir em Valtheris</div>
+      <p>Vladimir é o exemplo do que acontece quando a lealdade a uma causa sobrevive ao propósito dessa causa. A Ordem do Dragão de Prata existia para proteger o bem — mas Vladimir tornou sua sobrevivência um instrumento de ódio. Em Valtheris, onde Leyn carrega um Contrato com os Guardiões do Limiar e conhece o peso de sobreviver ao custo certo, Vladimir é um espelho perturbador: o cavaleiro que escolheu o lado errado da equação entre dever e descanso.</p>
+    </div>
+
+    <div class="callout gold">
+      <strong>A Cena Mais Poderosa com Vladimir</strong> não é o combate. É quando um aventureiro percebe que Vladimir <em>poderia</em> destruir Strahd — e explica por que não vai. A lógica é perfeitamente consistente: ele quer que Strahd sofra para sempre. Matar Strahd acabaria com o sofrimento. Logo, ele não pode matar Strahd. Há uma coerência devastadora num ser que se tornou o instrumento do tormento do inimigo — e que, ao fazer isso, também se tornou prisioneiro eterno de Barovia.
+    </div>
+  </section>
+
+  <!-- DESTRUIÇÃO PERMANENTE -->
+  <section id="destruicao">
+    <div class="section-header">
+      <span class="section-icon ven">💀</span>
+      <h2 class="ven">Destruição Permanente</h2>
+      <div class="section-line ven"></div>
+    </div>
+
+    <div class="card ven" style="margin-bottom:14px;">
+      <div class="card-title ven">Por Que Matar Não é Suficiente</div>
+      <p>Vladimir ressurge em 24 horas enquanto seu propósito não for cumprido. E seu propósito — manter Strahd sofrendo — é tecnicamente cumprido apenas com a morte de Strahd, algo que ele ativamente impede. Isso cria um loop onde Vladimir é <mark class="ven">funcionalmente imortal enquanto Strahd existir</mark>.</p>
+    </div>
+
+    <div class="phase-grid">
+      <div class="phase-card p1">
+        <div class="phase-num p1">Via 1</div>
+        <div class="phase-title">Argynvost</div>
+        <p>Recuperar o crânio de Argynvost e colocá-lo na Torre do Farol. O dragão de prata descansa, levando Vladimir com ele. É a única saída pacífica.</p>
+      </div>
+      <div class="phase-card p2">
+        <div class="phase-num p2">Via 2</div>
+        <div class="phase-title">Ressurreição Maior</div>
+        <p><em>Ressurreição Maior</em> lançada sobre os restos de Vladimir impede o rejuvenescimento. Requer acesso a magia de 7º nível — e alguém capaz de lançá-la sobre um ressurgido hostil.</p>
+      </div>
+      <div class="phase-card p3">
+        <div class="phase-num p3">Via 3</div>
+        <div class="phase-title">Destruir Strahd</div>
+        <p>Se Strahd for destruído permanentemente, o propósito de Vladimir seria cumprido à revelia de sua vontade. Ele descansaria — algo que consideraria a derrota final.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SANIDADE -->
+  <section id="sanidade">
+    <div class="section-header">
+      <span class="section-icon frost">🌑</span>
+      <h2 class="frost">Dano de Sanidade — Regra Opcional</h2>
+      <div class="section-line frost"></div>
+    </div>
+
+    <div class="card frost" style="margin-bottom:14px;">
+      <div class="card-title frost">O Horror de Vladimir</div>
+      <p>O horror de Vladimir não é o combate — é a compreensão. Ele é um cavaleiro que escolheu o ódio sobre o descanso eterno. Cada interação revela um pouco mais de sua lógica impecável e completamente corrompida. O dano de sanidade vem do momento em que os personagens percebem que ele está <em>certo</em> dentro de sua própria estrutura — e que isso é pior do que estar errado.</p>
+    </div>
+
+    <table class="san-table">
+      <thead>
+        <tr><th>Situação</th><th>Sucesso (SAB)</th><th>Falha (SAB)</th><th>CD</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="situation">Primeira vez que entra no Salão dos Cavaleiros e vê os ressurgidos em silêncio</td>
+          <td class="pass">—</td><td class="fail">1d4</td><td class="cd">CD 11</td>
+        </tr>
+        <tr>
+          <td class="situation">Vladimir explica que poderia matar Strahd — e escolhe não fazer isso</td>
+          <td class="pass">1d4</td><td class="fail">1d8</td><td class="cd">CD 14</td>
+        </tr>
+        <tr>
+          <td class="situation">Compreender que Vladimir é funcionalmente imortal enquanto Strahd viver</td>
+          <td class="pass">—</td><td class="fail">1d6</td><td class="cd">CD 13</td>
+        </tr>
+        <tr>
+          <td class="situation">Receber o Olhar Apavorante e ficar paralisado, vendo o rosto vazio de Vladimir</td>
+          <td class="pass">1d4</td><td class="fail">2d6</td><td class="cd">CD 15</td>
+        </tr>
+        <tr>
+          <td class="situation">Perceber que Vladimir sofre — e que ele prefere isso à paz</td>
+          <td class="pass">1d6</td><td class="fail">2d8</td><td class="cd">CD 16</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<div style="max-width:940px;margin:0 auto;padding:0 20px;">
+  <div class="divider" style="padding:0;margin-bottom:0;">
+    <div class="divider-line"></div><span class="divider-glyph">⚔</span><div class="divider-line"></div>
+  </div>
+</div>
+<div class="top-bar" style="margin-top:0;"></div>
+
+<footer>
+  Vladimir Horngaard <span>⸸</span> Ordem do Dragão de Prata <span>⸸</span> Curse of Strahd
+</footer>
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+<script>
+document.getElementById('top-btn').addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});window.addEventListener('scroll',function(){document.getElementById('top-btn').classList.toggle('visible',window.scrollY>400);});
+</script>
+</body>
+</html>

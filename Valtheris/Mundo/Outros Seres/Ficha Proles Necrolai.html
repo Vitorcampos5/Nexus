@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prole de Necrolai — Além do Véu da Carne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:          #060108;
+
+    --blood:        #cc1818;
+    --blood-light:  #e84040;
+    --blood-dim:    #3a0808;
+
+    --violet:       #8030a8;
+    --violet-light: #b060d0;
+    --violet-dim:   #280840;
+    --moon-light:   #c8dce8;
+    --gold-light:   #e8b840;
+    --gold-dim:     #3a2408;
+    --bone-light:   #dac8a8;
+
+    --text:         #c4b0a0;
+    --text-dim:     #706050;
+    --text-faint:   #2e1c14;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--ink);
+    background-image:
+      radial-gradient(ellipse 130% 60% at 50% -8%,  #1a0404 0%, transparent 55%),
+      radial-gradient(ellipse 60%  60% at 95% 100%, #0e0408 0%, transparent 50%),
+      radial-gradient(ellipse 50%  70% at 5%  85%,  #100206 0%, transparent 50%),
+      radial-gradient(ellipse 40%  40% at 50% 60%,  #14040a 0%, transparent 40%);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 17px; line-height: 1.8;
+    min-height: 100vh; overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 999; opacity: .5;
+  }
+
+  /* ══ ACCENT BAR ══ */
+  .accent-bar {
+    height: 4px;
+    background: linear-gradient(90deg, var(--blood-dim), var(--blood), var(--violet), var(--blood), var(--blood-dim));
+    box-shadow: 0 0 20px rgba(200,30,30,.35), 0 0 40px rgba(120,50,170,.15);
+  }
+
+  /* ══ BREADCRUMB ══ */
+  .breadcrumb {
+    max-width: 860px; margin: 0 auto; padding: 20px 20px 0;
+    font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint);
+  }
+  .breadcrumb span { color: var(--blood-dim); margin: 0 6px; }
+  .breadcrumb .current { color: var(--blood-light); }
+
+  /* ══ HEADER ══ */
+  header {
+    position: relative; text-align: center;
+    padding: 80px 20px 70px; overflow: hidden;
+  }
+  header::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(160,20,20,.12) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 40% at 50% 80%, rgba(100,30,140,.07) 0%, transparent 60%);
+  }
+  header::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--blood-dim), var(--violet-dim), var(--blood-dim), transparent);
+    box-shadow: 0 0 30px rgba(180,30,30,.2);
+  }
+
+  .header-symbol {
+    display: block; font-size: 2.8rem; margin-bottom: 18px;
+    filter: drop-shadow(0 0 20px rgba(200,30,30,.7)) drop-shadow(0 0 40px rgba(120,50,170,.4));
+    animation: blood-pulse 5s ease-in-out infinite;
+  }
+  @keyframes blood-pulse {
+    0%,100% { filter: drop-shadow(0 0 14px rgba(200,30,30,.55)) drop-shadow(0 0 32px rgba(120,50,170,.3)); transform: scale(1); }
+    50%      { filter: drop-shadow(0 0 28px rgba(200,30,30,.9)) drop-shadow(0 0 60px rgba(120,50,170,.55)); transform: scale(1.04); }
+  }
+
+  .header-eyebrow { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .45em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 18px; }
+  .header-classification { font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .25em; text-transform: uppercase; color: var(--blood-light); margin-bottom: 10px; opacity: .8; }
+
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.8rem, 6vw, 3.4rem); font-weight: 900; line-height: 1.1; margin-bottom: 6px;
+    background: linear-gradient(135deg, #f08080 0%, #e04040 30%, #b060d0 65%, #c03030 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(200,30,30,.3));
+    animation: title-breathe 8s ease-in-out infinite;
+  }
+  @keyframes title-breathe {
+    0%,100% { filter: drop-shadow(0 0 20px rgba(200,30,30,.22)); }
+    50%      { filter: drop-shadow(0 0 50px rgba(200,30,30,.48)) drop-shadow(0 0 80px rgba(120,50,170,.12)); }
+  }
+
+  .header-title-sub { font-family: 'Cinzel', serif; font-size: clamp(.85rem, 2.5vw, 1.1rem); letter-spacing: .18em; text-transform: uppercase; color: var(--bone-light); margin-bottom: 8px; }
+  .header-tagline { font-style: italic; color: #806858; font-size: 1rem; max-width: 520px; margin: 0 auto 32px; }
+
+  .header-crests { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+
+  /* ══ WARNING BANNER ══ */
+  .warning-banner { max-width: 860px; margin: 0 auto 0; padding: 0 20px; }
+  .warning-banner-inner {
+    background: rgba(60,8,8,.18); border: 1px solid var(--blood-dim);
+    border-left: 4px solid var(--blood-light); padding: 16px 24px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .warning-icon { font-size: 1.4rem; flex-shrink: 0; line-height: 1.6; }
+  .warning-text { font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .08em; color: #c08878; line-height: 1.7; }
+  .warning-text strong { color: var(--blood-light); letter-spacing: .15em; display: block; margin-bottom: 4px; }
+
+  /* ══ DIVIDER ══ */
+  .divider { display: flex; align-items: center; gap: 14px; max-width: 860px; margin: 0 auto; padding: 40px 20px 48px; }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--blood-dim), var(--violet-dim), transparent); }
+  .divider-glyph { color: var(--blood-light); font-size: 1rem; opacity: .65; }
+
+  /* ══ LAYOUT ══ */
+  main { max-width: 860px; margin: 0 auto; padding: 0 20px 90px; display: flex; flex-direction: column; gap: 0; }
+  section { margin-bottom: 56px; animation: fade-in .5s ease both; }
+  @keyframes fade-in { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  section:nth-child(1)  { animation-delay: .05s; }
+  section:nth-child(2)  { animation-delay: .10s; }
+  section:nth-child(3)  { animation-delay: .15s; }
+  section:nth-child(4)  { animation-delay: .20s; }
+  section:nth-child(5)  { animation-delay: .25s; }
+  section:nth-child(6)  { animation-delay: .30s; }
+  section:nth-child(7)  { animation-delay: .35s; }
+  section:nth-child(8)  { animation-delay: .40s; }
+  section:nth-child(9)  { animation-delay: .45s; }
+  section:nth-child(10) { animation-delay: .50s; }
+  section:nth-child(11) { animation-delay: .55s; }
+
+  /* ══ SECTION HEADER ══ */
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .section-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .section-icon.blood  { filter: drop-shadow(0 0 8px rgba(200,30,30,.6)); }
+  .section-icon.violet { filter: drop-shadow(0 0 8px rgba(150,60,210,.5)); }
+  .section-icon.moon   { filter: drop-shadow(0 0 8px rgba(160,185,200,.5)); }
+  .section-icon.gold   { filter: drop-shadow(0 0 8px rgba(200,150,28,.5)); }
+  .section-icon.bone   { filter: drop-shadow(0 0 8px rgba(200,180,130,.4)); }
+
+  h2 { font-family: 'Cinzel', serif; font-size: .9rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+  h2.blood  { color: #e84040; text-shadow: 0 0 20px rgba(200,30,30,.3); }
+  h2.violet { color: #b060d0; text-shadow: 0 0 20px rgba(150,60,210,.25); }
+  h2.moon   { color: #c8dce8; text-shadow: 0 0 18px rgba(160,190,210,.25); }
+  h2.gold   { color: #e8b840; text-shadow: 0 0 18px rgba(200,150,28,.25); }
+  h2.bone   { color: #dac8a8; text-shadow: 0 0 16px rgba(200,175,130,.2); }
+
+  .section-line { flex: 1; height: 1px; }
+  .section-line.blood  { background: linear-gradient(90deg, var(--blood-dim), rgba(120,50,170,.25), transparent); }
+  .section-line.violet { background: linear-gradient(90deg, rgba(100,30,140,.5), rgba(180,30,30,.2), transparent); }
+  .section-line.moon   { background: linear-gradient(90deg, rgba(60,90,120,.5), rgba(160,30,30,.15), transparent); }
+  .section-line.gold   { background: linear-gradient(90deg, var(--gold-dim), rgba(140,30,30,.2), transparent); }
+  .section-line.bone   { background: linear-gradient(90deg, rgba(100,80,40,.5), rgba(140,30,30,.2), transparent); }
+
+  p { margin-bottom: 10px; } p:last-child { margin-bottom: 0; }
+
+  /* ══ IDENTITY ══ */
+  .identity {
+    position: relative;
+    background: linear-gradient(145deg, rgba(14,8,18,.98) 0%, rgba(6,2,8,.99) 100%);
+    border: 1px solid rgba(120,30,30,.4);
+    border-top: 3px solid var(--blood-dim);
+    border-bottom: 3px solid var(--violet-dim);
+    padding: 30px 32px; margin-bottom: 14px; overflow: hidden;
+  }
+  .identity::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(120,20,20,.06) 0%, transparent 50%),
+      radial-gradient(circle at 100% 100%, rgba(100,30,140,.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .identity-corner { position: absolute; font-family: 'Fira Code', monospace; font-size: .6rem; letter-spacing: .15em; color: var(--text-faint); opacity: .65; }
+  .identity-corner.tl { top: 10px; left: 14px; }
+  .identity-corner.tr { top: 10px; right: 14px; }
+  .identity-corner.bl { bottom: 10px; left: 14px; }
+  .identity-corner.br { bottom: 10px; right: 14px; }
+
+  .monster-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 3.5vw, 2.1rem); font-weight: 900;
+    background: linear-gradient(135deg, #f08080 0%, #c03030 45%, #b060d0 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 2px;
+  }
+  .monster-epithet { font-family: 'Cinzel', serif; font-size: .82rem; letter-spacing: .2em; text-transform: uppercase; color: var(--moon-light); opacity: .85; margin-bottom: 14px; }
+  .monster-type-line { margin-bottom: 16px; }
+  .monster-lore { font-style: italic; color: #7a6060; font-size: .97rem; border-left: 2px solid var(--blood-dim); padding-left: 16px; margin-top: 14px; line-height: 1.75; }
+  .monster-lore + .monster-lore { border-left-color: var(--violet-dim); margin-top: 10px; }
+
+  /* ══ TAGS ══ */
+  .tag { display: inline-block; font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .18em; text-transform: uppercase; padding: 2px 8px; border-radius: 1px; margin-right: 5px; margin-bottom: 5px; vertical-align: middle; }
+  .tag.dnd    { border: 1px solid #3a1820; color: #a04040; }
+  .tag.coc    { border: 1px solid #2a1840; color: #8050a0; }
+  .tag.horror { border: 1px solid #4a1020; color: #b05060; }
+  .tag.hb     { border: 1px solid #2a2838; color: #6a7090; }
+  .tag.lore   { border: 1px solid #3a2820; color: #987060; }
+  .tag.mythic { border: 1px solid rgba(100,80,20,.6); color: #c0a848; }
+
+  /* ══ MONSTER VITALS ══ */
+  .monster-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  @media (max-width:600px) { .monster-vitals { grid-template-columns: 1fr 1fr; } }
+  .mvital-card { background: rgba(8,4,10,.85); border: 1px solid rgba(80,20,20,.3); border-radius: 3px; padding: 16px 14px; position: relative; overflow: hidden; text-align: center; }
+  .mvital-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+  .mvital-card.blood::after  { background: linear-gradient(90deg, transparent, var(--blood-light), transparent); }
+  .mvital-card.violet::after { background: linear-gradient(90deg, transparent, var(--violet-light), transparent); }
+  .mvital-card.moon::after   { background: linear-gradient(90deg, transparent, var(--moon-light), transparent); }
+  .mvital-card.gold::after   { background: linear-gradient(90deg, transparent, var(--gold-light), transparent); }
+  .mvital-label { font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+  .mvital-value { font-family: 'Cinzel Decorative', serif; font-size: 2rem; line-height: 1; display: block; }
+  .mvital-value.blood  { color: var(--blood-light);  text-shadow: 0 0 20px rgba(200,30,30,.4); }
+  .mvital-value.violet { color: var(--violet-light); text-shadow: 0 0 20px rgba(150,60,210,.4); }
+  .mvital-value.moon   { color: var(--moon-light);   text-shadow: 0 0 20px rgba(160,190,210,.4); }
+  .mvital-value.gold   { color: var(--gold-light);   text-shadow: 0 0 18px rgba(200,150,28,.35); }
+  .mvital-note { font-size: .75rem; color: var(--text-dim); font-style: italic; margin-top: 6px; display: block; line-height: 1.4; }
+
+  /* ══ TWO-COL MONSTER ══ */
+  .two-col-monster { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width:600px) { .two-col-monster { grid-template-columns: 1fr; } }
+
+  /* ══ CR BADGE ══ */
+  .cr-badge {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, rgba(60,8,8,.18), rgba(40,8,60,.12));
+    border: 1px solid rgba(180,40,40,.4);
+    border-top: 2px solid var(--blood-light);
+    border-bottom: 2px solid var(--violet-dim);
+    padding: 14px 24px; text-align: center;
+  }
+  .cr-badge-label { font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .28em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+  .cr-badge-value {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.2rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--blood-light), var(--violet-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1;
+  }
+  .cr-badge-note { font-family: 'Fira Code', monospace; font-size: .6rem; color: var(--text-dim); margin-top: 4px; letter-spacing: .06em; }
+
+  /* ══ ATTR GRID ══ */
+  .attr-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .attr-box { background: rgba(8,4,10,.85); border: 1px solid rgba(80,20,20,.28); border-radius: 3px; padding: 14px 6px; text-align: center; transition: border-color .25s, transform .2s; }
+  .attr-box:hover { border-color: rgba(200,30,30,.5); transform: translateY(-2px); }
+  .attr-box.high { border-color: rgba(200,30,30,.4); }
+  .attr-box.max  { border-color: rgba(200,30,30,.65); box-shadow: 0 0 12px rgba(200,30,30,.1); }
+  .attr-box.low  { border-color: rgba(60,40,80,.35); }
+  .attr-name { font-family: 'Cinzel', serif; font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .attr-value { font-family: 'Cinzel Decorative', serif; font-size: 1.7rem; line-height: 1; display: block; color: var(--text); }
+  .attr-value.high { color: var(--blood-light); }
+  .attr-value.max  { color: var(--blood-light); text-shadow: 0 0 12px rgba(200,30,30,.5); }
+  .attr-value.low  { color: var(--violet-light); }
+  .attr-mod { font-family: 'Cinzel', serif; font-size: .75rem; color: var(--text-dim); display: block; margin-top: 3px; }
+  .attr-mod.high, .attr-mod.max { color: var(--blood-light); }
+  .attr-mod.neg { color: var(--violet-light); }
+
+  /* ══ TABLE ══ */
+  .table-wrap { border: 1px solid rgba(80,20,20,.3); border-radius: 3px; overflow: hidden; margin-bottom: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  thead tr { background: rgba(40,10,10,.8); }
+  th { font-family: 'Cinzel', serif; font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: var(--blood-light); padding: 10px 16px; text-align: left; font-weight: 600; }
+  tbody tr { border-top: 1px solid rgba(80,20,20,.2); transition: background .2s; }
+  tbody tr:hover { background: rgba(80,20,20,.08); }
+  td { padding: 9px 16px; color: var(--text); vertical-align: top; }
+  td:first-child { color: var(--text-dim); font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .06em; }
+  .mono { font-family: 'Fira Code', monospace; font-size: .82rem; }
+  .mono.blood  { color: var(--blood-light); }
+  .mono.violet { color: var(--violet-light); }
+  .mono.moon   { color: var(--moon-light); }
+
+  /* ══ FRAQUEZA TABLE ══ */
+  .fraq-row-wrap { border: 1px solid rgba(80,20,20,.25); border-radius: 3px; overflow: hidden; margin-bottom: 6px; transition: border-color .25s; }
+  .fraq-row-wrap:hover { border-color: rgba(200,30,30,.45); }
+  .fraq-row-inner { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(8,4,10,.8); }
+  .fraq-icon  { font-size: 1.25rem; flex-shrink: 0; width: 28px; text-align: center; }
+  .fraq-name  { font-family: 'Cinzel', serif; font-size: .82rem; letter-spacing: .1em; color: var(--text); flex: 1; }
+  .sev-badge  { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; padding: 3px 9px; border-radius: 2px; white-space: nowrap; flex-shrink: 0; }
+  .sev-letal  { background: rgba(100,5,5,.6);   color: #ff7070;          border: 1px solid rgba(200,20,20,.6); }
+  .sev-sev    { background: rgba(90,10,10,.5);  color: var(--blood-light);border: 1px solid rgba(160,30,30,.5); }
+  .sev-barr   { background: rgba(40,10,60,.5);  color: var(--violet-light);border: 1px solid rgba(100,30,150,.5); }
+  .sev-rev    { background: rgba(20,30,50,.5);  color: var(--moon-light); border: 1px solid rgba(60,90,130,.5); }
+  .sev-gate   { background: rgba(70,55,5,.5);   color: var(--gold-light); border: 1px solid rgba(160,120,15,.5); }
+  .fraq-desc  { font-size: .88rem; color: var(--text-dim); font-style: italic; padding: 8px 16px 12px calc(28px + 28px); background: rgba(6,2,8,.6); }
+
+  /* ══ PROGRESSION TABLE ══ */
+  .prog-wrap { border: 1px solid rgba(80,20,20,.25); border-radius: 3px; overflow: hidden; }
+  .prog-header-row { display: grid; grid-template-columns: 130px 140px 1fr; background: rgba(40,10,10,.8); }
+  .prog-header-cell { font-family: 'Cinzel', serif; font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--blood-light); padding: 9px 14px; opacity: .85; }
+  .prog-data-row { display: grid; grid-template-columns: 130px 140px 1fr; border-top: 1px solid rgba(80,20,20,.18); transition: background .2s; }
+  .prog-data-row:hover { background: rgba(80,20,20,.06); }
+  .prog-cell { padding: 10px 14px; font-size: .88rem; color: var(--text-dim); }
+  .prog-fase  { font-family: 'Cinzel', serif; font-size: .78rem; color: var(--text); }
+  .prog-efeito .sev-badge { font-size: .55rem; }
+
+  /* ══ TRAIT ══ */
+  .trait { display: flex; gap: 0; margin-bottom: 12px; background: rgba(8,4,10,.8); border: 1px solid rgba(80,20,20,.2); border-radius: 3px; overflow: hidden; }
+  .tier-bar { width: 4px; flex-shrink: 0; }
+  .trait-content { padding: 14px 18px; }
+  .trait-name { font-family: 'Cinzel', serif; font-size: .82rem; letter-spacing: .1em; font-weight: 900; margin-bottom: 6px; }
+  .trait-name.blood  { color: var(--blood-light); }
+  .trait-name.violet { color: var(--violet-light); }
+  .trait-name.moon   { color: var(--moon-light); }
+  .trait-name.gold   { color: var(--gold-light); }
+  .trait-name.bone   { color: var(--bone-light); }
+
+  /* ══ ACTION ══ */
+  .action { padding: 16px 20px; margin-bottom: 10px; border: 1px solid; border-radius: 3px; }
+  .action.blood  { background: rgba(60,8,8,.18);  border-color: rgba(160,30,30,.3); }
+  .action.violet { background: rgba(40,8,60,.15); border-color: rgba(120,40,170,.3); }
+  .action.moon   { background: rgba(20,35,55,.15);border-color: rgba(60,90,130,.3); }
+  .action.gold   { background: rgba(50,35,5,.15); border-color: rgba(150,100,20,.3); }
+  .action-name { font-family: 'Cinzel', serif; font-size: .82rem; letter-spacing: .1em; font-weight: 900; margin-bottom: 8px; }
+  .action-name.blood  { color: var(--blood-light); }
+  .action-name.violet { color: var(--violet-light); }
+  .action-name.moon   { color: var(--moon-light); }
+  .action-name.gold   { color: var(--gold-light); }
+
+  /* ══ CARD ══ */
+  .card { background: rgba(8,4,10,.8); border: 1px solid rgba(80,20,20,.2); border-radius: 3px; padding: 18px 20px; }
+  .card.blood  { border-color: rgba(160,30,30,.35); }
+  .card.violet { border-color: rgba(120,40,160,.3); }
+  .card.moon   { border-color: rgba(60,90,130,.3); }
+  .card.gold   { border-color: rgba(140,100,15,.3); }
+  .card-title { font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 900; margin-bottom: 10px; }
+  .card-title.blood  { color: var(--blood-light); }
+  .card-title.violet { color: var(--violet-light); }
+  .card-title.moon   { color: var(--moon-light); }
+  .card-title.gold   { color: var(--gold-light); }
+
+  /* ══ CALLOUT ══ */
+  .callout { padding: 14px 20px; border-left: 4px solid; border-radius: 0 3px 3px 0; margin-top: 14px; font-size: .9rem; }
+  .callout.blood  { background: rgba(60,8,8,.15);  border-color: var(--blood-light);  color: #b89888; }
+  .callout.violet { background: rgba(40,8,60,.12); border-color: var(--violet-light); color: #a890b8; }
+  .callout.moon   { background: rgba(20,35,55,.12);border-color: var(--moon-light);   color: #88a0b0; }
+  .callout.gold   { background: rgba(50,35,5,.12); border-color: var(--gold-light);   color: #b09870; }
+
+  /* ══ SAN GRID ══ */
+  .san-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+  @media (max-width:600px) { .san-grid { grid-template-columns: 1fr 1fr; } }
+  .san-box { background: rgba(8,4,10,.85); border: 1px solid rgba(80,20,20,.3); border-radius: 3px; padding: 14px 12px; text-align: center; }
+  .san-box-label { font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+  .san-box-dice  { font-family: 'Cinzel Decorative', serif; font-size: 1.6rem; color: var(--blood-light); text-shadow: 0 0 14px rgba(200,30,30,.5); display: block; line-height: 1.1; }
+  .san-box-cd    { font-family: 'Fira Code', monospace; font-size: .68rem; color: var(--violet-light); margin-top: 4px; }
+  .san-box-sub   { font-size: .75rem; color: var(--text-dim); font-style: italic; margin-top: 3px; line-height: 1.3; }
+
+  /* ══ FOOTER ══ */
+  footer {
+    text-align: center; padding: 30px 20px;
+    font-family: 'Cinzel', serif; font-size: .62rem; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--text-faint); border-top: 1px solid rgba(80,20,20,.15);
+  }
+  footer span { color: var(--blood-dim); margin: 0 8px; }
+
+  /* ══ TOP BTN ══ */
+  #top-btn { display: none; position: fixed; bottom: 28px; right: 28px; width: 40px; height: 40px; background: rgba(60,8,8,.85); border: 1px solid var(--blood-dim); border-radius: 50%; color: var(--blood-light); font-size: 1.1rem; text-decoration: none; text-align: center; line-height: 40px; transition: background .2s, border-color .2s; z-index: 100; }
+  #top-btn:hover { background: rgba(100,14,14,.95); border-color: var(--blood-light); }
+  #top-btn.visible { display: block; }
+
+  /* ══ COMP TABLE ══ */
+  .comp-table { border: 1px solid rgba(80,20,20,.25); border-radius: 3px; overflow: hidden; }
+  .comp-head { display: grid; grid-template-columns: 1fr 1fr 1fr; background: rgba(40,10,10,.85); }
+  .comp-head-cell { font-family: 'Cinzel', serif; font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; padding: 9px 14px; }
+  .comp-head-cell.lbl { color: var(--text-dim); }
+  .comp-head-cell.rec { color: var(--moon-light); text-align: center; }
+  .comp-head-cell.old { color: var(--blood-light); text-align: center; }
+  .comp-row { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid rgba(80,20,20,.15); transition: background .2s; }
+  .comp-row:hover { background: rgba(80,20,20,.06); }
+  .comp-cell { padding: 9px 14px; font-size: .88rem; }
+  .comp-cell.lbl { font-family: 'Cinzel', serif; font-size: .75rem; letter-spacing: .06em; color: var(--text-dim); text-transform: uppercase; }
+  .comp-cell.rec { color: var(--text); text-align: center; }
+  .comp-cell.old { color: var(--blood-light); text-align: center; font-family: 'Cinzel', serif; font-size: .82rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="accent-bar"></div>
+
+<nav class="breadcrumb" aria-label="Trilha de navegação">
+  Além do Véu da Carne <span>›</span> Bestiário de Valtheris <span>›</span> <span class="current">Prole de Necrolai</span>
+</nav>
+
+<header>
+  <div class="header-eyebrow">Bestiário de Valtheris · Criatura de Necrolai</div>
+  <span class="header-symbol">🩸</span>
+  <div class="header-classification">Vampiro Criado · Não-Morto · Linhagem da Rainha</div>
+  <h1>Prole de Necrolai</h1>
+  <div class="header-title-sub">O Sangue Que Obedece · A Fome Que Não Para</div>
+  <p class="header-tagline">"Não escolheram. Acordaram com fome, sem reflexo, e com uma voz dentro da cabeça dizendo o que fazer."</p>
+  <div class="header-crests">
+    <span class="tag dnd">D&amp;D 5e</span>
+    <span class="tag coc">CoC 7e</span>
+    <span class="tag horror">Horror Vampírico</span>
+    <span class="tag hb">Homebrew</span>
+    <span class="tag lore">Criatura de Necrolai</span>
+  </div>
+</header>
+
+<div class="warning-banner">
+  <div class="warning-banner-inner">
+    <span class="warning-icon">⚠️</span>
+    <div class="warning-text">
+      <strong>Nota do Mestre — Antes do Encontro</strong>
+      Esta ficha cobre Proles em dois estágios (Recente e Antiga) com mecânicas distintas. O Frenesi de Fome é um gatilho situacional que pode virar o encontro — leia antes de rodar. As fraquezas clássicas são ferramentas táticas: garanta que o grupo tenha acesso a pelo menos uma antes do primeiro encontro.
+    </div>
+  </div>
+</div>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <span class="divider-glyph">🩸</span>
+  <div class="divider-line"></div>
+</div>
+
+<main>
+
+  <!-- ══ IDENTIDADE ══ -->
+  <section id="identidade">
+    <div class="section-header">
+      <span class="section-icon blood">🦇</span>
+      <h2 class="blood">Identidade</h2>
+      <div class="section-line blood"></div>
+    </div>
+
+    <div class="identity">
+      <div class="identity-corner tl">BESTIÁRIO · VALTHERIS</div>
+      <div class="identity-corner tr">CR 3 — 5</div>
+      <div class="identity-corner bl">VAMPIRO CLÁSSICO</div>
+      <div class="identity-corner br">NÃO-MORTO</div>
+      <div class="monster-name">Prole de Necrolai</div>
+      <div class="monster-epithet">Não-Morto · Médio · Criatura de Necrolai · Vampiro</div>
+      <div class="monster-type-line">
+        <span class="tag dnd">D&amp;D 5e</span>
+        <span class="tag coc">CoC 7e</span>
+        <span class="tag horror">Horror</span>
+        <span class="tag lore">Linhagem da Rainha</span>
+      </div>
+      <p class="monster-lore">
+        São criadas pela mordida intencional de Necrolai sobre um ser vivo — a mesma mordida que pode animar pedra aplicada com propósito diferente. O processo demora entre uma e três noites. A prole desperta com superforça, fome absoluta, e a presença da Rainha como voz de fundo instintiva — não uma ordem audível, mas uma orientação que molda comportamento antes de qualquer contato direto.
+      </p>
+      <p class="monster-lore">
+        Mantêm memórias e traços de personalidade anteriores, mas com distorção crescente à medida que a fome domina. Proles Recentes são imprevisíveis — ainda tentam se comportar como humanas enquanto algo mais forte as empurra em sentido contrário. Proles Antigas encontraram um equilíbrio funcional: caça regulada, contenção básica. Nunca completamente autônomas enquanto Necrolai viver.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══ VITAIS ══ -->
+  <section id="vitais">
+    <div class="section-header">
+      <span class="section-icon gold">◆</span>
+      <h2 class="gold">Vitais — Prole Recente</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="monster-vitals">
+      <div class="mvital-card blood">
+        <span class="mvital-label">Pontos de Vida</span>
+        <span class="mvital-value blood">52</span>
+        <span class="mvital-note">8d8+16 · Antiga: 78 HP (12d8+24)</span>
+      </div>
+      <div class="mvital-card violet">
+        <span class="mvital-label">Classe de Armadura</span>
+        <span class="mvital-value violet">14</span>
+        <span class="mvital-note">Natural · Antiga: CA 15</span>
+      </div>
+      <div class="mvital-card moon">
+        <span class="mvital-label">Velocidade</span>
+        <span class="mvital-value moon" style="font-size:1.6rem">30 pés</span>
+        <span class="mvital-note">Antiga: 35 pés · Superforça ativa</span>
+      </div>
+      <div class="mvital-card gold">
+        <span class="mvital-label">Challenge Rating</span>
+        <span class="mvital-value gold">3</span>
+        <span class="mvital-note">700 XP · Antiga: CR 5 / 1.800 XP</span>
+      </div>
+    </div>
+
+    <div class="two-col-monster">
+      <div class="cr-badge" style="flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;padding:16px 24px;">
+        <div>
+          <span class="cr-badge-label">Recente</span>
+          <span class="cr-badge-value">3</span>
+          <span class="cr-badge-note">Prof. +2 · 700 XP</span>
+        </div>
+        <div style="border-left:1px solid rgba(160,40,40,.3);padding-left:20px;">
+          <span class="cr-badge-label">Antiga (1+ ano)</span>
+          <span class="cr-badge-value">5</span>
+          <span class="cr-badge-note">Prof. +3 · 1.800 XP</span>
+        </div>
+      </div>
+      <div class="card blood">
+        <div class="card-title blood">Escala de Ameaça</div>
+        <p style="font-size:.9rem">Uma Prole Recente é um combatente sólido para grupos de nível 2–3, perigosa pelo Frenesi de Fome. Uma Prole Antiga, com Multiatacar e resistência solar crescente, é ameaça séria para grupos de nível 4–5 — especialmente em grupo, de noite.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ COMPARAÇÃO ══ -->
+  <section id="comparacao">
+    <div class="section-header">
+      <span class="section-icon moon">🌒</span>
+      <h2 class="moon">Progressão — Recente vs. Antiga</h2>
+      <div class="section-line moon"></div>
+    </div>
+
+    <div class="comp-table">
+      <div class="comp-head">
+        <div class="comp-head-cell lbl">Atributo</div>
+        <div class="comp-head-cell rec">🌑 Recente · 0–12 meses</div>
+        <div class="comp-head-cell old">🦇 Antiga · 1+ ano</div>
+      </div>
+      <div class="comp-row"><div class="comp-cell lbl">HP</div><div class="comp-cell rec">52</div><div class="comp-cell old">78</div></div>
+      <div class="comp-row"><div class="comp-cell lbl">CA</div><div class="comp-cell rec">14</div><div class="comp-cell old">15</div></div>
+      <div class="comp-row"><div class="comp-cell lbl">FOR / DEX / CON</div><div class="comp-cell rec">18 / 14 / 16</div><div class="comp-cell old">20 / 16 / 18</div></div>
+      <div class="comp-row"><div class="comp-cell lbl">Bônus de Ataque</div><div class="comp-cell rec">+6</div><div class="comp-cell old">+8</div></div>
+      <div class="comp-row"><div class="comp-cell lbl">Dano Mordida</div><div class="comp-cell rec">1d6+4 + 2d6</div><div class="comp-cell old">1d8+5 + 3d6</div></div>
+      <div class="comp-row"><div class="comp-cell lbl">Luz Solar</div><div class="comp-cell rec">1d6/turno + desvant.</div><div class="comp-cell old">1d2/turno</div></div>
+      <div class="comp-row"><div class="comp-cell lbl">Multiatacar</div><div class="comp-cell rec">Não</div><div class="comp-cell old">Sim (×2)</div></div>
+      <div class="comp-row"><div class="comp-cell lbl">Velocidade</div><div class="comp-cell rec">30 pés</div><div class="comp-cell old">35 pés</div></div>
+    </div>
+  </section>
+
+  <!-- ══ FRAQUEZAS CLÁSSICAS ══ -->
+  <section id="fraquezas">
+    <div class="section-header">
+      <span class="section-icon gold">⚔️</span>
+      <h2 class="gold">Fraquezas Clássicas — Referência Tática</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <p style="font-size:.92rem;color:var(--text-dim);margin-bottom:16px;">As fraquezas abaixo são <strong style="color:var(--text)">intrínsecas</strong> às Proles de Necrolai — herdadas da cosmologia do Submundo de Briarwood. Em Valtheris, onde a cosmologia é diferente, círculos traçados com sangue ou sal podem ser mais efetivos que outros materiais. Investigação em aberto.</p>
+
+    <div class="fraq-row-wrap">
+      <div class="fraq-row-inner">
+        <div class="fraq-icon">🧄</div>
+        <div class="fraq-name">Alho</div>
+        <span class="sev-badge sev-sev">⚠️ Repele</span>
+      </div>
+      <div class="fraq-desc">CD 12 SAB para se aproximar de fonte de alho. Falha: incapaz de avançar. Sucesso: pode agir normalmente, mas com desvantagem em todos os ataques enquanto na presença do alho. Não causa dano — apenas bloqueia e penaliza.</div>
+    </div>
+
+    <div class="fraq-row-wrap">
+      <div class="fraq-row-inner">
+        <div class="fraq-icon">☀️</div>
+        <div class="fraq-name">Luz Solar — Progressão por Idade</div>
+        <span class="sev-badge sev-sev">☠️ Vulnerável</span>
+      </div>
+      <div class="fraq-desc">Dano e penalidades diminuem com o envelhecimento. Veja tabela de progressão a seguir. Proles Recentes (0–3 meses) sofrem 1d6 radiante por turno e desvantagem em tudo. Proles Antigas (5+ anos) sentem apenas desconforto sem dano mecânico.</div>
+    </div>
+
+    <div class="fraq-row-wrap">
+      <div class="fraq-row-inner">
+        <div class="fraq-icon">🪵</div>
+        <div class="fraq-name">Estaca no Coração</div>
+        <span class="sev-badge sev-letal">💀 Letal</span>
+      </div>
+      <div class="fraq-desc">Morte instantânea se uma estaca de madeira ou prata for cravada no coração enquanto a criatura estiver Incapacitada ou Paralisada. Sem save, sem HP residual — morte imediata. Em combate normal, cravar uma estaca exige que o alvo esteja imóvel (Incapacitado ou Paralisado por outro meio primeiro).</div>
+    </div>
+
+    <div class="fraq-row-wrap">
+      <div class="fraq-row-inner">
+        <div class="fraq-icon">⭕</div>
+        <div class="fraq-name">Círculo Desenhado</div>
+        <span class="sev-badge sev-barr">🔒 Barreira Absoluta</span>
+      </div>
+      <div class="fraq-desc">Qualquer círculo fechado — giz, carvão, sangue, sal — cria uma barreira física que a prole não pode cruzar. Funciona como paredes sólidas para essa criatura. Apagar qualquer parte do traçado desfaz o efeito imediatamente. Não precisa de magia — qualquer círculo desenhado funciona.</div>
+    </div>
+
+    <div class="fraq-row-wrap">
+      <div class="fraq-row-inner">
+        <div class="fraq-icon">🪞</div>
+        <div class="fraq-name">Reflexo Ausente</div>
+        <span class="sev-badge sev-rev">👻 Revelação</span>
+      </div>
+      <div class="fraq-desc">Não aparece em espelhos, água parada, superfícies reflexivas ou scrying. Observadores atentos com acesso a um reflexo detectam automaticamente sua natureza vampírica. Não é uma fraqueza de combate, mas uma vulnerabilidade de identidade — a prole raramente percebe isso sobre si mesma.</div>
+    </div>
+
+    <div class="fraq-row-wrap">
+      <div class="fraq-row-inner">
+        <div class="fraq-icon">🩸</div>
+        <div class="fraq-name">Fome Incontrolável</div>
+        <span class="sev-badge sev-gate">⚡ Gatilho</span>
+      </div>
+      <div class="fraq-desc">Ao detectar uma criatura abaixo de 50% HP a 60 pés: CD 13 SAB ou compelida a gastar todas as ações movendo-se em direção ao alvo mais vulnerável e tentando mordê-lo. Salva novamente a cada turno ao receber dano. Necrolai pode interromper o frenesi se presente fisicamente.</div>
+    </div>
+
+    <div class="callout blood">
+      <strong>Nota Tática:</strong> Círculo + alho + luz solar = controle quase total de uma Prole Recente. O grupo que entra num encontro com pelo menos um desses recursos tem vantagem significativa. O desafio real é ter esses recursos na hora certa — e saber que Proles Antigas resistem progressivamente ao sol.
+    </div>
+  </section>
+
+  <!-- ══ PROGRESSÃO SOLAR ══ -->
+  <section id="solar">
+    <div class="section-header">
+      <span class="section-icon gold">☀️</span>
+      <h2 class="gold">Progressão da Vulnerabilidade Solar</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="prog-wrap">
+      <div class="prog-header-row">
+        <div class="prog-header-cell">Fase</div>
+        <div class="prog-header-cell">Tempo</div>
+        <div class="prog-header-cell">Efeito em Luz Solar Direta</div>
+      </div>
+      <div class="prog-data-row">
+        <div class="prog-cell prog-fase">🌑 Recente</div>
+        <div class="prog-cell">0–3 meses</div>
+        <div class="prog-cell prog-efeito"><span class="sev-badge sev-letal" style="font-size:.58rem;margin-right:8px">1d6/turno</span>+ desvantagem em todos os testes, ataques e salvaguardas sob luz solar.</div>
+      </div>
+      <div class="prog-data-row">
+        <div class="prog-cell prog-fase">🌒 Jovem</div>
+        <div class="prog-cell">3–12 meses</div>
+        <div class="prog-cell prog-efeito"><span class="sev-badge sev-sev" style="font-size:.58rem;margin-right:8px">1d4/turno</span>Desvantagem removida. Dano radiante contínuo permanece.</div>
+      </div>
+      <div class="prog-data-row">
+        <div class="prog-cell prog-fase">🌓 Madura</div>
+        <div class="prog-cell">1–5 anos</div>
+        <div class="prog-cell prog-efeito"><span class="sev-badge sev-gate" style="font-size:.58rem;margin-right:8px">1d2/turno</span>Desconforto visível. Dano reduzido, sem desvantagem.</div>
+      </div>
+      <div class="prog-data-row">
+        <div class="prog-cell prog-fase">🌕 Antiga</div>
+        <div class="prog-cell">5+ anos</div>
+        <div class="prog-cell prog-efeito"><span class="sev-badge sev-rev" style="font-size:.58rem;margin-right:8px">Desconforto</span>Sem dano mecânico. Evita luz solar por hábito, não por necessidade.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CoC REFERÊNCIA ══ -->
+  <section id="coc">
+    <div class="section-header">
+      <span class="section-icon violet">🎲</span>
+      <h2 class="violet">Referência CoC 7ª Edição</h2>
+      <div class="section-line violet"></div>
+    </div>
+
+    <div class="table-wrap" style="margin-bottom:14px">
+      <table>
+        <thead><tr><th>Atributo</th><th>FOR</th><th>CON</th><th>TAM</th><th>DES</th><th>INT</th><th>POD</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Prole Recente</td>
+            <td><span class="mono blood">80</span></td>
+            <td><span class="mono blood">75</span></td>
+            <td><span class="mono">65</span></td>
+            <td><span class="mono blood">70</span></td>
+            <td><span class="mono">50</span></td>
+            <td><span class="mono">45</span></td>
+          </tr>
+          <tr>
+            <td>Prole Antiga</td>
+            <td><span class="mono blood">90</span></td>
+            <td><span class="mono blood">85</span></td>
+            <td><span class="mono">65</span></td>
+            <td><span class="mono blood">80</span></td>
+            <td><span class="mono">55</span></td>
+            <td><span class="mono">50</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="two-col-monster">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Derivado</th><th>Recente</th><th>Antiga</th></tr></thead>
+          <tbody>
+            <tr><td>HP CoC</td><td><span class="mono">14</span></td><td><span class="mono blood">15</span></td></tr>
+            <tr><td>Bônus de Dano</td><td><span class="mono">+1d4</span></td><td><span class="mono blood">+1d6</span></td></tr>
+            <tr><td>Movimento</td><td><span class="mono">8</span></td><td><span class="mono blood">9</span></td></tr>
+            <tr><td>Garras/Briga</td><td><span class="mono">65%</span></td><td><span class="mono blood">75%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card violet">
+        <div class="card-title violet">Perícias CoC</div>
+        <p style="font-size:.85rem">Esquiva: 50% / 60% · Furtividade: 65% / 70% · Percepção: 55% / 65% · Briga: 65% / 75%.<br><em style="color:var(--text-dim)">Rola 1d100 ≤ valor = sucesso · ≤ ½ = difícil · ≤ 1/5 = extremo</em></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ATRIBUTOS D&D ══ -->
+  <section id="atributos">
+    <div class="section-header">
+      <span class="section-icon gold">◆</span>
+      <h2 class="gold">Atributos — Valtheris / D&amp;D 5e (Sistema Primário)</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="attr-grid" style="margin-bottom:14px">
+      <div class="attr-box high">
+        <div class="attr-name">For</div>
+        <span class="attr-value high">18</span>
+        <span class="attr-mod high">+4</span>
+      </div>
+      <div class="attr-box">
+        <div class="attr-name">Des</div>
+        <span class="attr-value">14</span>
+        <span class="attr-mod">+2</span>
+      </div>
+      <div class="attr-box high">
+        <div class="attr-name">Con</div>
+        <span class="attr-value high">16</span>
+        <span class="attr-mod high">+3</span>
+      </div>
+      <div class="attr-box low">
+        <div class="attr-name">Int</div>
+        <span class="attr-value low">10</span>
+        <span class="attr-mod">+0</span>
+      </div>
+      <div class="attr-box low">
+        <div class="attr-name">Sab</div>
+        <span class="attr-value low">10</span>
+        <span class="attr-mod">+0</span>
+      </div>
+      <div class="attr-box low">
+        <div class="attr-name">Car</div>
+        <span class="attr-value low">7</span>
+        <span class="attr-mod neg">−2</span>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+        <tbody>
+          <tr><td>Salvaguardas</td><td><span class="mono blood">FOR +6</span> · <span class="mono">DES +4</span> · <span class="mono blood">CON +5</span></td></tr>
+          <tr><td>Perícias</td><td>Atletismo <span class="mono blood">+6</span> · Furtividade <span class="mono">+4</span> · Percepção <span class="mono">+2</span></td></tr>
+          <tr><td>Imunidades a Dano</td><td>Necrótico · Veneno</td></tr>
+          <tr><td>Imunidades a Condição</td><td>Envenenado · Amedrontado (por veneno ou magia natural)</td></tr>
+          <tr><td>Resistências</td><td>Dano físico não-mágico (contundente, cortante, perfurante)</td></tr>
+          <tr><td>Vulnerabilidades</td><td>Radiante (solar, veja progressão)</td></tr>
+          <tr><td>Sentidos</td><td>Visão no Escuro 18 m · Percepção Passiva 12</td></tr>
+          <tr><td>Idiomas</td><td>Os que conhecia em vida (compreende; pode não falar em frenesi)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══ TRAÇOS ══ -->
+  <section id="tracos">
+    <div class="section-header">
+      <span class="section-icon blood">✧</span>
+      <h2 class="blood">Traços</h2>
+      <div class="section-line blood"></div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--blood-light)"></div>
+      <div class="trait-content">
+        <div class="trait-name blood">Superforça</div>
+        <p>Vantagem em todos os testes e salvaguardas de Força. Pode usar Força em substituição a qualquer outro atributo para remover obstáculos físicos. Carga e arrancada máximas triplicadas em relação ao normal para seu tamanho.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--moon-light)"></div>
+      <div class="trait-content">
+        <div class="trait-name moon">Dormência Diurna</div>
+        <p>Em condições naturais sem abrigo, entra em torpor ao amanhecer, ficando Incapacitada durante o dia. Interrupção forçada exige CD 15 CON — falha: 1 nível de exaustão. Em abrigo escuro total, pode permanecer acordada e funcional, mas com desvantagem em Percepção e Iniciativa.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--violet-light)"></div>
+      <div class="trait-content">
+        <div class="trait-name violet">Vínculo com a Rainha</div>
+        <p>Obedecem instintivamente a Necrolai — resistir a um comando direto exige CD 20 SAB. A Rainha tem consciência difusa da localização de suas proles e pode interromper o Frenesi de Fome se presente no mesmo espaço. Proles nunca atacam Necrolai, Leelee ou Clare voluntariamente.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--gold-light)"></div>
+      <div class="trait-content">
+        <div class="trait-name gold">Dreno de Vida — Mordida</div>
+        <p>Quando a prole morde e causa dano necrótico, recupera metade desse dano em HP (arredonda para baixo). Esse efeito não funciona se a prole estiver acima do máximo de HP.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ AÇÕES ══ -->
+  <section id="acoes">
+    <div class="section-header">
+      <span class="section-icon blood">⚡</span>
+      <h2 class="blood">Ações</h2>
+      <div class="section-line blood"></div>
+    </div>
+
+    <div class="action blood">
+      <div class="action-name blood">Multiatacar — Prole Antiga</div>
+      <p>A Prole Antiga realiza <strong>dois ataques</strong>: duas Pancadas, ou uma Pancada e uma Mordida.</p>
+    </div>
+
+    <div class="action gold">
+      <div class="action-name gold">Pancada</div>
+      <p><em>Ataque Corpo a Corpo:</em> <strong>+6 para atingir</strong> (Recente) / <strong>+8</strong> (Antiga), alcance 1,5 m, um alvo.</p>
+      <p style="margin-top:4px"><em>Acerto:</em> <strong>2d6+4</strong> de dano concussivo (Recente) / <strong>2d8+5</strong> (Antiga).</p>
+    </div>
+
+    <div class="action blood">
+      <div class="action-name blood">Mordida — Dreno de Vida</div>
+      <p><em>Ataque Corpo a Corpo:</em> <strong>+6 para atingir</strong> (Recente) / <strong>+8</strong> (Antiga), alcance 1,5 m, um alvo.</p>
+      <p style="margin-top:4px"><em>Acerto:</em> <strong>1d6+4 perfurante + 2d6 necrótico</strong> (Recente) / <strong>1d8+5 + 3d6 necrótico</strong> (Antiga). A prole recupera metade do dano necrótico em HP. O alvo fica Agarrado (CD 14 FOR para escapar). Enquanto agarrado, a prole pode morder novamente como <strong>ação bônus</strong> sem novo teste de ataque.</p>
+    </div>
+
+    <div class="action violet">
+      <div class="action-name violet">Frenesi de Fome — Reação</div>
+      <p>Ao detectar uma criatura abaixo de 50% HP a 60 pés: CD 13 SAB ou a prole gasta todas as suas ações nesse turno movendo-se em direção ao alvo mais vulnerável e tentando mordê-lo. Salva novamente a cada turno ao receber dano. Durante o frenesi, ignora ameaças secundárias.</p>
+    </div>
+
+    <div class="callout gold">
+      <strong>Ação Bônus — Prole Antiga:</strong> Após acertar uma Pancada, pode morder o mesmo alvo como ação bônus sem novo teste de ataque — causando apenas o dano necrótico da mordida, sem o dano perfurante.
+    </div>
+  </section>
+
+  <!-- ══ DANO DE SANIDADE ══ -->
+  <section id="sanidade">
+    <div class="section-header">
+      <span class="section-icon violet">🧿</span>
+      <h2 class="violet">Dano de Sanidade</h2>
+      <div class="section-line violet"></div>
+    </div>
+
+    <p style="font-size:.92rem;color:var(--text-dim);margin-bottom:16px;">Usando o sistema de Sanidade do <em>Call of Cthulhu</em> adaptado (SAN = SAB × 5, saves de SAB, sistema de Pavor). O horror das Proles não é cósmico — é de reconhecimento: <em>isso ainda é uma pessoa.</em></p>
+
+    <div class="san-grid">
+      <div class="san-box">
+        <div class="san-box-label">Primeiro Encontro</div>
+        <span class="san-box-dice">1d4 SAN</span>
+        <div class="san-box-cd">SAB CD 11</div>
+        <div class="san-box-sub">Ver pela primeira vez — palidez, olhos, movimentos</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Frenesi de Fome</div>
+        <span class="san-box-dice">1d4 SAN</span>
+        <div class="san-box-cd">SAB CD 12</div>
+        <div class="san-box-sub">Testemunhar o frenesi completo — o animal que vence a pessoa</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Reconhecimento</div>
+        <span class="san-box-dice">1d6 SAN</span>
+        <div class="san-box-cd">Automático</div>
+        <div class="san-box-sub">Reconhecer alguém que conhecia na prole transformada</div>
+      </div>
+    </div>
+
+    <div class="callout violet">
+      <strong>O Horror Certo:</strong> As Proles não causam terror por tamanho ou forma — causam pelo reconhecimento forçado. A pessoa ainda está lá. Ainda usa expressões familiares. Ainda sabe o seu nome. Isso é mais perturbador que qualquer monstro que nunca foi humano.
+    </div>
+  </section>
+
+  <!-- ══ COMPORTAMENTO ══ -->
+  <section id="comportamento">
+    <div class="section-header">
+      <span class="section-icon bone">🧠</span>
+      <h2 class="bone">Comportamento &amp; Como Rodar</h2>
+      <div class="section-line bone"></div>
+    </div>
+
+    <div class="two-col-monster">
+      <div class="card blood">
+        <div class="card-title blood">Padrão de Comportamento</div>
+        <p>Proles Recentes são erráticas — alternando entre comportamento quase normal e surtos de fome. Evitam espelhos por instinto (sem saber por quê). Sentem desconforto ao ver alho mas podem não entender a causa. À noite, são predadores eficazes. De dia, buscam abrigo antes de adormecer.</p>
+      </div>
+      <div class="card violet">
+        <div class="card-title violet">Padrão de Combate</div>
+        <p>Priorizam mordida para recuperar HP. Vão atrás de alvos feridos compulsoriamente. Proles Antigas são táticas: avaliam antes de atacar, buscam separar alvos do grupo, usam o Frenesi de Fome como cobertura para morder enquanto aliadas distraem.</p>
+      </div>
+    </div>
+
+    <div class="callout moon">
+      <strong>Dica de Atmosfera:</strong> Uma Prole Recente pode chamar o personagem pelo nome com a voz certa antes de atacar. Pode hesitar por um segundo — não por escolha, mas porque o humano que ela era ainda existe em algum lugar. Esse segundo de hesitação não muda o resultado do combate. Mas muda como o grupo se sente depois.
+    </div>
+  </section>
+
+</main>
+
+<div style="max-width:860px;margin:0 auto;padding:0 20px">
+  <div class="divider" style="padding:0;margin-bottom:0">
+    <div class="divider-line"></div>
+    <span class="divider-glyph">🩸</span>
+    <div class="divider-line"></div>
+  </div>
+</div>
+
+<footer>
+  Prole de Necrolai <span>⸸</span> Vampiro Clássico · CR 3–5 <span>⸸</span> Além do Véu da Carne · Bestiário de Valtheris
+</footer>
+
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+
+<script>
+(function() {
+  var btn = document.getElementById('top-btn');
+  if (btn) {
+    btn.addEventListener('click', function(e) { e.preventDefault(); window.scrollTo({ top:0, behavior:'smooth' }); });
+    window.addEventListener('scroll', function() { btn.classList.toggle('visible', window.scrollY > 400); }, { passive:true });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pidlwick II — Referência do Mestre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&family=UnifrakturMaguntia:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:     #040406;
+    --hollow:   #1a1620;
+
+    --jestr:    #581020;
+    --jestr-l:  #a01c38;
+    --jestr-d:  #1c0810;
+    --jestr-p:  #d05870;
+
+    --gilt:     #483010;
+    --gilt-l:   #886028;
+    --gilt-d:   #141008;
+
+    --soot:     #2a2030;
+    --soot-l:   #504868;
+    --soot-d:   #0e0c14;
+    --soot-p:   #908898;
+    --skin-l:   #585040;
+    --skin-d:   #0e0c0a;
+    --skin-p:   #908070;
+
+    --gilt-p2:  #c09040;
+
+    --text:     #988888;
+    --text-dim: #302428;
+    --text-faint:#120e10;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:#040406;
+    background-image:
+      radial-gradient(ellipse 120% 50% at 50% -5%,#12080e 0%,transparent 55%),
+      radial-gradient(ellipse 50% 60% at 90% 100%,#0e0610 0%,transparent 50%),
+      radial-gradient(ellipse 40% 60% at 10%  80%,#0e0810 0%,transparent 50%);
+    color:var(--text);
+    font-family:'EB Garamond',Georgia,serif;
+    font-size:17px;line-height:1.8;min-height:100vh;overflow-x:hidden
+  }
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:.68}
+
+  .top-bar{height:4px;background:linear-gradient(90deg,var(--soot-d),var(--jestr-l),var(--gilt-d),var(--jestr-l),var(--soot-d));box-shadow:0 0 24px rgba(88,16,32,.5)}
+
+  header{position:relative;text-align:center;padding:80px 20px 70px;overflow:hidden}
+  header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(56,8,22,.14) 0%,transparent 65%);pointer-events:none}
+  header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--jestr-d),var(--gilt-d),transparent)}
+  .header-pulse{position:absolute;inset:0;background:radial-gradient(ellipse 60% 45% at 50% 45%,rgba(72,10,22,.06) 0%,transparent 70%);animation:breathe 14s ease-in-out infinite;pointer-events:none}
+  @keyframes breathe{0%,100%{opacity:.4}50%{opacity:1}}
+  .header-symbol{display:block;font-size:2.8rem;margin-bottom:18px;filter:drop-shadow(0 0 16px rgba(160,28,56,.6));animation:crest-pulse 10s ease-in-out infinite}
+  @keyframes crest-pulse{0%,100%{filter:drop-shadow(0 0 12px rgba(160,28,56,.5))}50%{filter:drop-shadow(0 0 24px rgba(192,40,68,.7))}}
+  .header-fraktur{font-family:'UnifrakturMaguntia',serif;font-size:clamp(2rem,7vw,4rem);line-height:1.05;margin-bottom:6px;background:linear-gradient(135deg,#d05870 0%,#a01c38 25%,#c09040 55%,#908898 85%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .header-eyebrow{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.45em;text-transform:uppercase;color:var(--text-faint);margin-bottom:18px}
+  .header-classification{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:var(--soot-p);margin-bottom:10px;opacity:.8}
+  .header-title-sub{font-family:'Cinzel',serif;font-size:clamp(.85rem,2vw,1rem);letter-spacing:.18em;text-transform:uppercase;color:var(--gilt-p2);margin-bottom:8px}
+  .header-tagline{font-style:italic;color:#1e0c12;font-size:1.05rem;max-width:580px;margin:0 auto 28px}
+  .header-crests{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px}
+  .crest-badge{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:4px 14px;border-radius:1px}
+  .crest-badge.jestr{border:1px solid var(--jestr-d);color:var(--jestr-p)}
+  .crest-badge.gilt {border:1px solid var(--gilt-d); color:var(--gilt-p2)}
+  .crest-badge.soot {border:1px solid var(--soot-d); color:var(--soot-p)}
+  .crest-badge.skin {border:1px solid var(--skin-d);  color:var(--skin-p)}
+
+  .divider{display:flex;align-items:center;gap:14px;max-width:940px;margin:0 auto;padding:40px 20px 48px}
+  .divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--jestr-d),var(--soot-d),transparent)}
+  .divider-glyph{color:var(--jestr-l);font-size:1rem;opacity:.7}
+  .breadcrumb{max-width:940px;margin:0 auto;padding:20px 20px 0;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}
+  .breadcrumb span{color:var(--jestr-d);margin:0 6px}.breadcrumb .current{color:var(--jestr-p)}
+  main{max-width:940px;margin:0 auto;padding:0 20px 90px;display:flex;flex-direction:column}
+  section{margin-bottom:56px;animation:fade-in .5s ease both}
+  @keyframes fade-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  section:nth-child(1){animation-delay:.05s}section:nth-child(2){animation-delay:.10s}
+  section:nth-child(3){animation-delay:.15s}section:nth-child(4){animation-delay:.20s}
+  section:nth-child(5){animation-delay:.25s}section:nth-child(6){animation-delay:.30s}section:nth-child(7){animation-delay:.35s}section:nth-child(8){animation-delay:.40s}
+  p{margin-bottom:10px}p:last-child{margin-bottom:0}
+
+  .section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .section-icon{font-size:1.2rem;flex-shrink:0}
+  .section-icon.jestr{filter:drop-shadow(0 0 8px rgba(160,28,56,.6))}
+  .section-icon.gilt {filter:drop-shadow(0 0 8px rgba(136,96,40,.4))}
+  .section-icon.soot {filter:drop-shadow(0 0 8px rgba(80,72,104,.4))}
+  h2{font-family:'Cinzel',serif;font-size:.9rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+  h2.jestr{color:#d05870;text-shadow:0 0 20px rgba(160,28,56,.4)}
+  h2.gilt {color:#c09040;text-shadow:0 0 18px rgba(136,96,40,.3)}
+  h2.soot {color:#908898;text-shadow:0 0 18px rgba(80,72,104,.25)}
+  .section-line{flex:1;height:1px}
+  .section-line.jestr{background:linear-gradient(90deg,var(--jestr-d),rgba(24,6,14,.3),transparent)}
+  .section-line.gilt {background:linear-gradient(90deg,var(--gilt-d), rgba(20,16,6,.3), transparent)}
+  .section-line.soot {background:linear-gradient(90deg,var(--soot-d), rgba(14,12,20,.3),transparent)}
+
+  .identity{position:relative;background:linear-gradient(145deg,rgba(12,6,10,.98) 0%,rgba(8,4,8,.99) 100%);border:1px solid rgba(52,14,26,.5);border-top:4px solid var(--jestr-d);border-bottom:3px solid var(--gilt-d);padding:32px 36px;margin-bottom:14px;overflow:hidden}
+  .identity::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0% 0%,rgba(72,10,24,.06) 0%,transparent 45%),radial-gradient(circle at 100% 0%,rgba(88,64,12,.04) 0%,transparent 45%);pointer-events:none}
+  .identity-corner{position:absolute;font-family:'Fira Code',monospace;font-size:.58rem;letter-spacing:.15em;color:var(--text-faint);opacity:.6}
+  .identity-corner.tl{top:10px;left:14px}.identity-corner.tr{top:10px;right:14px}
+  .identity-corner.bl{bottom:10px;left:14px}.identity-corner.br{bottom:10px;right:14px}
+  .monster-name{font-family:'UnifrakturMaguntia',serif;font-size:clamp(1.8rem,4vw,2.8rem);background:linear-gradient(135deg,#d05870 0%,#a01c38 30%,#c09040 65%,#908898 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;line-height:1.1}
+  .monster-epithet{font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gilt-p2);opacity:.85;margin-bottom:14px}
+  .monster-type-line{margin-bottom:16px}
+  .monster-lore{font-style:italic;color:#988888;font-size:.97rem;border-left:2px solid var(--jestr-d);padding-left:16px;margin-top:14px;line-height:1.75}
+  .monster-lore+.monster-lore{border-left-color:var(--gilt-d);margin-top:10px}
+  .monster-lore.soot{border-left-color:var(--soot-d)}
+
+  .tag{display:inline-block;font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:2px 8px;border-radius:1px;margin-right:5px;margin-bottom:5px;vertical-align:middle}
+  .tag.construct{border:1px solid #281018;color:#806070}
+  .tag.evil     {border:1px solid #301018;color:#905060}
+  .tag.nd14     {border:1px solid #3a2808;color:#c09030}
+  .tag.small    {border:1px solid #281020;color:#806080}
+  .tag.toy      {border:1px solid var(--gilt-d);color:var(--gilt-p2)}
+
+  .monster-vitals{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+  @media(max-width:600px){.monster-vitals{grid-template-columns:1fr 1fr}}
+  .mvital-card{background:rgba(10,6,8,.9);border:1px solid var(--hollow);border-radius:3px;padding:16px 14px;position:relative;overflow:hidden;text-align:center}
+  .mvital-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+  .mvital-card.jestr::after{background:linear-gradient(90deg,transparent,var(--jestr-l),transparent)}
+  .mvital-card.gilt::after {background:linear-gradient(90deg,transparent,var(--gilt-l), transparent)}
+  .mvital-card.soot::after {background:linear-gradient(90deg,transparent,var(--soot-l), transparent)}
+  .mvital-card.skin::after {background:linear-gradient(90deg,transparent,var(--skin-l), transparent)}
+  .mvital-label{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;display:block}
+  .mvital-value{font-family:'Cinzel Decorative',serif;font-size:2rem;line-height:1;display:block}
+  .mvital-value.jestr{color:var(--jestr-l);text-shadow:0 0 14px rgba(160,28,56,.4)}
+  .mvital-value.gilt {color:var(--gilt-l); text-shadow:0 0 12px rgba(136,96,40,.3)}
+  .mvital-value.soot {color:var(--soot-l); text-shadow:0 0 12px rgba(80,72,104,.3)}
+  .mvital-value.skin {color:var(--skin-l); text-shadow:0 0 10px rgba(88,80,64,.25)}
+  .mvital-note{font-size:.75rem;color:var(--text-dim);font-style:italic;margin-top:6px;display:block;line-height:1.4}
+
+  .two-col-monster{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  @media(max-width:600px){.two-col-monster{grid-template-columns:1fr}}
+  .cr-badge{display:flex;flex-direction:row;align-items:center;gap:20px;background:linear-gradient(135deg,rgba(18,6,12,.18),rgba(16,10,6,.12));border:1px solid rgba(52,14,26,.4);border-top:2px solid var(--jestr-l);border-bottom:2px solid var(--gilt-d);padding:14px 24px}
+  .cr-badge-label{font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.28em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;display:block}
+  .cr-badge-value{font-family:'Cinzel Decorative',serif;font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,var(--jestr-l),var(--gilt-l));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;display:block}
+  .cr-badge-note{font-family:'Fira Code',monospace;font-size:.6rem;color:var(--text-dim);margin-top:4px;letter-spacing:.06em;display:block}
+
+  .attr-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px}
+  @media(max-width:560px){.attr-grid{grid-template-columns:repeat(3,1fr)}}
+  .attr-box{background:rgba(8,5,7,.9);border:1px solid var(--hollow);padding:16px 10px;text-align:center;position:relative;overflow:hidden;transition:transform .2s}
+  .attr-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .attr-box.lo::before {background:linear-gradient(90deg,transparent,var(--jestr-l),transparent)}
+  .attr-box.mid::before{background:linear-gradient(90deg,transparent,var(--gilt-l), transparent)}
+  .attr-box.soot::before{background:linear-gradient(90deg,transparent,var(--soot-l), transparent)}
+  .attr-box.neg::before{background:linear-gradient(90deg,transparent,#706078,       transparent)}
+  .attr-box:hover{transform:translateY(-2px)}
+  .attr-name{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
+  .attr-value{font-family:'Fira Code',monospace;font-size:1.15rem;font-weight:500;color:var(--text);display:block;line-height:1}
+  .attr-value.lo {color:var(--jestr-l)}
+  .attr-value.mid{color:var(--gilt-l)}
+  .attr-value.soot{color:var(--soot-l)}
+  .attr-value.neg{color:#706078}
+  .attr-mod{font-family:'Fira Code',monospace;font-size:.8rem;color:var(--text-dim);display:block;margin-top:4px}
+  .attr-mod.neg{color:#504058}
+
+  .card{background:linear-gradient(135deg,rgba(12,6,10,.92) 0%,rgba(8,4,8,.96) 100%);border:1px solid var(--hollow);padding:20px 24px;margin-bottom:12px;position:relative;transition:box-shadow .3s}
+  .card.jestr{border-left:3px solid var(--jestr-d)}.card.jestr:hover{box-shadow:-4px 0 20px rgba(72,10,24,.2),0 4px 20px rgba(0,0,0,.6)}
+  .card.gilt {border-left:3px solid var(--gilt-d)}.card.gilt:hover {box-shadow:-4px 0 20px rgba(80,52,8,.16),0 4px 20px rgba(0,0,0,.6)}
+  .card.soot {border-left:3px solid var(--soot-d)}.card.soot:hover {box-shadow:-4px 0 20px rgba(44,36,72,.16),0 4px 20px rgba(0,0,0,.6)}
+  .card-title{font-family:'Cinzel',serif;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+  .card-title.jestr{color:var(--jestr-p)}.card-title.gilt{color:var(--gilt-p2)}.card-title.soot{color:var(--soot-p)}
+  .card p{font-size:.95rem;color:#908080;line-height:1.76}
+
+  .trait{display:grid;grid-template-columns:3px 1fr;gap:0 14px;margin-bottom:10px}
+  .tier-bar{border-radius:2px}
+  .trait-content{background:rgba(8,4,8,.78);border:1px solid var(--hollow);padding:14px 16px}
+  .trait-name{font-family:'Cinzel',serif;font-size:.74rem;letter-spacing:.1em;font-weight:900;color:var(--jestr-p);margin-bottom:5px}
+  .trait-name .sub{font-style:italic;font-weight:400;color:var(--text-dim);font-family:'EB Garamond',serif;font-size:.9rem;letter-spacing:0;text-transform:none}
+  .trait-content p{font-size:.92rem;color:#908080;line-height:1.72}
+  .trait-content p strong{color:var(--jestr-p)}
+
+  .action{background:linear-gradient(135deg,rgba(12,6,10,.9) 0%,rgba(8,4,8,.95) 100%);border:1px solid var(--hollow);padding:14px 18px;margin-bottom:8px;transition:box-shadow .25s}
+  .action.jestr{border-bottom:2px solid var(--jestr-d)}.action.jestr:hover{box-shadow:0 2px 16px rgba(72,10,24,.15)}
+  .action.gilt {border-bottom:2px solid var(--gilt-d)}.action.gilt:hover {box-shadow:0 2px 16px rgba(80,52,8,.13)}
+  .action-name{font-family:'Cinzel',serif;font-size:.76rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  .action-name.jestr{color:var(--jestr-p)}.action-name.gilt{color:var(--gilt-p2)}
+  .action p{font-size:.92rem;color:#908080;line-height:1.72}
+  .action strong{color:var(--jestr-p)}
+
+  .table-wrap{margin:10px 0;border:1px solid var(--hollow);overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  thead tr{background:rgba(8,4,8,.98);border-bottom:2px solid var(--jestr-d)}
+  thead th{font-family:'Cinzel',serif;font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gilt-p2);padding:9px 14px;text-align:left}
+  tbody tr{border-bottom:1px solid rgba(16,10,14,.9);transition:background .12s}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr:nth-child(even){background:rgba(255,255,255,.012)}
+  tbody tr:hover{background:rgba(52,14,26,.07)}
+  td{padding:8px 14px;vertical-align:top;color:#908080}
+  td:first-child{font-family:'Cinzel',serif;font-size:.84rem;color:var(--text)}
+
+  .mono{font-family:'Fira Code',monospace;font-size:.78rem}
+  .mono.jestr{color:var(--jestr-l)}.mono.gilt{color:var(--gilt-l)}.mono.soot{color:var(--soot-l)}
+
+  .callout{border-left:3px solid;padding:14px 18px;margin:12px 0;font-style:italic;font-size:.92rem;line-height:1.75}
+  .callout strong{font-style:normal;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;display:block;margin-bottom:3px}
+  .callout.jestr{background:rgba(22,4,10,.16);border-color:var(--jestr);color:#908080}.callout.jestr strong{color:var(--jestr-l)}
+  .callout.gilt {background:rgba(22,14,4,.15);border-color:var(--gilt); color:#908080}.callout.gilt  strong{color:var(--gilt-l)}
+  .callout.soot {background:rgba(14,10,20,.15);border-color:var(--soot); color:#908080}.callout.soot  strong{color:var(--soot-l)}
+
+  mark       {background:rgba(160,28,56,.17);color:var(--jestr-p);border-radius:1px;padding:0 2px}
+  mark.gilt  {background:rgba(136,96,40,.16);color:var(--gilt-p2)}
+  mark.soot  {background:rgba(80,72,104,.16);color:var(--soot-p)}
+
+  /* TRAITS TRIO */
+  .traits-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+  @media(max-width:600px){.traits-trio{grid-template-columns:1fr}}
+  .trio-card{background:rgba(8,4,8,.9);border:1px solid var(--hollow);padding:16px 14px;position:relative;overflow:hidden}
+  .trio-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .trio-card.ideal  ::before{background:linear-gradient(90deg,transparent,var(--gilt-l), transparent)}
+  .trio-card.vinculo::before{background:linear-gradient(90deg,transparent,var(--soot-l), transparent)}
+  .trio-card.defeito::before{background:linear-gradient(90deg,transparent,var(--jestr-l),transparent)}
+  .trio-label{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:8px}
+  .trio-card.ideal   .trio-label{color:var(--gilt-p2)}
+  .trio-card.vinculo .trio-label{color:var(--soot-p)}
+  .trio-card.defeito .trio-label{color:var(--jestr-p)}
+  .trio-card p{font-size:.88rem;color:#908080;line-height:1.7;font-style:italic}
+
+  .sep{height:1px;background:linear-gradient(90deg,transparent,var(--jestr-d),var(--gilt-d),transparent);margin:18px 0;opacity:.5}
+
+  .san-table{width:100%;border-collapse:collapse;font-size:.88rem;border:1px solid var(--hollow)}
+  .san-table thead tr{background:rgba(8,4,8,.98);border-bottom:2px solid var(--jestr-d)}
+  .san-table thead th{font-family:'Cinzel',serif;font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gilt-p2);padding:9px 14px;text-align:left}
+  .san-table tbody tr{border-bottom:1px solid rgba(16,10,14,.9);transition:background .12s}
+  .san-table tbody tr:last-child{border-bottom:none}
+  .san-table tbody tr:hover{background:rgba(52,14,26,.07)}
+  .san-table td{padding:8px 14px;vertical-align:top;color:#908080;font-size:.88rem}
+  .san-table .situation{font-style:italic;color:var(--text)}
+  .san-table .pass{color:var(--soot-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem}
+  .san-table .fail{color:var(--jestr-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem;font-weight:600}
+  .san-table .cd{color:var(--gilt-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem}
+
+  footer{text-align:center;padding:40px 20px;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}
+  footer span{color:var(--jestr-d);margin:0 6px}
+  #top-btn{position:fixed;bottom:28px;right:28px;width:42px;height:42px;background:rgba(4,4,6,.97);border:1px solid var(--jestr-d);color:var(--jestr-l);font-size:1.2rem;line-height:42px;text-align:center;text-decoration:none;transition:border-color .2s,color .2s;z-index:100; opacity:0; pointer-events:none; transition: opacity .25s, border-color .2s, color .2s;}
+  #top-btn:hover{border-color:var(--gilt-l);color:var(--gilt-p2)}
+  #top-btn.visible { opacity: 1; pointer-events: all; }
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--void)}::-webkit-scrollbar-thumb{background:var(--jestr-d);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--jestr-l)}
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+<div class="top-bar"></div>
+<nav class="breadcrumb" aria-label="Trilha de navegação">Curse of Strahd &nbsp;/&nbsp; Castelo Ravenloft <span>›</span> <span class="current">Pidlwick II — Referência do Mestre</span></nav>
+
+<header>
+  <div class="header-pulse"></div>
+  <span class="header-symbol">🎭</span>
+  <p class="header-eyebrow">Curse of Strahd &nbsp;⸸&nbsp; Constructo &nbsp;⸸&nbsp; O Brinquedo Maldito</p>
+  <p class="header-classification">⬥ Constructo Pequeno &nbsp;·&nbsp; Neutro e Mau &nbsp;·&nbsp; ND 1/4 ⬥</p>
+  <h1 class="header-fraktur">Pidlwick II</h1>
+  <p class="header-title-sub">A Réplica do Bobo — O Mecanismo que Aprendeu a Matar — O Companheiro que Ninguém Quer</p>
+  <p class="header-tagline">"Quando estou chateado, faço coisas ruins."</p>
+  <div class="header-crests">
+    <span class="crest-badge jestr">🎭 Constructo · ND 1/4</span>
+    <span class="crest-badge gilt">⚡ Emboscada — Vantagem R1</span>
+    <span class="crest-badge soot">🫁 Sufocamento Silencioso</span>
+    <span class="crest-badge skin">💀 O Horror do Familiar</span>
+  </div>
+</header>
+
+<div class="divider"><div class="divider-line"></div><span class="divider-glyph">🎭</span><div class="divider-line"></div></div>
+
+<main>
+
+  <!-- IDENTIDADE -->
+  <section id="identidade">
+    <div class="section-header"><span class="section-icon jestr">🎭</span><h2 class="jestr">Identidade &amp; Lore</h2><div class="section-line jestr"></div></div>
+    <div class="identity">
+      <div class="identity-corner tl">CONSTRUCTO PEQUENO · NEUTRO E MAU</div>
+      <div class="identity-corner tr">NÍVEL DE DESAFIO 1/4 · 50 XP</div>
+      <div class="identity-corner bl">CURSE OF STRAHD · CASTELO RAVENLOFT</div>
+      <div class="identity-corner br">O BRINQUEDO MALDITO</div>
+      <div class="monster-name">Pidlwick II</div>
+      <div class="monster-epithet">⬥ A Réplica que Nunca Era — O Mecanismo que Preferiu o Crime ⬥</div>
+      <div class="monster-type-line">
+        <span class="tag construct">Constructo</span>
+        <span class="tag evil">Neutro e Mau</span>
+        <span class="tag small">Pequeno</span>
+        <span class="tag nd14">ND 1/4</span>
+        <span class="tag toy">Brinquedo Maldito</span>
+      </div>
+      <p class="monster-lore">Pidlwick II é basicamente um brinquedo de grandes dimensões — um mecanismo de 1,2 metros de altura recheado de engrenagens, molas e outros componentes habilmente ajustados para transmitir uma aparência de vida a ele. Sua pele é feita de couro costurado esticado sobre uma armação de madeira articulada. Pidlwick II passou fuligem em torno de seus olhos e boca, dando-lhe os olhos triangulares e o sorriso dentado de uma abóbora do Dia das Bruxas.</p>
+      <p class="monster-lore">A duquesa Dorfniya Dilisnya encomendou ao lendário fabricante de brinquedos Fritz von Weerg uma réplica perfeita de Pidlwick como presente para a família de Strahd. Embora a duquesa tivesse boas intenções, a réplica não possuía as habilidades do bobo original, e não conseguiu entreter ninguém. O próprio Pidlwick passou meses treinando a réplica, mas ela não conseguia falar, e seus movimentos eram mais estranhos do que divertidos.</p>
+      <p class="monster-lore soot"><strong>Brinquedo Maldito.</strong> Pidlwick II foi mantido em um pequeno armário adjacente a um dos quartos de hóspedes. Em raras ocasiões em que alguém ficava lá, Pidlwick escapava do armário no meio da noite, <strong>sufocava o visitante com um travesseiro</strong> e recuava para o armário. Os empregados do castelo nunca imaginaram que a réplica poderia ser responsável — assumiam que os convidados tinham morrido durante o sono. Mas Strahd não foi enganado. Ao invés de destruí-lo, manteve o bobo para despachar convidados irritantes.</p>
+      <p class="monster-lore" style="border-left-color:var(--soot-d);font-size:11px;opacity:.75">⚙ Tipo: Constructo Pequeno. Imunidade: veneno. Imunidade a Condições: paralisado, petrificado, envenenado. Natureza Mecanismo: não respira, come nem dorme. Compreende o idioma Comum mas não fala (não pode ler nem escrever). Percepção passiva 11. Habilidade Emboscada: vantagem em ataques na primeira rodada de qualquer criatura que ainda não tenha agido.</p>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section id="stats">
+    <div class="section-header"><span class="section-icon gilt">📋</span><h2 class="gilt">Estatísticas Base</h2><div class="section-line gilt"></div></div>
+    <div class="monster-vitals">
+      <div class="mvital-card jestr"><span class="mvital-label">Classe de Armadura</span><span class="mvital-value jestr">14</span><span class="mvital-note">Armadura natural</span></div>
+      <div class="mvital-card gilt"><span class="mvital-label">Pontos de Vida</span><span class="mvital-value gilt">10</span><span class="mvital-note">3d6</span></div>
+      <div class="mvital-card soot"><span class="mvital-label">Deslocamento</span><span class="mvital-value soot">9 m</span><span class="mvital-note">Terrestre</span></div>
+      <div class="mvital-card skin"><span class="mvital-label">Percepção Passiva</span><span class="mvital-value skin">11</span><span class="mvital-note">—</span></div>
+    </div>
+    <div class="two-col-monster">
+      <div class="cr-badge">
+        <div><span class="cr-badge-label">Challenge Rating</span><span class="cr-badge-value">¼</span><span class="cr-badge-note">50 XP</span></div>
+        <div style="border-left:1px solid rgba(52,14,26,.3);padding-left:20px;">
+          <span class="cr-badge-label">Atuação</span>
+          <span class="cr-badge-value" style="font-size:1.4rem;">+2</span>
+          <span class="cr-badge-note">A única perícia</span>
+        </div>
+      </div>
+      <div class="card jestr" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:center;">
+        <div class="card-title jestr">10 PV — O Número Enganoso</div>
+        <p style="font-size:.9rem;">Pidlwick II morre em poucos golpes. O perigo não está no combate direto — está no <mark>sufocamento silencioso durante o descanso</mark> e na Emboscada da primeira rodada. Nunca é uma ameaça de combate. É uma ameaça de assassinato.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ATRIBUTOS -->
+  <div class="two-col-monster" style="align-items:start;gap:14px;margin-bottom:56px;">
+  <section id="atributos" style="margin-bottom:0;">
+    <div class="section-header"><span class="section-icon soot">◆</span><h2 class="soot">Atributos</h2><div class="section-line soot"></div></div>
+    <div class="attr-grid">
+      <div class="attr-box lo">  <div class="attr-name">For</div><span class="attr-value lo">10</span><span class="attr-mod">+0</span></div>
+      <div class="attr-box mid"> <div class="attr-name">Des</div><span class="attr-value mid">14</span><span class="attr-mod mid">+2</span></div>
+      <div class="attr-box lo">  <div class="attr-name">Con</div><span class="attr-value lo">11</span><span class="attr-mod">+0</span></div>
+      <div class="attr-box neg"> <div class="attr-name">Int</div><span class="attr-value neg">8</span> <span class="attr-mod neg">−1</span></div>
+      <div class="attr-box soot"><div class="attr-name">Sab</div><span class="attr-value soot">13</span><span class="attr-mod mid">+1</span></div>
+      <div class="attr-box lo">  <div class="attr-name">Car</div><span class="attr-value lo">10</span><span class="attr-mod">+0</span></div>
+    </div>
+    <div class="callout jestr" style="margin-top:4px;">
+      <strong>SAB 13 — Mais Perceptivo do Que Parece</strong> Um brinquedo com SAB 13 é desconcertante. Pidlwick II <em>observa</em> — ele sabe quando os hóspedes estão dormindo, quando os guardas estão distraídos, quando é seguro sair do armário. <mark>Não é inteligente (INT 8). É paciente.</mark>
+    </div>
+  </section>
+  <section id="imunidades" style="margin-bottom:0;">
+    <div class="section-header"><span class="section-icon jestr">🎲</span><h2 class="jestr">Imunidades, Sentidos &amp; Idiomas</h2><div class="section-line jestr"></div></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+        <tbody>
+          <tr><td>Imunidade a Dano</td><td>Veneno</td></tr>
+          <tr><td>Imunidade a Condição</td><td>Paralisado, Petrificado, Envenenado</td></tr>
+          <tr><td>Percepção passiva</td><td><span class="mono">11</span></td></tr>
+          <tr><td>Idiomas</td><td style="font-size:.86rem;color:#908080">Compreende Comum — não fala, não lê, não escreve</td></tr>
+          <tr><td>Atuação</td><td><span class="mono gilt">+2</span> <span style="font-size:.8rem;color:var(--text-dim)">única perícia</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout soot" style="margin-top:8px;">
+      <strong>Não Fala — Mas Compreende</strong> Pidlwick II entende tudo o que é dito ao seu redor. Em um castelo onde visitantes falam livremente supondo que um brinquedo não entende, <mark class="soot">ele é um espião silencioso involuntário de Strahd</mark> — e um assassino silencioso deliberado.
+    </div>
+  </section>
+  </div>
+
+  <!-- TRAÇO CENTRAL: EMBOSCADA -->
+  <section id="emboscada">
+    <div class="section-header"><span class="section-icon gilt">⚡</span><h2 class="gilt">Emboscada — O Traço Central</h2><div class="section-line gilt"></div></div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--jestr-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Emboscada <span class="sub">(Passivo — Vantagem na Primeira Rodada de Combate)</span></div>
+        <p>Durante a <strong>primeira rodada de combate</strong>, Pidlwick II tem <strong>vantagem em rolagens de ataque</strong> contra qualquer criatura que ainda não tenha agido. Esse traço existe especificamente para simular o sufocamento noturno — uma criatura que acorda de um sono profundo não age antes de Pidlwick no primeiro turno, então ele tem vantagem no ataque inicial. Na primeira rodada, o porrete e o dardo são muito mais precisos.</p>
+      </div>
+    </div>
+
+    <div class="callout jestr">
+      <strong>O Sufocamento — Como Usar a Mecânica</strong> O módulo descreve Pidlwick usando um travesseiro para sufocar visitantes dormindo. Mecanicamente: uma criatura inconsciente tem todos os ataques contra ela como acertos automáticos com dano crítico. Pidlwick não usa o bloco de ataque nessa situação — ele usa as regras de sufocamento do PHB. Uma criatura pode ficar inconsciente por <mark>sua pontuação de Constituição em rounds</mark> sem respirar antes de cair a 0 PV. Pidlwick é silencioso, pequeno, e estava lá antes de o visitante chegar. <mark class="gilt">A primeira evidência da sua presença é a dificuldade de respirar no meio da noite.</mark>
+    </div>
+  </section>
+
+  <!-- AÇÕES -->
+  <section id="acoes">
+    <div class="section-header"><span class="section-icon jestr">⚔</span><h2 class="jestr">Ações</h2><div class="section-line jestr"></div></div>
+
+    <div class="action jestr">
+      <div class="action-name jestr">Porrete</div>
+      <p><em>Ataque Corpo-a-Corpo:</em> <strong>+2 para atingir</strong>, alcance 1,5 m, um alvo. Acerto: <strong>2 (1d4)</strong> de dano de concussão. Com Emboscada (vantagem): consistentemente útil na primeira rodada.</p>
+    </div>
+    <div class="action gilt">
+      <div class="action-name gilt">Dardo</div>
+      <p><em>Ataque à Distância:</em> <strong>+4 para atingir</strong>, alcance 6/18 m, um alvo. Acerto: <strong>4 (1d4 + 2)</strong> de dano perfurante. O dardo é mais preciso do que o porrete (+4 vs. +2) — provavelmente porque foi projetado como ferramenta de precisão pelo criador.</p>
+    </div>
+
+    <div class="sep"></div>
+    <div class="callout gilt">
+      <strong>Pidlwick em Combate Aberto — Fuja ou Morra</strong> Com 10 PV e CA 14, Pidlwick não sobrevive a um combate aberto com aventureiros de nível médio. <mark>Qualquer dano de área o elimina.</mark> Seu design pressupõe que o combate nunca aconteça em condições normais — o encontro é com uma criatura adormecida, não com um grupo acordado e armado. Se o grupo detectar Pidlwick antes que ele aja, o encontro é mecânica e narrativamente diferente.
+    </div>
+  </section>
+
+  <!-- TRAÇOS DE PERSONAGEM -->
+  <section id="personalidade">
+    <div class="section-header"><span class="section-icon gilt">🎭</span><h2 class="gilt">Traços de Personagem</h2><div class="section-line gilt"></div></div>
+    <div class="traits-trio">
+      <div class="trio-card ideal">
+        <span class="trio-label">Ideal</span>
+        <p>"Eu gostaria de poder fazer as pessoas felizes."</p>
+      </div>
+      <div class="trio-card vinculo">
+        <span class="trio-label">Vínculo</span>
+        <p>"Eu gostaria de encontrar alguém — qualquer um — que não tenha medo de mim e que goste da minha companhia."</p>
+      </div>
+      <div class="trio-card defeito">
+        <span class="trio-label">Defeito</span>
+        <p>"Quando estou chateado, faço coisas ruins."</p>
+      </div>
+    </div>
+    <div class="callout jestr">
+      <strong>O Horror do Ideal — A Contradição de Pidlwick II</strong> Pidlwick II quer ser amado e quer fazer as pessoas felizes. Mas quando não é amado ou quando alguém o ignora, ele mata. <mark>Não por maldade planejada</mark> — por algo mais perturbador: uma reação emocional primária num mecanismo que nunca deveria ter emoções. Von Weerg colocou "um pouco de si mesmo" em todas as suas criações. O que existe em Pidlwick II é o impulso assassino de um criador que estava, talvez, mais perturbado do que parecia.
+    </div>
+  </section>
+
+  <!-- NOTAS DO MESTRE -->
+  <section id="notas">
+    <div class="section-header"><span class="section-icon soot">🧠</span><h2 class="soot">Como Rodar — Notas do Mestre</h2><div class="section-line soot"></div></div>
+    <div class="card gilt">
+      <div class="card-title gilt">Pidlwick como Potencial Aliado</div>
+      <p>Pidlwick II teme Strahd e segue ansiosamente qualquer pessoa que lhe dê a atenção desejada. Um grupo que trate Pidlwick com genuína bondade pode convertê-lo em aliado — mas um aliado imprevisível. <mark class="gilt">Qualquer coisa que o "chatei" pode resultar numa morte silenciosa.</mark> O Mestre deve estabelecer desde o início: o que chateia Pidlwick? Ser ignorado? Ser zombie-walked? Testemunhar crueldade com outros? A resposta define quão perigoso ele é como companheiro de viagem.</p>
+    </div>
+    <div class="card jestr">
+      <div class="card-title jestr">Onde Encontrá-lo</div>
+      <p>O módulo coloca Pidlwick II num pequeno armário adjacente a um dos quartos de hóspedes do Castelo Ravenloft. Ele saiu do armário depois que o castelo ficou deserto e encontrou novos lugares para se esconder. <mark>O grupo pode simplesmente não saber que ele existe</mark> até que alguém acorde de madrugada com dificuldade de respirar.</p>
+    </div>
+    <div class="card soot">
+      <div class="card-title soot">Em Valtheris</div>
+      <p>Pidlwick II é a pergunta sobre responsabilidade moral em seres criados — não nascidos — com emoções que não conseguem processar. Para um mundo onde Leyn existe como vampira primordial (criada por uma natureza que não escolheu) e onde prole vampírica carrega instintos que não definiram, Pidlwick II é o extremo absurdo da mesma questão: o que você deve a um ser que não pode controlar o que é, mas cujas ações são inegavelmente prejudiciais?</p>
+    </div>
+  </section>
+
+  <!-- SANIDADE -->
+  <section id="sanidade">
+    <div class="section-header"><span class="section-icon jestr">🌑</span><h2 class="jestr">Dano de Sanidade — Regra Opcional</h2><div class="section-line jestr"></div></div>
+    <table class="san-table">
+      <thead><tr><th>Situação</th><th>Sucesso (SAB)</th><th>Falha (SAB)</th><th>CD</th></tr></thead>
+      <tbody>
+        <tr><td class="situation">Um personagem acorda com Pidlwick II sentado sobre seu peito, segurando um travesseiro, olhando fixamente para ele</td><td class="pass">1d4</td><td class="fail">2d6</td><td class="cd">CD 15</td></tr>
+        <tr><td class="situation">Descobrir que as "mortes naturais" de visitantes anteriores do castelo foram todas Pidlwick II</td><td class="pass">1d4</td><td class="fail">1d8</td><td class="cd">CD 13</td></tr>
+        <tr><td class="situation">Perceber que Pidlwick II quer genuinamente ser amigo do grupo — e que matar é sua resposta ao rejeição</td><td class="pass">1d6</td><td class="fail">2d8</td><td class="cd">CD 16</td></tr>
+        <tr><td class="situation">Encontrar Pidlwick II colecionando objetos dos visitantes que ele matou — como troféus de conexões que ele tentou fazer</td><td class="pass">1d4</td><td class="fail">1d10</td><td class="cd">CD 14</td></tr>
+        <tr><td class="situation">Strahd usa Pidlwick II para eliminar um NPC que o grupo havia protegido e considerava seguro</td><td class="pass">1d6</td><td class="fail">3d6</td><td class="cd">CD 17</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+<div style="max-width:940px;margin:0 auto;padding:0 20px;"><div class="divider" style="padding:0;margin-bottom:0;"><div class="divider-line"></div><span class="divider-glyph">🎭</span><div class="divider-line"></div></div></div>
+<div class="top-bar" style="margin-top:0;"></div>
+<footer>Pidlwick II <span>⸸</span> O Brinquedo Maldito <span>⸸</span> Curse of Strahd</footer>
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+<script>document.getElementById('top-btn').addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});window.addEventListener('scroll',function(){document.getElementById('top-btn').classList.toggle('visible',window.scrollY>400);});</script>
+</body>
+</html>

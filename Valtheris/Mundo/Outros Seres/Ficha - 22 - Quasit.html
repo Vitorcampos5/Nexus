@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quasit — Apêndice D · Valtheris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:          #050407;
+    --hollow:        #181420;
+
+    --chaos:         #6a0a40;
+    --chaos-light:   #a01860;
+    --chaos-bright:  #c82878;
+    --chaos-dim:     #220814;
+    --chaos-pale:    #e07098;
+
+    --venom:         #285030;
+    --venom-light:   #408048;
+    --venom-dim:     #0a1810;
+    --venom-pale:    #70c088;
+
+    --shadow:        #2a2038;
+    --shadow-light:  #483858;
+    --shadow-dim:    #0c0814;
+    --shadow-pale:   #7868a0;
+
+    --bile-light:    #708040;
+    --bile-dim:      #181a08;
+
+    --text:          #807080;
+    --text-dim:      #302030;
+    --text-faint:    #100c14;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--void);
+    background-image:
+      radial-gradient(ellipse 120% 50% at 50% -5%, #100616 0%, transparent 55%),
+      radial-gradient(ellipse 50%  60% at 90% 100%, #080408 0%, transparent 50%),
+      radial-gradient(ellipse 40%  60% at 10%  80%, #0a0810 0%, transparent 50%);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 17px; line-height: 1.8;
+    min-height: 100vh; overflow-x: hidden;
+  }
+
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"); pointer-events: none; z-index: 999; opacity: .65; }
+
+  .top-bar { height: 4px; background: linear-gradient(90deg, var(--chaos-dim), var(--chaos-light), var(--venom-light), var(--chaos-light), var(--chaos-dim)); box-shadow: 0 0 30px rgba(160,24,96,.5); }
+
+  header { position: relative; text-align: center; padding: 80px 20px 70px; overflow: hidden; }
+  header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(106,10,64,.12) 0%, transparent 65%), radial-gradient(ellipse 40% 30% at 50% 60%, rgba(40,30,56,.08) 0%, transparent 70%); pointer-events: none; }
+  .header-pulse { position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--chaos-dim), var(--shadow-dim), var(--chaos-dim), transparent); }
+  .header-symbol { display: block; font-size: 2.2rem; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(160,24,96,.6)); }
+  .header-eyebrow { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .45em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 18px; }
+  .header-classification { font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .25em; text-transform: uppercase; color: var(--chaos-pale); margin-bottom: 10px; opacity: .8; }
+  .header-title-sub { font-family: 'Cinzel', serif; font-size: clamp(.85rem, 2vw, 1rem); letter-spacing: .18em; text-transform: uppercase; color: var(--shadow-pale); margin-bottom: 8px; }
+  .header-fraktur { font-family: 'Cinzel Decorative', serif; font-size: clamp(2rem, 6vw, 3.6rem); font-weight: 900; line-height: 1.1; margin-bottom: 16px; background: linear-gradient(135deg, var(--chaos-light) 0%, var(--shadow-light) 40%, var(--chaos-pale) 70%, var(--venom-light) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .header-tagline { font-family: 'EB Garamond', serif; font-style: italic; font-size: clamp(.9rem, 2.2vw, 1.08rem); color: #302030; letter-spacing: .06em; margin-top: 8px; }
+  .header-crests { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 24px; }
+  .crest-badge { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; padding: 5px 14px; border-radius: 1px; }
+  .crest-badge.chaos  { border: 1px solid var(--chaos-dim);  color: var(--chaos-light);  background: rgba(22,4,14,.4); }
+  .crest-badge.venom  { border: 1px solid var(--venom-dim);  color: var(--venom-light);  background: rgba(8,16,10,.4); }
+  .crest-badge.shadow { border: 1px solid var(--shadow-dim); color: var(--shadow-light); background: rgba(10,8,16,.3); }
+  .crest-badge.bile   { border: 1px solid var(--bile-dim);   color: var(--bile-light);   background: rgba(16,16,6,.3); }
+
+  .divider { display: flex; align-items: center; gap: 14px; padding: 0 20px; max-width: 860px; margin: 0 auto 24px; }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--chaos-dim), var(--shadow-dim), transparent); }
+  .divider-glyph { font-family: 'Cinzel', serif; font-size: .7rem; color: var(--chaos-dim); }
+
+  main { max-width: 860px; margin: 0 auto; padding: 0 20px 90px; display: flex; flex-direction: column; gap: 0; position: relative; z-index: 1; }
+
+  section { margin-bottom: 56px; animation: fade-in .5s ease both; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  section:nth-child(1)  { animation-delay: .05s; }
+  section:nth-child(2)  { animation-delay: .12s; }
+  section:nth-child(3)  { animation-delay: .18s; }
+  section:nth-child(4)  { animation-delay: .24s; }
+  section:nth-child(5)  { animation-delay: .30s; }
+  section:nth-child(6)  { animation-delay: .36s; }
+  section:nth-child(7)  { animation-delay: .42s; }
+  section:nth-child(8)  { animation-delay: .48s; }
+
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .section-icon { font-size: 1.1rem; }
+  .section-icon.chaos  { filter: drop-shadow(0 0 8px rgba(160,24,96,.7)); }
+  .section-icon.venom  { filter: drop-shadow(0 0 8px rgba(64,128,72,.5)); }
+  .section-icon.shadow { filter: drop-shadow(0 0 8px rgba(72,56,88,.5)); }
+  .section-icon.bile   { filter: drop-shadow(0 0 8px rgba(112,128,64,.4)); }
+  h2 { font-family: 'Cinzel', serif; font-size: .9rem; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; }
+  h2.chaos  { color: var(--chaos-light);  text-shadow: 0 0 18px rgba(160,24,96,.45); }
+  h2.venom  { color: var(--venom-light);  text-shadow: 0 0 18px rgba(64,128,72,.3); }
+  h2.shadow { color: var(--shadow-light); text-shadow: 0 0 18px rgba(72,56,88,.3); }
+  h2.bile   { color: var(--bile-light);   text-shadow: 0 0 18px rgba(112,128,64,.25); }
+  .section-line { flex: 1; height: 1px; }
+  .section-line.chaos  { background: linear-gradient(90deg, var(--chaos-dim),  rgba(56,6,32,.3),  transparent); }
+  .section-line.venom  { background: linear-gradient(90deg, var(--venom-dim),  rgba(18,36,18,.3), transparent); }
+  .section-line.shadow { background: linear-gradient(90deg, var(--shadow-dim), rgba(22,16,30,.3), transparent); }
+  .section-line.bile   { background: linear-gradient(90deg, var(--bile-dim),   rgba(28,28,10,.3), transparent); }
+
+  .identity { position: relative; background: rgba(6,4,9,.92); border: 1px solid rgba(72,10,44,.3); padding: 44px 32px 36px; text-align: center; margin-bottom: 28px; }
+  .identity::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--chaos-dim), var(--shadow-dim), transparent); }
+  .identity::after  { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--venom-dim), transparent); }
+  .identity-corner { position: absolute; font-family: 'Cinzel', serif; font-size: .48rem; letter-spacing: .22em; text-transform: uppercase; color: var(--chaos-dim); }
+  .identity-corner.tl { top: 10px; left: 14px; }
+  .identity-corner.tr { top: 10px; right: 14px; }
+  .identity-corner.bl { bottom: 10px; left: 14px; }
+  .identity-corner.br { bottom: 10px; right: 14px; }
+  .monster-name { font-family: 'Cinzel Decorative', serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 900; line-height: 1.1; margin-bottom: 10px; background: linear-gradient(135deg, var(--chaos-light), var(--shadow-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .monster-epithet { font-family: 'EB Garamond', serif; font-style: italic; font-size: 1rem; color: var(--chaos-dim); letter-spacing: .06em; margin-bottom: 16px; }
+  .monster-type-line { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 20px; }
+  .monster-lore { font-style: italic; color: #807080; font-size: .97rem; border-left: 2px solid var(--chaos-dim); padding-left: 16px; margin-top: 14px; line-height: 1.75; text-align: left; }
+  .monster-lore + .monster-lore { border-left-color: var(--shadow-dim); margin-top: 10px; }
+
+  .tag { display: inline-block; font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .18em; text-transform: uppercase; padding: 2px 8px; border-radius: 1px; margin-right: 4px; margin-bottom: 4px; vertical-align: middle; }
+  .tag.dnd      { border: 1px solid #503808; color: #c09030; }
+  .tag.lore     { border: 1px solid #40061e; color: var(--chaos-pale); }
+  .tag.hb       { border: 1px solid #1a3020; color: #508060; }
+  .tag.tiny     { border: 1px solid #1a1022; color: var(--shadow-light); }
+  .tag.cr-qtr   { border: 1px solid #200a14; color: var(--chaos-light); }
+  .tag.fiend    { border: 1px solid #380618; color: var(--chaos-bright); }
+  .tag.familiar { border: 1px solid #181026; color: var(--shadow-pale); }
+  .tag.chaos    { border: 1px solid #1a0e20; color: var(--shadow-light); }
+  .tag-a { font-family: 'Fira Code', monospace; font-size: .6rem; padding: 1px 7px; margin-left: 6px; border-radius: 1px; vertical-align: middle; }
+  .tag-a.chaos  { border: 1px solid var(--chaos-dim);  color: var(--chaos-pale); }
+  .tag-a.shadow { border: 1px solid var(--shadow-dim); color: var(--shadow-pale); }
+
+  .monster-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  @media (max-width: 600px) { .monster-vitals { grid-template-columns: 1fr 1fr; } }
+  .mvital-card { background: rgba(6,4,9,.88); border: 1px solid rgba(56,8,34,.3); border-radius: 3px; padding: 16px 14px; position: relative; overflow: hidden; text-align: center; }
+  .mvital-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+  .mvital-card.chaos::after  { background: linear-gradient(90deg, transparent, var(--chaos-light),  transparent); }
+  .mvital-card.venom::after  { background: linear-gradient(90deg, transparent, var(--venom-light),  transparent); }
+  .mvital-card.shadow::after { background: linear-gradient(90deg, transparent, var(--shadow-light), transparent); }
+  .mvital-card.bile::after   { background: linear-gradient(90deg, transparent, var(--bile-light),   transparent); }
+  .mvital-label { font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+  .mvital-value { font-family: 'Cinzel Decorative', serif; font-size: 2rem; line-height: 1; display: block; }
+  .mvital-value.chaos  { color: var(--chaos-light);  text-shadow: 0 0 20px rgba(160,24,96,.5); }
+  .mvital-value.venom  { color: var(--venom-light);  text-shadow: 0 0 16px rgba(64,128,72,.4); }
+  .mvital-value.shadow { color: var(--shadow-light); text-shadow: 0 0 16px rgba(72,56,88,.4); }
+  .mvital-value.bile   { color: var(--bile-light);   text-shadow: 0 0 14px rgba(112,128,64,.3); }
+  .mvital-note { font-size: .75rem; color: var(--text-dim); font-style: italic; margin-top: 6px; display: block; line-height: 1.4; }
+
+  .two-col-monster { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 600px) { .two-col-monster { grid-template-columns: 1fr; } }
+  .cr-badge { display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(32,6,20,.16), rgba(18,14,28,.12)); border: 1px solid rgba(72,10,44,.3); border-top: 2px solid var(--chaos-light); border-bottom: 2px solid var(--shadow-dim); padding: 14px 24px; text-align: center; }
+  .cr-badge-label { font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .28em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; display: block; }
+  .cr-badge-value { font-family: 'Cinzel Decorative', serif; font-size: 2.2rem; font-weight: 900; background: linear-gradient(135deg, var(--chaos-light), var(--shadow-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1; display: block; }
+  .cr-badge-note { font-family: 'Fira Code', monospace; font-size: .6rem; color: var(--text-dim); margin-top: 4px; letter-spacing: .06em; display: block; }
+
+  .card { background: rgba(6,4,9,.90); border: 1px solid var(--hollow); padding: 20px 24px; margin-bottom: 10px; position: relative; overflow: hidden; }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .card.chaos::before  { background: linear-gradient(90deg, transparent, var(--chaos-dim),  transparent); }
+  .card.venom::before  { background: linear-gradient(90deg, transparent, var(--venom-dim),  transparent); }
+  .card.shadow::before { background: linear-gradient(90deg, transparent, var(--shadow-dim), transparent); }
+  .card-title { font-family: 'Cinzel', serif; font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 10px; }
+  .card-title.chaos  { color: var(--chaos-pale); }
+  .card-title.venom  { color: var(--venom-pale); }
+  .card-title.shadow { color: var(--shadow-pale); }
+  .card p { font-size: .94rem; color: #706070; line-height: 1.75; }
+  .card strong { color: var(--shadow-pale); }
+
+  .trait { display: grid; grid-template-columns: 3px 1fr; gap: 0 14px; margin-bottom: 10px; }
+  .tier-bar { border-radius: 2px; }
+  .trait-content { background: rgba(6,4,9,.78); border: 1px solid var(--hollow); padding: 14px 16px; }
+  .trait-name { font-family: 'Cinzel', serif; font-size: .74rem; letter-spacing: .1em; font-weight: 900; color: var(--chaos-pale); margin-bottom: 5px; }
+  .trait-name .sub { font-style: italic; font-weight: 400; color: var(--text-dim); font-family: 'EB Garamond', serif; font-size: .9rem; letter-spacing: 0; text-transform: none; }
+  .trait-content p { font-size: .92rem; color: #706070; line-height: 1.72; }
+  .trait-content p strong { color: var(--shadow-pale); }
+
+  .action { background: rgba(6,4,9,.88); border: 1px solid var(--hollow); padding: 14px 18px; margin-bottom: 8px; transition: border-bottom-color .2s; }
+  .action.chaos  { border-bottom: 2px solid var(--chaos-dim); }
+  .action.chaos:hover  { border-bottom-color: var(--chaos-light); }
+  .action.venom  { border-bottom: 2px solid var(--venom-dim); }
+  .action.venom:hover  { border-bottom-color: var(--venom-light); }
+  .action.shadow { border-bottom: 2px solid var(--shadow-dim); }
+  .action.shadow:hover { border-bottom-color: var(--shadow-light); }
+  .action-name { font-family: 'Cinzel', serif; font-size: .76rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+  .action-name.chaos  { color: var(--chaos-light); }
+  .action-name.venom  { color: var(--venom-pale); }
+  .action-name.shadow { color: var(--shadow-pale); }
+  .action p { font-size: .92rem; color: #706070; line-height: 1.72; }
+  .action strong { color: var(--shadow-pale); }
+
+  .attr-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 14px; }
+  @media (max-width: 500px) { .attr-grid { grid-template-columns: repeat(3, 1fr); } }
+  .attr-box { background: rgba(5,4,8,.92); border: 1px solid var(--hollow); padding: 16px 10px; text-align: center; position: relative; overflow: hidden; }
+  .attr-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; }
+  .attr-box.max::before  { background: linear-gradient(90deg, transparent, var(--chaos-light),  transparent); }
+  .attr-box.high::before { background: linear-gradient(90deg, transparent, var(--shadow-light), transparent); }
+  .attr-box.mid::before  { background: linear-gradient(90deg, transparent, var(--venom-light),  transparent); }
+  .attr-box.low::before  { background: linear-gradient(90deg, transparent, #c05050,             transparent); }
+  .attr-name { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+  .attr-value { display: block; font-family: 'Fira Code', monospace; font-size: 1.4rem; font-weight: 500; line-height: 1; color: var(--text); }
+  .attr-value.max  { color: var(--chaos-light); }
+  .attr-value.high { color: var(--shadow-light); }
+  .attr-value.mid  { color: var(--venom-light); }
+  .attr-value.low  { color: #c05050; }
+  .attr-mod { display: block; font-family: 'Cinzel', serif; font-size: .62rem; margin-top: 4px; color: var(--text-dim); }
+  .attr-mod.max  { color: var(--chaos-dim); }
+  .attr-mod.high { color: var(--shadow-dim); }
+  .attr-mod.mid  { color: var(--venom-dim); }
+  .attr-mod.neg  { color: #803030; }
+
+  .sep { height: 1px; background: linear-gradient(90deg, transparent, var(--chaos-dim), var(--shadow-dim), transparent); margin: 18px 0; opacity: .5; }
+
+  .table-wrap { margin: 12px 0; border: 1px solid var(--hollow); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  thead tr { background: rgba(6,4,9,.98); border-bottom: 2px solid var(--chaos-dim); }
+  thead th { font-family: 'Cinzel', serif; font-size: .64rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--chaos-pale); padding: 9px 14px; text-align: left; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid rgba(18,12,20,.9); transition: background .12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:nth-child(even) { background: rgba(255,255,255,.012); }
+  tbody tr:hover { background: rgba(106,10,64,.07); }
+  td { padding: 8px 14px; vertical-align: top; color: #706070; }
+  td:first-child { font-family: 'Cinzel', serif; font-size: .84rem; color: var(--text); white-space: nowrap; }
+  .mono        { font-family: 'Fira Code', monospace; font-size: .78rem; color: var(--chaos-pale); }
+  .mono.chaos  { color: var(--chaos-light); }
+  .mono.venom  { color: var(--venom-light); }
+  .mono.shadow { color: var(--shadow-light); }
+
+  .callout { border-left: 3px solid; padding: 14px 18px; margin: 12px 0; font-style: italic; font-size: .92rem; line-height: 1.75; }
+  .callout strong { font-style: normal; font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .1em; display: block; margin-bottom: 3px; }
+  .callout.tip   { background: rgba(24,4,14,.15); border-color: var(--chaos);  color: #706070; }
+  .callout.tip strong   { color: var(--chaos-light); }
+  .callout.venom { background: rgba(8,22,12,.15); border-color: var(--venom);  color: #607060; }
+  .callout.venom strong { color: var(--venom-light); }
+  .callout.shadow{ background: rgba(16,12,24,.14);border-color: var(--shadow); color: #606070; }
+  .callout.shadow strong{ color: var(--shadow-light); }
+
+  mark        { background: rgba(160,24,96,.18); color: var(--chaos-pale);  border-radius: 1px; padding: 0 2px; }
+  mark.venom  { background: rgba(64,128,72,.15);  color: var(--venom-pale); }
+  mark.shadow { background: rgba(72,56,88,.15);   color: var(--shadow-pale);}
+
+  .hl        { color: var(--chaos-light);  font-weight: 600; }
+  .hl-chaos  { color: var(--chaos-light);  font-weight: 600; }
+  .hl-venom  { color: var(--venom-light);  font-weight: 600; }
+  .hl-shadow { color: var(--shadow-light); font-weight: 600; }
+  .hl-red    { color: #c05050; font-weight: 600; }
+
+  .recharge      { font-family: 'Fira Code', monospace; font-size: .62rem; border: 1px solid var(--chaos-dim); color: var(--chaos-light); padding: 1px 7px; margin-left: 8px; vertical-align: middle; }
+  .recharge.rare { border-color: var(--shadow-dim); color: var(--shadow-light); }
+  .cost-badge    { font-family: 'Fira Code', monospace; font-size: .6rem; padding: 1px 7px; margin-left: 6px; border: 1px solid var(--venom-dim); color: var(--venom-pale); vertical-align: middle; }
+
+  /* ══ IMUNIDADES ══ */
+  .imun-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .imun-tag { font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .12em; text-transform: uppercase; padding: 3px 10px; border-radius: 1px; }
+  .imun-tag.chaos  { border: 1px solid var(--chaos-dim);  color: var(--chaos-pale); }
+  .imun-tag.venom  { border: 1px solid var(--venom-dim);  color: var(--venom-pale); }
+  .imun-tag.shadow { border: 1px solid var(--shadow-dim); color: var(--shadow-pale); }
+
+  /* ══ SHAPE GRID ══ */
+  .shape-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+  @media (max-width: 560px) { .shape-grid { grid-template-columns: 1fr; } }
+  .shape-card { background: rgba(6,4,9,.82); border: 1px solid var(--hollow); padding: 12px 16px; text-align: center; position: relative; }
+  .shape-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--chaos-dim), transparent); }
+  .shape-emoji { font-size: 1.6rem; display: block; margin-bottom: 6px; filter: drop-shadow(0 0 8px rgba(160,24,96,.4)); }
+  .shape-name { font-family: 'Cinzel', serif; font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--shadow-pale); margin-bottom: 4px; }
+  .shape-note { font-size: .82rem; color: #605060; line-height: 1.5; font-style: italic; }
+
+  /* ══ QUASIT vs DIABRETE ══ */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  @media (max-width: 560px) { .compare-grid { grid-template-columns: 1fr; } }
+  .compare-card { background: rgba(6,4,9,.85); border: 1px solid var(--hollow); padding: 16px 18px; }
+  .compare-label { font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid; display: flex; align-items: center; gap: 6px; }
+  .compare-label.quasit   { color: var(--chaos-pale);  border-bottom-color: var(--chaos-dim); }
+  .compare-label.diabrete { color: var(--shadow-pale); border-bottom-color: var(--shadow-dim); }
+  .compare-card p { font-size: .88rem; color: #706070; line-height: 1.7; }
+  .compare-card strong { color: var(--text); }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--void); }
+  ::-webkit-scrollbar-thumb { background: var(--chaos-dim); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--chaos-light); }
+
+  .breadcrumb { max-width: 860px; margin: 0 auto; padding: 20px 20px 0; font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+  .breadcrumb span { color: var(--chaos-dim); margin: 0 6px; }
+  .breadcrumb .current { color: var(--chaos-light); }
+  footer { text-align: center; padding: 40px 20px; font-family: 'Cinzel', serif; font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+  footer span { color: var(--chaos-dim); margin: 0 6px; }
+  #top-btn { position: fixed; bottom: 28px; right: 28px; width: 42px; height: 42px; background: rgba(6,4,9,.95); border: 1px solid var(--chaos-dim); color: var(--chaos-light); font-size: 1.2rem; line-height: 42px; text-align: center; text-decoration: none; opacity: 0; pointer-events: none;
+    transition: border-color .2s, color .2s, opacity .3s; z-index: 100; }
+  #top-btn.visible { opacity: 1; pointer-events: auto; }
+  #top-btn:hover { border-color: var(--venom-light); color: var(--venom-light); }
+  #atributos, #perfil { margin-bottom: 0; }
+  .monster-lore.mec-note { border-left-color: var(--shadow-dim); font-size: 11px; opacity: .75; font-style: italic; }
+  .card.flex-center { display: flex; flex-direction: column; justify-content: center; margin-bottom: 0; }
+  .text-sm { font-size: .9rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    section { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+<nav class="breadcrumb" aria-label="Caminho de navegação">Valtheris &nbsp;/&nbsp; Apêndice D <span>›</span> <span class="current">22 — Quasit</span></nav>
+
+<header>
+  <div class="header-pulse"></div>
+  <span class="header-symbol">👹</span>
+  <p class="header-eyebrow">Apêndice D &nbsp;⬥&nbsp; 22 / 31 &nbsp;⬥&nbsp; Além do Véu da Carne</p>
+  <p class="header-classification">⬥ Demônio Minúsculo · Caótico e Mau ⬥</p>
+  <h1 class="header-fraktur">Quasit</h1>
+  <p class="header-title-sub">Familiar Infernal — Caos Encarnado</p>
+  <p class="header-tagline">"O Diabrete serve por contrato. O Quasit serve por prazer."</p>
+  <div class="header-crests">
+    <span class="crest-badge chaos">👹 Demônio · Caótico e Mau</span>
+    <span class="crest-badge venom">☠ Veneno — CD 10</span>
+    <span class="crest-badge shadow">🎭 3 Formas Alternativas</span>
+    <span class="crest-badge bile">ND 1 · 200 XP</span>
+  </div>
+</header>
+
+<div class="divider"><div class="divider-line"></div><span class="divider-glyph">⬥</span><div class="divider-line"></div></div>
+
+<main>
+
+<!-- ══ IDENTIDADE ══ -->
+<section id="identidade">
+  <div class="section-header">
+    <span class="section-icon chaos">👹</span>
+    <h2 class="chaos">Identidade</h2>
+    <div class="section-line chaos"></div>
+  </div>
+  <div class="identity">
+    <div class="identity-corner tl">DEMÔNIO MINÚSCULO · CAÓTICO E MAU</div>
+    <div class="identity-corner tr">NÍVEL DE DESAFIO 1 · 200 XP</div>
+    <div class="identity-corner bl">APÊNDICE D · 22 / 31</div>
+    <div class="identity-corner br">FICHA · BESTIÁRIO</div>
+    <div class="monster-name">Quasit</div>
+    <div class="monster-epithet">⬥ Familiar Infernal — Caos Encarnado ⬥</div>
+    <div class="monster-type-line">
+      <span class="tag dnd">D&D 5e</span>
+      <span class="tag fiend">Demônio</span>
+      <span class="tag lore">Caótico e Mau</span>
+      <span class="tag tiny">Minúsculo</span>
+      <span class="tag cr-qtr">ND 1</span>
+      <span class="tag familiar">Familiar Infernal</span>
+      <span class="tag chaos">Metamorfo</span>
+    </div>
+    <p class="monster-lore">O Quasit é o espelho demoníaco do Diabrete — onde o Diabrete é um Diabo (Leal e Mau, planejador, contratual), o Quasit é um Demônio (<strong>Caótico e Mau</strong>, impulsivo, instintivo). Ambos são familiares infernais, mas com filosofias radicalmente diferentes. O Quasit não serve por contrato — serve por lealdade ao caos, por desejo de causar dano, por afinidade com conjuradores que compartilham sua natureza.</p>
+    <p class="monster-lore">Mecanicamente, o Quasit tem ND 1 — o mesmo do Diabrete — com três formas alternativas (Morcego, Sapo, Centopeia), Invisibilidade à Vontade, Resistência à Magia, e Imunidade a Veneno e Relâmpago. Seu Arranhão causa Veneno (CD 10 de CON) que impõe desvantagem em ataques e testes de habilidade — uma condição debilitante significativa para o tamanho da criatura.</p>
+    <p class="monster-lore mec-note">
+      ⚙ Nota Mecânica — Tipo: Demônio (Fiend) Minúsculo. Como familiar, o Quasit é exclusivo de conjuradores que o vinculam voluntariamente — frequentemente Feiticeiros de origem demoníaca ou Bruxos com Patrono caótico. Imune a Veneno e Relâmpago; Resistência a dano físico não-mágico e não-prateado; Resistência à Magia. Invisibilidade persiste até atacar ou lançar magia. INT 7 — mais instintivo que o Diabrete (INT 11), menos capaz de raciocínio complexo.
+    </p>
+  </div>
+</section>
+
+<!-- ══ ESTATÍSTICAS BASE ══ -->
+<section id="stats">
+  <div class="section-header">
+    <span class="section-icon venom">⚔</span>
+    <h2 class="venom">Estatísticas Base</h2>
+    <div class="section-line venom"></div>
+  </div>
+  <div class="monster-vitals">
+    <div class="mvital-card shadow">
+      <span class="mvital-label">Classe de Armadura</span>
+      <span class="mvital-value shadow">13</span>
+      <span class="mvital-note">Iniciativa +3 · Armadura Natural</span>
+    </div>
+    <div class="mvital-card chaos">
+      <span class="mvital-label">Pontos de Vida</span>
+      <span class="mvital-value chaos">7</span>
+      <span class="mvital-note">3d4</span>
+    </div>
+    <div class="mvital-card venom">
+      <span class="mvital-label">Deslocamento</span>
+      <span class="mvital-value venom">6 m</span>
+      <span class="mvital-note">Voo 12 m (forma de morcego)</span>
+    </div>
+    <div class="mvital-card bile">
+      <span class="mvital-label">Visão no Escuro</span>
+      <span class="mvital-value bile">24 m</span>
+      <span class="mvital-note">Percepção Passiva 10</span>
+    </div>
+  </div>
+  <div class="two-col-monster">
+    <div class="cr-badge" style="flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;padding:16px 24px;">
+      <div>
+        <span class="cr-badge-label">Challenge Rating</span>
+        <span class="cr-badge-value">1</span>
+        <span class="cr-badge-note">200 XP</span>
+      </div>
+      <div style="border-left:1px solid rgba(72,10,44,.3);padding-left:20px;">
+        <span class="cr-badge-label">Proficiência</span>
+        <span class="cr-badge-value" style="font-size:1.6rem;">+2</span>
+        <span class="cr-badge-note">CR 1</span>
+      </div>
+    </div>
+    <div class="card chaos flex-center">
+      <div class="card-title chaos">Escala de Ameaça</div>
+      <p class="text-sm">ND 1 com PV apenas 7 — extremamente frágil. O valor está na <span class="hl-venom">invisibilidade permanente + Resistência à Magia + Veneno debilitante</span>. Como adversário, incomoda; como aliado, silencia e debilita.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ATRIBUTOS + PERFIL (two-col) ══ -->
+<div class="two-col-monster" style="align-items:start;gap:14px;margin-bottom:56px;">
+<section id="atributos">
+  <div class="section-header">
+    <span class="section-icon shadow">◆</span>
+    <h2 class="shadow">Atributos</h2>
+    <div class="section-line shadow"></div>
+  </div>
+  <div class="attr-grid">
+    <div class="attr-box low"><div class="attr-name">For</div><span class="attr-value low">5</span><span class="attr-mod neg">−3</span></div>
+    <div class="attr-box max"><div class="attr-name">Des</div><span class="attr-value max">17</span><span class="attr-mod max">+3</span></div>
+    <div class="attr-box mid"><div class="attr-name">Con</div><span class="attr-value mid">10</span><span class="attr-mod mid">+0</span></div>
+    <div class="attr-box low"><div class="attr-name">Int</div><span class="attr-value low">7</span><span class="attr-mod neg">−2</span></div>
+    <div class="attr-box high"><div class="attr-name">Sab</div><span class="attr-value high">10</span><span class="attr-mod high">+0</span></div>
+    <div class="attr-box high"><div class="attr-name">Car</div><span class="attr-value high">10</span><span class="attr-mod high">+0</span></div>
+  </div>
+  <div class="callout tip">
+    <strong>Nota sobre os Atributos</strong> DEX 17 (+3) — o mais alto entre os familiares infernais — justifica CA 13, Furtividade alta, e Iniciativa +3. INT 7 vs INT 11 do Diabrete: o Quasit age mais por instinto, menos por cálculo. CON 10 resulta em PV apenas 7 (3d4) — criatíssimo frágil, mas Resistência à Magia compensa em sobrevivência contra conjuradores inimigos.
+  </div>
+</section>
+<section id="perfil">
+  <div class="section-header">
+    <span class="section-icon bile">🎲</span>
+    <h2 class="bile">Resistências, Sentidos &amp; Idiomas</h2>
+    <div class="section-line bile"></div>
+  </div>
+  <div class="card shadow" style="margin-bottom:8px;">
+    <div class="card-title shadow">Resistências &amp; Imunidades</div>
+    <div class="imun-grid">
+      <span class="imun-tag venom">Imune: Veneno</span>
+      <span class="imun-tag chaos">Imune: Relâmpago</span>
+      <span class="imun-tag shadow">Imune: Envenenado</span>
+      <span class="imun-tag shadow">Resist.: Frio · Fogo · Trovão</span>
+      <span class="imun-tag venom">Resist.: Físico não-mágico/prata</span>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+      <tbody>
+        <tr><td>Furtividade</td><td><span class="mono chaos">+5</span></td></tr>
+        <tr><td>Visão no Escuro</td><td><span class="mono bile">24 m</span></td></tr>
+        <tr><td>Percepção Passiva</td><td><span class="mono">10</span></td></tr>
+        <tr><td>Idiomas</td><td>Abissal · Comum</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+</div>
+
+<!-- ══ TRAÇOS ══ -->
+<section id="tracos">
+  <div class="section-header">
+    <span class="section-icon chaos">✧</span>
+    <h2 class="chaos">Traços Especiais</h2>
+    <div class="section-line chaos"></div>
+  </div>
+  <div class="trait">
+    <div class="tier-bar" style="background:linear-gradient(180deg,var(--shadow-light),var(--shadow-dim));"></div>
+    <div class="trait-content">
+      <div class="trait-name">Resistência à Magia <span class="sub">(Passivo)</span></div>
+      <p>Vantagem em testes de resistência contra magias e outros efeitos mágicos. Idêntica ao Diabrete — o Quasit é tão resistente à magia quanto seu primo infernal. Como familiar, <strong>não compartilha</strong> essa resistência com o conjurador (diferente do Pseudodragão).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ AÇÕES ══ -->
+<section id="acoes">
+  <div class="section-header">
+    <span class="section-icon venom">⚔</span>
+    <h2 class="venom">Ações</h2>
+    <div class="section-line venom"></div>
+  </div>
+  <div class="action chaos">
+    <div class="action-name chaos">Arranhão <span class="recharge.rare" style="font-family:'Fira Code',monospace;font-size:.62rem;border:1px solid var(--venom-dim);color:var(--venom-light);padding:1px 7px;margin-left:8px;vertical-align:middle;">Venenoso</span></div>
+    <p><em>Ataque Corpo-a-Corpo com Arma:</em> <strong>+4 para atingir</strong>, alcance 1,5 m, uma criatura. Acerto: <strong>5 (1d4 + 3)</strong> de dano perfurante e a criatura deve ser bem-sucedida num <strong>Teste de Resistência de Constituição CD 10</strong> ou ficar <strong>Envenenada</strong> por 1 minuto. A criatura pode repetir o teste de resistência no fim de cada um dos seus turnos, encerrando o efeito em si mesma em caso de sucesso.</p>
+  </div>
+  <div class="action shadow">
+    <div class="action-name shadow">Invisibilidade <span class="recharge rare">Magia · Concentração</span></div>
+    <p>O quasit lança magicamente a magia <em>Invisibilidade</em> sobre si mesmo. A magia termina se o quasit atacar ou lançar uma magia.</p>
+  </div>
+  <div class="sep"></div>
+  <div class="callout venom">
+    <strong>Envenenado — A Condição Debilitante</strong> Uma criatura Envenenada tem <mark class="venom">desvantagem em testes de ataque e testes de habilidade</mark>. CD 10 é baixíssima — mas para criaturas com CON negativa, há chance real de falha e refalha. Um NPC com CON 8 (−1) que falhe no teste inicial tem 45% de chance de falhar de novo no próximo turno. O Quasit pode manter múltiplas criaturas envenenadas com ataques em turnos consecutivos.
+  </div>
+</section>
+
+<!-- ══ FORMAS ALTERNATIVAS ══ -->
+<section id="formas">
+  <div class="section-header">
+    <span class="section-icon shadow">🎭</span>
+    <h2 class="shadow">Formas Alternativas</h2>
+    <div class="section-line shadow"></div>
+  </div>
+  <div class="shape-grid">
+    <div class="shape-card">
+      <span class="shape-emoji">🦇</span>
+      <div class="shape-name">Morcego</div>
+      <div class="shape-note">Voo 12 m. Ecolocalização. Mantém INT, SAB, CAR e todas as habilidades.</div>
+    </div>
+    <div class="shape-card">
+      <span class="shape-emoji">🐸</span>
+      <div class="shape-name">Sapo (Centopeia)</div>
+      <div class="shape-note">Deslocamento 6 m. Escalada 6 m. Passa por gretas e rachaduras mínimas.</div>
+    </div>
+    <div class="shape-card">
+      <span class="shape-emoji">🦎</span>
+      <div class="shape-name">Centopeia (Lagarto)</div>
+      <div class="shape-note">Deslocamento 6 m. Escalada 6 m. Passa por brechas, tetos, dutos.</div>
+    </div>
+  </div>
+  <div class="callout shadow">
+    <strong>Formas mantêm estatísticas base</strong> Em qualquer forma, o Quasit mantém DEX 17, todas as resistências e imunidades, Resistência à Magia, e Invisibilidade. Diferente do Diabrete, o Quasit tem <mark class="shadow">três formas</mark> vs as mesmas três do Diabrete — mas o Quasit também pode ser uma Centopeia, que passa por espaços ainda menores que um Rato.
+  </div>
+</section>
+
+<!-- ══ QUASIT vs DIABRETE ══ -->
+<section id="comparativo">
+  <div class="section-header">
+    <span class="section-icon bile">⚖</span>
+    <h2 class="bile">Quasit vs. Diabrete — Familiares Infernais</h2>
+    <div class="section-line bile"></div>
+  </div>
+  <div class="compare-grid">
+    <div class="compare-card">
+      <div class="compare-label quasit">👹 Quasit (22)</div>
+      <p>Demônio · <strong>Caótico e Mau</strong><br>INT <strong>7</strong> · CAR <strong>10</strong> · DEX <strong>17</strong><br>PV <strong>7</strong> · Visão no Escuro <strong>24 m</strong><br>Arranhão Venenoso (CD 10) · Invisibilidade<br>Imune: Veneno + Relâmpago<br>Formas: Morcego / Sapo / Centopeia<br><em>Resistência NÃO compartilhada</em></p>
+    </div>
+    <div class="compare-card">
+      <div class="compare-label diabrete">😈 Diabrete (09)</div>
+      <p>Diabo · <strong>Leal e Mau</strong><br>INT <strong>11</strong> · CAR <strong>14</strong> · DEX <strong>17</strong><br>PV <strong>10</strong> · Visão da Trevas Diabólica<br>Ferrão Venenoso (CD 11) · Invisibilidade<br>Imune: Fogo + Veneno<br>Formas: Rato / Corvo / Aranha<br><em>Enganação +4 · Persuasão +4</em></p>
+    </div>
+  </div>
+  <div class="card chaos">
+    <div class="card-title chaos">Quando Escolher o Quasit</div>
+    <p>O Diabrete é superior em inteligência, carisma, e utilidade social (Enganação +4). O Quasit é superior em <mark>resistências elementais</mark> (imune a Relâmpago, resiste a Fogo/Frio/Trovão vs imune a Fogo do Diabrete) e <mark class="venom">visão no escuro mais longa</mark> (24 m vs 36 m da Visão da Trevas — mas o Quasit perde em escuridão mágica). O Quasit serve melhor personagens caóticos, enquanto o Diabrete é a escolha racional para planejamento de longo prazo.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>Valtheris <span>›</span> Apêndice D <span>›</span> <span style="color:var(--chaos-dim);">22 — Quasit</span></footer>
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+<script>
+(function() {
+  const btn = document.getElementById('top-btn');
+  btn.addEventListener('click', function(e) {
+    e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  window.addEventListener('scroll', function() {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grimório de NPCs — Valtheris</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Georgia, 'Times New Roman', serif;
+  background: #1a1208;
+  color: #d4b896;
+  -webkit-text-size-adjust: 100%;
+}
+
+.page {
+  min-height: 100vh;
+  padding: 20px 16px 40px;
+  max-width: 680px;
+  margin: 0 auto;
+  background: transparent;
+}
+
+.header {
+  text-align: center;
+  padding: 20px 0 16px;
+  border-bottom: 1px solid #4a3520;
+  margin-bottom: 16px;
+}
+
+.header h1 {
+  font-size: 22px;
+  font-weight: normal;
+  color: #e8c97a;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 20px rgba(232,201,122,0.3);
+}
+
+.header p {
+  font-size: 12px;
+  color: #7a6040;
+  letter-spacing: 0.15em;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+.search-wrap {
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.search-wrap input {
+  width: 100%;
+  padding: 9px 14px;
+  border-radius: 4px;
+  border: 1px solid #4a3520;
+  background: #0f0b05;
+  color: #d4b896;
+  font-family: Georgia, serif;
+  font-size: 14px;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.search-wrap input::placeholder { color: #4a3520; }
+.search-wrap input:focus { border-color: #8a6030; }
+
+.search-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #4a3520;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 4px;
+  line-height: 1;
+  display: none;
+}
+.search-clear:hover { color: #d4b896; }
+
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.filter-btn {
+  padding: 4px 11px;
+  border-radius: 3px;
+  border: 1px solid #4a3520;
+  background: transparent;
+  color: #7a6040;
+  font-family: Georgia, serif;
+  font-size: 12px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s;
+}
+.filter-btn:hover { border-color: #8a6030; color: #d4b896; }
+.filter-btn.active { border-color: #e8c97a; color: #e8c97a; background: rgba(232,201,122,0.08); }
+.filter-btn.urgent-btn { border-color: rgba(180,60,20,0.4); color: #e07050; }
+.filter-btn.urgent-btn.active { border-color: #e07050; background: rgba(180,60,20,0.12); }
+
+.count {
+  font-size: 11px;
+  color: #4a3520;
+  margin-bottom: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.card {
+  border: 1px solid #3a2a14;
+  border-radius: 3px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  background: #120d06;
+  position: relative;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  border-radius: 3px 0 0 3px;
+}
+
+.card.cat-aliado::before   { background: #1D9E75; }
+.card.cat-inimigo::before  { background: #993C1D; }
+.card.cat-morto::before    { background: #444441; }
+.card.cat-entidade::before { background: #534AB7; }
+.card.cat-familia::before  { background: #993556; }
+.card.cat-outro::before    { background: #854F0B; }
+.card.b-warn-stripe::before { background: #B07010; }
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.card-name {
+  font-size: 15px;
+  color: #e8c97a;
+  font-weight: normal;
+  letter-spacing: 0.03em;
+}
+
+.card-sess {
+  font-size: 11px;
+  color: #4a3520;
+  margin-top: 2px;
+  font-family: Georgia, serif;
+  letter-spacing: 0.08em;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-size: 11px;
+  font-family: Georgia, serif;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+  border: 1px solid;
+}
+
+.b-aliado   { background: rgba(29,158,117,0.12);  color: #5DCAA5; border-color: rgba(29,158,117,0.3); }
+.b-inimigo  { background: rgba(153,60,29,0.15);   color: #F0997B; border-color: rgba(153,60,29,0.4); }
+.b-morto    { background: rgba(68,68,65,0.2);     color: #888780; border-color: rgba(68,68,65,0.4); }
+.b-entidade { background: rgba(83,74,183,0.15);   color: #AFA9EC; border-color: rgba(83,74,183,0.4); }
+.b-familia  { background: rgba(153,53,86,0.15);   color: #ED93B1; border-color: rgba(153,53,86,0.4); }
+.b-outro    { background: rgba(133,79,11,0.15);   color: #EF9F27; border-color: rgba(133,79,11,0.4); }
+.b-warn     { background: rgba(160,100,10,0.18);  color: #F0C060; border-color: rgba(180,120,20,0.5); }
+
+.card-desc {
+  font-size: 12px;
+  color: #8a7055;
+  line-height: 1.6;
+  margin-top: 5px;
+  word-break: break-word;
+  font-family: Georgia, serif;
+}
+
+/* ── Important NPCs: subtle gold distinction ── */
+.card.card-important {
+  border-color: #3d2e14;
+  background: #140f07;
+}
+.card.card-important::before {
+  width: 4px;
+  box-shadow: 0 0 8px rgba(232,201,122,0.18);
+}
+.card.card-important .card-name {
+  font-size: 16px;
+  text-shadow: 0 0 12px rgba(232,201,122,0.2);
+}
+.important-crown {
+  font-size: 9px;
+  color: #6a4e20;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid #2a1e0e;
+}
+
+.hp-bar {
+  font-size: 11px;
+  font-family: Georgia, serif;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.ac-val {
+  font-size: 11px;
+  font-family: Georgia, serif;
+  color: #AFA9EC;
+  letter-spacing: 0.04em;
+}
+
+.meta-sep {
+  color: #3a2a14;
+  font-size: 11px;
+}
+
+.links-row {
+  font-size: 11px;
+  color: #5a4530;
+  font-family: Georgia, serif;
+  flex: 1;
+  min-width: 0;
+}
+
+.links-row a {
+  color: #8a6a3a;
+  text-decoration: none;
+  cursor: pointer;
+  border-bottom: 1px dotted #4a3520;
+}
+
+.links-row a:hover {
+  color: #e8c97a;
+  border-color: #8a6030;
+}
+
+.urgent-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-family: Georgia, serif;
+  letter-spacing: 0.06em;
+  background: rgba(180,60,20,0.15);
+  color: #e07050;
+  border: 1px solid rgba(180,60,20,0.35);
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.urgent-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #e07050;
+  animation: blink 1.8s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
+}
+
+.divider {
+  text-align: center;
+  color: #3a2a14;
+  font-size: 14px;
+  letter-spacing: 0.3em;
+  margin: 4px 0 12px;
+}
+
+.desc-section {
+  margin-top: 8px;
+}
+.desc-label {
+  display: block;
+  font-size: 10px;
+  color: #7a5828;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+  font-family: Georgia, serif;
+  border-bottom: 1px solid #2a1e0e;
+  padding-bottom: 2px;
+}
+.desc-content {
+  font-size: 12px;
+  color: #8a7055;
+  line-height: 1.6;
+  font-family: Georgia, serif;
+  margin-top: 3px;
+}
+.desc-plain {
+  font-size: 12px;
+  color: #8a7055;
+  line-height: 1.6;
+  font-family: Georgia, serif;
+}
+
+.no-results {
+  text-align: center;
+  color: #4a3520;
+  font-size: 13px;
+  padding: 32px 0;
+  letter-spacing: 0.06em;
+}
+
+.header-runes {
+  font-size: 20px;
+  color: #3a2a14;
+  letter-spacing: 0.4em;
+  margin-bottom: 8px;
+}
+
+/* ── ACESSIBILIDADE: MOVIMENTO REDUZIDO ─────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+</style>
+</head>
+<body>
+<!-- avisa o mapa do Nexus (se estiver por perto) que esta página foi visitada -->
+<script>try{ if (window.top !== window) window.top.postMessage({ tipo:'nexus-visita', id:'valtheris_npcs' }, '*'); }catch(e){}</script>
+<div class="page">
+  <div class="header">
+    <div class="header-runes">&#10022; &#10022; &#10022;</div>
+    <h1>Registro dos Conhecidos</h1>
+    <p>Arquivos da Campanha</p>
+  </div>
+
+  <div class="divider">&#10022; &#10022; &#10022;</div>
+
+  <main>
+  <div class="search-wrap">
+    <input type="text" id="search" placeholder="Buscar nos registros..." oninput="onSearch()" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button class="search-clear" id="clearBtn" onclick="clearSearch()">&#215;</button>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" id="filter-todos" onclick="setFilter('todos',this)">Todos</button>
+    <button class="filter-btn" onclick="setFilter('aliado',this)">Aliados</button>
+    <button class="filter-btn" onclick="setFilter('inimigo',this)">Inimigos</button>
+    <button class="filter-btn" onclick="setFilter('morto',this)">Mortos</button>
+    <button class="filter-btn" onclick="setFilter('entidade',this)">Entidades</button>
+    <button class="filter-btn" onclick="setFilter('familia',this)">Fam&#237;lia</button>
+    <button class="filter-btn" onclick="setFilter('outro',this)">Outros</button>
+    <button class="filter-btn urgent-btn" onclick="setFilter('urgent',this)">&#9679; Urgente</button>
+  </div>
+
+  <div class="count" id="count"></div>
+  <div id="cards"></div>
+  </main>
+</div>
+
+<script>
+function esc(s) {
+  if (!s) return "";
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+var data = [
+  { name: "Leyn Sepet", status: "Família — Vila Sepet", badge: "b-familia", cat: "familia", important: true, sess: "S1–21", desc: "§Introdução§Último guerreiro adulto do clã Sepet. Primordial de linhagem com mais de cinco mil anos. Filho de uma família que ensinava equilíbrio antes da lâmina: o pai o fez treinar na beira da lareira para aprender que força sem controle é queda; a mãe tecia mantos de viagem com bênçãos em cada fio. Era o filho que cedia o lugar à janela para ser exemplo — o que não sabia é que ser exemplo significaria sobreviver quando todos os outros morreram. Na noite do massacre não escapou: foi capturado e mantido nas câmaras mais profundas da Fortaleza com correntes de prata alquímica por cem anos.§Acontecimentos§Cem anos aprisionado na Fortaleza do Culto. Ao despertar, controlou a fome com força de vontade antes de agir. Usou as próprias correntes como arma improvisada. Chegou à beira da morte permanente na primeira hora — salvo pela Multibraços que reconheceu que ele \'liberta, não escraviza.\' Primeira fala após um século: \'Você não deveria buscar esse tipo de poder, humano podre.\' No Salão dos Abominados: capturado por armadilha ritual de Seraphine. Tocar Seraphine transferiu corrupção de Algo Antigo — a mancha ainda não cicatrizou completamente. Rugido Primordial ao ser libertado — saiu por falha na resistência à dor, alertou toda a fortaleza. Deslize verbal: \'Vamos, meus serv... digo... guardas\' — Cicatriz ouviu e registrou. Estocada de Uma Polegada: máxima potência em distância mínima sem telegrafar — destruiu fechadura de ferro com um único golpe. Derrubado pelos Carniçais após pânico por respingos de água corrente — capturado de volta pelos Construtos. Três salvaguardas falhadas — morreu de verdade. Vozes dos pais durante as salvaguardas. Renascido pelas lágrimas de Mara — humanidade pura dissolveu também a corrupção de Seraphine. Discurso ao Devorador: \'Sou aquele que nem o karma do azar pode parar. Não me curvarei diante de nenhum ser.\' Transformou Mara e Elise — perguntou onde cada uma queria ser mordida. Ninguém havia feito isso antes. Saiu da floresta batendo palmas — predador que sabe que já venceu. Resistiu completamente aos Símbolos Sagrados Falsos do Padre Cornelius — caminhou através deles como se não existissem. Gambit da Rendição: soltou a espada para salvar criança refém, coordenando Mara e Elise telepaticamente. Rugido do Líder: \'Vocês são cavaleiros! Agora usem suas forças para proteger os inocentes!\' Ao salvar a aldeia inteira, a ferida estrutural do retorno recuou — o sangue respondeu ao que havia feito. Meditação vampírica ensinada a Mara e Elise — o tremor que carregava desde a ressurreição desapareceu. Ao dar a Kaira o primeiro descanso verdadeiro em cem anos, a ferida recuou novamente — o sangue reconhece esses gestos com uma precisão que nenhum esforço consciente alcança. Visão vampírica das correntes de Kaira: fragmentos gravados — \'...contenção... potencial selado... colheita futura...\' Juramento silencioso: \'Isso não vai acontecer. Não vou deixar.\' Falhou em acalmar Kaira com honestidade — respondeu com verdade: \'Não garanto que consigo sozinho. Mas não estou sozinho. Precisa confiar em mim.\' Mara acalmou Kaira onde ele falhou. Chamou Kaira de \'pirralha mimada\' com afeto. Aceitou aliança de Aldric Voss: \'Se tudo que disse for verdade, então confio nele.\' Discurso de decisão na aldeia: \'Vamos ficar aqui e lutar. Vamos vencer. É só estarmos preparados e atentos.\' Ao integrar Tobias à família, o sangue respondeu pela terceira vez — a linhagem cresceu mais um elo. Saiu para o norte com elmo fechado, espada longa e estaca de prata forjada por Kaira — ela perguntou \'promete que volta?\' Formação tática: Leyn e Marcus na frente, Veterano protegido pelo escudo, Helena ao lado, Darius alguns passos atrás. Segunda morte real — atingido por jato de fogo do Arauto durante a fuga para o Rio Corvinal. Os vínculos com Mara, Elise e Kaira desapareceram simultaneamente. Última mensagem antes de morrer: \'Obrigado... por serem... a minha família.\' No Limiar pela segunda vez: confrontou os Guardiões com o argumento de que eles precisavam dele tanto quanto ele precisava deles — o Devorador estava nas sombras do Limiar esperando para reivindicá-lo. Negociou. Selene estava lá: \'Esse é meu irmão. Teimoso até na morte.\' Prometeu continuar observando. Contrato revisado com os Guardiões: retorno com tudo intacto, proteção contra entidades externas, uma missão futura negociável, e uma salvaguarda única gravada na alma — a teimosia de não cair quando deveria cair. Ao retornar: Estocada Espiral — em voo, desviou o jato final do Arauto e cravou a lâmina no coração de fogo. Empurrou o Arauto para o Rio Corvinal com a promessa de Kaira nos lábios. A segunda passagem pelo Limiar desbloqueou algo — centelha de magia instintiva que antes apenas existia como possibilidade. Os cem anos de prisão foram finalmente queimados pela morte — as últimas ressonâncias das correntes, extintas. Retornou à família com tom casual: \'Estou de volta, pessoal.\' Mara abraçou tão forte que quase o derrubou. Baú de Gareth Voss aberto: Armadura Élfica Reforçada — leve, flexível, runas que pulsam ao contato com sangue primordial. Pergaminho de Velocidade guardado. Entregou o Anel de Proteção a Kaira — ajoelhado na altura dos olhos dela. Vínculo com a Espada Longa Superior realizado na caverna durante o dia — uma hora de foco puro. A lâmina brilhou azul por um segundo e apagou. Inteligência residual reconhece seu sangue; não pode ser separado dela permanentemente. Transformação nomeada após o segundo retorno do Limiar: Cavaleiro Arcano — sentidos aguçados além do padrão primordial, magia instintiva ativa. Revelou a Kaira que sabe quem é o pai dela — corrigiu-se ao falar: \'Não, Não, NÃO. Aquela coisa nem pode ser considerada parte da família.\' Quarto ato de compaixão: revelar a verdade sobre o pai de Kaira — o sangue respondeu novamente.§Propósito§Reconstruir o clã Sepet e proteger quem escolheu como família. Não age por dever ou culpa — age porque sempre foi feliz protegendo. Objetivo imediato: impedir que os Mestres completem o que o Ritual de Convergência não completou.§Personalidade e Alinhamento§Calmo, direto, difícil de surpreender. Cede o lugar à janela — ainda. A prisão não destruiu quem ele era; tornou-o mais preciso. Leal além do que qualquer vínculo de sangue exigiria. Reconhece alma antes de reconhecer forma. Alinhamento: proteção genuína, sem performatividade.§Aparência§Presença que não combina com o rosto jovem. Traços Sepet inconfundíveis. Olhos vermelhos escuros. Chora lágrimas de sangue em momentos de emoção intensa.§Capacidades§Natureza do Sangue: absorve e dissolve corrupção profana. Proles mantêm humanidade intacta. Campo purificador ao redor do portador — age automaticamente na presença de corrupção intensa, sem intenção deliberada. Reconhecimento: escuta consciências aprisionadas. Território: ambientes de vínculo deliberado respondem só a ele. Vínculos: conexão mental com Mara, Elise e Kaira. Benção de Selene os vinculou como família. A ferida estrutural do retorno recua a cada ato genuíno de compaixão — o sangue da linhagem compassiva responde ao que o portador é, não ao que tenta ser.§Equipamento§Armadura Élfica Reforçada — leve, flexível, runas de proteção do baú de Gareth Voss. Espada Longa Superior vinculada — inteligência residual reconhece o sangue do portador. Victória (lâmina com núcleo do Construto, veios âmbar, palavra Levanta). Valaquia (espada do pai, vínculo latente). Anel de Prata dos Primeiros com pergaminho em primordial antigo — ainda não traduzido. Pergaminho de Velocidade — guardado para o momento certo.", hp: "", ac: "", links: ["Mara Vell","Elise","Kaira Sepet","Selene Sepet","Kael Sepet","Aldric Voss","Guardiões do Limiar"], urgent: false },
+  { name: "Cultista (sem nome)", status: "Morto", badge: "b-morto", cat: "morto", sess: "S1", desc: "§Introdução§Jovem rejeitado pelos nobres por ser plebeu, expulso pela Igreja. Encontrado pelo Culto da Verdade Profunda no momento de maior vulnerabilidade — recrutado com promessas de propósito, conhecimento e poder.§Acontecimentos§Controlava as aberrações do nível profundo da Fortaleza por algemas rúnicas astrais — sem poder real além disso, embora fingisse ter mais. Confrontado por Leyn, foi desarmado pela Multibraços antes de completar o contra-ataque. As correntes de prata alquímica de Leyn expurgaram as entidades parasitas que viviam dentro dele — fumaça negra saindo pela boca, nariz e olhos enquanto a corrupção era queimada. Confissão: \'Eu… só queria ter importância… os Mestres prometeram que eu seria ALGO.\' Últimas palavras: \'…obrigado… por acabar… com isso.\' Morto por Leyn por necessidade — mas Leyn ofereceu escolha antes. Escolheu morrer.", hp: "", ac: "", links: [], urgent: false },
+  { name: "Lady Seraphine", status: "Morta — pelo Devorador", badge: "b-morto", cat: "morto", sess: "S2–3", desc: "§Introdução§Hospedeiro — uma casca de carne humana usada por algo de fora como fantasia descartável. Parou de ser humana há anos. Sob a pele: escamas, quitina, algo de origem alienígena.§Acontecimentos§Comandava a Fortaleza do Culto, dirigia os experimentos de transformação e era obcecada em despertar o Devorador usando o sangue primordial de Leyn. O que chamava de transcendência — dissolução da humanidade em algo maior — era possessão completa. Uma vida vendida fração a fração por poder que nunca foi dela. Quando o ritual falhou e o Devorador se manifestou sem controle, saudou-o com êxtase — e foi esmagada como inseto. A entidade que servia a descartou sem hesitação. Não era digna. Era apenas lixo.§Aparência§Cabelos prateados. Olhos completamente vazios — nenhuma alma, nenhuma humanidade residual. Não pisca. Quando fala, às vezes saem vozes múltiplas. Seu toque transmitia corrupção de algo Antigo de Verdade.", hp: "", ac: "", links: ["O Devorador"], urgent: false },
+  { name: "Cicatriz", status: "Fugitivo", badge: "b-outro", cat: "outro", sess: "S2", desc: "§Introdução§Mercenário veterano. Cicatriz no rosto, olhos duros. Leal ao ouro, não à causa — entrou na fortaleza do Culto por contrato, não por crença.§Acontecimentos§Avaliou Leyn com respeito genuíno desde o primeiro contato: \'Não parece acabado. Parece confiante.\' Tomou iniciativa de propor a aliança e definiu os termos — sem mordidas, sem transformações. Quebrou as correntes astrais de Leyn com a adaga, raspando os símbolos de ancoragem. Ouviu o deslize verbal de Leyn (\'meus serv... digo... guardas\') e registrou sem comentar. Quando Leyn foi capturado pelos Construtos nos esgotos, questionou a fuga antes de aceitar: \'ENTÃO FUGIMOS E O DEIXAMOS MORRER?!\' — foi a voz que questionou, não a que decidiu facilmente. Fugiu pelo rio com o Guarda Nervoso. Destino desconhecido.§Personalidade§Pragmático. Respeita competência acima de tudo. \'Finalmente fala como guerreiro.\' Toma decisões frias quando necessário — mas não sem questionar primeiro.", hp: "", ac: "", links: [], urgent: false },
+  { name: "Guarda Nervoso", status: "Fugitivo", badge: "b-outro", cat: "outro", sess: "S2", desc: "§Introdução§Mercenário. Trabalhou na fortaleza do Culto por ouro. Menos experiente que Cicatriz — mais honesto consigo mesmo sobre o que estava fazendo.§Acontecimentos§Primeiro a ceder à intimidação de Leyn na câmara de extração. Revelou informações cruciais: a rota pelos esgotos, e que metade dos cultistas \'transcendeu\' — ele mesmo encontrou roupas manchadas de sangue no porão. Sabia o que aquilo significava e não falou antes. Ao ver Leyn capturado pelos Construtos nos esgotos, disse as últimas palavras que Leyn ouviu antes de perder a consciência: \'Sim. Desculpa, vampiro. Você lutou bem.\' Fugiu com Cicatriz. Destino desconhecido.§Personalidade§Nervoso por natureza, mas com senso moral intacto. O peso do que sabia e não disse chegou cedo demais. Foi o primeiro a quebrar, e o último a abandonar sem pedir desculpas.", hp: "", ac: "", links: [], urgent: false },
+  { name: "Mara Vell", status: "Aliada — Vila Sepet", badge: "b-aliado", cat: "aliado", important: true, sess: "S1–21", desc: "§Introdução§Soldada da 2ª Companhia, arqueira. Cresceu no orfanato da Igreja com Elise — eram irmãs antes de tudo. Participou do massacre de 612 CC — concordava que era errado, mas não falou. Punição dos nobres: braços extras em lugares errados. Décadas nos esgotos, perdendo o nome.§Acontecimentos§O encontro com Leyn reacendeu sua consciência. Quando Leyn foi capturado, arrancou pedaços da parede para salvá-lo — suas lágrimas o trouxeram de volta da morte. Transformação: Leyn perguntou onde ela queria ser mordida. Ninguém havia feito isso antes. Nome recuperado: \'Era... Mara. Mara Vell.\' Os braços refinaram-se — quatro braços funcionais, permite usar escudo, espada e adaga simultaneamente. Coordenou o combate final quando Leyn morreu pela segunda vez. Na meditação vampírica: treino com Elise com arcos sob o sol, orgulho nos olhos de Elise ao primeiro acerto a cem metros. A Kaira: \'Você sobreviveu cem anos sozinha. Você NÃO é fraca.\' Ao ver Aldric: escudo à frente, adaga de prata, posicionou-se entre Leyn e Aldric instintivamente. Quando Leyn falhou em acalmar Kaira, desceu sozinha ao subsolo: \'Leyn me viu. Não como monstro. Como PESSOA.\' \'Medo não desaparece. Nunca desaparece completamente. Você aprende a andar COM ele.\' \'Com minha vida\' — sem hesitação ao ser perguntada se protegeria Kaira. Mara chegou onde Leyn não chegou. Treinou Kaira com a lança — identificou instinto natural para o peso da arma. Operou o fole da forja em modo de urgência. Terceira vez chegando para salvar Leyn: sentiu o vínculo desaparecer e correu pela floresta. \'AGUENTA! EU VOU TE SALVAR! DE NOVO! SEMPRE!\' Quando Leyn morreu: levantou, limpou as lágrimas, pegou o escudo, pegou as estacas de prata, assumiu o comando: \'ALDRIC! ELISE! SOLDADOS! EMPURREM ELE PRO RIO! AGORA! POR LEYN!\' Todos obedeceram. Quando Leyn voltou do Limiar: \'E VOCÊ VOLTOU! VOCÊ REALMENTE VOLTOU!\' — correu e abraçou com força que quase o derrubou. \'NÃO MORRA DE NOVO! NUNCA MAIS! ENTENDEU?!\' \'...nunca mude. Por favor. Essa calma absurda é... reconfortante.\' Ao ouvir a revelação sobre o pai de Kaira: limpou as próprias lágrimas — \'Kaira... você é mais forte que pensa.\' Cena da Casa Sepet: Leyn a levou à casa da família — abraçou com os quatro braços, tirou a armadura, ficaram uma hora no quarto de infância. Recolocou a armadura peça por peça. \'Meu algo\' — ainda sem nome certo, mas importante.§Propósito§Proteger Leyn e Kaira. Figura maternal para Kaira. Assume comando tático quando Leyn está incapacitado.§Personalidade e Alinhamento§Armadura como linguagem: quando a tira, é o único gesto de desarmamento genuíno que conhece. Carrega a culpa do massacre sem deixar que a paralise. Alinhamento: redenção que virou força.§Aparência§Quatro braços funcionais e bem posicionados.§Equipamento§Armadura de Placas Leve. Escudo Grande. Espada Longa. Adaga de Prata. Grimório de Técnicas Sepet.", hp: "34/34", ac: "19", links: ["Leyn Sepet","Elise","Kaira Sepet"], urgent: false },
+  { name: "Elise", status: "Aliada — Vila Sepet", badge: "b-aliado", cat: "aliado", important: true, sess: "S1–21", desc: "§Introdução§Tia Elise para Kaira. Irmã de criação de Mara Vell. Arqueira da Segunda Companhia — mesma unidade que Mara, crescidas juntas no orfanato da Igreja. No massacre, questionou abertamente as ordens. Punição dos nobres: arrancaram seu rosto, substituído por boca vertical cheia de dentes em camadas.§Acontecimentos§Reencontrou Mara através de Leyn, que a reconheceu como alguém com alma antes mesmo de conhecê-la. Pediu os 30% que Leyn não conhecia: \'Os 30% que você não conhece... eu posso mostrar?\' — ajoelhou-se em oferta, não em submissão. Transformada por Leyn nos esgotos: boca vertical reorganizou-se em lábios pálidos com controle total. Tem rosto novamente. Leyn perguntou onde ela queria ser mordida — escolheu o pescoço como Mara, para pertencer à mesma família. Último pedido: \'Me dê segunda vida como deu para Mara. Me deixe ser EU de novo.\' Ao tocar o rosto: \'Eu tenho rosto de novo.\' \'Leyn... você... sempre volta... sempre...\' / \'Família... não abandona... família...\' Abraçou Kaira após a revelação sobre o pai: \'Nós... vamos proteger... você... daquele monstro...\' Guiou a fuga pela fortaleza carregando Leyn e Mara através do lago de água corrente dentro de si mesma. Técnica de ácido refinada no combate contra o Arauto Ardente. Na meditação vampírica: memórias recuperadas com dificuldade. O que sobreviveu: Mara segurando sua mão, maçãs roubadas do pomar do convento, o som de sua própria risada antes de perder a boca. Soluçou de alívio — não tristeza, alívio de ter encontrado quem era. A Kaira: \'Força não é apenas músculos… é coração que não desiste.\'§Propósito§Falar quando é necessário — mesmo quando custa. Ser para Kaira o que ninguém foi para ela.§Personalidade e Alinhamento§Falou quando os outros ficaram em silêncio — e pagou por isso. Não se arrependeu. Gentil com precisão. Alinhamento: integridade que sobreviveu à desfiguração.§Aparência§Lábios pálidos reorganizados. Tem rosto novamente.§Equipamento§Cota de Malha Reforçada. Arco Longo Élfico. Flechas de Prata. Frasco de Ácido. 2 doses de Veneno Suicida — neurotoxina abissal; não funciona em construtos, espíritos ou demônios maiores.", hp: "28/28", ac: "16", links: ["Mara Vell","Leyn Sepet","Kaira Sepet"], urgent: false },
+  { name: "O Devorador", status: "Entidade — bloqueado", badge: "b-entidade", cat: "entidade", sess: "S3, S8", desc: "§Introdução§Ser Antigo movido por curiosidade, não apenas instinto. Mantido contido na Fortaleza do Culto até o ritual rompido de Lady Seraphine.§Acontecimentos§Ao se manifestar plenamente, recuou: deparou com um ser que morreu e voltou por compaixão pura, sem poder das Coisas Antigas. Chamou Leyn de \'Anomalia\'. Diálogo completo registrado: \'Tu morreu e retornou... não através de nosso poder... mas através de compaixão?\' \'Vejo vínculo não de corrupção, mas de livre-arbítrio e sacrifício mútuo. Algo que não compreendemos.\' \'Vai, vampiro Anomalia. Leva tua ligada. Vivam sua impossibilidade.\' \'Outros virão. Outros Mestres não serão tão curiosos quanto eu.\' \'Este mundo ainda não está pronto para o Despertar Total. Mas logo. Muito logo.\' Partiu afundando através da própria realidade — não voltou para a jaula nem pelo caminho normal. Foi visto aguardando no Plano da Morte durante a segunda morte de Leyn — bloqueado pelo Contrato dos Guardiões.§Natureza§A distinção entre curiosidade e instinto é o que o separa dos outros Devoradores. Recuou porque algo que não deveria existir existia. Isso não significa aliança — significa que a informação foi registrada e levada para onde quer que Seres Antigos levem o que aprendem.", hp: "", ac: "", links: ["Guardiões do Limiar","Lady Seraphine"], urgent: false },
+  { name: "Padre Cornelius", status: "Destruído", badge: "b-morto", cat: "morto", sess: "S4", desc: "Na aldeia: tomou criança refém com adaga no pescoço quando perdeu o controle. Ganância de ter o primordial venceu o instinto de sobrevivência ao aceitar a oferta de Leyn. O ácido de Elise atingiu seu rosto, derretendo pele e revelando as runas profanas na estrutura óssea. Últimas palavras: \'...não... importa... já cumpri... minha missão... os Mestres... já sabem... sobre vocês... vampiro primordial... eles virão... você não salvou... ninguém... apenas atrasou... o inevitável...\' Explodiu em energia profana ao morrer — onda de corrupção em área. A ganância foi o que o destruiu. Mesma função final: ao encontrar Leyn Sepet, transmitiu a informação aos Mestres antes de explodir. Mesmo em morte, cumpriu seu propósito.", hp: "", ac: "", links: ["Arcebispo Davren Solharte"], urgent: false },
+  { name: "Marcus (Inquisidor)", status: "Aliado — aldeia", badge: "b-aliado", cat: "aliado", sess: "S4–21", desc: "Atua sob o comando tático de Leyn Sepet — papel que aceitou não por obrigação, mas por escolha. Confirmado em campo: as runas do treinamento inquisitorial funcionam contra mortos-vivos menores, espíritos e corrupção básica — não contra vampiros primordiais (\'como tentar parar tsunami com cerca de madeira\'). Começou a aprender runas de alta ordem com Aldric Voss.", hp: "", ac: "", links: ["Veterano","Helena","Darius"], urgent: false },
+  { name: "Veterano", status: "Aliado — aldeia", badge: "b-aliado", cat: "aliado", sess: "S4–21", desc: "Desobedeceu ordens de Leyn junto com Helena — voltou para buscar o vampiro caído. Antes de partir para o rio, sua despedida a Leyn: \'Não morra, vampiro. Sua família precisa de você.\' Frase definitiva sobre o padre: \'Nunca vi vampiro defender humanos. E nunca vi padre com runas profanas dentro da cabeça. Algo está muito errado. E acho que não é você, criatura.\' Após o Rugido do Líder, organizou os soldados: \'Marcus, você era escriba — conhece runas de proteção? Comece a desenhar perímetro!\' Segue o comando de Leyn com respeito genuíno, chamando-o de \'Comandante vampiro\' sem ironia.", hp: "", ac: "", links: ["Marcus (Inquisidor)","Helena","Darius"], urgent: false },
+  { name: "Kaira Sepet", status: "Família — Vila Sepet", badge: "b-familia", cat: "familia", important: true, sess: "S4–21", desc: "§Introdução§Filha de Selene Sepet e pai desconhecido de identidade suspeita. Sobreviveu ao massacre selada em correntes espectrais — aprisionada não por clemência, mas como ferramenta para uso futuro.§Acontecimentos§Cem anos sozinha — caçando ratos, dormindo em cavernas e árvores ocas, nunca descansando de verdade. As correntes quebraram ao cruzar o perímetro da Vila Sepet. Transformação em segundos: cresceu para 1,65m, feições de 16 anos, quase idênticas a Selene. Alimentou-se diretamente de Leyn nas catacumbas — vínculo de sangue familiar criado. Ritual de Vínculo com a lança no setor de tumbas, com Selene observando espiritualmente. Prestou respeitos à mãe na Tumba 23 e recebeu a Bênção Familiar. Recusou qualquer relação com o padre: \'Pai é quem cuida.\' Apareceu na porta de Marcus ~02h00 após a batalha — passou pelas patrulhas sem ser detectada, só quando quis. Reconheceu Leyn pelo cheiro do sangue antigo — o mesmo cheiro que a mãe tinha. Lágrimas douradas ao ser reconhecida como família. Confessão do massacre: escondida no buraco sob a casa de Selene, ouviu o grito \'VOCÊ?! POR QUÊ?!\' O padre de olhos díspares a encontrou: \'Você será útil, mas não agora. Sobreviva. Esconda-se. Quando as correntes caírem, saberá o que fazer.\' Nunca descansou de verdade em cem anos — hipervigilância constante. Primeiro descanso verdadeiro: Leyn ficou ao lado dela segurando sua mão. Segurou a bainha da espada como cobertor. Primeiro despertar natural em cem anos: \'Tio... eu dormi... de verdade... não tive pesadelos...\' Ataque de pânico ao sentir Aldric — removeu as botas, encolhida no canto mais escuro, tremendo. Trauma central revelado: \'E se eu confiar... e todos morrerem... como minha mãe... e eu fico sozinha DE NOVO?\' Acalmada por Mara com experiência vivida — não por Leyn. Subiu a escada segurando a mão de Leyn. Primeira pergunta a Aldric: \'Você jura? Pelo nome da sua família?\' Última fala da saga: \'Então tudo bem. Mas se mentir, meu tio vai te bater.\' Calçou as botas de novo. Correu pela floresta quando sentiu Leyn morrer pelo vínculo — chegou com roupas rasgadas e olhos dourados brilhando: \'TIO! VOCÊ PROMETEU! E VOCÊ CUMPRIU!\' Recebeu o Anel de Proteção de Leyn — ajustou automaticamente ao dedo pequeno. Sentiu as runas ao tocar. Sensibilidade mágica crescendo com o enfraquecimento das correntes — sentiu o vínculo de Leyn com a espada se formando sem que ninguém dissesse nada. Correntes piscam a cada 8 segundos ao fim da saga — colapso total previsto esta noite ao chegar à Vila. Revelação sobre o pai processada em silêncio, lágrimas douradas sem soluço: \'Então... meu pai... é o monstro que matou minha mãe.\' Depois — determinação, não medo. \'Quando estas caírem... eu vou ser EU. Não a ferramenta dele. EU.\' \'VOCÊ é mais pai pra mim do que ele jamais foi. Você, Mara, Elise... vocês são minha família de verdade.\' \'Quando ele vier... eu não vou fugir. Vou lutar. Com vocês. Como FAMÍLIA.\' Primeiras roupas de verdade em cem anos — costuradas por Miriam. Sorriu para a Garotinha salva sem medo — primeiro contato positivo com humano desconhecido. Treinou com Mara: primeiro disparo real com a lança com potência primordial — Mara viu o instinto natural para o peso da arma. Forjou a estaca de prata que Leyn levou para o norte. \'Promete que volta?\' Tobias a chamou de \'pequena\' com afeto genuíno — primeiro sorriso genuíno dele desde que chegou. Correntes: 40% colapsadas. 2 a 3 dias, talvez menos.§Propósito§Encontrar o que significa ter família — não apenas sangue, mas escolha. Aprender a usar o que é, não o que as correntes deixaram que fosse.§Personalidade e Alinhamento§Direta ao ponto de parecer brusca. Econômica com palavras. Afeto existe — aparece em atos, não em declarações. Alinhamento: sobrevivência que está aprendendo a virar proteção.§Aparência§1,65m. Cabelo negro até a cintura. Feições de 16 anos, quase idênticas a Selene. Olhos dourados — traço raro da linhagem Sepet.§Equipamento§Armadura Cerimonial Sepet. Lança de Prata vinculada. Escudo Médio. Espada Curta (item emocional). Boneco de pano de Selene.", hp: "25/25", ac: "21", links: ["Leyn Sepet","Selene Sepet","Padre de olhos díspares","Mara Vell","Elise"], urgent: false },
+  { name: "Aldric Voss", status: "Aliado — Vila Sepet", badge: "b-aliado", cat: "aliado", sess: "S6–21", desc: "§Introdução§Vampiro primordial da linhagem Voss. ~342 anos. Estava fora quando sua linhagem foi massacrada há três séculos (~412 CC) pela mesma coalizão que destruiu os Sepet. Voltou para encontrar cinzas. Vive há 3 séculos em vergonha de ter sobrevivido por acidente de ausência.§Acontecimentos§Décadas escondido, estudando runas antigas e táticas anti-primordiais — conhecimento único em Valtheris. Decifrou 100% do Grimório do Culto. Conheceu e ajudou a guardar o legado de Gareth Voss. Sentiu o renascimento de Leyn à distância — e a presença primordial jovem e selada de Kaira. Primeiro encontro: \'Seu sangue é diferente. Há compaixão? Humanidade? Impossível, mas está lá.\' \'Você não deveria existir. E ainda assim, existe.\' Ofereceu aliança estendendo a mão em gesto humano — não vassalagem. \'Você questionou em dez segundos o que eu pratiquei por dois séculos.\' Juramento formal: \'Juro por Voss. Por meus ancestrais. Por meu sangue. Não trarei mal a você ou aos seus.\' Se ajoelhou diante de Kaira — gesto antigo de respeito a membro jovem de linhagem primordial. Começou a ensinar Marcus runas anti-primordiais na mesma noite. \'Você é... oficialmente o vampiro mais teimoso que já conheci. Foi honra lutar ao seu lado.\' Ficou na aldeia para construir runas genuínas com Marcus — dois dias para defesas sólidas. Dividiu as 12 estacas de prata igualmente: seis para o grupo da Vila, seis para os humanos na aldeia. Parte para a Vila depois de terminar — chega em cerca de duas horas correndo direto. A carta de Gareth foi entregue a Leyn — Aldric ainda não sabe do conteúdo. Questão em aberto. \'Fugir para sempre não é vida.\' — aceitou ficar e lutar sem hesitação. \'A criança merece ver que pode ser defendida. Que não precisa fugir sempre.\' Advertência sobre campeões do Culto: \'Não são humanos comuns.\' Equipamento completo: espada longa élfica com prata e aço e runas antigas, adaga ritual, armadura de couro élfico sob a capa.§Propósito§Garantir que o que os Mestres começaram não se complete. Transferir o conhecimento acumulado — para que desta vez, quando a linhagem cair, não haja só cinzas.§Personalidade e Alinhamento§Preciso, analítico, carrega culpa que não verbaliza mas informa cada decisão. Respeito genuíno por quem questiona com substância. Alinhamento: expiação pela via do conhecimento.§Aparência§Mais de 1,90m. Capa negra. Cicatrizes no pescoço. Olhos vermelhos. Usa anel de prata deliberadamente — o desconforto é uma escolha, não descuido.§Equipamento§Grimório do Culto da Verdade Profunda (decifrado). Anel de prata (deliberado).", hp: "117/117", ac: "", links: ["Gareth Voss","Leyn Sepet"], urgent: false },
+  { name: "Tobias", status: "Aliado — oficina da Vila", badge: "b-aliado", cat: "aliado", sess: "S7–21", desc: "§Introdução§Aprendiz de ferreiro, 19 anos. Magro, cabelo castanho desgrenado, mãos calejadas e queimadas. Seu mestre Garrett Stonehammer — anão cuja longevidade natural lhe permitiu guardar o baú de Gareth Voss por três séculos — morreu de ataque cardíaco na própria fornalha. Tobias o encontrou e desde então não conseguia voltar à forja.§Acontecimentos§Guardava a chave do baú lacrado de Gareth Voss, cumprindo o último pedido do mestre. Leyn o trouxe de volta através de presença acolhedora e humor desarmante — ao ensinar Kaira sobre as ferramentas da oficina, Tobias encontrou propósito novamente: ensinou como mestre, exatamente como Garrett fazia com ele. Essa conexão quebrou o bloqueio emocional que o mantinha longe da forja.§Propósito§Ferreiro residente da família Sepet. Integrado à família Sepet — forja do Mestre Garrett vive novamente. Primeiro sorriso genuíno ao incluir Kaira no trabalho: chamou-a de \'pequena\' com afeto. Comprometeu-se a forjar 20 a 25 estacas de prata em modo de urgência. Filosofia herdada do mestre: \'Ferro deveria criar, não destruir.\' Garrett odiava quando a Igreja pedia espadas — Tobias ainda carrega esse conflito ao forjar estacas de prata.", hp: "", ac: "", links: ["Gareth Voss"], urgent: false },
+  { name: "Darius", status: "Aliado — aldeia", badge: "b-aliado", cat: "aliado", sess: "S7–21", desc: "§Introdução§Arqueiro inquisidor, 25 anos. Precisão documentada de 100 metros.§Acontecimentos§Durante o combate com o Arauto Ardente foi decisivo: distraiu a criatura com dois acertos consecutivos — incluindo crítico no pescoço — comprando tempo para Helena e o Veterano resgatarem Leyn inconsciente. Com flecha a 80 metros de distância desviou o Arauto do golpe final sobre Leyn caído na floresta — comprou os segundos que Helena e o Veterano precisavam para arrastar Leyn até o rio. Segunda flecha acertou o pescoço do Arauto — ele tropeçou, o jato seguinte errou completamente. Ficou sem flechas ao final do combate.§Equipamento§Arco longo. Aljava com trinta flechas.", hp: "12/13", ac: "", links: ["Marcus (Inquisidor)","Veterano","Helena"], urgent: false },
+  { name: "Helena", status: "Aliada — aldeia", badge: "b-aliado", cat: "aliado", sess: "S7–21", desc: "§Introdução§Soldada inquisidora de 30 e poucos anos. Integra o grupo de oito inquisidores que acompanharam o Padre Cornelius e depois ficaram sob comando de Leyn.§Acontecimentos§Desobedeceu ordens de Leyn por escolha deliberada — voltou para buscá-lo caído na floresta junto com o Veterano, arrastando-o até a margem do Rio Corvinal enquanto o Arauto ainda os perseguia. \'NÃO O DEIXAMOS PARA TRÁS!\' Demonstrou lealdade ao recusar abandonar Leyn caído durante o combate com o Arauto — ela e o Veterano arrastaram o vampiro inconsciente até a margem do Rio Corvinal enquanto o Arauto era distraído por Darius.§Equipamento§Armadura de couro com placas de metal. Machado de guerra.", hp: "9/14", ac: "", links: ["Marcus (Inquisidor)","Veterano","Darius"], urgent: false },
+  { name: "2 Soldados desaparecidos", status: "Paradeiro desconhecido", badge: "b-outro", cat: "outro", sess: "S17", desc: "Armaduras dobradas, sem luta. Suspeita sobrenatural.", hp: "", ac: "", links: [], urgent: true },
+  { name: "Criança doente na aldeia", status: "Situação crítica", badge: "b-outro", cat: "outro", sess: "S17–21", desc: "Febre alta, olhos pretos, múltiplas vozes em Profano Antigo.", hp: "", ac: "", links: [], urgent: true },
+  { name: "Arcebispo Davren Solharte", status: "Inimigo — chegando", badge: "b-inimigo", cat: "inimigo", sess: "S18–21", desc: "§Introdução§Líder da ala militar da Igreja do Sol Agonizante. Chegada à região considerada inevitável com base na informação de Marcus.§Acontecimentos§O Padre Cornelius afirmou seguir suas ordens — mas até que ponto os decretos refletem sua vontade real, e quantos foram manipulados pelos Mestres através de infiltrados na Igreja, é questão em aberto. Quando declara uma região como \'contaminada\', a população inteira desaparece em menos de uma semana.§Propósito§Erradicar o que a Igreja classifica como contaminação profana — categoria que inclui vampiros legítimos, híbridos e qualquer coisa que não se encaixe na teologia do Sol Agonizante. Se os decretos são seus ou dos Mestres: determinar isso muda tudo sobre como abordá-lo.§Personalidade e Alinhamento§Pureza fanática — não tolera heresia de nenhuma forma. Eficiência brutal sem crueldade performativa: simplesmente resolve o problema da forma mais completa possível. Alinhamento: fé absoluta com alcance continental.§Aparência e Capacidades§Porta a Lança do Amanhecer — fragmento de luz solar aprisionada em cristal que queima mortos-vivos num raio considerável apenas por estar presente. Os mantos de contenção no Arsenal Sepet podem bloquear a radiação da Lança por tempo limitado.", hp: "", ac: "", links: ["Padre Cornelius","A Mestra — Devorador de Faces"], urgent: true },
+  { name: "A Mestra — Devorador de Faces", status: "Inimiga — ameaça máxima", badge: "b-inimigo", cat: "inimigo", important: true, sess: "S18–21", desc: "§Introdução§Referida pelo Culto simplesmente como \'a Mestra\'. Classificada nos registros mais antigos como Devorador de Faces — filha direta dos Mestres Antigos. Não invocada: nascida. Uma das primeiras. Usa máscara permanentemente. Quando fala, às vezes saem vozes que não são dela: múltiplas, sobrepostas, em idiomas que não pertencem a humanos.§Acontecimentos§Coordenou o Ritual de Convergência. Tinha consciência direta do que acontecia com a família Sepet — soube imediatamente quando as correntes de Kaira quebraram e quando o Ponto Alfa foi destruído. Não estava com o grupo do Devorador Menor no ataque à Vila. Testemunho de Teren — único registro direto existente: avistada de costas sem a máscara numa câmara que ele achava vazia. Sem pescoço no sentido convencional. Pele branco-osso que ondulava sob a superfície, como se houvesse algo por baixo tentando sair. Teren acredita que a pele que usa não é sua. E que não é a primeira. \'Tragam a menina de olhos dourados até mim. Ou eu vou buscá-la de qualquer jeito.\'§Propósito§Completar o que o Ritual de Convergência não completou. Kaira Sepet como objetivo específico — por razão ainda não documentada. Os Mestres acima dela ainda não responderam ao que farão com a informação de que Leyn é uma Anomalia reconhecida.§Personalidade e Alinhamento§Cultistas que desertaram descrevem que \'ela sempre tem razão\' com o automatismo de quem foi condicionado, não convencido. Não é cruel por prazer — é eficiente com indiferença. Alinhamento: propósito ancestral que não tem categoria moral humana.§Aparência§Máscara permanente. Quando removida: sem pescoço convencional, cabeça continuando nos ombros sem transição anatômica. Pele branco-osso que se move — ondula como se houvesse algo por baixo. A pele que usa não é sua. Não é a primeira.", hp: "", ac: "", links: ["Arcebispo Davren Solharte","Devorador Menor","Arauto da Fome Eterna"], urgent: true },
+  { name: "Capitão Vor", status: "Inimigo — coordenando", badge: "b-inimigo", cat: "inimigo", sess: "S18–21", desc: "Voz no cristal de comunicação cultista.", hp: "", ac: "", links: ["A Mestra — Devorador de Faces"], urgent: false },
+  { name: "Teren", status: "Aliado — vampiro recém-transformado", badge: "b-warn", cat: "aliado", important: true, sess: "S19–21", desc: "§Introdução§Conjurador do Culto por seis anos — recrutado aos dezessete com promessas de poder e propósito. Assinou pacto de sangue: deserção equivalia a suicídio por dentro.§Acontecimentos§Traiu o Culto para salvar o irmão Luca, 15 anos. Transformado por Leyn quando o pacto tentou matá-lo — a mordida na palma da mão venceu a corrida contra o pacto. Seu melhor amigo Maven morreu em ritual falho — escondeu isso de Rory por meses. \'Eu senti. Mesmo sendo vampiro novo. Eu senti quando ela foi embora.\'§Propósito§Proteger Luca. Provar à Sentinela — e a si mesmo — que o que foi não define o que é.§Personalidade e Alinhamento§Carrega culpa com seriedade e sem dramatismo. Leal com quem escolhe ser leal. Alinhamento: redenção em andamento. A Sentinela está avaliando se é digno de permanecer na Vila Sepet.§Capacidades§Fome instável — os resíduos de seis anos de magia profana nas veias interagem de forma imprevisível com o sangue primordial de Leyn que o anima.", hp: "", ac: "", links: ["Luca","Rory / Kael","Maven"], urgent: false },
+  { name: "Rory / Kael", status: "Aliado — humano", badge: "b-aliado", cat: "aliado", sess: "S19–21", desc: "§Introdução§Guerreiro do Culto. Amigo de infância e irmão de escolha de Teren. Não assinou pacto de sangue — entrou por lealdade a Teren, não por crença.§Acontecimentos§Destruiu fisicamente o Ponto Alfa com a própria espada, provando que a deserção era genuína. Nome Kael suspenso — Leyn considerou que um guerreiro cultista não merecia o nome do ancião sem prová-lo primeiro. A Sentinela está avaliando tanto Rory quanto Teren quanto à dignidade de permanecerem na Vila. Ainda processando tudo que aconteceu em menos de uma hora: viu o amigo morrer e renascer como vampiro, entrou nas catacumbas de uma Vila considerada lenda cultista, e foi renomeado por um vampiro primordial. \'Estou muito feliz de não estar mais do outro lado.\'§Propósito§Ficar ao lado de Teren. Descobrir o que significa merecer o nome que foi suspenso.", hp: "", ac: "", links: ["Teren"], urgent: false },
+  { name: "Luca", status: "Prisioneiro — Fortaleza", badge: "b-outro", cat: "outro", sess: "S19", desc: "§Introdução§Irmão de 15 anos de Teren. Câmara leste, nível 3.§Situação§Sendo preparado para sacrifício na lua nova — 10 dias no momento do registro. A razão pela qual Teren traiu o Culto.", hp: "", ac: "", links: ["Teren"], urgent: true },
+  { name: "Arauto da Fome Eterna", status: "Entidade — objetivo do Ritual", badge: "b-entidade", cat: "entidade", sess: "S19–21", desc: "§Introdução§O que o Ritual de Convergência quer invocar. Nunca foi humano — entidade distinta do Arauto Ardente, que era um humano transformado já destruído.§Natureza§Invocação requer: portal de 12 minutos sustentado mais âncora de sangue primordial puro — Kaira. Ainda não foi invocado. Ritual de Convergência foi rompido antes de completar. Os Mestres que sobreviveram ao colapso da Fortaleza mantêm o objetivo em aberto.", hp: "", ac: "", links: ["A Mestra — Devorador de Faces","Kaira Sepet"], urgent: true },
+  { name: "Arauto Ardente", status: "Destruído — Rio Corvinal", badge: "b-morto", cat: "morto", sess: "S8", desc: "§Introdução§Campeão transformado do Culto. Era humano aprisionado — agradeceu ao ser libertado. Entidade distinta do Arauto da Fome Eterna: este era um humano corrompido, já destruído; o da Fome Eterna nunca foi humano e é o objetivo do Ritual de Convergência.§Acontecimentos§Missão na aldeia: procurar Kaira Sepet para captura viva — tinha inteligência e ordens específicas, não era servo sem mente. Destruído no Rio Corvinal pela Estocada Espiral de Leyn — empurrado para a água pela força do golpe. Revelação ao rachar no choque térmico: sob a cerâmica havia carne humana. O humano dentro estava consciente de tudo durante toda a transformação, incapaz de controlar nada, forçado a cumprir ordens que o horror dentro de si impunha. Últimas palavras ao ser libertado pela água: \'...obri...gado...\' A água corrente foi o fator decisivo — Mara coordenou o combate final quando Leyn morreu pela segunda vez.", hp: "", ac: "", links: ["Culto da Verdade Profunda", "A Mestra — Devorador de Faces"], urgent: false },
+  { name: "Guardiões do Limiar", status: "Contrato ativo", badge: "b-entidade", cat: "entidade", important: true, sess: "S8", desc: "§Introdução§Três entidades que guardam a fronteira entre o mundo dos vivos e o Plano da Morte — não são Seres Antigos nem Deuses, existem em categoria própria. A Mulher de Vestes Brancas com olhos que veem tudo. O Homem de Armadura Negra com espada que corta destinos. A Criança que muda de idade constantemente, segurando uma ampulheta.§Acontecimentos§Reconheceram Leyn como única anomalia registrada: morreu duas vezes e voltou sem ser reivindicado. Na segunda morte, com o Devorador aguardando, preferiram firmar contrato a arriscar. Leyn viu brevemente Selene, que o encorajou a retornar. No segundo encontro: o Devorador espreitava nas sombras do Limiar esperando reivindicar Leyn caso o contrato falhasse — os Guardiões preferiram vinculá-lo a eles. \'Você... está CORRETO, anomalia. Não conseguimos lidar com você como com outros.\' A Mulher riu. O Homem admitiu. A Criança declarou: \'EU GOSTO DELE! Ele é engraçado!\' Selene observava da luz dourada: \'Esse é meu irmão. Teimoso até na morte.\' Contrato revisado: retorno com tudo intacto, proteção de entidades externas, uma missão futura negociável — os termos podem ser negociados quando a missão vier.§O Contrato§Termos concedidos a Leyn: retorno com tudo intacto, proteção contra reivindicações externas em morte, bênção Determinação Inabalável. Em troca: direito a uma única missão futura, negociável quando chegar.", hp: "", ac: "", links: ["Leyn Sepet","O Devorador","Vrykolakas Corvath"], urgent: false },
+  { name: "Selene Sepet", status: "Morta — em paz", badge: "b-familia", cat: "familia", sess: "S5, S8–21", desc: "§Introdução§Irmã de Leyn. Mãe de Kaira. Aparentava 27 anos. Criou Kaira sozinha sem revelar o pai: \'os anciãos não aprovariam.\'§Acontecimentos§Guerreira: matou vários inquisidores antes de ser abatida no massacre. Seus últimos gritos foram de traição, não de medo — reconheceu alguém entre os atacantes. Leyn a encontrou no Plano da Morte — em paz, pediu que cuidasse de Kaira. Sua Bênção Familiar vinculou os quatro como família escolhida.§Nota Canônica§As correntes que selaram Kaira são tecnologia de Correntes Espectrais da Igreja — não magia vampírica independente. O padre de olhos díspares atuava como agente da Igreja com motivação dupla: contenção institucional e interesse pessoal de linhagem. Suspeita de Leyn: é o próprio pai de Kaira — traiu Selene ao facilitar o massacre, mas selou Kaira como \'útil\' para uso futuro.§Aparência§Cabelo negro longo até a cintura, traços delicados e queixo firme — os mesmos herdados por Kaira. Olhos dourados, traço raro da linhagem Sepet.§Localização§Sepultada com armadura cerimonial Sepet e espada de prata. Boneco de pano ao lado. Tumba 23, setor leste.", hp: "", ac: "", links: ["Leyn Sepet","Kaira Sepet","Padre de olhos díspares"], urgent: false },
+  { name: "Padre de olhos díspares", status: "Localização desconhecida", badge: "b-outro", cat: "outro", sess: "S5–21", desc: "§Introdução§Olhos azul e dourado — traço que aparece também em Selene e Kaira. Não estava entre os 14 inimigos identificados no massacre original.§Acontecimentos§Selou Kaira com correntes espectrais em vez de matá-la — chamou-a de \'útil.\' Conhecia o esconderijo da floresta, o que implica presença continuada ou informante próximo.§Suspeita de Leyn§É o pai biológico de Kaira — relacionamento proibido com Selene que ele traiu ao facilitar o massacre, preservando a filha como peça futura em plano maior. As correntes que selaram Kaira são tecnologia de Correntes Espectrais da Igreja — ele atuava como agente com motivação dupla: contenção institucional e interesse pessoal de linhagem.", hp: "", ac: "", links: ["Selene Sepet","Kaira Sepet"], urgent: false },
+  { name: "Armadura-Sentinela", status: "Guarda — catacumbas", badge: "b-outro", cat: "outro", sess: "S11–21", desc: "§Introdução§Não é construto animado — é memória, dever e amor transformados em função: a essência dos cinco Fundadores que se sacrificaram, não de Kael (que apenas a despertou e instruiu).§Acontecimentos§Ficou sozinha por 97 anos, 2 meses e 14 dias após Kael partir. \'Victória registrada. Classificação: única. Os Fundadores ficariam honrados.\'§Capacidades§Detecta sangue Sepet legítimo. Ativa armadilhas contra profanadores — em combate defensivo, prioriza cultistas antes de vampiros legítimos. Opera com inteligência precisa — registro de presença primordial com precisão de dias, meses e anos.§Aparência§Armadura completa de placas negras, vazia por dentro. Viseira brilhando violeta. Flutua 20cm acima do chão.", hp: "", ac: "", links: ["Kael Sepet","Os Fundadores"], urgent: false },
+  { name: "Devorador Menor", status: "Fugitivo — relatando aos Mestres", badge: "b-inimigo", cat: "inimigo", sess: "S12–21", desc: "§Introdução§Servo dos Mestres Antigos. Primeiro Devorador Menor registrado a bater em retirada.§Acontecimentos§O Rugido Ancestral de Leyn fez com que sentisse medo genuíno pela primeira vez. Ritual paralisado — reconstruível em aproximadamente uma semana. A retirada foi o dado mais relevante: Devoradores Menores não recuam por instinto. Algo no sangue primordial de Leyn criou uma resposta que a categoria não tem precedente para processar.", hp: "", ac: "", links: ["A Mestra — Devorador de Faces"], urgent: true },
+  { name: "Kael Sepet", status: "Morto — Ano 615", badge: "b-familia", cat: "familia", sess: "S12–21", desc: "§Introdução§Avô de Leyn. ~640 anos ao morrer. Último guardião e mestre da Armadura-Sentinela — foi ele quem a despertou e instruiu para sua função, mas a essência da Sentinela origina-se do sacrifício dos cinco Fundadores, não de Kael.§Acontecimentos§Não estava na Vila no dia do massacre — retornou três dias depois para encontrar as cinzas. Passou os três anos seguintes sozinho: enterrando os 147 mortos e gravando cada nome nas paredes das catacumbas. Quando o último nome foi gravado, construiu o próprio túmulo com as mãos em quatro dias. Foi à Sentinela e disse: \'Pode me substituir.\' Entrou na Sala da Balança e nunca saiu. Respondeu à prece de Leyn na Batalha das Catacumbas.§Propósito§A Sala da Balança permanece fechada — sua última instrução foi que sua escolha fosse respeitada. Marcação: \'Aquele que ficou quando todos foram. Aquele que enterrou os nomes para que não fossem esquecidos.\'§Aparência§Caixão vazio ao lado do túmulo — construído pela Sentinela a pedido dele. Frasco de sangue emergencial no Arsenal.", hp: "", ac: "", links: ["Leyn Sepet","Armadura-Sentinela"], urgent: false },
+  { name: "Os Primeiros", status: "Míticos — origem da linhagem", badge: "b-entidade", cat: "entidade", sess: "S17", desc: "§Introdução§Dois vampiros numa lua vermelha e campo de neve — seus nomes não estão registrados, apenas o título: Os Primeiros. A memória mais antiga acessível à Armadura-Sentinela, fragmento sem palavras. O sangue que corre em Leyn e Kaira é o mesmo sangue daqueles dois, ininterrupto por milênios — a linhagem Sepet tem pelo menos 4.000 a 5.000 anos de história antes do ritual de fundação da Vila.§A Diáspora Primordial§Os filhos dos Primeiros não permaneceram juntos. A fragmentação não foi ruptura — foi expansão por domínio. Os Voss foram para o norte e ordenaram. Os Elendra cruzaram para a floresta e harmonizaram. Os Corvath juraram servir à passagem das almas e encaminharam. Os Sepet ficaram e preservaram. O que os unia não era aliança — era origem. E enquanto essa origem permanecesse no sangue, a fragmentação nunca seria total.§O Desvio e a Correção§À medida que os filhos se espalharam, a vontade absoluta foi usada crescentemente para dominar. A intenção original se perdeu nas gerações seguintes. A resposta de Leyn na Provação da Dignidade — \'porque sempre fui feliz fazendo isso\' — foi reconhecida pelo ancestral precisamente porque recuperava a pureza anterior à distorção. Não é apenas anomalia biológica. É o primeiro portador da linhagem em milênios a devolver ao sangue o sentido que Os Primeiros carregavam no campo de neve.§Aparição§Na Provação da Dignidade, a figura que apareceu para Leyn assumiu a forma de um dos Primeiros — o portador mais honesto da linhagem, segundo a própria Câmara.", hp: "", ac: "", links: [], urgent: false },
+  { name: "Gareth Voss", status: "Morto — carta entregue", badge: "b-morto", cat: "morto", sess: "S9–21", desc: "§Introdução§Irmão de Aldric. Sobreviveu ao massacre dos Voss por estar fora — os dois se separaram propositalmente.§Acontecimentos§Nas primeiras gerações de viagem, os outros clãs ainda existiam. Encontrou-os vivos mas recusou aproximação direta: acreditava que sua presença poderia atrair os mesmos caçadores, e escolheu observar de longe. À medida que os clãs caíam um por um — Corvath, Elendra, por último os Sepet — tentou chegar a tempo em cada um e não chegou. Deixou com o ferreiro Garrett Stonehammer — anão cuja longevidade garantia que viveria para entregar — um baú lacrado e carta endereçada a qualquer primordial que sobrevivesse. O baú foi entregue a Leyn por Tobias, aprendiz de Garrett, que guardou a chave para o momento certo. Garrett morreu de ataque cardíaco quatro meses antes da chegada de Leyn: resistiu tempo suficiente para garantir que o baú chegasse às mãos certas, mas não viveu para ver.§Propósito§Carta entregue a Leyn pelo baú que Tobias guardava — lacrada com cera vermelha, símbolo das duas luas entrelaçadas da linhagem Voss. Lida durante a corrida noturna para a Vila Sepet. Registrou que viajou por Valtheris após o massacre, encontrou apenas ruínas — Sepet, Corvath, Elendra, todos extintos. Sentiu que algo ainda vivia na Vila Sepet: não fantasmas, algo mais profundo, magia antiga dos Sepet. Aviso incluído: a noite eterna protege vampiros, mas também atrai outras coisas. Morreu feliz. Recado ao irmão: \'Diga ao meu irmão idiota e teimoso que Gareth morreu feliz. Encontrei paz.\'", hp: "", ac: "", links: ["Aldric Voss","Tobias"], urgent: false },
+  { name: "Mermillion Moonlight", status: "Arquivado — futuro", badge: "b-outro", cat: "outro", sess: "S11", desc: "§Introdução§Alcunha: Aquele que Ruge. Dragão lendário. Aparece sempre à noite. Maior que uma vila inteira. Dez mil homens são considerados suicídio contra ele. Sem vínculo com cultos nem inimigos específicos — simplesmente é.§Natureza§Povos constroem calendários e superstições em torno de sua aparição. Sua presença no continente complica qualquer teologia que tente explicar o mundo em termos de bem e mal, ordem e caos — ele não pertence a nenhuma dessas categorias. Guardado para momento narrativamente apropriado.§Aparência§Escamas e pelos quase negros com texturas pontiagudas ao longo da cabeça, costas e cauda. Olho brilhante em roxo-violeta — contraste sobrenatural, como se movido por força arcana. Garras dianteiras enormes.", hp: "", ac: "", links: [], urgent: false },
+  { name: "Miriam", status: "Aldeã — costureira", badge: "b-outro", cat: "outro", sess: "S7", desc: "Costureira idosa que fez roupas novas para Kaira.", hp: "", ac: "", links: [], urgent: false },
+  { name: "Garotinha salva", status: "Aldeã", badge: "b-outro", cat: "outro", sess: "S4, S7", desc: "§Introdução§~8 anos. Filha de aldeã que ajudou uma criança vampira desconhecida por compaixão e quase morreu queimada por isso.§Acontecimentos§Tomada como refém pelo Padre Cornelius — adaga no pescoço. Libertada quando Leyn se ofereceu como prisioneiro em troca. Após a batalha: \'Você… você tem olhos vermelhos… mas salvou a gente…\' Já com a mãe: \'Obrigada, senhor vampiro.\'", hp: "", ac: "", links: [], urgent: false },
+  { name: "Maven", status: "Morto — Culto", badge: "b-morto", cat: "morto", sess: "S19–21", desc: "§Introdução§Melhor amigo de Teren no Culto. Morreu num ritual fracassado.§Acontecimentos§Teren mentiu sobre sua morte para proteger Rory por meses — não queria que o amigo carregasse o peso de saber que o Culto consumia as pessoas que recrutava. A morte de Maven foi o catalisador silencioso da deserção de Teren: o momento em que o custo se tornou pessoal demais para ser racionalizado.", hp: "", ac: "", links: ["Teren","Rory / Kael"], urgent: false },
+  { name: "A Criança de Olhos Âmbar", status: "Liberada — vive em Victória", badge: "b-outro", cat: "outro", sess: "S21", desc: "§Introdução§Aprisionada no Núcleo do Construto. Olhos âmbar — mesma cor de Kaira.§Acontecimentos§Liberta por Leyn pela presença — o núcleo reagiu à sua intenção verbal antes de qualquer contato físico. A Sentinela descreveu a técnica como algo mais antigo que qualquer método registrado. Escolheu \'Levanta\' para gravar em Victória. \'Obrigada por me ver. Não como ferramenta. Como eu era.\'", hp: "", ac: "", links: [], urgent: false },
+  { name: "Vrykolakas Corvath", status: "Presença remanescente — território do clã", badge: "b-entidade", cat: "entidade", sess: "Codex", desc: "§Introdução§Membros do clã Corvath que morreram no massacre sem rito e sem vínculo de sangue que os ancorasse — e voltaram. Não são vampiros no sentido que Valtheris conhece: não foram transformados com intenção, não têm criador. Sangue primordial sem forma produziu algo distorcido — potência sem coordenadas.§Natureza§O clã era de psicopompos: guiavam almas para atravessar a fronteira. Os Vrykolakas retornaram com o impulso desse propósito sem a compreensão que o tornava funcional — agora prendem almas em vez de conduzi-las. Qualquer um que morra no território é atraído e preso no mesmo limbo. Corvos em número anormal circulam sobre o território. Os Guardiões têm ciência do desequilíbrio — que ainda não tenham resolvido sugere que precisam de alguém capaz de chegar aos Corvath de uma forma que eles não conseguem.§Nota§Existe uma segunda forma de origem documentada no Codex: morte com Sanidade reduzida a zero, produzindo variante sem memória de propósito, apenas impulso sem coordenadas. Essa variante é distinta dos Corvath.", hp: "", ac: "", links: ["Guardiões do Limiar"], urgent: false },
+  { name: "Os Fundadores", status: "Míticos — essência da Vila", badge: "b-familia", cat: "familia", sess: "Codex", desc: "§Introdução§Cinco vampiros primordiais Sepet que se sacrificaram voluntariamente há 304 anos para fundar a Vila Sepet. Não são os mesmos que Os Primeiros — Os Primeiros são a origem da linhagem (4.000–5.000 anos antes). Os Fundadores são os que escolheram parar e construir.§Acontecimentos§Seu sangue foi vertido nos quatro pontos cardinais e no centro do vale — ato que criou a Noite Eterna, o Vínculo da Vila e a própria Armadura-Sentinela. Kael foi seu último guardião e mestre, mas os Fundadores são o que a Sentinela é. \'Os Fundadores ficariam honrados.\'", hp: "", ac: "", links: ["Armadura-Sentinela"], urgent: false },
+  { name: "Linhagem Elendra", status: "Exterminada — data incerta", badge: "b-outro", cat: "outro", sess: "Codex", desc: "§Introdução§Linhagem primordial de vampiros mestiços — nascidos do cruzamento entre sangue primordial vampírico e sangue élfico. Carregavam dupla consciência: demasiado vampiros para o reino élfico, demasiado élficos para os clãs primordiais.§Destino§Não voltaram como Vrykolakas — o sangue élfico, com sua conexão aos espíritos e a um deus regente ativo, pode ter oferecido uma forma de passagem que o sangue vampírico puro não consegue. O que restou foi o território e a memória que os espíritos da floresta ainda carregam.", hp: "", ac: "", links: [], urgent: false },
+  { name: "Tharion Bruk", status: "Notável — Caminha Entre Raças", badge: "b-outro", cat: "outro", sess: "Codex", desc: "§Introdução§Troll moldado pela guerra e redefinido pela perda. Ficou órfão jovem num conflito que mal compreendia — a segunda chance veio de elfos arqueiros e um anão ferreiro que enxergaram não um monstro, mas alguém que ainda podia ser salvo.§Acontecimentos§Dos elfos herdou disciplina, precisão e paciência. Do anão absorveu o conhecimento da forja e a resistência mental que transforma sofrimento em técnica. Cicatrizes cobrem seu corpo como registros de tudo que enfrentou e sobreviveu.§Propósito§Sua maior singularidade está na voz — domina a língua ancestral dos trolls, o idioma refinado dos elfos, o dialeto dos anões, e outros acumulados em batalhas e jornadas. Em um continente onde raças raramente se entendem, é uma das poucas pontes que existem entre mundos que nunca conversariam.§Personalidade e Alinhamento§Sua batalha mais difícil é interna: forte demais para ser elfo, refinado demais para ser troll, diferente demais para ser anão. Pertence a todos os três mundos e a nenhum completamente. Alinhamento: lealdade forjada, não herdada.§Aparência e Combate§Força esmagadora de troll com técnica élfica sobreposta — pensa enquanto luta. Movimentos calculados, quase elegantes.", hp: "", ac: "", links: [], urgent: false },
+  { name: "A Caçadora do Luar", status: "Itinerante — nome desconhecido", badge: "b-outro", cat: "outro", sess: "Codex", desc: "§Introdução§Ninguém que cruzou com ela sabe seu nome — ela nunca disse. Passou a ser chamada de Caçadora do Luar por quem precisava de uma forma de se referir a ela. Ela não corrigiu. A ausência do nome é doutrina: espectros suficientemente antigos podem usar um nome como âncora para atingir quem o carrega à distância. Abolir o uso do próprio nome começou como precaução profissional. Tornou-se hábito. Tornou-se identidade. O nome existe apenas em algum lugar dentro dela, guardado como a única coisa que ela não entregou ao ofício.§Acontecimentos§Antes de ser caçadora, um espectro não a matou — tocou-a. Contato espectral direto é raro nos vivos: desenvolveu sintonização em vez de trauma. O toque ficou gravado como se o Plano da Morte tivesse deixado uma impressão digital nela. Desde então o mundo nunca mais pareceu completamente sólido. Decidiu, com a clareza de quem entendeu algo irreversível, que isso tornava necessário aprender a operar nele de qualquer forma.§Propósito§O ofício como identidade — caçar espectros é o que ela é, não apenas o que faz. Não está alinhada com nenhuma organização. Age por critérios próprios não completamente documentados.§Personalidade e Alinhamento§Opera com cinco perspectivas emocionais puras como conselho permanente e aprendeu a ouvi-las todas sem ser paralisada por nenhuma. Caça sem jamais encarar diretamente o que persegue — para quem a observa, parece olhar para o lugar errado até que se percebe que era o certo. Alinhamento: algo que Valtheris não tem categoria para classificar.§Aparência§Cabelos longos e pretos como a própria noite. Capa escura. A sensação de que ela já sabia o que ia encontrar antes de encontrar.§Capacidades§Sente presença espectral como variação térmica com direção rastreável. Vê espectros pela visão periférica — olhar direto os faz recuar. Lugares com presença espectral ativa têm textura diferente que ela aprendeu a ler. A Arma: metal escuro sem marca de origem que muda de forma conforme a intenção — às vezes antes de ela decidir. Opera no plano espectral de forma única: não fere espectros — toca. Ferir dissolve; tocar estabelece contato. Os Cristalizados: cinco estados emocionais puros — Ódio (vermelho-sangue), Amor (vermelho-vinho), Felicidade (verde), Paz (branco), Vazio (azul). Ódio: conclusões frias a partir da raiva. Amor: contesta Ódio, emocional sem ser frágil. Paz: nunca disse uma palavra. Felicidade e Vazio: externamente indistinguíveis — ela aprendeu a esperar antes de nomear qual é qual.§Ausência de Superfície§Em toda a trajetória — Cristalizados, Plano da Morte, instalações espectrais — nunca foi percebida por um Ser Antigo. Não há registro, não há contato, não há atenção. Para entidades que operam em escala de existência e não de identidade física, ela simplesmente não forma superfície de contato. A razão ela não conhece. O fato, também não.", hp: "", ac: "", links: ["Soren"], urgent: false },
+  { name: "Soren", status: "Catalogador espectral — sem filiação", badge: "b-outro", cat: "outro", sess: "Codex", desc: "§Introdução§Sem sobrenome registrado, sem endereço fixo, sem filiação ativa. Homem de meia-idade difícil de datar — pode ter quarenta anos ou sessenta. Constituição comum, nada que o destaque numa multidão. O tipo de pessoa que se esquece depois de se afastar. O que faz não tem nome em Valtheris: chega depois de um espectro colapsar, coleta o residual que sobra, cataloga e vende. Décadas nesse ofício produziram o maior arquivo privado de dados espectrais que existe no continente. Nenhuma instituição tem o que ele tem. Nenhuma instituição sabe que ele tem.§Personalidade e Alinhamento§Não vende a mesma informação para lados que se opõem diretamente — não por ética, por metodologia. \'Informação que vai para os dois lados perde valor.\' O que perturba quem negocia com ele não é encontrar a mentira — é não encontrá-la.§Aparência§Olhos cinza-claro com tonalidade que muda conforme a luz. É descoloração progressiva de décadas catalogando artefatos espectrais sem proteção adequada. Ele sabe disso e ainda não parou. Carrega sempre um caderno de capa grossa com bordas metálicas que não abre na frente de ninguém.§Capacidades§Paradoxo visual: reconhece Cristalizados com precisão suficiente para identificar a instalação de origem antes de qualquer pergunta. Mas não consegue vê-los pela periferia — apenas com foco direto. Quando olha para o lado, os espectros somem; quando foca, aparecem com clareza. O oposto exato de quem os caça com eficiência. Excelente em análise; dependente de parceiros para execução — algo que nunca admitiu em voz alta.", hp: "", ac: "", links: ["A Caçadora do Luar"], urgent: false },
+  { name: "Arin", status: "Estado Limiar — ex-prisioneira da Igreja", badge: "b-outro", cat: "outro", sess: "Codex", desc: "§Introdução§Sobrenome desconhecido. Mulher jovem, vinte e poucos anos. Os inquisidores da Igreja a submeteram a experimentos de acesso ao Plano da Morte. Foi forçada parcialmente através da fronteira e puxada de volta. Sobreviveu. A fronteira não voltou ao lugar. Carrega desde então o Estado Limiar: existe parcialmente em ambos os planos simultaneamente.§Acontecimentos§Mantém mentalmente um registro de quantas vezes usou a capacidade Limiar — não compartilhou esse número com ninguém. O inquisidor que conduziu os experimentos ainda está vivo e ainda serve à Igreja. A Igreja tem alcance continental em Valtheris. Essas duas informações em conjunto não requerem elaboração. Sobre o período de cativeiro não fala — não porque o trauma não foi processado, mas porque as palavras certas para o que aconteceu ainda não existem. Um dia vai encontrá-las.§Conexões§Soren mantém um dossiê de personagens sem nome — os resíduos que ela deixa ao usar o Estado Limiar têm uma composição que ele ainda não sabe nomear. Ela é um dado que ele não tem. Esteve presente, sem que a Caçadora do Luar soubesse, no momento em que a Caçadora decidiu abandonar o próprio nome — a primeira missão que fizeram juntas. Desde então carrega esse nome. Nunca o usou.§Aparência§Constituição que sugere movimento constante — não força, mas presença habitual em espaços onde ficar parada é risco. A sombra não se comporta corretamente: em luz direta aparece levemente maior que deveria. Em múltiplas fontes de luz, projeta apenas uma sombra. Às vezes, por uma fração de segundo, parece haver duas dela no mesmo espaço — eco visual. Dura menos de um piscar. Ela não menciona.", hp: "", ac: "", links: ["Soren", "A Caçadora do Luar"], urgent: false },
+  { name: "A Matriarca Fraetz", status: "Casa Fraetz — Coroa sem Cerimônia", badge: "b-aliado", cat: "aliado", important: true, sess: "Codex", desc: "§Introdução§Usa coroa não como adorno mas como declaração: este é o padrão, e eu o carrego. Comanda da forma que quem tem substância real comanda: sem precisar anunciar que está no comando.§Personalidade e Alinhamento§Cada filho tem seu caminho, seu método. O que ela estabelece são os limites que nenhum dos três cruzaria — não por obediência, mas porque entenderam por que os limites existem antes de serem velhos o suficiente para questioná-los. Quando aparece para resolver algo, resolve.§Aparência§Cabelos entre o castanho, o loiro e o ruivo — cor que muda com a luz.§Nota§Entrada a expandir com base em material futuro.", hp: "", ac: "", links: ["Fraetz — O Filho Visível", "Fraetz — O Terceiro", "Casa Fraetz"], urgent: false },
+  { name: "Fraetz — O Filho Visível", status: "Casa Fraetz — O Rosto da Família", badge: "b-aliado", cat: "aliado", sess: "Codex", desc: "§Introdução§O membro da família que aparece na frente. Não porque os outros recuem — porque esse é o papel dele no código da família: ser o ponto de contato, a presença que o mundo vê quando a Casa Fraetz decide se mover.§Personalidade e Alinhamento§O que isso exige não é apenas coragem física: exige ser o rosto de algo maior sem reduzir esse algo ao que o rosto representa.§Nota§Entrada a expandir com base em material futuro.", hp: "", ac: "", links: ["A Matriarca Fraetz", "Fraetz — O Terceiro", "Casa Fraetz"], urgent: false },
+  { name: "Fraetz — O Terceiro", status: "Casa Fraetz — Comandante da Rise", badge: "b-aliado", cat: "aliado", important: true, sess: "Codex", desc: "§Introdução§Estava lá. Não apareceu. Para um Fraetz, essa distinção não é ausência — é método. Opera pelo ângulo que nenhum observador está cobrindo. Chega antes que o problema se torne confronto. Sai antes que o crédito precise ser atribuído.§Capacidades§Comanda a Rise — onde qualquer um pode entrar, pegar contrato, construir reputação. A maioria dos membros nunca sabe quem está no topo. Para os que provaram valor, o encontro acontece: sem anúncio, sem agenda — simplesmente percebem que não estão mais sozinhos no cômodo, e que quem entrou conhece cada detalhe relevante sobre o que fizeram. Contratos que violam o código Fraetz não voltam com aprovação — sem explicação, simplesmente não acontece.§Nota§Entrada a expandir com base em material futuro.", hp: "", ac: "", links: ["A Matriarca Fraetz", "Fraetz — O Filho Visível", "Rise"], urgent: false },
+  { name: "Uhddra", status: "Nobre Corrompido — Manipulador", badge: "b-inimigo", cat: "inimigo", important: true, sess: "Codex", desc: "§Introdução§Nome completo: Braglie Aurelian Uhddra. Não é o nobre mais poderoso de Valtheris — é o mais convincente. Filho de linhagem menor que nunca deveria ter chegado aos salões do alto escalão, escalou cada degrau pela palavra e pela capacidade de moldar a realidade ao redor do que lhe convém acreditar. A distorção deixou de ser instrumental — distorce para si mesmo primeiro. O erro é uma categoria que não se aplica à sua própria pessoa. Não como estratégia. Como estado.§A Legião dos Convencidos§O poder real não está no título — está em quem ele consegue arrastar. Identifica pessoas com pouco acesso à informação e muito desejo de pertencer. Os que chegam em dúvida saem em certeza — a certeza que ele forneceu. Sua legião não é formada por tolos: é formada por pessoas que nunca tiveram acesso às versões alternativas dos fatos. Isola o fluxo de informação por vias indiretas — garante que quem discorda seja apresentado como movido por rancor ou ignorância. Quando o seguidor ouve a voz dissonante, já está preparado para descartá-la.§Impunidade Estrutural§Arruinou famílias com acusações fabricadas com camadas suficientes de verossimilhança. Desviou recursos da coroa em dois conflitos — quando investigado, apresentou-se como denunciante anônimo das irregularidades que criou. A investigação se virou contra os investigadores. O sistema ao redor foi lentamente reformatado: quem poderia julgá-lo o admira, o teme ou depende de favores.§Mecanismo§Quando o argumento não funciona, muda o terreno: questiona quem o interlocutor é para ter conteúdo — a idade, a origem, os anos de experiência, o nome da família. A posição de Uhddra, por definição, é sempre superior. Isso não é critério. É garantia. Garante que o mapa que carrega seja o único válido. Garante que quem chegou de forma diferente permaneça abaixo, precisando da aprovação que ele nunca vai conceder. Único registro de desafio bem-sucedido: uma jovem escriba sem nome registrado reuniu testemunhos de quatorze lesados em sessão pública. Ficou em silêncio por quase dois minutos — pela primeira vez documentada. A escriba desapareceu das folhas de pagamento três semanas depois. Uhddra não foi mencionado no processo.§Limitação§O que não consegue fazer é ajudar — por incapacidade estrutural: ajudar exige que o outro cresça, e um outro que cresce eventualmente não precisa mais de Uhddra para saber onde está.", hp: "", ac: "", links: ["Nobres Sanguessugas"], urgent: true },
+  { name: "Necrolai", status: "Ambígua — Rainha sem teto acima dela", badge: "b-outro", cat: "outro", important: true, sess: "Codex", desc: "§Introdução§Título imposto, nunca reivindicado: 'Rainha dos Vampiros' foi etiqueta que generais usavam na mesma frase em que a chamavam de bruxa. Sobreviveu séculos bajulando quem estivesse no topo — Morticon, depois Imperious, depois quem viesse. Octomus caiu, o trono ficou vago. Pela primeira vez ninguém acima para confirmar ou negar. É, agora, indiscutivelmente a Rainha — e não sabe bem o que fazer com essa ausência de teto.§Motor§O discurso de servir às trevas nunca foi dela — era o papel que performava como serva. Por isso, quando as trevas dominaram, continuou sem rumo: a vitória nunca foi sua. O que move de verdade é sobrevivência e vantagem pessoal — previsível em interesse mútuo, imprevisível em tudo o mais. Valtheris é o primeiro lugar sem patrão para reagir. Ainda não decidiu o que fazer com a liberdade.§O Único Gesto Sem Cálculo§Quando Octomus ordenou o extermínio, a fúria recaiu sobre a própria filha. Implorou por ela sem calcular vantagem — depois sacrificou os próprios poderes para ressuscitar guerreiros que nada lhe deviam, incluindo dois que nunca fariam o mesmo por ela. Não sabe nomear o que isso foi. Os nomes, com o tempo, chegam.§Nota§Transformou o pai de Leelee em verme e contou isso à filha com frieza. Há vermes em Briarwood que nunca reverteu — não por crueldade ativa, por indiferença ao dano de uma versão anterior de si mesma. Essa indiferença está diminuindo. Devagar.", hp: "", ac: "", links: ["Leelee Pimvare", "Clare Langtree"], urgent: false },
+  { name: "Leelee Pimvare", status: "Itinerante — dhampir, filha de Necrolai", badge: "b-outro", cat: "outro", sess: "Codex", desc: "§Introdução§Filha de vampira, meio-humana. Viveu entre humanos por escolha e entre o Submundo por circunstância — nunca pertenceu completamente a nenhum lado, e com o tempo deixou de tentar. O que parecia marginalidade virou perspectiva: é a única que entende tanto o lado humano quanto o vampírico de qualquer situação.§A Mãe§Necrolai a transformou em verme duas vezes — uma a mando de Imperious, outra pela própria mãe, testando um morfador. Nunca recebeu de volta o cajado que usou para salvar a vida de uma aliada. Mesmo assim atravessou o portal ao lado dela. Não é disfunção. É complicado porque é real.§Personalidade§Humor seco desenvolvido como distância segura — não é cinismo, é proteção. Quando para de fazer piada é quando algo importa de verdade. Lealdade escolhida, não automática: fica do lado de quem decide ficar, e quando decide, fica.", hp: "", ac: "", links: ["Necrolai", "Clare Langtree"], urgent: false },
+  { name: "Clare Langtree", status: "Guardiã do Portão — herdeira de Niella", badge: "b-outro", cat: "outro", sess: "Codex", desc: "§Introdução§Filha de Niella, que morreu selando o Portão do Submundo — consumiu a própria força vital para fechar o que precisava ser fechado. Restou Clare, aprendiz que virou responsável antes de estar pronta. O portão que a mãe fechou com a vida é o que ela guarda agora.§O Caminho Até Aqui§Passou anos como a aprendiz incapaz de executar o feitiço mais básico da própria escola. Quando finalmente conseguiu, o posto que viria antes dela já tinha ficado vago — e caiu sobre ela. Carrega essa história com humor quieto, não modéstia performática: o caminho importou.§Necrolai e Leelee§Sabe o que as duas fizeram num momento decisivo — um sacrifício de poder, um roubo que salvou uma vida. Não é dívida contratual, é reconhecimento que não dá para ignorar. Isso não torna a convivência fácil. Torna honesta.§Nota§Prometeu a alguém que voltaria viva e com resposta. Leva promessas a sério — é parte de ser Guardiã.", hp: "", ac: "", links: ["Necrolai", "Leelee Pimvare"], urgent: false },
+  { name: "Vraene — A que Forja Sonhos", status: "Itinerante — inscritora, amiga de infância de Davren", badge: "b-outro", cat: "outro", sess: "Codex", desc: "§Introdução§Nasceu numa comunidade draconata onde forja era trabalho, não magia. O fogo apareceu cedo — não como arma, como sensibilidade: sentia quando o metal estava pronto, quando uma lâmina ia aguentar e quando ia partir. A comunidade chamava de olho de brasa. Ela nunca discordou do nome.§O Fragmento Solar§Passou meses desenvolvendo, sem precedente conhecido, uma matriz capaz de conter energia solar de forma estável. Deu de presente a um amigo de infância, sem contrato, como declaração: acredito no que você está se tornando. Esse fragmento é hoje o núcleo da Lança do Amanhecer — a arma que o Arcebispo Davren Solharte carrega contra mortos-vivos. Ela não usa o título dele. Continua perguntando em silêncio se a peça ajudou a criar a grilheta.§A Distância§A amizade era real. O distanciamento também é — sem um momento exato de ruptura, só conversas cada vez mais curtas. Quando fala dele, usa o nome, não o título. É a única concessão emocional que aparece na superfície.§Ofício§Tem oficina fixa no reino dos humanos, sem vínculo com a Vila Sepet nem com comunidade draconata nenhuma. A alcunha existe porque as inscrições dela não encantam só o objeto — fazem o portador se sentir capaz do que mais teme. 'Uma runa gravada por encomenda dura. Uma gravada por intenção verdadeira transforma.'", hp: "", ac: "", links: ["Arcebispo Davren Solharte"], urgent: false }
+];
+
+var currentFilter = "todos";
+
+// ── highlight exact-match card after link click ───────────────────────────
+function jumpToCard(name) {
+  currentFilter = "todos";
+  var btns = document.querySelectorAll(".filter-btn");
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove("active");
+  document.getElementById("filter-todos").classList.add("active");
+  document.getElementById("search").value = "";
+  document.getElementById("clearBtn").style.display = "none";
+  render(name);   // pass highlight target
+  var card = document.getElementById("card-" + name.replace(/[^a-z0-9]/gi,'_'));
+  if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function clearSearch() {
+  document.getElementById("search").value = "";
+  document.getElementById("clearBtn").style.display = "none";
+  render();
+}
+
+function onSearch() {
+  var val = document.getElementById("search").value;
+  document.getElementById("clearBtn").style.display = val ? "block" : "none";
+  render();
+}
+
+function renderDesc(desc) {
+  if (!desc) return '<div class="card-desc"></div>';
+  if (desc.indexOf('§') === -1) {
+    return '<div class="card-desc">' + esc(desc) + '</div>';
+  }
+  var parts = desc.split('§');
+  var html = '<div class="card-desc">';
+  // Texto antes do primeiro § (se houver) exibe como parágrafo normal
+  if (parts[0].trim()) {
+    html += '<div class="desc-plain">' + esc(parts[0].trim()) + '</div>';
+  }
+  // Pares: §Label§Conteúdo
+  for (var i = 1; i + 1 < parts.length; i += 2) {
+    var label = parts[i].trim();
+    var cnt   = parts[i + 1].trim();
+    if (!label) continue;
+    html += '<div class="desc-section">';
+    html += '<span class="desc-label">' + esc(label) + '</span>';
+    if (cnt) html += '<div class="desc-content">' + esc(cnt) + '</div>';
+    html += '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function render(highlightName) {
+  var q = (document.getElementById("search").value || "").toLowerCase().trim();
+  var container = document.getElementById("cards");
+  var html = "";
+  var visible = 0;
+
+  for (var i = 0; i < data.length; i++) {
+    var r = data[i];
+
+    // Filter logic
+    var matchUrgent = currentFilter === "urgent" ? r.urgent : true;
+    var matchCat    = currentFilter === "todos" || currentFilter === "urgent" || r.cat === currentFilter;
+    var searchStr   = r.name + " " + r.status + " " + r.desc + " " + r.sess + " " + (r.links||[]).join(" ");
+    var matchQ      = !q || searchStr.toLowerCase().indexOf(q) >= 0;
+    if (!matchCat || !matchUrgent || !matchQ) continue;
+
+    visible++;
+    var cardId = "card-" + r.name.replace(/[^a-z0-9]/gi,'_');
+    var isHighlight = highlightName && r.name === highlightName;
+    var importantClass = r.important ? ' card-important' : '';
+    var importantLabel = r.important ? '<div class="important-crown">✦ Personagem Central</div>' : '';
+
+    // ── meta bar ──
+    var meta = "";
+    var hasMeta = r.hp || r.ac || r.links.length > 0 || r.urgent;
+    if (hasMeta) {
+      meta += '<div class="card-meta">';
+      if (r.urgent) {
+        meta += '<span class="urgent-tag"><span class="urgent-dot"></span>Urgente</span>';
+      }
+      if (r.hp || r.ac) {
+        if (r.hp) {
+          var parts = r.hp.split("/");
+          var cur = parseInt(parts[0]), max = parseInt(parts[1]);
+          var pct = max ? Math.round((cur/max)*100) : 100;
+          var hpColor = pct > 60 ? "#5DCAA5" : pct > 30 ? "#d4a030" : "#e05040";
+          meta += '<span class="hp-bar" style="color:' + hpColor + '">HP ' + r.hp + '</span>';
+        }
+        if (r.hp && r.ac) meta += '<span class="meta-sep">·</span>';
+        if (r.ac) {
+          meta += '<span class="ac-val">AC ' + r.ac + '</span>';
+        }
+      }
+      if (r.links.length > 0) {
+        var linkHtml = r.links.map(function(l) {
+          return '<a class="link-ref" data-target="' + esc(l) + '">' + esc(l) + '</a>';
+        }).join(', ');
+        meta += '<span class="links-row">↔ ' + linkHtml + '</span>';
+      }
+      meta += '</div>';
+    }
+
+    var highlight = isHighlight ? ' style="border-color:#8a6030;background:#1a1208;"' : '';
+    var warnStripe = r.badge === 'b-warn' ? ' b-warn-stripe' : '';
+    html += '<div class="card cat-' + r.cat + importantClass + warnStripe + '" id="' + cardId + '"' + highlight + '>'
+      + '<div class="card-header">'
+      + '<div><div class="card-name">' + esc(r.name) + '</div>' + importantLabel + '<div class="card-sess">' + esc(r.sess) + '</div></div>'
+      + '<span class="badge ' + r.badge + '">' + esc(r.status) + '</span>'
+      + '</div>'
+      + renderDesc(r.desc)
+      + meta
+      + '</div>';
+  }
+
+  if (!html) {
+    html = '<div class="no-results">Nenhum registro encontrado.</div>';
+  }
+
+  container.innerHTML = html;
+  document.getElementById("count").textContent = visible + (visible !== 1 ? " registros encontrados" : " registro encontrado");
+}
+
+function setFilter(cat, btn) {
+  currentFilter = cat;
+  var btns = document.querySelectorAll(".filter-btn");
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove("active");
+  btn.classList.add("active");
+  render();
+}
+
+render();
+
+// single persistent delegation for link clicks
+document.getElementById("cards").addEventListener("click", function(e) {
+  var a = e.target.closest(".link-ref");
+  if (a) { jumpToCard(a.getAttribute("data-target")); }
+});
+</script>
+</body>
+</html>

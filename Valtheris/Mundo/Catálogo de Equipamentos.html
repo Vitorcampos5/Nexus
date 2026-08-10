@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo de Equipamentos — Valtheris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:          #08060f;
+    --surface:     #0f0b1c;
+    --border:      #1e1830;
+    --border-2:    #2c2448;
+    --blood:       #8b1a28;
+    --blood-glow:  #cc2840;
+    --purple:      #4a1870;
+    --gold:        #c9a84c;
+    --gold-light:  #e8c870;
+    --gold-dim:    #5a4010;
+    --text:        #cec0e2;
+    --text-dim:    #6a5880;
+    --text-faint:  #24183a;
+    --font-title:  'Cinzel', serif;
+    --font-body:   'Crimson Text', serif;
+    --font-mono:   'Fira Code', monospace;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background-color:var(--bg);
+    background-image:
+      radial-gradient(ellipse 80% 40% at 50% 0%, #1a0828 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 100% 100%, #0a0520 0%, transparent 50%),
+      radial-gradient(ellipse 30% 40% at 0% 80%, #180a08 0%, transparent 50%);
+    min-height:100vh;
+    font-family:var(--font-body);
+    color:var(--text);
+  }
+  body::after{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+    opacity:.4;
+  }
+  ::-webkit-scrollbar{width:5px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--blood);border-radius:3px}
+  input{outline:none;border:none}
+  button{cursor:pointer}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulse-border{0%,100%{opacity:.5}50%{opacity:1}}
+
+  /* ────────────────────────────────
+     LAYOUT
+  ──────────────────────────────── */
+  #app{max-width:900px;margin:0 auto;padding:0 16px 80px;position:relative;z-index:1}
+
+  /* ────────────────────────────────
+     HEADER
+  ──────────────────────────────── */
+  header{
+    text-align:center;
+    padding:52px 0 32px;
+    position:relative;
+  }
+  header::after{
+    content:'';display:block;
+    height:1px;
+    background:linear-gradient(90deg,transparent,var(--blood) 30%,var(--purple) 70%,transparent);
+    margin-top:24px;
+    opacity:.5;
+  }
+  .header-eyebrow{
+    font-family:var(--font-mono);
+    font-size:9px;letter-spacing:.5em;text-transform:uppercase;
+    color:var(--text-faint);margin-bottom:14px;
+  }
+  .header-title{
+    font-family:var(--font-title);
+    font-size:clamp(22px,5vw,34px);
+    font-weight:900;letter-spacing:.1em;
+    background:linear-gradient(135deg,#d4a0a0 0%,var(--gold-light) 45%,#a880ff 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  }
+  .header-count{
+    margin:10px 0 0;
+    color:var(--text-dim);font-size:12px;
+    font-family:var(--font-title);letter-spacing:.06em;
+  }
+  .header-counts{
+    margin-top:16px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;
+  }
+  .header-type-count{
+    font-size:10px;font-family:var(--font-title);
+    padding:3px 10px;border-radius:20px;
+    border:1px solid currentColor;
+    opacity:.5;letter-spacing:.06em;
+  }
+  .header-type-count:hover{opacity:1}
+
+  /* ────────────────────────────────
+     FILTER PANEL — sticky
+  ──────────────────────────────── */
+  #filter-panel{
+    position:sticky;top:0;z-index:100;
+    background:rgba(8,6,15,.92);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border-2);
+    padding:12px 0 10px;
+    margin:0 -16px;
+    padding-left:16px;padding-right:16px;
+  }
+
+  /* Search */
+  .search-wrap{position:relative;margin-bottom:10px}
+  .search-icon{
+    position:absolute;left:14px;top:50%;transform:translateY(-50%);
+    color:var(--text-faint);font-size:15px;pointer-events:none;
+  }
+  .search-input{
+    width:100%;
+    background:var(--surface);
+    border:1px solid var(--border-2);
+    border-radius:4px;
+    padding:10px 14px 10px 38px;
+    color:var(--text);
+    font-size:14px;font-family:var(--font-body);
+    transition:border-color .2s,box-shadow .2s;
+  }
+  .search-input:focus{
+    border-color:var(--blood);
+    box-shadow:0 0 0 2px rgba(139,26,40,.18),0 0 20px rgba(139,26,40,.1);
+  }
+  .search-input::placeholder{color:var(--text-faint)}
+
+  /* Tipo tabs — icon row */
+  .tipo-tabs{
+    display:flex;gap:4px;overflow-x:auto;
+    scrollbar-width:none;-ms-overflow-style:none;
+    margin-bottom:8px;
+    padding-bottom:2px;
+  }
+  .tipo-tabs::-webkit-scrollbar{display:none}
+  .tipo-tab{
+    display:flex;align-items:center;gap:5px;
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:3px;
+    padding:5px 11px;
+    color:var(--text-dim);
+    font-size:11px;font-family:var(--font-title);letter-spacing:.07em;
+    white-space:nowrap;
+    transition:all .15s;flex-shrink:0;
+  }
+  .tipo-tab .tipo-icon{font-size:12px}
+  .tipo-tab:hover{border-color:var(--border-2);color:var(--text)}
+  .tipo-tab.active{
+    background:rgba(139,26,40,.18);
+    border-color:var(--blood);
+    color:#e88090;
+    box-shadow:0 0 8px rgba(139,26,40,.2);
+  }
+
+  /* Filter toggle button */
+  .filter-toggle-row{
+    display:flex;align-items:center;gap:8px;
+  }
+  .filter-toggle-btn{
+    display:flex;align-items:center;gap:6px;
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:3px;
+    padding:4px 12px;
+    color:var(--text-dim);
+    font-size:10px;font-family:var(--font-title);letter-spacing:.1em;
+    transition:all .15s;
+    white-space:nowrap;
+  }
+  .filter-toggle-btn:hover{border-color:var(--border-2);color:var(--text)}
+  .filter-toggle-btn.has-active{
+    border-color:var(--gold-dim);color:var(--gold);
+    background:rgba(200,160,48,.08);
+  }
+  .filter-active-count{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:16px;height:16px;border-radius:50%;
+    background:var(--blood);color:#fff;
+    font-size:9px;font-family:var(--font-mono);
+  }
+  .filter-clear-btn{
+    background:transparent;border:none;
+    color:var(--text-faint);font-size:10px;
+    font-family:var(--font-title);letter-spacing:.08em;
+    padding:4px 8px;
+    transition:color .15s;margin-left:auto;
+  }
+  .filter-clear-btn:hover{color:var(--blood-glow)}
+
+  /* Advanced filter drawer */
+  .filter-drawer{
+    display:none;
+    border-top:1px solid var(--border);
+    margin-top:10px;padding-top:10px;
+    flex-direction:column;gap:10px;
+    animation:fadeIn .15s ease;
+  }
+  .filter-drawer.open{display:flex}
+  .filter-group{display:flex;flex-direction:column;gap:6px}
+  .filter-group-label{
+    font-size:8px;letter-spacing:.25em;text-transform:uppercase;
+    color:var(--text-faint);font-family:var(--font-mono);
+  }
+  .filter-chips{display:flex;gap:4px;flex-wrap:wrap}
+  .filter-chip{
+    background:transparent;
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:3px 12px;
+    color:var(--text-dim);
+    font-size:10px;font-family:var(--font-title);letter-spacing:.06em;
+    transition:all .15s;white-space:nowrap;
+  }
+  .filter-chip:hover{border-color:var(--border-2);color:var(--text)}
+  .filter-chip.active{
+    border-width:1px;
+  }
+
+  /* Divider */
+  .divider{
+    display:flex;align-items:center;gap:14px;
+    margin:24px 0 18px;
+  }
+  .divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border-2),transparent)}
+  .divider-text{
+    font-size:8px;color:var(--text-faint);letter-spacing:.3em;
+    font-family:var(--font-mono);white-space:nowrap;
+  }
+
+  /* ────────────────────────────────
+     CARDS
+  ──────────────────────────────── */
+  #cards{display:flex;flex-direction:column;gap:8px}
+
+  /* Empty state */
+  .empty{text-align:center;padding:80px 0}
+  .empty-icon{font-size:48px;margin-bottom:20px;opacity:.15}
+  .empty-body{color:var(--text-faint);font-size:14px;font-family:var(--font-body)}
+
+  /* Base card shell */
+  .card-shell{
+    position:relative;cursor:pointer;
+    border-radius:3px;
+    overflow:hidden;
+    border:1px solid var(--border);
+    background:var(--surface);
+    transition:border-color .2s,box-shadow .2s,transform .15s;
+  }
+  .card-shell:hover{transform:translateX(2px)}
+  .card-stripe{
+    position:absolute;left:0;top:0;bottom:0;
+    width:3px;
+  }
+  .card-inner{padding:13px 16px 10px 20px}
+
+  /* Card header layout */
+  .card-header{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .card-left{flex:1;min-width:0}
+  .card-name-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+  .card-icon{font-size:13px;flex-shrink:0}
+  .card-name{
+    font-family:var(--font-title);font-size:14px;font-weight:700;
+    letter-spacing:.04em;color:var(--text);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .card-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .card-rarity{
+    font-size:9px;font-family:var(--font-title);
+    letter-spacing:.12em;text-transform:uppercase;font-weight:600;
+  }
+  .card-subtipo{font-size:10px;font-family:var(--font-body);color:var(--text-dim)}
+  .card-saga{
+    font-size:9px;font-family:var(--font-mono);
+    color:var(--text-faint);letter-spacing:.04em;margin-left:auto;
+  }
+  .card-right{text-align:right;flex-shrink:0}
+  .card-status{font-size:11px;font-family:var(--font-title);letter-spacing:.04em}
+  .card-possuidor{font-size:10px;font-family:var(--font-body);color:var(--text-faint);margin-top:2px}
+  .card-toggle{
+    text-align:center;margin-top:8px;
+    font-size:7px;letter-spacing:.25em;
+    font-family:var(--font-mono);color:var(--text-faint);
+  }
+  .card-body{margin-top:12px;padding-top:10px;border-top:1px solid var(--border);animation:fadeIn .2s ease}
+
+  /* Body internals */
+  .section{margin-bottom:10px}
+  .section-label{
+    font-size:8px;letter-spacing:.2em;text-transform:uppercase;
+    font-family:var(--font-mono);display:block;margin-bottom:5px;
+  }
+  .section-text{font-size:13px;font-family:var(--font-body)}
+  .attr-row{
+    display:flex;gap:8px;margin-top:3px;
+    font-size:13px;font-family:var(--font-body);line-height:1.5;
+  }
+  .attr-bullet{font-size:7px;margin-top:5px;flex-shrink:0}
+  .card-descricao{
+    font-size:13px;font-family:var(--font-body);
+    font-style:italic;line-height:1.8;
+  }
+
+  /* ── LENDÁRIO ── */
+  .card-lendario{position:relative;cursor:pointer;overflow:hidden;border-radius:3px;transition:filter .2s,box-shadow .3s}
+  .card-lendario:hover{filter:brightness(1.08)}
+  .card-lendario .card-body{border-top:1px solid rgba(255,255,255,.07)}
+  .card-lendario-inner{padding:13px 16px 10px 20px;position:relative;z-index:1}
+  .lend-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
+  .lend-scanline{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.18) 3px,rgba(0,0,0,.18) 4px);pointer-events:none;z-index:2;opacity:.5}
+  .lend-particles{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+  .lend-particle{position:absolute;border-radius:50%;animation:lend-float linear infinite}
+  @keyframes lend-float{0%{transform:translateY(0) scale(1);opacity:.7}50%{opacity:.3}100%{transform:translateY(-60px) scale(.4);opacity:0}}
+  .lend-crown{position:absolute;top:10px;right:14px;font-size:18px;opacity:.18;pointer-events:none;z-index:3;letter-spacing:4px}
+  .lend-border-glow{position:absolute;inset:0;pointer-events:none;z-index:4;border-radius:3px}
+
+  /* ── ARTEFATO ÚNICO ── */
+  .card-artefato-unico{position:relative;cursor:pointer;overflow:hidden;border-radius:3px;transition:filter .2s,box-shadow .3s}
+  .card-artefato-unico:hover{filter:brightness(1.1)}
+  .card-artefato-unico .card-body{border-top:1px solid rgba(255,255,255,.1)}
+  .card-artefato-unico-inner{padding:13px 16px 10px 20px;position:relative;z-index:1}
+  .uniq-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
+  .uniq-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,transparent 30%,rgba(0,0,0,.6) 100%);z-index:2;pointer-events:none}
+  .uniq-runes{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:13px;letter-spacing:8px;opacity:.12;pointer-events:none;z-index:3;font-family:serif}
+  .uniq-corner-tl{position:absolute;top:0;left:0;width:32px;height:32px;pointer-events:none;z-index:3}
+  .uniq-corner-tr{position:absolute;top:0;right:0;width:32px;height:32px;pointer-events:none;z-index:3;transform:scaleX(-1)}
+  .uniq-pulse{position:absolute;inset:0;pointer-events:none;z-index:2;animation:uniq-breathe 4s ease-in-out infinite}
+  @keyframes uniq-breathe{0%,100%{opacity:.05}50%{opacity:.18}}
+
+  /* Footer */
+  footer{
+    margin-top:60px;text-align:center;padding-top:20px;
+    border-top:1px solid var(--border);
+    color:var(--text-faint);font-size:9px;letter-spacing:.3em;
+    font-family:var(--font-mono);
+  }
+
+  /* ══════════════════════════════════════════════════
+     ESTILOS DA ANIMAÇÃO DO BAÚ
+  ══════════════════════════════════════════════════ */
+  /* ── overlay ── */
+  #chest-overlay {
+    position:fixed;inset:0;z-index:9999;
+    background:radial-gradient(ellipse at 50% 60%, #12090200 0%, #080400 100%);
+    background-color:#060402;
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+    transition:opacity .9s ease, visibility .9s ease;
+  }
+  #chest-overlay.hidden { opacity:0; pointer-events:none; visibility:hidden; }
+
+  /* ── bg runes ── */
+  #chest-bg-runes {
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:320px;color:#c8a650;opacity:.018;
+    font-family:serif;letter-spacing:30px;
+    user-select:none;pointer-events:none;
+    animation:runeRotate 40s linear infinite;
+  }
+  @keyframes runeRotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+  /* ── cena ── */
+  #chest-scene {
+    display:flex;flex-direction:column;align-items:center;gap:0;
+    position:relative;z-index:2;
+    animation:sceneAppear 1.2s cubic-bezier(.22,1,.36,1) both;
+  }
+  @keyframes sceneAppear {
+    from{opacity:0;transform:translateY(24px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  #chest-eyebrow {
+    font-size:10px;letter-spacing:.4em;color:#352a10;
+    font-family:'Cinzel',serif;margin-bottom:10px;
+    animation:sceneAppear 1.4s .2s both;
+  }
+  #chest-subtitle {
+    font-size:22px;font-family:'Cinzel',serif;color:#c8a96e;
+    letter-spacing:.12em;font-weight:700;margin-bottom:32px;
+    text-shadow:0 0 30px #c8a96e40;
+    animation:sceneAppear 1.4s .3s both;
+  }
+
+  /* ── wrapper clicável ── */
+  #chest-wrapper {
+    position:relative;cursor:pointer;
+    width:260px;height:200px;
+    display:flex;align-items:center;justify-content:center;
+    animation:chestFloat 3.5s ease-in-out infinite;
+    transition:transform .15s;
+  }
+  #chest-wrapper:hover { transform:scale(1.035); }
+  #chest-wrapper:active { transform:scale(.97); }
+  @keyframes chestFloat {
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-7px)}
+  }
+  #chest-wrapper.opening { animation:none !important; }
+
+  /* ── SVG ── */
+  #chest-svg { width:240px;height:180px;overflow:visible;filter:drop-shadow(0 8px 24px #00000088); }
+
+  /* ── glow ring ── */
+  #chest-glow-ring {
+    position:absolute;top:50%;left:50%;
+    width:200px;height:200px;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:radial-gradient(circle, #c8a65015 0%, transparent 70%);
+    pointer-events:none;
+    animation:glowPulse 2.5s ease-in-out infinite;
+  }
+  @keyframes glowPulse {
+    0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1)}
+    50%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
+  }
+
+  /* ── sombra ── */
+  #chest-shadow {
+    position:absolute;bottom:2px;left:50%;
+    transform:translateX(-50%);
+    width:190px;height:14px;
+    background:radial-gradient(ellipse, #00000099 0%, transparent 70%);
+    pointer-events:none;
+    transition:all .4s ease;
+  }
+
+  /* ── prompt ── */
+  #chest-prompt {
+    margin-top:20px;
+    display:flex;align-items:center;gap:8px;
+    font-family:'Cinzel',serif;font-size:11px;
+    letter-spacing:.28em;color:#3a2e14;
+    animation:promptPulse 2s ease-in-out infinite, sceneAppear 1.4s .5s both;
+  }
+  @keyframes promptPulse {
+    0%,100%{opacity:.5;color:#3a2e14}
+    50%{opacity:1;color:#7a6228}
+  }
+  #chest-prompt-icon { font-size:10px; }
+
+  /* ── tampa abrindo ── */
+  #chest-lid-group {
+    transition:transform .7s cubic-bezier(.22,1,.36,1);
+  }
+  #chest-lid-group.lid-open {
+    transform:rotateX(-125deg) !important;
+  }
+
+  /* ── luz interna ── */
+  #chest-inner-light {
+    transition:opacity .4s .3s ease;
+  }
+  #chest-inner-light.visible { opacity:1 !important; }
+
+  /* ── partículas ── */
+  #chest-particles-container {
+    position:fixed;inset:0;pointer-events:none;z-index:10000;overflow:hidden;
+  }
+  .chest-particle {
+    position:absolute;
+    border-radius:50%;
+    pointer-events:none;
+    animation:particleBurst var(--dur) var(--delay) ease-out forwards;
+  }
+  @keyframes particleBurst {
+    0%   {transform:translate(0,0) scale(1);opacity:1}
+    100% {transform:translate(var(--tx),var(--ty)) scale(0);opacity:0}
+  }
+
+  /* ── flash de abertura ── */
+  #chest-flash {
+    position:fixed;inset:0;z-index:10001;
+    background:#c8a650;opacity:0;pointer-events:none;
+    transition:opacity .12s ease;
+  }
+  #chest-flash.flash-on { opacity:.18; }
+  #chest-flash.flash-off { opacity:0;transition:opacity .4s ease; }
+
+  /* bloqueia scroll enquanto overlay está visível */
+  body.chest-locked { overflow:hidden; }
+
+/* ── ACESSIBILIDADE: MOVIMENTO REDUZIDO ─────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+</style>
+</head>
+<body>
+<!-- avisa o mapa do Nexus (se estiver por perto) que esta página foi visitada -->
+<script>try{ if (window.top !== window) window.top.postMessage({ tipo:'nexus-visita', id:'valtheris_equip' }, '*'); }catch(e){}</script>
+
+<div id="chest-overlay">
+  <div id="chest-bg-runes"></div>
+  <div id="chest-particles-container"></div>
+
+  <div id="chest-scene">
+    <div id="chest-eyebrow">✦ &nbsp; VALTHERIS &nbsp; ✦</div>
+    <div id="chest-subtitle">Catálogo de Equipamentos</div>
+
+    <div id="chest-wrapper" onclick="openChest()" role="button" tabindex="0" aria-label="Abrir catálogo de equipamentos">
+      <div id="chest-glow-ring"></div>
+
+      <!-- SVG do baú -->
+      <svg id="chest-svg" viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="woodBody" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#2a1c08"/>
+            <stop offset="40%" stop-color="#1e1206"/>
+            <stop offset="100%" stop-color="#130c04"/>
+          </linearGradient>
+          <linearGradient id="woodLid" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#2e1e0a"/>
+            <stop offset="100%" stop-color="#1a1006"/>
+          </linearGradient>
+          <linearGradient id="metalGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#c8a650"/>
+            <stop offset="50%" stop-color="#a07828"/>
+            <stop offset="100%" stop-color="#705010"/>
+          </linearGradient>
+          <linearGradient id="metalGradH" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#705010"/>
+            <stop offset="50%" stop-color="#c8a650"/>
+            <stop offset="100%" stop-color="#705010"/>
+          </linearGradient>
+          <filter id="glow-gold">
+            <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glow-red">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <radialGradient id="lockGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#c94040" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#7a1010" stop-opacity="0.3"/>
+          </radialGradient>
+        </defs>
+
+        <!-- CORPO DO BAÚ -->
+        <g id="chest-body-group">
+          <!-- corpo principal -->
+          <rect x="20" y="100" width="200" height="76" rx="3" fill="url(#woodBody)" stroke="#3a2808" stroke-width="1.5"/>
+          <!-- tábuas de madeira — linhas verticais -->
+          <line x1="66" y1="102" x2="66" y2="174" stroke="#0e0804" stroke-width="1" opacity="0.6"/>
+          <line x1="112" y1="102" x2="112" y2="174" stroke="#0e0804" stroke-width="1" opacity="0.6"/>
+          <line x1="158" y1="102" x2="158" y2="174" stroke="#0e0804" stroke-width="1" opacity="0.6"/>
+          <!-- realce superior do corpo -->
+          <rect x="20" y="100" width="200" height="3" rx="1" fill="#4a3010" opacity="0.6"/>
+
+          <!-- faixas de metal horizontais -->
+          <rect x="18" y="108" width="204" height="9" rx="1.5" fill="url(#metalGradH)" filter="url(#glow-gold)"/>
+          <rect x="18" y="155" width="204" height="9" rx="1.5" fill="url(#metalGradH)" filter="url(#glow-gold)"/>
+
+          <!-- rebites nas faixas -->
+          <circle cx="30" cy="112.5" r="3" fill="#d4ac50" filter="url(#glow-gold)"/>
+          <circle cx="210" cy="112.5" r="3" fill="#d4ac50" filter="url(#glow-gold)"/>
+          <circle cx="30" cy="159.5" r="3" fill="#d4ac50" filter="url(#glow-gold)"/>
+          <circle cx="210" cy="159.5" r="3" fill="#d4ac50" filter="url(#glow-gold)"/>
+
+          <!-- dobradiças — lado esquerdo do corpo -->
+          <rect x="14" y="104" width="10" height="18" rx="2" fill="url(#metalGrad)"/>
+          <circle cx="19" cy="106" r="2" fill="#d4ac50"/>
+          <circle cx="19" cy="120" r="2" fill="#d4ac50"/>
+          <!-- dobradiças — lado direito do corpo -->
+          <rect x="216" y="104" width="10" height="18" rx="2" fill="url(#metalGrad)"/>
+          <circle cx="221" cy="106" r="2" fill="#d4ac50"/>
+          <circle cx="221" cy="120" r="2" fill="#d4ac50"/>
+
+          <!-- cadeado / fecho central -->
+          <rect x="104" y="108" width="32" height="22" rx="3" fill="#1a1006" stroke="#c8a650" stroke-width="1.2"/>
+          <!-- arco do cadeado -->
+          <path d="M112 108 Q120 96 128 108" fill="none" stroke="#c8a650" stroke-width="2.5" stroke-linecap="round" filter="url(#glow-gold)"/>
+          <!-- buraco da fechadura -->
+          <circle cx="120" cy="117" r="4" fill="url(#lockGlow)" filter="url(#glow-red)"/>
+          <rect x="118.5" y="117" width="3" height="6" rx="1" fill="#c94040" filter="url(#glow-red)"/>
+
+          <!-- cantos reforçados -->
+          <path d="M20,176 L20,100 L30,100" fill="none" stroke="#c8a650" stroke-width="2" stroke-linecap="round" filter="url(#glow-gold)" opacity="0.7"/>
+          <path d="M220,176 L220,100 L210,100" fill="none" stroke="#c8a650" stroke-width="2" stroke-linecap="round" filter="url(#glow-gold)" opacity="0.7"/>
+          <line x1="20" y1="176" x2="50" y2="176" stroke="#c8a650" stroke-width="2" opacity="0.7" filter="url(#glow-gold)"/>
+          <line x1="220" y1="176" x2="190" y2="176" stroke="#c8a650" stroke-width="2" opacity="0.7" filter="url(#glow-gold)"/>
+        </g>
+
+        <!-- TAMPA DO BAÚ — pivota a partir de y=100 -->
+        <g id="chest-lid-group" style="transform-origin:120px 100px">
+          <!-- corpo da tampa -->
+          <rect x="20" y="62" width="200" height="40" rx="3" fill="url(#woodLid)" stroke="#3a2808" stroke-width="1.5"/>
+          <!-- curva superior da tampa -->
+          <ellipse cx="120" cy="62" rx="100" ry="10" fill="#2a1c08" stroke="#3a2808" stroke-width="1"/>
+          <!-- tábuas da tampa -->
+          <line x1="66" y1="63" x2="66" y2="100" stroke="#0e0804" stroke-width="1" opacity="0.6"/>
+          <line x1="112" y1="63" x2="112" y2="100" stroke="#0e0804" stroke-width="1" opacity="0.6"/>
+          <line x1="158" y1="63" x2="158" y2="100" stroke="#0e0804" stroke-width="1" opacity="0.6"/>
+          <!-- faixa metálica da tampa -->
+          <rect x="18" y="76" width="204" height="8" rx="1.5" fill="url(#metalGradH)" filter="url(#glow-gold)"/>
+          <!-- rebites -->
+          <circle cx="30" cy="80" r="3" fill="#d4ac50" filter="url(#glow-gold)"/>
+          <circle cx="210" cy="80" r="3" fill="#d4ac50" filter="url(#glow-gold)"/>
+          <!-- dobradiças tampa — esquerda -->
+          <rect x="14" y="96" width="10" height="14" rx="2" fill="url(#metalGrad)"/>
+          <circle cx="19" cy="98" r="2" fill="#d4ac50"/>
+          <!-- dobradiças tampa — direita -->
+          <rect x="216" y="96" width="10" height="14" rx="2" fill="url(#metalGrad)"/>
+          <circle cx="221" cy="98" r="2" fill="#d4ac50"/>
+          <!-- cantos superiores da tampa -->
+          <path d="M20,62 L20,100 L30,100" fill="none" stroke="#c8a650" stroke-width="2" stroke-linecap="round" filter="url(#glow-gold)" opacity="0.7"/>
+          <path d="M220,62 L220,100 L210,100" fill="none" stroke="#c8a650" stroke-width="2" stroke-linecap="round" filter="url(#glow-gold)" opacity="0.7"/>
+          <!-- runa gravada na tampa -->
+          <text x="120" y="89" text-anchor="middle" font-size="13" fill="#c8a650" opacity="0.4" font-family="serif" filter="url(#glow-gold)">⚔ ✦ ⚔</text>
+        </g>
+
+        <!-- LUZ INTERNA (visível ao abrir) -->
+        <g id="chest-inner-light" opacity="0">
+          <ellipse cx="120" cy="100" rx="85" ry="12" fill="#c8a650" opacity="0.6" filter="url(#glow-gold)"/>
+          <rect x="25" y="90" width="190" height="15" fill="#e8c870" opacity="0.15"/>
+        </g>
+      </svg>
+
+      <!-- sombra embaixo do baú -->
+      <div id="chest-shadow"></div>
+    </div>
+
+    <div id="chest-prompt">
+      <span id="chest-prompt-text">Clique para abrir</span>
+      <span id="chest-prompt-icon">⬡</span>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- flash element -->
+<div id="chest-flash"></div>
+
+<!-- ══════════════════════════════════════════════════
+     SCRIPT DA ANIMAÇÃO DO BAÚ
+══════════════════════════════════════════════════ -->
+
+<script>
+(function() {
+  document.body.classList.add('chest-locked');
+
+  // ── preenche runa de fundo ──
+  document.getElementById('chest-bg-runes').textContent = '✦⚔✦⚔✦';
+
+  // ── estado ──
+  let opened = false;
+
+  // ── cria partículas douradas ──
+  function spawnParticles() {
+    const container = document.getElementById('chest-particles-container');
+    const svg = document.getElementById('chest-svg');
+    const rect = svg.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height * 0.55;
+
+    const colors = ['#c8a650','#e8c870','#d4ac50','#f0d080','#c8a96e','#a07828','#fff8e0'];
+    const count = 52;
+
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('div');
+      el.className = 'chest-particle';
+      const size = 3 + Math.random() * 6;
+      const angle = (Math.random() * 360) * Math.PI / 180;
+      const dist = 80 + Math.random() * 220;
+      const tx = Math.cos(angle) * dist;
+      const ty = Math.sin(angle) * dist - (80 + Math.random() * 120);
+      const dur = (.6 + Math.random() * .9) + 's';
+      const delay = (Math.random() * .25) + 's';
+      const color = colors[Math.floor(Math.random() * colors.length)];
+
+      el.style.cssText = `
+        left:${cx}px;top:${cy}px;
+        width:${size}px;height:${size}px;
+        background:${color};
+        box-shadow:0 0 ${size * 2}px ${color};
+        --tx:${tx}px;--ty:${ty}px;
+        --dur:${dur};--delay:${delay};
+      `;
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 1600);
+    }
+  }
+
+  // ── abertura do baú ──
+  // keyboard accessibility
+  document.getElementById('chest-wrapper').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.openChest(); }
+  });
+
+  window.openChest = function() {
+    if (opened) return;
+    opened = true;
+
+    const wrapper = document.getElementById('chest-wrapper');
+    const lid = document.getElementById('chest-lid-group');
+    const innerLight = document.getElementById('chest-inner-light');
+    const prompt = document.getElementById('chest-prompt');
+    const flash = document.getElementById('chest-flash');
+    const shadow = document.getElementById('chest-shadow');
+
+    wrapper.classList.add('opening');
+    wrapper.style.cursor = 'default';
+    prompt.style.opacity = '0';
+    prompt.style.transition = 'opacity .2s';
+
+    // pequeno tremor antes de abrir
+    wrapper.style.animation = 'none';
+    wrapper.style.transition = 'transform .08s';
+    let shakeCount = 0;
+    const shake = setInterval(() => {
+      const dx = (Math.random() - .5) * 6;
+      const dy = (Math.random() - .5) * 3;
+      wrapper.style.transform = `translate(${dx}px,${dy}px)`;
+      shakeCount++;
+      if (shakeCount >= 6) {
+        clearInterval(shake);
+        wrapper.style.transform = '';
+        // abre a tampa
+        setTimeout(() => {
+          lid.classList.add('lid-open');
+          innerLight.classList.add('visible');
+          // flash
+          flash.classList.add('flash-on');
+          setTimeout(() => flash.classList.add('flash-off'), 120);
+          // partículas
+          setTimeout(spawnParticles, 180);
+          // sombra some (baú "levita" ao abrir)
+          shadow.style.opacity = '0';
+          shadow.style.transform = 'translateX(-50%) scaleX(.7)';
+          // fecha overlay
+          setTimeout(() => {
+            const overlay = document.getElementById('chest-overlay');
+            overlay.classList.add('hidden');
+            document.body.classList.remove('chest-locked');
+            setTimeout(() => overlay.remove(), 1000);
+          }, 820);
+        }, 60);
+      }
+    }, 55);
+  };
+})();
+</script>
+
+<div id="app">
+  <header>
+    <div class="header-eyebrow">✦ &nbsp; ALÉM DO VÉU DA CARNE &nbsp; ✦</div>
+    <h1 class="header-title">Catálogo de Equipamentos</h1>
+    <p class="header-count" id="header-count"></p>
+    <div class="header-counts" id="header-type-counts"></div>
+  </header>
+
+  <main>
+  <div id="filter-panel">
+    <div class="search-wrap">
+      <span class="search-icon">⚲</span>
+      <input class="search-input" id="busca" placeholder="Buscar por nome, local, possuidor, efeito..." oninput="render()">
+    </div>
+    <div class="tipo-tabs" id="filter-tipo"></div>
+    <div class="filter-toggle-row">
+      <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleFilterDrawer()">
+        <span>⚙</span> <span>FILTROS</span>
+        <span class="filter-active-count" id="filter-active-count" style="display:none"></span>
+      </button>
+      <button class="filter-clear-btn" id="filter-clear-btn" onclick="clearFilters()" style="display:none">✕ limpar</button>
+    </div>
+    <div class="filter-drawer" id="filter-drawer">
+      <div class="filter-group">
+        <span class="filter-group-label">status</span>
+        <div class="filter-chips" id="filter-status"></div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-group-label">raridade</span>
+        <div class="filter-chips" id="filter-raridade"></div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-group-label">possuidor</span>
+        <div class="filter-chips" id="filter-possuidor"></div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-group-label">ordenar por</span>
+        <div class="filter-chips" id="filter-ordem"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <span class="divider-text" id="divider-count"></span>
+    <div class="divider-line"></div>
+  </div>
+
+  <div id="cards"></div>
+  </main>
+  <footer>✦ &nbsp; VALTHERIS &nbsp; ✦ &nbsp; ALÉM DO VÉU DA CARNE</footer>
+</div>
+
+<script>
+
+const RARIDADE_COLORS = {"Comum":"#b0a89a","Incomum":"#6db87a","Raro":"#5b9bd5","Muito Raro":"#a47fd4","Lendário":"#e0a84b","Artefato Único":"#c94040"};
+const STATUS_COLORS = {"Em Posse":"#6db87a","Perdido":"#e0a84b","Destruído":"#c94040","Localização Desconhecida":"#a47fd4"};
+const STATUS_ICONS = {"Em Posse":"◆","Perdido":"◇","Destruído":"✕","Localização Desconhecida":"?"};
+const TIPO_ICONS = {"Arma":"⚔","Armadura":"🛡","Artefato":"✦","Consumível":"⬡","Acessório":"◉","Outro":"◈"};
+const RARIDADE_ORDER = ["Comum","Incomum","Raro","Muito Raro","Lendário","Artefato Único"];
+
+// Correspondência Raridade → Qualidade de Durabilidade (conforme Grimório de Regras)
+const DURABILIDADE_MAP = {
+  "Comum":         {qualidade:"Ordinária",              faixa:"10–20", max_ref:15,  auto_reparo:"Não",             cor:"#6a5a3a"},
+  "Incomum":       {qualidade:"Boa",                    faixa:"30–50", max_ref:45,  auto_reparo:"Não",             cor:"#5a7a3a"},
+  "Raro":          {qualidade:"Superior",               faixa:"60–80", max_ref:70,  auto_reparo:"Parcial",         cor:"#3a5a7a"},
+  "Muito Raro":    {qualidade:"Excepcional",            faixa:"100+",  max_ref:100, auto_reparo:"Sim",             cor:"#6a3a8a"},
+  "Lendário":      {qualidade:"Inquebrável",            faixa:"∞",     max_ref:null,auto_reparo:"—",               cor:"#8a6a2a"},
+  "Artefato Único":{qualidade:"Inquebrável/Excepcional",faixa:"∞/100+",max_ref:null,auto_reparo:"Depende do item",cor:"#8a2a2a"}
+};
+
+const TIPOS = ["Todos","Arma","Armadura","Artefato","Consumível","Acessório","Outro"];
+const STATUS_LIST = ["Todos","Em Posse","Perdido","Destruído","Localização Desconhecida"];
+const RARIDADES = ["Todas","Comum","Incomum","Raro","Muito Raro","Lendário","Artefato Único"];
+const ORDENS = [
+  {value:"saga-asc",label:"Saga ↑"},{value:"saga-desc",label:"Saga ↓"},
+  {value:"nome-asc",label:"Nome A-Z"},{value:"nome-desc",label:"Nome Z-A"},
+  {value:"raridade-asc",label:"Raridade ↑"},{value:"raridade-desc",label:"Raridade ↓"}
+];
+
+let state = {busca:"",tipo:"Todos",status:"Todos",raridade:"Todas",possuidor:"Todos",ordem:"saga-asc",expanded:new Set()};
+
+// Deriva possuidores únicos dos dados — lista canônica por personagem principal
+function getPossuidores() {
+  const canonical = ["Leyn Sepet","Kaira Sepet","Mara Vell","Elise","Aldric Voss","Teren","Caçadora do Luar"];
+  const found = new Set();
+  ITEMS.forEach(item => {
+    if (!item.possuidor) return;
+    canonical.forEach(c => { if (item.possuidor.includes(c)) found.add(c); });
+    // Captura possuidores não canônicos (NPCs, Arsenal, etc.)
+    if ([...canonical].every(c => !item.possuidor.includes(c))) found.add(item.possuidor.split(" ·")[0].split("(")[0].trim());
+  });
+  return ["Todos", ...canonical.filter(c => found.has(c)), ...[...found].filter(f => !canonical.includes(f)).sort()];
+}
+
+const ITEMS = [
+  {id:1,nome:"Correntes de Prata Alquímica",tipo:"Arma",subtipo:"Arma Improvisada · Correntes",status:"Em Posse",possuidor:"Inquisidor Marcus (estudo) · Originalmente Leyn Sepet",saga:"Saga 1",local:"Câmara de Contenção — Subterrâneos Desconhecidos",raridade:"Incomum",atributos:["1d6 + 2 de dano contundente (arma improvisada)","As runas de contenção queimam criaturas corrompidas e profanas ao contato","Prata alquímica causa dano adicional a não-mortos e aberrações","Originalmente forjadas para conter vampiros primordiais — a ironia não se perdeu no portador","Após serem encharcadas de sangue corrompido, as runas inverteram parcialmente sua função: contêm a profanação em vez de conter o vampiro","[Saga 6] Entregues a Marcus para estudo e cópia das runas — com orientação de Aldric Voss, estimativa de 1-2 dias para criar barreiras de alta contenção"],descricao:"Forjadas pela Igreja com prata alquímica e gravadas com runas de contenção, estas correntes aprisionaram Leyn Sepet por um século inteiro. O que deveria ser instrumento de submissão tornou-se sua primeira arma ao despertar — o metal que queimava sua carne morta passou a queimar com igual ferocidade tudo aquilo que não deveria existir. Ainda pendem de seus pulsos, gotejando ícor e memórias. Na Saga 6, Leyn as entregou ao Inquisidor Marcus como modelo para reprodução: as runas de alto nível gravadas nelas são o padrão necessário para criar barreiras capazes de deter ameaças primordiais. Aldric Voss assumiu a orientação técnica do processo."},
+  {id:2,nome:"Garrafa Quebrada de Sangue Humano",tipo:"Consumível",subtipo:"Sangue · Uso Único",status:"Destruído",possuidor:null,saga:"Saga 1",local:"Câmara de Contenção — oferecida pela Criatura-Multibraços",raridade:"Comum",atributos:["Restaurou 7 PV ao ser consumida","Sangue humano velho, mas puro — sem traços de corrupção","Não provoca os sussurros das Coisas Antigas, ao contrário do sangue corrompido","Salvaguarda de Sanidade CD 12: 18+1 = 19 — SUCESSO CRÍTICO ao ser consumida com controle"],descricao:"Uma garrafa já quebrada, de origem desconhecida, contendo sangue humano conservado por magia rudimentar. Oferecida pela Criatura-Multibraços no momento em que Leyn estava à beira da morte permanente. Velha, mas incorrupta — a diferença entre a extinção de uma linhagem primordial e sua continuação. Consumida inteiramente. Não restam fragmentos."},
+  {id:3,nome:"Espada Curta dos Guardas",tipo:"Arma",subtipo:"Espada Curta",status:"Perdido",possuidor:null,saga:"Saga 2",local:"Câmara de Extração — Fortaleza dos Nobres Corrompidos",raridade:"Comum",atributos:["1d6 + 2 de dano perfurante","Tamanho compacto — fácil de ocultar sob manto ou roupa","Usada para executar a Estocada de Uma Polegada: destruiu fechadura de ferro e madeira reforçada (CD 12) em um único golpe","Escorregou da mão de Leyn ao ser derrubado pelos Carniçais de Esgoto"],descricao:"Uma espada curta comum, roubada do armário de suprimentos pelo guarda nervoso durante a fuga improvisada. Não há nada de extraordinário em seu aço — mas nas mãos de Leyn Sepet ela atravessou ferro e madeira reforçada como papel, destruindo uma fechadura trancada com um único golpe preciso que fez até Cicatriz emmudecer. Foi perdida no chão do esgoto quando os Carniçais derrubaram seu portador. O aço comum permanece apodrecendo em algum canal subterrâneo."},
+  {id:4,nome:"Manto Escuro de Leyn",tipo:"Acessório",subtipo:"Manto · Vestuário",status:"Em Posse",possuidor:"Kaira Sepet",saga:"Saga 2",local:"Câmara de Extração — Fortaleza dos Nobres Corrompidos",raridade:"Comum",atributos:["Nenhum bônus de CA — proteção simbólica e cobertura","[Saga 2] Entregue pelo guarda nervoso junto com espada e tocha — disfarçou marcas vampíricas e correntes durante a fuga","[Saga 2] Rasgado pelos Carniçais de Esgoto durante o combate nos esgotos — mas não perdido","[Saga 11] Leyn o removeu e envolveu ao redor de Kaira nas catacumbas da Vila Sepet — roupas dela rasgaram durante a transformação acelerada de criança para adolescente em trinta segundos","Sobreviveu a esgotos, batalhas, um Arauto Ardente e duas mortes do portador antes de chegar a Kaira"],descricao:"O guarda nervoso o jogou sobre os ombros de Leyn na fuga da fortaleza — escuro, gasto, já rasgado. Passou pelos esgotos, pelos Carniçais, por batalhas, por duas mortes e ressurreições do portador, pelo combate contra o Arauto Ardente. Acompanhou Leyn em silêncio por toda a jornada. Na Saga 11, quando as roupas de Kaira rasgaram nas costuras durante sua transformação súbita nas catacumbas da Vila Sepet, Leyn o removeu sem cerimônia e o envolveu ao redor dela. Sem palavras, sem hesitação. Era o momento para cobertura e calor, não para discurso. O manto que não tinha história própria agora tem: passou de disfarce improvisado para o primeiro presente que Kaira recebeu já adulta."},
+  {id:5,nome:"Lágrimas de Mara",tipo:"Artefato",subtipo:"Artefato Único · Consumido",status:"Destruído",possuidor:null,saga:"Saga 3",local:"Salão Ritual — Fortaleza dos Nobres Corrompidos",raridade:"Artefato Único",atributos:["Ressuscitou Leyn Sepet após 3/3 salvaguardas contra morte falhadas — evento sem precedente em Valtheris","Origem: lágrimas de uma aberração que recuperou sua humanidade através de gratidão e sacrifício voluntário","Não são magia profana nem divina — são compaixão pura em forma líquida","Alteraram permanentemente a linhagem primordial: vampiros transformados por Leyn após o Renascimento retêm consciência e humanidade","Confundiram o próprio Devorador, que declarou Leyn uma 'anomalia fora do ciclo'","Efeito único e irreproduzível — nasceram de um momento singular que nunca se repetirá"],descricao:"Não foram conjuradas. Não foram destiladas. Simplesmente caíram. Uma soldada que passou décadas como aberração sem nome, sem rosto, sem escolha — no momento em que recuperou sua humanidade, chorou. E essas lágrimas, carregadas de gratidão genuína e sacrifício sem recompensa esperada, tocaram o rosto de um vampiro morto. O impossível aconteceu. Leyn Sepet voltou. Nem o Devorador compreendeu como. As lágrimas se dissolveram ao cumprir seu propósito, mas o que fizeram ao sangue primordial de Leyn permanece para sempre."},
+  {id:6,nome:"Espada Curta de Kaira",tipo:"Arma",subtipo:"Espada Curta",status:"Em Posse",possuidor:"Kaira Sepet",saga:"Saga 3",local:"Salão Ritual — Fortaleza dos Nobres Corrompidos",raridade:"Comum",dur_atual:10,atributos:["1d6 + 2 de dano perfurante","Usada por Leyn para destruir dois Construtos de Carne e Pedra (CA 15) com ataques de 16 e 18","Estocada Relâmpago — com ela Leyn executou a técnica pela primeira vez na fortaleza","Sobreviveu à travessia do lago subterrâneo no interior de Elise","[Saga 10] Entregue por Leyn a Kaira durante sessão de treino de combate — 'primeira arma de verdade' de Kaira","[Saga 10] Com esta arma Kaira executou seu primeiro golpe real, acertando um vampiro primordial após três tentativas","[Saga 16] Kaira confirmou ser backup emocional permanente — guardada com cuidado, nunca descartada"],descricao:"Uma espada curta sem história própria — até ganhar uma. Apanhada do chão do salão ritual, com ela Leyn executou a Estocada Relâmpago na sua forma evoluída, destruiu Construtos, atravessou o lago subterrâneo no interior de Elise. Na Saga 10, Leyn a entregou a Kaira para o primeiro treino de combate da sobrinha. Com ela, Kaira errou duas vezes, aprendeu a observar, aprendeu a prever — e no terceiro ataque acertou um vampiro primordial usando velocidade e precisão em vez de força. A lâmina ficou com ela. 'Foi minha primeira arma de verdade', disse Kaira, abraçando a espada contra o peito."},
+  {id:7,nome:"Arco e Flechas do Caçador",tipo:"Arma",subtipo:"Arco Curto · Munição",status:"Perdido",possuidor:null,saga:"Saga 4",local:"Casa do Caçador — Aldeia da Floresta de Valtheris",raridade:"Comum",atributos:["1d6 de dano perfurante (arco curto)","Alcance efetivo: 80/320 pés","Usado por Mara para cobrir Leyn durante a confrontação com o Padre Cornelius","Flecha apontada para a cabeça do padre — tiro que nunca foi necessário disparar","Mara era arqueira antes de ser transformada em aberração — o arco é mais que uma arma, é memória de identidade","[Saga 12] Aposentado — Mara passou a operar com espada longa e múltiplos braços após equipar-se no Arsenal Sepet. Elise recebeu o Arco Longo Élfico diretamente do rack do Arsenal (por instrução de Leyn), não deste arco"],descricao:"Retirado silenciosamente da casa de um caçador enquanto Leyn caminhava sozinho para a praça incendiada. Um arco simples, de madeira escura e corda bem esticada — exatamente o tipo que Mara Vell empunhava antes de virar experimento da Igreja. Ela o manteve apontado para a cabeça do padre durante toda a confrontação, pronta para disparar à primeira palavra de Leyn. O tiro nunca foi dado — Elise chegou primeiro com ácido. Mas Mara não soltou o arco."},
+  {id:8,nome:"Adaga do Padre Cornelius",tipo:"Arma",subtipo:"Adaga · Arma de Reféns",status:"Destruído",possuidor:null,saga:"Saga 4",local:"Praça Central — Aldeia da Floresta de Valtheris",raridade:"Comum",atributos:["1d4 de dano perfurante","Ocultada nas vestes do padre — sacada apenas para ameaçar uma criança de 8 anos","Destruída junto com seu portador na explosão de energia profana","Nunca foi usada em combate real — arma de covardes, não de guerreiros"],descricao:"Uma adaga escondida nas dobras de vestes sacerdotais ornamentadas, revelada apenas quando o padre perdeu o controle da situação. Sua única façanha: encostada no pescoço de uma criança de oito anos como último recurso de um homem que nunca foi padre — era um hospedeiro com runas profanas gravadas dentro dos próprios ossos. Desapareceu na explosão de energia negra quando Cornelius se fragmentou. Nem a lâmina sobreviveu ao que ele realmente era."},
+  {id:9,nome:"Livro Sagrado de Cornelius",tipo:"Artefato",subtipo:"Grimório Profano · Disfarçado",status:"Destruído",possuidor:null,saga:"Saga 4",local:"Praça Central — Aldeia da Floresta de Valtheris",raridade:"Incomum",atributos:["Projetava luz divina falsificada — amarelada e doentia, ineficaz contra vampiros primordiais","Leyn atravessou a luz como se não existisse, expondo a falsidade publicamente","Páginas começaram a fumar ao contato com o ácido de Elise","Caiu das mãos do padre quando o ácido atingiu seu rosto — destruído completamente na explosão profana subsequente","Sua falha revelou aos soldados que o padre não servia à Igreja real"],descricao:"Encadernado em couro branco com bordados dourados, carregado com a autoridade do Arcebispo — ou assim dizia. O livro projetava luz que imitava o sagrado, mas era corrupção com maquiagem divina. Quando Leyn caminhou através dessa luz sem desviar, o livro perdeu mais poder do que qualquer feitiço poderia ter tomado. As páginas fumegaram com o ácido de Elise. O que restou foi consumido junto com Cornelius na explosão final de energia profana. Os soldados viram tudo. A Igreja não saberá o que perdeu — ou talvez nem soubesse que o tinha."},
+  {id:10,nome:"Victória",tipo:"Arma",subtipo:"Espada Longa · Núcleo Integrado · Vontade Própria",status:"Em Posse",possuidor:"Leyn Sepet",saga:"Saga 21",local:"Integração realizada nas Catacumbas da Vila Sepet",raridade:"Artefato Único",atributos:["1d8 + 2 de dano cortante (Força +2 — Duelista não se aplica: estilo de combate de Leyn é Técnica Superior)","NÚCLEO ÂMBAR INTEGRADO: veios dourados correm pela lâmina da base até dois terços da ponta — visível, permanente","INSCRIÇÃO GRAVADA PELA PRÓPRIA VONTADE: 'Levanta' em vampírico antigo — não gravada por ferramenta; emergiu da integração; palavras escolhidas pela presença do núcleo, não por Leyn","VONTADE INQUEBRÁVEL (passiva): a presença integrada é potencial puro sem intenção forçada — sem precedente nos registros da Vila Sepet; Sentinela confirmou: 'classificação única'","Nome declarado por Leyn: 'Victória — a espada com vontade inquebrável. Carregue a determinação de quem cai e se levanta. De quem vê o mal e não fecha os olhos. De quem foi aprisionada e mesmo assim não esqueceu o que é ser livre.'","A presença da criança aprisionada no núcleo partiu com: 'Obrigada por me ver. Não como ferramenta. Como eu era.' — não purificada por substituição; escutada até o fim","Aldric Voss: 'O que você fez não tem nome em nenhum texto que já li'","[Origem da lâmina] Forjada pelo ferreiro de Valtheris — encontrada em compartimento secreto (Saga 5); lâmina ainda afiada após anos, equilibrada, Weapon Bond estabelecido","Inscrição anterior do Arsenal sumiu ao ser substituída pela integração"],descricao:"Começou como espada de ferreiro morto num compartimento secreto — a melhor obra de um artesão que não conseguia entregá-la a quem não merecia. Esperou décadas no compartimento secreto até que o dono certo chegasse. Percorreu esgotos, batalhas, o lago subterrâneo e o Arauto Ardente como 'a arma que levará Leyn adiante'. Na Saga 21, parou de ser apenas lâmina. O núcleo de cristal negro de um Construto do Culto continha uma criança de sete anos aprisionada — cabelo negro, olhos âmbar, arrancada de campo de flores amarelas por homens de mantos roxos. Leyn não a purificou. A encontrou no canto da escuridão, sentou no chão e esperou. Ela veio. Ele tocou a cabeça dela. Ela foi embora com luz, não com raiva. O cristal se integrou à lâmina. A inscrição emergiu por escolha própria: Levanta. Aldric ficou sem palavras. A Sentinela disse que os Fundadores ficariam honrados. Mara testou o nome em voz alta e disse que combinava. Kaira reconheceu a cor dos próprios olhos nos veios dourados da lâmina."},
+  {id:11,nome:"Adaga de Prata Pura",tipo:"Arma",subtipo:"Adaga",status:"Em Posse",possuidor:"Mara Vell",saga:"Saga 5",local:"Compartimento Secreto — Oficina do Ferreiro, Aldeia da Floresta de Valtheris",raridade:"Incomum",atributos:["1d4 + 3 de dano perfurante","Prata pura: eficaz contra criaturas corrompidas, cultistas possuídos e aberrações profanas","Encontrada junto com a espada longa no compartimento secreto","Empunhada por Mara — arqueira que agora tem braços suficientes para segurar escudo e lâmina simultaneamente"],descricao:"Prata pura forjada com esmero — não liga, não revestimento. O ferreiro sabia para que servia. Em Valtheris, quem trabalha metal por tempo suficiente aprende que ferro não é suficiente para tudo que existe nas florestas e nas ruínas. Mara a escolheu sem hesitar. Ela passou décadas como aberração — sabe melhor que ninguém o que prata pura faz com carne corrompida."},
+  {id:12,nome:"Escudo Médio de Ferro",tipo:"Armadura",subtipo:"Escudo · Backup",status:"Em Posse",possuidor:"Mara Vell (backup)",saga:"Saga 5",local:"Baú 2 — Oficina do Ferreiro, Aldeia da Floresta de Valtheris",raridade:"Comum",dur_atual:8,atributos:["+2 CA quando equipado","Equipamento militar de qualidade — forjado para cliente que nunca voltou buscá-lo","Mara o segura com dois de seus braços múltiplos, liberando os demais para outras funções","CA total de Mara com escudo: 14","[Saga 12] Substituído pelo Escudo Grande de Aço Reforçado (+3 CA) do Arsenal Sepet — borda rachada e múltiplas amassaduras acumuladas no combate contra o Arauto. Mantido como backup"],descricao:"Encomendado, pago, nunca retirado. O ferreiro o fez com cuidado de quem acredita que qualidade importa mesmo quando o cliente não vem. O baú onde estava trancado foi aberto por Leyn com um único puxão que arrancou a fechadura enferrujada sem rachar a madeira. Mara o ergueu, testou o peso, e percebeu que seus braços múltiplos — herança grotesca de décadas como aberração — agora tinham propósito diferente: segurar escudo enquanto as outras mãos permanecem livres."},
+  {id:13,nome:"Cota de Malha Militar",tipo:"Armadura",subtipo:"Cota de Malha",status:"Perdido",possuidor:null,saga:"Saga 5",local:"Baú 2 — Oficina do Ferreiro, Aldeia da Floresta de Valtheris",raridade:"Comum",atributos:["CA 13 + mod DES (máx +2) — CA 14 com DES +1 de Elise","Qualidade militar — parte do mesmo conjunto encomendado e nunca retirado","Veste sobre o corpo parcialmente aberrante de Elise — estranha, mas funcional","Primeira proteção física real que Elise recebeu em décadas","[Saga 12] Substituída pela Cota de Malha Reforçada do Arsenal Sepet (CA 16) — elos soltos, amassaduras e manchas de ácido da batalha contra o Arauto tornaram-na ineficaz. Abandonada no Arsenal"],descricao:"Elise hesitou antes de pedi-la. Uma criatura com boca vertical onde deveria haver torso não é o usuário típico de cota de malha. Mas ela pediu — não por vaidade, por proteção. A armadura fica estranha no corpo ainda parcialmente aberrante, com anéis de ferro se ajustando sobre anatomia que não foi pensada para ela. Funciona mesmo assim. É a primeira vez em muito tempo que algo foi colocado sobre o corpo de Elise não para prendê-la, mas para guardá-la."},
+  {id:14,nome:"Elmo Fechado",tipo:"Armadura",subtipo:"Elmo · Proteção de Cabeça",status:"Perdido",possuidor:null,saga:"Saga 5",local:"Baú 2 — Oficina do Ferreiro, Aldeia da Floresta de Valtheris",raridade:"Comum",atributos:["+1 CA (proteção de cabeça)","Parte do conjunto encomendado junto com cota de malha e escudo","CA total de Leyn com o elmo: 13","[Saga 9] Removido ao equipar a Armadura Élfica Reforçada do baú misterioso — deixado na aldeia"],descricao:"Parte do conjunto que nunca foi retirado. Leyn o colocou na cabeça sem cerimônia — pela primeira vez em muito tempo deixou de parecer 'criatura das sombras' e passou a parecer 'guerreiro respeitável'. Foram as palavras de Mara. O elmo não tem história própria ainda. Mas está na cabeça certa."},
+  {id:15,nome:"Botas de Couro Reforçado de Kaira",tipo:"Acessório",subtipo:"Calçado",status:"Em Posse",possuidor:"Kaira Sepet",saga:"Saga 5",local:"Baú 1 — Oficina do Ferreiro, Aldeia da Floresta de Valtheris",raridade:"Comum",atributos:["Silenciosas — sola de couro macio não produz som em pedra ou madeira","Grandes demais para Kaira — amarradas com cadarços apertados ao máximo","Primeiras botas de verdade que Kaira já teve em toda a sua existência"],descricao:"Tamanho adulto em pés de criança. Kaira as amarrou com os cadarços no limite e deu os primeiros passos. CLUMP. CLUMP. E riu — som puro, infantil, que não combinava com cem anos de solidão na floresta. Leyn as jogou para ela sem aviso, como quem distribui itens de inventário. Para Kaira, foi o primeiro presente que alguém lhe deu desde que sua mãe morreu. Ela não tirou as botas durante todo o descanso subsequente."},
+  {id:16,nome:"Mapa Parcial de Valtheris",tipo:"Outro",subtipo:"Documento · Mapa",status:"Em Posse",possuidor:"Leyn Sepet",saga:"Saga 5",local:"Compartimento Secreto — Oficina do Ferreiro, Aldeia da Floresta de Valtheris",raridade:"Incomum",atributos:["Marca rotas comerciais antigas de Valtheris","Localiza alguns vilarejos e pontos de referência geográficos","Contém um X vermelho sobre o local do vilarejo destruído de Leyn — quem marcou? Por quê?","Parcial: regiões ao sul e leste estão em branco ou rasgadas"],descricao:"Encontrado com a espada e as moedas no compartimento secreto do ferreiro. As rotas comerciais foram traçadas por mãos habilidosas — o ferreiro conhecia os caminhos de Valtheris. Mas o X vermelho sobre o vilarejo destruído não é traço de comerciante. Alguém marcou aquele lugar deliberadamente. O ferreiro sabia o que aconteceu ali? Estava conectado de alguma forma? Perguntas sem resposta, dobradas junto com o mapa no bolso interno de Leyn."},
+  {id:17,nome:"Frasco de Ácido",tipo:"Consumível",subtipo:"Alquímico · Projétil",status:"Em Posse",possuidor:"Elise",saga:"Saga 5",local:"Prateleiras — Oficina do Ferreiro, Aldeia da Floresta de Valtheris",raridade:"Comum",atributos:["2d6 de dano ácido ao contato direto","Pode ser usado por Elise combinado com sua boca: projétil de maior alcance e concentração","Lacrado — preservado em pote selado, ainda em bom estado após anos de abandono","Dois frascos adicionais permanecem na oficina (não equipados)"],descricao:"Elise já carrega ácido próprio — sua boca produz naturalmente. Mas ácido alquímico tem propriedades diferentes: estável, concentrado, e mais volátil que o biológico. Ela o pegou com precisão cirúrgica, sabendo exatamente o que ia fazer com ele. A cena do padre Cornelius ainda está fresca: um jato certeiro de ácido no rosto de um homem que ameaçava uma criança com faca. Elise entende o valor de ter munição extra."},
+  {id:18,nome:"Pó de Prata",tipo:"Consumível",subtipo:"Material Alquímico",status:"Em Posse",possuidor:"Tobias (em uso na forja) · Originalmente Leyn Sepet",saga:"Saga 5",local:"Prateleiras — Oficina do Ferreiro, Aldeia da Floresta de Valtheris",raridade:"Incomum",atributos:["Pode ser aplicado a armas para adicionar dano de prata temporariamente","Útil em rituais de proteção ou contenção contra mortos-vivos corrompidos","Pode criar munição improvisada de prata (misturado com outros materiais)","Quantidade limitada — uso criterioso recomendado"],descricao:"Prata reduzida a pó fino por processo alquímico — mais versátil que a adaga de prata de Mara, porém menos durável. O ferreiro trabalhava com prata: sabia o que ela fazia a certas coisas. O pó estava lacrado em pote de cerâmica junto com os frascos de ácido, como se fossem ferramentas do mesmo ofício. Em Valtheris, para quem forja metal e convive com florestas retorcidas, prata não é apenas material precioso — é precaução. Na Saga 7, Tobias o identificou como material suficiente para trabalhar e começou a fundi-lo para forjar estacas de prata."},
+  {id:19,nome:"Anel de Prata de Aldric Voss",tipo:"Acessório",subtipo:"Anel · Linhagem",status:"Em Posse",possuidor:"Aldric Voss",saga:"Saga 6",local:"Desconhecido — em posse de Aldric há séculos",raridade:"Raro",atributos:["Prata pura: causa desconforto constante ao portador vampírico — usado deliberadamente","Detalhe observado por Leyn ao primeiro encontro: dedo anelar esquerdo, postura de guerreiro, não de cortesão","Possível função ritual ou de memória — Aldric não explicou seu propósito","Incomum para vampiro de qualquer linhagem: tolerância à prata sugere condicionamento ou propósito específico"],descricao:"Um anel de prata no dedo de um vampiro primordial. A contradição em si é quase provocação. Aldric o usa conscientemente — a prata causa desconforto, não é ignorada — e ainda assim não o retira. Leyn o notou antes mesmo de notar as cicatrizes no pescoço de Aldric, antes de notar a postura de guerreiro ou a idade nos olhos. O anel não foi explicado. Talvez seja penitência. Talvez seja memória. Talvez seja simplesmente quem Aldric Voss decidiu ser em 342 anos de solidão."},
+  {id:20,nome:"Estaca de Prata — Presente de Kaira",tipo:"Arma",subtipo:"Estaca · Arma Improvisada",status:"Em Posse",possuidor:"Leyn Sepet",saga:"Saga 7",local:"Forja do Ferreiro — Aldeia da Floresta de Valtheris",raridade:"Comum",atributos:["Dano de prata pura contra mortos-vivos corrompidos, aberrações e entidades profanas","30-40 centímetros de comprimento — primeira do lote forjado por Tobias com orientação de Aldric","Ainda estava quente do forjamento quando Kaira a entregou","Leyn saiu para investigar os rastros de fogo portando esta estaca como proteção"],descricao:"A primeira estaca saiu da forja e Kaira correu com ela ainda quente nas mãos. Não esperou esfriar, não perguntou se era a certa — apenas foi até o tio e entregou, pedindo que voltasse. É prata pura forjada por aprendiz ansioso, moldada por mãos vampíricas que não sentem calor, organizada por uma menina de cem anos que nunca teve família para se despedir. A arma é simples. O que ela carrega não é."},
+  {id:21,nome:"Espada Longa Élfica de Aldric",tipo:"Arma",subtipo:"Espada Longa · Élfil",status:"Em Posse",possuidor:"Aldric Voss",saga:"Saga 7",local:"Desconhecido — em posse de Aldric há décadas",raridade:"Raro",atributos:["Forjada em prata e aço élficos combinados — resistente e de fio duradouro","Gravada com runas antigas ao longo da lâmina","Eficaz contra mortos-vivos, aberrações e entidades profanas","Revelada quando Aldric abriu a capa para mostrar que não chegara desarmado — gesto de transparência, não de ameaça","Trezentos anos de uso: a lâmina está impecável"],descricao:"Aldric abriu a capa ligeiramente — não para ameaçar, mas para mostrar que era honesto sobre suas capacidades. A espada estava lá, como sempre esteve: prata e aço élficos entrelaçados em forjamento que humanos não reproduzem, runas antigas gravadas por mão que conhecia o que escrevia. Trezentos anos e a lâmina não perdeu o fio. Alguns dizem que aço élfico aprende com quem o porta. Se isso é verdade, esta espada aprendeu muito com Aldric Voss."},
+  {id:22,nome:"Adaga Ritual de Aldric",tipo:"Arma",subtipo:"Adaga · Ritual",status:"Em Posse",possuidor:"Aldric Voss",saga:"Saga 7",local:"Desconhecido — em posse de Aldric há décadas",raridade:"Incomum",atributos:["Lâmina de prata — eficaz para rituais e combate próximo","Presa ao cinto, acessível rapidamente","Propósito dual: arma de combate e instrumento ritual","Trezentos anos de estudo deram a Aldric conhecimento de uso ritual que a maioria dos vampiros ignora"],descricao:"Menor que a espada, mas não menos importante. Uma adaga ritual no cinto de vampiro que passou 300 anos estudando magia antiga faz muito mais que ferir — abre portas, sela pactos, desfaz feitiços gravados em carne. Aldric a revelou no mesmo momento que a espada, sem destaque especial. Para ele, é ferramenta tão natural quanto o anel de prata no dedo. Para quem entende o que significa, é prova de quanto conhecimento Aldric acumulou nos seus séculos de isolamento."},
+  {id:23,nome:"Armadura de Couro Élfico de Aldric",tipo:"Armadura",subtipo:"Armadura de Couro · Élfica",status:"Em Posse",possuidor:"Aldric Voss",saga:"Saga 7",local:"Desconhecido — em posse de Aldric há décadas",raridade:"Raro",atributos:["CA 15 + mod DES (total, sem limite) — Armadura Élfica: regra homebrew da campanha","Flexível: não restringe movimentos de combate ou furtividade","Usada sob a capa preta — invisível até que Aldric revelasse","Couro élfico: mais resistente que couro comum, mais leve que metal equivalente"],descricao:"Três séculos de sobrevivência ensinam o que funciona. Aldric usa armadura sob a capa não por paranoia, mas por hábito de quem aprendeu que ameaças chegam sem aviso. O couro élfico é discreto, flexível, e permite que ele se mova como guerreiro ou estudioso conforme a situação exige. Quando abriu a capa para mostrar transparência a Leyn, revelou também que chegou à aldeia completamente preparado para combate — mas escolheu falar primeiro."},
+  {id:24,nome:"Roupas Novas de Kaira",tipo:"Acessório",subtipo:"Vestuário",status:"Em Posse",possuidor:"Kaira Sepet",saga:"Saga 7",local:"Casa da Costureira — Aldeia da Floresta de Valtheris",raridade:"Comum",atributos:["Vestido de lã marrom simples, limpo e ajustado ao tamanho de Kaira","Calças de tecido grosso por baixo — práticas para treino e movimento","Combinam com as botas entregues por Leyn na Saga 5","Custo: 5 moedas de ouro pagas por Leyn — um ano de renda da costureira","Duas mudas adicionais prometidas pela costureira"],descricao:"Cinco moedas de ouro entregues sem hesitação. Leyn disse que ouro serviria mais à costureira que a vampiros — e estava certo. A mulher ficou boquiaberta. Kaira ficou radiante. Cem anos de trapos sujos de floresta, manchados de sangue de rato e lama de caverna, trocados por lã limpa e calças práticas. Ela girou na praça mostrando para o tio. Depois foi ajudar na forja com vestido novo, botas grandes demais e cabelo ainda meio desgrenhado. Perfeito. [Saga 11] Rasgadas nas costuras durante a transformação acelerada nas catacumbas da Vila Sepet — o corpo de criança crescendo para adolescente em trinta segundos destruiu cada costura. Leyn cobriu Kaira com seu próprio manto."},
+  {id:25,nome:"Lote de Estacas de Prata",tipo:"Arma",subtipo:"Estaca · Arma Anti-Profana",status:"Em Posse",possuidor:"Leyn (2), Mara (2), Elise (2) · Defesa da Aldeia (6 unidades) · Tobias (forjando mais)",saga:"Saga 7",local:"Forja do Ferreiro — Aldeia da Floresta de Valtheris",raridade:"Incomum",atributos:["Dano de prata pura contra mortos-vivos corrompidos, aberrações e entidades profanas","30-40 centímetros de comprimento — tamanho otimizado para uso em combate próximo ou como projétil","Estimativa de produção: 20-25 unidades em algumas horas de trabalho ininterrupto","Tobias opera a forja com Mara no fole, Elise moldando com as mãos (imunes ao calor), Kaira organizando e resfriando","Plano original de luvas foi substituído por estacas ao surgir ameaça imediata dos rastros de fogo na floresta","Forjadas com o pó de prata alquímica encontrado nas prateleiras da oficina","[Saga 8] Aldric levou 12 unidades ao combate contra o Arauto Ardente — quantidade restante com Tobias na forja","[Saga 9] Divididas: 6 estacas para o grupo vampiro (viagem à Vila Sepet), 6 estacas para humanos (defesa da aldeia). Tobias forjará 10-15 unidades adicionais com o pó restante","[Saga 10] Distribuição interna do grupo vampiro: 2 estacas para Leyn, 2 para Mara, 2 para Elise — Kaira não recebeu (mãos pequenas demais para manejar efetivamente)"],descricao:"A decisão foi rápida: esqueça as luvas, faça estacas. Quando Marcus subiu com a notícia de árvores derretidas e pedras rachadas a 2 quilômetros ao norte, a prioridade mudou em segundos. Tobias pegou os moldes antes mesmo de Leyn terminar a frase. Na Saga 8, Aldric partiu para o combate carregando 12 unidades prontas enquanto Tobias continuava forjando. As estacas cumpriram seu papel — não matando o Arauto diretamente, mas fazendo parte do arsenal que o manteve pressionado até o rio."},
+  {id:26,nome:"Contrato com os Guardiões do Limiar",tipo:"Artefato",subtipo:"Artefato Único · Contrato de Alma",status:"Em Posse",possuidor:"Leyn Sepet",saga:"Saga 8",local:"O Limiar — fronteira entre vida e morte",raridade:"Artefato Único",atributos:["Gravado diretamente na alma — invisível, permanente como cicatriz","BENÇÃO 'Determinação Inabalável': 1x em toda a campanha — permanentemente consumida após uso; ao cair para 0 HP, Leyn pode escolher retornar a 1 HP automaticamente","PROTEÇÃO DOS GUARDIÕES: entidades externas (Devorador, Mestres Antigos) não podem reivindicar sua alma sem permissão","OBRIGAÇÃO FUTURA: uma única missão a ser convocada — termos negociáveis, não será suicida nem contra sua família","HP máximo restaurado integralmente (29) — sem penalidades permanentes","Símbolo invisível gravado na testa pelo Homem de Armadura Negra — visível apenas para entidades do Limiar","Selene Sepet testemunhou o contrato da luz dourada do outro lado"],descricao:"Três figuras — mulher de branco, homem de armadura negra, criança que não envelhece — tentaram cobrar preço pela terceira vida de Leyn Sepet. Ele recusou as três opções. Apontou que elas precisavam mais dele do que ele precisava delas. Chantageou com eficiência burocrática. A criança riu. A mulher cedeu. O contrato foi renegociado. Não é submissão — é parceria entre anomalia e sistema que não sabe o que fazer com ela. A benção 'Determinação Inabalável' é o reconhecimento formal do que já era verdade: Leyn Sepet é teimoso demais até para a morte."},
+  {id:27,nome:"Armadura de Couro Élfica Reforçada",tipo:"Armadura",subtipo:"Armadura de Couro · Élfica",status:"Em Posse",possuidor:"Leyn Sepet",saga:"Saga 9",local:"Baú com Runas — Oficina do Ferreiro, Aldeia da Floresta de Valtheris",raridade:"Raro",atributos:["CA 15 base — CA 17 total incluindo Destreza +2","Leve e flexível — não restringe movimentos de combate ou furtividade","Gravada com runas de proteção: +1 em salvaguardas contra magia","Feita especificamente para vampiro — sem símbolos sagrados, sem resistência ao portador","Deixada há 300 anos por Gareth Voss ao ferreiro Garrett (anão) com a instrução: 'guarde até que um primordial precise'","Substitui as roupas do ferreiro e o elmo fechado — Leyn a veste antes de partir para a Vila Sepet"],descricao:"O baú com runas esperou 300 anos pelo portador certo. Quando Tobias entregou a chave e o lacre se rompeu, a armadura estava exatamente como Gareth Voss a deixou — couro élfico com runas de proteção, feita para quem não pode usar símbolos sagrados. Leyn a vestiu sem cerimônia e sentiu a diferença imediatamente: leve, precisa, como segunda pele. Curiosamente similar ao equipamento de Aldric — o que faz todo sentido, considerando quem as encomendou."},
+  {id:28,nome:"Anel de Proteção",tipo:"Acessório",subtipo:"Anel · Mágico",status:"Em Posse",possuidor:"Kaira Sepet",saga:"Saga 9",local:"Baú com Runas — Oficina do Ferreiro, Aldeia da Floresta de Valtheris",raridade:"Raro",atributos:["+1 CA (contribui para CA 21 de Kaira: Armadura Cerimonial 18 + Anel +1 + Escudo Médio +2)","+1 em TODAS salvaguardas","Prata escurecida com gema vermelha — prata tratada magicamente, não causa desconforto a vampiros","AJUSTE AUTOMÁTICO: redimensionou-se para o dedo de Kaira ao ser colocado","[Saga 9] CA de Kaira à época: 11 → 12 (primeiro item mágico recebido — pré-armadura cerimonial)","Entregue por Leyn sem hesitação — 'Para você, pequena'"],descricao:"Era grande demais para os dedos pequenos dela. Mas quando Kaira o colocou, o anel simplesmente ajustou — metal vivo reconhecendo seu portador. Ela ficou olhando com olhos arregalados, sentindo a magia instalar-se. Leyn o entregou sem cerimônia, ajoelhado na sua frente, sem apresentar como presente grandioso. Era apenas o que fazia sentido: a proteção pertencia a ela. O anel não sabe que a menina que o porta sobreviveu cem anos com poder suprimido. Mas agora protege quem deveria ter sido protegida muito antes."},
+  {id:29,nome:"Poção de Cura Superior",tipo:"Consumível",subtipo:"Poção de Cura · Uso Único",status:"Destruído",possuidor:null,saga:"Saga 9",local:"Baú com Runas — Oficina do Ferreiro, Aldeia da Floresta de Valtheris",raridade:"Incomum",atributos:["8d4 + 8 de cura (dividida igualmente entre Mara e Elise)","Mara: recebeu 12 HP — restaurada de 16/28 para 28/28 HP (cura completa)","Elise: recebeu 16 HP — restaurada de 3/19 para 19/19 HP (cura completa)","Líquido vermelho brilhante em frasco de vidro — preservado por 300 anos","Consumida inteiramente antes da partida para a Vila Sepet"],descricao:"Trezentos anos de espera num baú com runas e a poção ainda brilhava como recém-feita. Gareth Voss não deixou equipamentos pela metade. Mara e Elise a dividiram sem discussão — quem precisava mais tomou mais. Queimaduras do Arauto desapareceram em segundos. Pele regenerou. A poção não tinha destinatário específico na carta de Gareth. Talvez ele simplesmente soubesse que quem encontrasse o baú precisaria dela."},
+  {id:30,nome:"Pergaminho de Velocidade",tipo:"Consumível",subtipo:"Pergaminho Mágico · Nível 3",status:"Em Posse",possuidor:"Leyn Sepet",saga:"Saga 9",local:"Baú com Runas — Oficina do Ferreiro, Aldeia da Floresta de Valtheris",raridade:"Incomum",atributos:["Feitiço Velocidade de nível 3 — uso único ao ler o pergaminho","Requer slot de magia de nível 3 para ativar — Leyn ainda não tem acesso","Guardado no bolso interno da Armadura Élfica Reforçada","Efeito do feitiço: dobra velocidade de movimento, +2 CA, ação adicional por turno, vantagem em testes de Destreza"],descricao:"Guardado com cuidado no bolso interno da nova armadura. Leyn não pode usá-lo ainda — o nível de magia necessário ainda está além do que sua centelha recém-despertada alcança. Mas Gareth Voss o deixou por razão. Talvez previsse que quem encontrasse o baú eventualmente precisaria de velocidade que nem mesmo vampiro primordial possui. O pergaminho espera o momento certo, como tudo que estava naquele baú."},
+  {id:31,nome:"Mapa Antigo da Vila Sepet",tipo:"Outro",subtipo:"Documento · Mapa",status:"Em Posse",possuidor:"Leyn Sepet",saga:"Saga 9",local:"Baú com Runas — Oficina do Ferreiro, Aldeia da Floresta de Valtheris",raridade:"Raro",atributos:["Detalha a Vila Sepet completa — mais preciso que o mapa parcial de Valtheris","Marca entradas secretas e armadilhas da vila","Localiza o COFRE PRINCIPAL do Clã Sepet","Nota escrita à mão: 'Para o último Sepet, se ainda existir — G.V.'","Elaborado por Gareth Voss durante observação da vila ainda viva — inclui observação de que 'algo ainda vive lá, magia antiga dos Sepet permanece'","Aviso: 'a noite eterna protege vampiros, mas também atrai OUTRAS coisas'"],descricao:"Gareth Voss encontrou a Vila Sepet viva durante suas décadas de viagem — e tentou chegar a tempo, como havia tentado com Corvath e Elendra antes dela. Não chegou. Com os outros clãs já caídos e os caçadores ainda ativos, fez o que pôde: uma entrada clandestina única, uma noite, usando furtividade vampírica, sem contato e sem rastro. Viu o interior da vila funcionando. Mapeou entradas secretas, armadilhas, o cofre principal — com a meticulosidade de quem sabe que talvez nunca possa voltar. Depois guardou distância crescente, observando de longe enquanto via o último clã caminhar para o mesmo fim. A nota 'para o último Sepet, se ainda existir' foi escrita nesse silêncio: a única noite que ele esteve lá, e nunca contou a ninguém. Ele estava certo em não voltar — a vila foi destruída décadas depois. E estava certo na esperança: o último Sepet existe. E agora tem o mapa."},
+  {id:32,nome:"Carta de Gareth Voss",tipo:"Outro",subtipo:"Documento · Correspondência",status:"Em Posse",possuidor:"Leyn Sepet",saga:"Saga 9",local:"Baú com Runas — Oficina do Ferreiro, Aldeia da Floresta de Valtheris",raridade:"Incomum",atributos:["Lacrada com cera vermelha — símbolo das duas luas entrelaçadas da Linhagem Voss","Lida por Mara em voz alta durante a corrida para a caverna","Revela que Gareth é irmão de Aldric Voss — e que morreu em paz, 300 anos atrás","Confirma que Gareth sentiu 'algo vivo' na Vila Sepet antes de falecer","Contém mensagem para Aldric: 'diga que Gareth morreu feliz. Encontrei paz. Espero que ele também encontre'"],descricao:"Trezentos anos esperando ser lida. Gareth Voss endereçou ao 'Vampiro Primordial que encontrar isto' — nunca sabendo quem seria, mas confiando que alguém digno o faria. Mara leu em voz alta enquanto corriam pela floresta noturna, a voz do morto viajando pelo vento entre as árvores. A revelação mais pesada: Gareth era irmão de Aldric. O irmão idiota e teimoso que Gareth esperava que encontrasse paz. Leyn carrega a mensagem consigo. Quando Aldric chegar à Vila Sepet em três dias, haverá palavras de seu irmão esperando por ele."},
+  {id:33,nome:"Correntes Espectrais de Kaira",tipo:"Artefato",subtipo:"Artefato Único · Destruído",status:"Destruído",possuidor:null,saga:"Saga 11",local:"Vila Sepet — quebradas no momento em que Kaira cruzou o limiar da Vila",raridade:"Artefato Único",atributos:["Magia de contenção da Igreja do Sol Agonizante — versão antiga, usada há 100 anos","Suprimia força vampírica, velocidade, poderes primordiais e capacidade de criar prole","Mantinha Kaira com aparência e força de criança de 10 anos por um século inteiro","Reagiam emocionalmente: medo e pânico as aceleravam; calma e confiança as enfraqueciam","Gravadas na alma — não na carne — por padre de olhos bicolores (azul e dourado)","Fissuras douradas apareceram ao se aproximar da Vila Sepet; explodiram em luz dourada ao cruzar o limiar","Fragmentos viraram pó dourado que se dissipou no ar da Vila"],descricao:"Elas aprisionaram mais do que o poder. Aprisionaram uma criança por cem anos — mantendo-a pequena, fraca, incapaz de crescer, de amadurecer, de ser o que deveria ser. O padre de olhos bicolores as gravou na alma de Kaira com a frieza de quem planta semente para colher depois. Kaira as carregou por 100 anos, caçando ratos, dormindo em cavernas, nunca podendo descansar de verdade. Quebraram explosivamente em luz dourada no instante em que ela cruzou o limiar da Vila Sepet — como se a magia ancestral do clã reconhecesse a injustiça e a desfizesse de uma vez. O pó dourado se dissipou no ar. Nada restou exceto a cicatriz invisível na alma de Kaira e o poder que sempre deveria ter sido dela."},
+  {id:34,nome:"Frasco de Sangue Humano A+ (Consumido)",tipo:"Consumível",subtipo:"Sangue · Uso Único",status:"Destruído",possuidor:null,saga:"Saga 12",local:"Arsenal de Emergência — Catacumbas da Vila Sepet",raridade:"Comum",atributos:["Sangue humano tipo A+ preservado por magia rúnica Sepet","HP recuperados: 6 — Leyn restaurado de 25/41 para 31/41","Magia de preservação Sepet: potência intacta após décadas armazenado"],descricao:"Kaira pegou o frasco e o entregou antes que Leyn pudesse dizer que estava bem. Ela sabia que não estava. A cor voltou ao rosto dele em segundos. Kaira ficou observando com aquele alívio de quem viu o tio morrer duas vezes e ainda não aprendeu a ficar calma quando ele perde sangue."},
+  {id:35,nome:"Frasco de Sangue Sepet Emergencial",tipo:"Consumível",subtipo:"Sangue Primordial · Emergencial",status:"Em Posse",possuidor:"Leyn Sepet",saga:"Saga 12",local:"Arsenal de Emergência — Catacumbas da Vila Sepet",raridade:"Lendário",atributos:["Sangue de Kael Sepet — Ancião da linhagem, preservado há ~97 anos (desde a vigília de 615 CC)","Etiqueta original: 'Uso apenas em morte iminente'","Sangue primordial puro de alta concentração — efeitos além de restauração desconhecidos","Frasco de vidro grosso — líquido brilha levemente dourado","Reconhecido por Kaira pelo cheiro antes de ler o rótulo: 'cheira como família'"],descricao:"Quase um século numa prateleira rúnica e o líquido ainda brilha. Kael Sepet — o Ancião que deixou a última ordem à Sentinela antes de morrer — preservou seu próprio sangue como último recurso durante sua vigília solitária de 615 CC. A etiqueta é direta: apenas em morte iminente. Kaira o reconheceu pelo cheiro antes de ler o rótulo. Sangue de família é sangue de família, mesmo que o doador tenha morrido décadas antes de a portadora crescer."},
+  {id:36,nome:"Grimório Familiar Sepet",tipo:"Artefato",subtipo:"Grimório · Conhecimento Ancestral",status:"Em Posse",possuidor:"Mara Vell",saga:"Saga 12",local:"Arsenal de Emergência — Catacumbas da Vila Sepet",raridade:"Artefato Único",atributos:["Título: 'Técnicas de Combate, Magia de Sangue e Rituais Ancestrais — Compilado ao longo de 12 gerações'","~5kg — capa de couro negro com runas douradas pulsando","RECONHECE sangue Sepet: runas brilham mais intensas quando Leyn o toca","Conteúdo: técnicas de combate Sepet, magia de sangue primordial, rituais ancestrais","Pedestal central do Arsenal — posição de honra, não de armazenagem","[Saga 18] Entregue por Leyn a Mara Vell — 'acho que você vai gostar da Seção Cinco (Técnicas de Proteção)'","Mara o recebeu com cuidado próximo de reverência — segurou contra o peito ao lado do escudo, 'como se fossem igualmente importantes'","Mara confirmou: será sua leitura noturna favorita"],descricao:"Doze gerações de vampiros Sepet escreveram neste livro. Cada técnica testada em campo. Cada ritual aprendido pela dor. Quando Leyn o tocou, o livro brilhou — como se reconhecesse o cheiro de quem deveria tê-lo encontrado há muito tempo. É a memória completa de um clã que quase desapareceu, esperando no pedestal de honra do Arsenal por alguém que ainda carregasse o sangue certo. Na Saga 18, Leyn o fechou com a palma repousando na capa de couro negro por um segundo — sentindo o peso de gerações naquelas páginas — e o entregou a Mara. Não porque ela tem sangue Sepet. Porque ela precisa do que está dentro."},
+  {id:37,nome:"Armadura Cerimonial Sepet",tipo:"Armadura",subtipo:"Armadura de Placas · Cerimonial · Mágica",status:"Em Posse",possuidor:"Kaira Sepet",saga:"Saga 12",local:"Arsenal de Emergência — Catacumbas da Vila Sepet",raridade:"Muito Raro",atributos:["CA 18 (armadura mágica — não requer modificador de Destreza)","Placas negras como a noite com runas douradas nas bordas","Símbolo Sepet (Lua Carmesim) gravado no peitoral","AUTO-AJUSTE MÁGICO: redimensionou-se automaticamente ao corpo de Kaira ao primeiro toque","Runas PULSAM em resposta às emoções da portadora — intensificam com determinação e raiva","Reconhece sangue Sepet: brilhou ao contato com Kaira antes mesmo de ser vestida","[Saga 16] Runas explodiram em brilho dourado ao fim da Terceira Provação, celebrando a maioridade de Kaira"],descricao:"As placas se movem como se respirassem. Quando Kaira tocou, a armadura ajustou-se sozinha. As runas douradas pulsaram. O símbolo da Lua Carmesim brilhou. Uma adolescente de 110 anos que passou cem deles escondendo-se de tudo olhou para si mesma na armadura do próprio clã e disse, com voz que ainda estava descobrindo: eu pareço guerreira de verdade agora. Estava certa."},
+  {id:38,nome:"Lança de Prata Pura",tipo:"Arma",subtipo:"Lança · Prata",status:"Em Posse",possuidor:"Kaira Sepet",saga:"Saga 12",local:"Arsenal de Emergência — Catacumbas da Vila Sepet",raridade:"Raro",atributos:["1d8 de dano perfurante + 2d6 de dano adicional contra criaturas corrompidas e entidades profanas","Alcance: 10 pés — pode atacar por cima de aliados em formação","Cabo de ébano negro, 2 metros de comprimento; lâmina de prata pura na ponta","VIBROU ao ser empunhada por Kaira — reconheceu sangue Sepet","Escolhida por lógica tática: 'quero manter distância dos inimigos'","[Saga 15] VINCULADA — ritual de 1 hora na Câmara de Tumbas: nunca pode ser desarmada permanentemente, pode invocar como ação bônus (até 300 pés), +1 para acertar","[Saga 15] Kaira arremessou a lança com olhos fechados e a recebeu de volta na palma — primeiro teste do vínculo confirmado","[Saga 16] Após a Câmara da Provação: movimento com a lança é PERFEITO — sem hesitação, sem desajeitamento. Kaira dominou completamente o corpo transformado"],descricao:"Kaira olhou para a espada longa e para a lança. Escolheu a lança. A lógica foi simples e tática: distância. A lança vibrou quando ela a empunhou. Na Saga 15, Leyn a ensinou a criar vínculo usando a metáfora da respiração: a lança é como o ar — sai, mas ainda é sua; retorna e se torna parte de você. A Câmara de Tumbas foi o lugar certo: Selene observando, família reunida, tochas douradas. Depois de uma hora em transe, Kaira jogou a lança três metros para cima, fechou os olhos, e a recebeu de volta perfeitamente na palma."},
+  {id:39,nome:"Armadura de Placas Leve — Arsenal Sepet",tipo:"Armadura",subtipo:"Armadura de Placas · Leve",status:"Em Posse",possuidor:"Mara Vell",saga:"Saga 12",local:"Arsenal de Emergência — Catacumbas da Vila Sepet",raridade:"Incomum",atributos:["CA 14 base + Dex +1 + Escudo Grande +3 + Defense +1 = CA 19 TOTAL","Placas de aço no peitoral, ombros e antebraços — resto em couro reforçado","Mobilidade preservada para combatente de múltiplos braços"],descricao:"A placa leve não cobre tudo — mas cobre o que importa, e deixa braços suficientes livres para escudo, espada, adaga e qualquer outra coisa que precise segurar simultaneamente. CA 19 combinada com o novo escudo. Mais sólida que qualquer coisa que Mara vestiu desde que era humana."},
+  {id:40,nome:"Escudo Grande de Aço Reforçado",tipo:"Armadura",subtipo:"Escudo Grande · Defesa Ativa",status:"Em Posse",possuidor:"Mara Vell",saga:"Saga 12",local:"Arsenal de Emergência — Catacumbas da Vila Sepet",raridade:"Incomum",atributos:["+3 CA (superior ao escudo médio anterior +2)","Aço reforçado — mais pesado e resistente ao impacto","Mara segura com dois braços múltiplos — os outros braços livres para ataque","CA total de Mara com escudo: 19 (inclui Dex +1 e Defense +1)","ANATOMIA ANULA PENALIDADES: quatro braços permitem empunhar o escudo grande com os braços auxiliares sem restringir ataques, furtividade ou testes de Destreza dos braços principais — regra específica de Mara, não aplicável a portadores convencionais","Substituiu o escudo médio amassado da oficina do ferreiro"],descricao:"O escudo médio aguentou o Arauto Ardente com a borda rachada como troféu. Foi uma boa vida para um escudo de ferreiro. O Arsenal Sepet ofereceu algo melhor: aço reforçado, +3 de proteção. Mara o testou com dois braços e usou os outros dois para gesticular aprovação."},
+  {id:41,nome:"Espada Longa do Arsenal Sepet",tipo:"Arma",subtipo:"Espada Longa",status:"Em Posse",possuidor:"Mara Vell",saga:"Saga 12",local:"Arsenal de Emergência — Catacumbas da Vila Sepet",raridade:"Incomum",atributos:["1d8 + 3 de dano cortante","Aura mágica leve detectada por Detectar Magia","Qualidade superior ao armamento humano padrão — forjada por ferreiros Sepet","Mara opera com escudo + espada longa + adaga de prata simultaneamente"],descricao:"Mara pegou uma do rack e a testou com a naturalidade de veterana. Equilíbrio bom, fio afiado, aura mágica leve. Com múltiplos braços pode segurar escudo, espada longa, adaga de prata e ainda tem braços sobrando. A aberração que a Igreja criou para caçar tornou-se, por ironia perfeita, o guerreiro mais versátil da família."},
+  {id:42,nome:"Arco Longo Élfico + Flechas de Prata",tipo:"Arma",subtipo:"Arco Longo · Munição de Prata",status:"Em Posse",possuidor:"Elise",saga:"Saga 12",local:"Arsenal de Emergência — Catacumbas da Vila Sepet",raridade:"Raro",atributos:["1d8 + 3 de dano perfurante (Destreza +3)","+1d6 de dano adicional de prata contra criaturas corrompidas e entidades profanas","Madeira élfica clara, cordas de tendão tratado — alcance e precisão superiores ao arco do caçador","Aljava com 40 flechas de prata — pontas brilhando","[Saga 13] 2 flechas disparadas: 1 no Devorador Menor (11 dano), 1 no Conjurador #1 (7+4=11 dano, morte). Restam 38 flechas","Elise cobre Kaira no combate: qualquer cultista que tentar magia leva flecha ou ácido"],descricao:"Elise Vell foi arqueira antes de ser Elise sem-rosto. Antes da transformação, ela acertava alvos a 100 metros com arco barato. O arco élfico do Arsenal é diferente: madeira clara, tendão tratado, 40 flechas de prata. Ela o pegou com a precisão de quem nunca esqueceu como segurar."},
+  {id:43,nome:"Cota de Malha Reforçada — Arsenal Sepet",tipo:"Armadura",subtipo:"Cota de Malha · Reforçada",status:"Em Posse",possuidor:"Elise",saga:"Saga 12",local:"Arsenal de Emergência — Catacumbas da Vila Sepet",raridade:"Incomum",atributos:["CA 16 — superior à cota anterior (CA 14)","Links menores e mais apertados; placas de aço nas áreas vitais","Mais adaptada à anatomia parcialmente aberrante de Elise que a cota anterior","Substituiu a cota manchada de ácido e com elos soltos do arsenal do ferreiro"],descricao:"A cota velha estava manchada do próprio ácido de Elise. Links soltos, amassaduras acumuladas. A reforçada do Arsenal: links mais apertados, placas nas áreas críticas, e curiosamente melhor adaptada à anatomia estranha de Elise. CA 16. Dois pontos a mais. Às vezes dois pontos salvam uma vida."},
+  {id:44,nome:"Lote de Frascos de Sangue — Arsenal Sepet",tipo:"Consumível",subtipo:"Sangue · Reserva de Combate",status:"Em Posse",possuidor:"Elise (2), Mara (3), Kaira (2) — 7 restantes",saga:"Saga 12",local:"Arsenal de Emergência — Catacumbas da Vila Sepet",raridade:"Comum",atributos:["9 frascos distribuídos: 3 para Elise, 3 para Mara, 3 para Kaira","Tipos: Humano A+, Veado, Javali — preservados por magia Sepet","Magia de preservação Sepet: potência intacta independente do tempo armazenado","Leyn recusou reserva pessoal — distribuiu tudo para as três","[Saga 13] 2 frascos consumidos em batalha: 1 por Elise (9 HP curados, 10→19 HP) e 1 por Kaira (9 HP curados, 1→10 HP). Restam 7 frascos"],descricao:"Leyn distribuiu frascos para as três antes de pensar em si mesmo. Nove frascos em três grupos iguais — humano, veado, javali, preservados em estante rúnica por décadas. Não são delicadeza. São sobrevivência calculada: um vampiro que pode beber um frasco e continuar lutando vale mais que um vampiro intacto que entra em frenesi por fome no pior momento."},
+  {id:45,nome:"Bênção dos Ancestrais Sepet",tipo:"Artefato",subtipo:"Bênção Ativa · Laço de Sangue",status:"Em Posse",possuidor:"Leyn Sepet",saga:"Saga 13",local:"Catacumbas da Vila Sepet — concedida durante a Batalha dos Ancestrais",raridade:"Artefato Único",atributos:["+2 temporário em TODOS os ataques e salvaguardas enquanto Leyn lutar nas Catacumbas Sepet","Ativada após prece silenciosa de Leyn aos ancestrais: 'não me importo de perder esse corpo, mas protejam minha família'","Fontes confirmadas: Kael Sepet (Ancião), Selene Sepet (irmã), 147 vampiros mortos e a própria Câmara da Provação","Manifestação física: runas douradas da armadura de Kaira brilharam, espada vinculada pulsou com luz prateada","Condição de ativação: humildade genuína + pedido pela família, não pelo portador","Duração: enquanto Leyn permanecer nas Catacumbas em defesa da linhagem"],descricao:"Leyn pediu ajuda pelos outros, não por si mesmo. Esse detalhe importou. Quando a prece chegou aos mortos — ao ancião cujo sangue espera num frasco há quase um século, à irmã cujo corpo repousa na tumba 23 do setor leste, aos 147 vampiros preservados com honra pela última ordem de Kael — a resposta foi imediata. Não como milagre espetacular. Como certeza que entra pelos ossos: você não está sozinho, nunca mais estará. As runas de Kaira brilharam. A espada vinculada pulsou. E Leyn Sepet, com +2 em tudo e os mortos do clã lutando através dele, finalizou a batalha sozinho enquanto mandava a família para longe do perigo."},
+  {id:46,nome:"Benção de Selene Sepet",tipo:"Artefato",subtipo:"Benção Permanente · Laço Familiar",status:"Em Posse",possuidor:"Leyn, Mara, Elise e Kaira (todos)",saga:"Saga 14",local:"Câmara de Tumbas — Setor Leste, Catacumbas da Vila Sepet",raridade:"Artefato Único",atributos:["Esfera de luz dourada dividida em quatro — um fragmento entrou em cada membro da família","+2 em todas as salvaguardas quando os quatro membros estão a 30 pés uns dos outros","1x por descanso curto: usar ação bônus para conceder vantagem ao ataque de UM membro da família","Fúria Protetora: se qualquer membro cair a 0 HP, os outros três ganham +1d6 de dano temporário em ataques","Condição de ativação: Kaira se despediu da mãe com aceitação, não com desespero — Selene respondeu","Confirmação espiritual: 'vocês quatro são agora verdadeiramente FAMÍLIA — não apenas por sangue, mas por escolha mútua e amor provado'","Diferença da Bênção dos Ancestrais: permanente, familiar, concedida por amor — não temporária de batalha","[Saga 16] Na Câmara da Provação, a Câmara bloqueou Leyn mas permitiu apoio de Mara e Elise — confirmando que o vínculo familiar funciona por oferta, não imposição"],descricao:"Selene Sepet não pôde ver a filha crescer. Não pôde estar presente quando as correntes quebraram, quando Kaira deu os primeiros passos adultos, quando aprendeu a lutar, quando escolheu ficar ao invés de fugir. Mas pôde estar presente para isso: o momento em que a filha se despediu com amor ao invés de culpa, em que a família escolhida se ajoelhou junto ao túmulo e fez promessas, em que Leyn chorou lágrimas de sangue e mostrou que força não é não sentir dor. A esfera dourada dividiu-se em quatro. Uma mãe dando o único presente que ainda podia dar."},
+  {id:47,nome:"Boneco de Pano de Kaira",tipo:"Acessório",subtipo:"Relíquia Familiar",status:"Em Posse",possuidor:"Kaira Sepet",saga:"Saga 14",local:"Túmulo de Selene Sepet — Tumba 23, Setor Leste",raridade:"Comum",atributos:["Brinquedo de infância de Kaira — estava ao lado da mão direita de Selene no sarcófago","Preservado perfeitamente por 100 anos junto ao corpo de Selene","Selene o guardou consigo ao ser sepultada — não entrou no túmulo com nada de valor exceto isso","Kaira o pegou antes do sarcófago fechar: 'para lembrar de você... e que mesmo quando pessoas vão embora, o amor fica'","Sem propriedades mágicas — mas Kaira o carrega como âncora emocional"],descricao:"Selene Sepet entrou no túmulo de armadura cerimonial, com espada de prata cruzada sobre o peito. Ao lado da mão direita havia apenas um boneco de pano. Nenhuma guerreira coloca brinquedo de criança no lugar de honra ao seu lado a menos que esse brinquedo signifique o mundo. Era o último objeto que ela havia tocado enquanto Kaira ainda era Kaira — antes das correntes, antes do massacre, antes de tudo. Kaira o pegou com cuidado. O sarcófago fechou. Ela guardou no bolso interno da armadura cerimonial, contra o símbolo da Lua Carmesim no peitoral."},
+  {id:48,nome:"Grimório do Culto da Verdade Profunda",tipo:"Artefato",subtipo:"Grimório · Inteligência Inimiga",status:"Em Posse",possuidor:"Leyn Sepet (Sentinela custodiando)",saga:"Saga 14",local:"Recuperado dos cadáveres — Catacumbas da Vila Sepet",raridade:"Incomum",atributos:["Sobreviveu ao fogo das armadilhas — protegido por magia do Culto","Contém magias profanas de níveis 1-3","Anotações sobre 'Despertar dos Mestres Antigos' — contexto do Ritual de Convergência","Recuperado pelo Conjurador morto por Elise (flecha de prata nas costas)","[Saga 15] Leyn tentou forçar o selo — choque psíquico causou 2 de dano. Capa: couro que não parece animal — provavelmente pele humana","[Saga 19] Aberto por Aldric Voss — 60% do conteúdo decifrado após trabalho ritual","RITUAL DE CONVERGÊNCIA: 3 Pontos de Ancoragem ativados simultaneamente na Lua Nova abrem portal de 12 minutos para o Vazio Profundo","OBJETIVO REAL: invocar 'Arauto da Fome Eterna' — entidade maior que o Devorador Menor; o Devorador era apenas batedor/teste","ÂNCORA VIVA CONFIRMADA: ritual requer sangue primordial puro como canal — alvo identificado: Kaira Sepet","CONDIÇÃO CRÍTICA: ativação requer 'servo disposto' derramando sangue voluntariamente + Nome Verdadeiro do Mestre — não funciona com prisioneiro","A 'MESTRA' NÃO É HUMANA: entidade antiga vestindo pele humana como roupa — origem e natureza desconhecidas","CONTINGÊNCIA INIMIGA: novo Ponto de Ancoragem pode ser criado em ~1 semana de trabalho ritual se algum ponto for destruído","[Saga 20] 100% DECIFRADO — Aldric Voss conclui análise completa","PONTO BETA REVELADO: Câmara do Primeiro Grito — aproximadamente 62km a sudeste da Vila Sepet","PONTO GAMA REVELADO: sob o poço central da aldeia — instalado há 100 anos, antes mesmo do massacre Sepet","A MESTRA IDENTIFICADA: classificada nos registros mais antigos como Devorador de Faces — filha direta dos Mestres Antigos, não invocada: nascida"],descricao:"Sobreviveu ao fogo que incinerou o portador porque a magia que o protegia era mais forte que a magia que o matou. A Sentinela o recuperou do cadáver do Conjurador #1. Alguém teve que ler. Aldric Voss levou duas horas e trinta anos de conhecimento acumulado para abrir o selo e decifrar 60% na Saga 19 — e voltou ao grimório depois, na Saga 20, para terminar o trabalho. 100% decifrado. O que encontrou recontextualiza tudo: o Devorador Menor não era o plano. Era o teste. O Ritual de Convergência precisa de três Pontos de Ancoragem, sangue primordial puro e alguém que queira que aconteça. O Ponto Gama está sob o poço da aldeia há um século. O Ponto Beta fica a 62km ao sul. E a entidade que os coordena — a Mestra — é classificada nos registros mais antigos como Devorador de Faces. Não invocada. Nascida. Uma das primeiras."},
+  {id:49,nome:"Mapa do Culto — Ponto de Convergência",tipo:"Outro",subtipo:"Documento · Inteligência Inimiga",status:"Em Posse",possuidor:"Leyn Sepet (Sentinela custodiando)",saga:"Saga 14",local:"Recuperado dos cadáveres — Catacumbas da Vila Sepet",raridade:"Incomum",atributos:["Marca a Vila Sepet, a Fortaleza do Culto (sudeste) e um 'Ponto de Convergência' (localização codificada)","Localização do Ponto de Convergência requer tradução de cifra do Culto para ser decifrada","Parcialmente sobrepõe o Mapa Parcial de Valtheris de Leyn — informações complementares","Recuperado do mesmo conjunto de cadáveres que o Grimório"],descricao:"O mapa mostra onde o Culto está e para onde quer ir. A Vila Sepet está marcada — eles sabiam exatamente onde vinham. A Fortaleza do Culto ao sudeste está indicada com símbolo de base operacional. E há um terceiro ponto: o 'Ponto de Convergência', localização codificada em cifra que ninguém no grupo sabe ler ainda. Mas a cifra pode estar no Grimório. Quando Aldric chegar em três dias, talvez ele reconheça."},
+  {id:50,nome:"Núcleo Mágico do Construto",tipo:"Artefato",subtipo:"Componente Mágico · Integrado",status:"Integrado — Victória",possuidor:"Leyn Sepet (via Victória)",saga:"Saga 21",local:"Integrado à lâmina Victória — Catacumbas da Vila Sepet",raridade:"Raro",atributos:["[INTEGRADO — não existe mais como objeto separado]","Conteúdo revelado: criança de ~7 anos, cabelo negro, olhos âmbar — aprisionada pelos homens de mantos roxos do Culto num campo de flores amarelas","Raiva dentro do núcleo era armadura — maior que o corpo que protegia; não agressão coordenada, desespero que virou violência","Leyn não usou ritual de substituição de Aldric; encontrou a presença no canto da escuridão, sentou e esperou","Presença veio até Leyn; ele tocou sua cabeça; ela foi — com luz âmbar, não com raiva; última comunicação: 'Obrigada por me ver. Não como ferramenta. Como eu era.'","Ao partir: cristal integrou-se à base da Espada Longa do Ferreiro em veios dourados; inscrição 'Levanta' emergiu por escolha da própria presença","Kaira identificou a cor dos veios âmbar: idêntica aos próprios olhos dourados","Teren sentiu a partida mesmo sendo vampiro novo de horas; Rory sentiu sem entender magia alguma","Aldric: 'O que você fez não tem nome em nenhum texto que já li'"],descricao:"Entrou neste catálogo como esfera de cristal negro rachada, com magia residual profana e vontade aprisionada que Kaira chamou de 'ainda está viva?'. Saiu dele integrado à lâmina de uma espada como veios dourados e a palavra Levanta gravada por escolha própria. O que estava dentro nunca foi combustível para Construto — foi criança num campo de flores que viu homens de manto roxo aparecerem na borda do mundo. A raiva que projetava era tudo o que sobrou dela depois de anos comprimida em cristal. Leyn não purificou. Escutou. A criança foi embora com luz. O núcleo foi com ela — mas deixou a cor dos olhos dela na lâmina, para que não seja esquecida."},
+  {id:51,nome:"Cajado com Cristal Corrompido",tipo:"Arma",subtipo:"Cajado Mágico · Profano",status:"Em Posse",possuidor:"Leyn Sepet (Sentinela custodiando)",saga:"Saga 14",local:"Recuperado dos cadáveres dos Conjuradores — Catacumbas da Vila Sepet",raridade:"Incomum",atributos:["1 cajado intacto de 3 recuperados (2 destruídos pelas armadilhas)","Cristal no topo pulsa com energia profana residual","Usado pelos Conjuradores do Culto para canalizar magias de ataque (Raio Gélido, Proteção, Luz)","Magia profana: pode amplificar feitiços de corrupção e trevas — uso por vampiro requer cautela","Pode ser reforjado/purificado por mago competente, ou usado como fonte de informação sobre magia do Culto"],descricao:"Dois dos três cajados viraram cinzas com os portadores. Este sobreviveu porque estava no Conjurador #2, o que a Sentinela decapitou — morte instantânea preservou o equipamento. O cristal ainda pulsa. Energia profana residual que não some com a morte do portador. Útil para estudo. Potencialmente perigoso para manusear sem preparo. A Sentinela o organizou na pilha de evidências com o mesmo pragmatismo de quem já viu muita coisa."},
+  {id:52,nome:"Veneno Suicida dos Cultistas",tipo:"Consumível",subtipo:"Veneno · Neurotoxina",status:"Em Posse",possuidor:"Elise (2 doses = 6 flechas)",saga:"Saga 14",local:"Recuperado dos cadáveres — dentes ocos de 2 cultistas guerreiros",raridade:"Incomum",atributos:["Neurotoxina extraída de criatura abissal","Efeito: Salvaguarda de Constituição CD 15 — Falha: Paralisia em 1 rodada + 3d6 de dano de veneno/rodada por 3 rodadas","Sucesso: Metade do dano, sem paralisia","Funciona em: humanos, construtos biológicos, mortos-vivos fracos","NÃO funciona em: construtos puramente mecânicos, espíritos, demônios maiores","Cada dose = suficiente para 3 flechas","[Saga 14] Recuperado de dentes ocos — cultistas o carregavam para evitar interrogatório","[Saga 15] Transferido por Leyn a Elise: 'use na ponta de suas flechas quando achar necessário'"],descricao:"Dois cultistas guerreiros carregavam veneno em dentes ocos — peças ocas de porcelana instaladas cirurgicamente para prevenir captura e interrogatório. A Sentinela recuperou com precisão cirúrgica. O líquido negro viscoso cheira a amêndoas amargas misturadas com carne podre: sinal de origem abissal. Leyn o passou para Elise sem cerimônia, tratando como ferramenta tática. Para Elise — ex-inquisidora que passou décadas como aberração — receber veneno como equipamento de combate e ser chamada de família no mesmo dia é uma combinação peculiar de normalidade."},
+  {id:53,nome:"Marca da Maioridade — Kaira Sepet",tipo:"Artefato",subtipo:"Transformação Permanente",status:"Em Posse",possuidor:"Kaira Sepet",saga:"Saga 16",local:"Câmara da Provação — Salão Comunal Central, Vila Sepet",raridade:"Artefato Único",atributos:["Kaira atingiu nível 3 como Guerreira após as Três Provações (ganhou 2 níveis)","HP: 10 a 25 (3d10 + CON)","Força 12 a 14, Constituição 12 a 14, Carisma 15 a 16","Habilidades ganhas: Action Surge, Second Wind (1d10+3), Estilo Proteção","Poderes primordiais completos: Regeneração Vampírica (2 PV/turno em combate · 2 PV/hora fora de combate), Mordida poderosa (2d6+2 + drena 2d6 HP)","Aura dourada visível quando em estado emocional intenso","Três Provações: Medo do Abandono/Criador, Auto-Aceitação, Escolha de Identidade (Porta Dourada — Família)","Vila Sepet celebrou: pela primeira vez em 100 anos, jovem vampiro Sepet alcança maioridade"],descricao:"A Câmara não age por crueldade. Age por sabedoria. Kaira enfrentou o Padre Traidor e o socou até rachar. Abraçou a versão criança de si mesma no espelho ao invés de negar. E diante de três portas — Poder, Liberdade, Família — escolheu a dourada sem hesitar: cem anos sozinha me ensinaram que segurança sem amor não é vida, é apenas sobrevivência. Saiu transformada. Não fisicamente dramática — mas completa. Sem os medos que a paralisavam, sem vergonha do passado, sem dúvida sobre quem é. A linhagem Sepet continua."},
+  {id:54,nome:"Anel de Prata dos Primeiros",tipo:"Acessório",subtipo:"Anel · Artefato da Linhagem",status:"Em Posse",possuidor:"Leyn Sepet",saga:"Saga 17",local:"Caixa de Madeira Escura — guardada por Aldric Voss por 100 anos após o massacre Sepet",raridade:"Artefato Único",atributos:["Prata com gema vermelha escura no centro — pulsou ao reconhecer sangue Sepet no momento do contato","Gravação interna em escrita vampírica antiga: 'Que o último carregue o que os primeiros construíram'","Ajuste automático ao dedo do portador — reconhece sangue Sepet, não aceita outro","Memória comprimida: cinco mil anos de linhagem encapsulados em prata e pedra vermelha — por enquanto manifestada apenas como presença, 'a mão de alguém que não se vê'","Aldric encontrou nos escombros de acampamento Sepet duas semanas após o massacre — guardou 100 anos aguardando portador certo","Encontrado junto ao Fragmento de Pergaminho Primordial na mesma caixa; os dois pertencem ao mesmo conjunto","Caixa de madeira escura gravada com runas de proteção contra deterioração: item preservado impecavelmente por mais de um século"],descricao:"Cem anos numa caixa de madeira escura, dentro da capa de um vampiro que não sabia o nome de quem receberia. Aldric Voss o encontrou nos escombros duas semanas após o massacre — o acampamento já estava frio, os rastros já tinham sumido, mas a caixa com runas de proteção ainda pulsava com sangue Sepet, recusando-se a apagar. Ele a guardou sem saber se haveria alguém vivo para recebê-la. Quando a tampa se abriu sob os dedos de Leyn sem resistência — como se sempre soubesse — o anel estava no veludo escurecido pelo tempo, exatamente como havia sido colocado. A gravação não é promessa. É instrução. Cinco mil anos de linhagem dizendo ao último: não comece do zero. Carregue o que construímos."},
+  {id:55,nome:"Fragmento de Pergaminho Primordial",tipo:"Outro",subtipo:"Documento · Primordial Arcaico",status:"Em Posse",possuidor:"Leyn Sepet",saga:"Saga 17",local:"Caixa de Madeira Escura — junto ao Anel de Prata dos Primeiros",raridade:"Raro",atributos:["Três linhas em escrita primordial arcaica — escritos à mão, tinta intacta após mais de um século","Escrita anterior ao que Aldric aprendeu em mais de três séculos de estudo: primordial pré-fundação","Aldric Voss confirmou incapacidade de leitura — estreita significativamente o campo de quem pode traduzir","Conteúdo: completamente desconhecido — requer especialista em primordial arcaico","Guardado dobrado junto ao Anel dos Fundadores — os dois foram deixados intencionalmente como conjunto","A tinta não desbotou: ou magia de preservação deliberada, ou o que está escrito recusou desaparecer"],descricao:"Três linhas. Não são muitas palavras. Mas a tinta não desbotou em mais de um século dentro da caixa — o que, para pergaminho, significa ou magia de preservação intencional, ou que o que está escrito recusou desaparecer. Aldric Voss tem 342 anos de estudo de línguas mortas e admitiu que não consegue ler. Isso estreita muito o campo de quem pode. Leyn o guarda dobrado junto ao anel, como se ambos pertencessem ao mesmo conjunto — porque pertencem. Quem os deixou na mesma caixa sabia o que estava fazendo."},
+  {id:56,nome:"Provação da Dignidade — Marca do Protetor",tipo:"Artefato",subtipo:"Transformação Permanente · Marca Ancestral",status:"Em Posse",possuidor:"Leyn Sepet",saga:"Saga 17",local:"Sala da Provação da Dignidade — Catacumbas da Vila Sepet",raridade:"Artefato Único",atributos:["ESCUDO DO PROTETOR (Passivo): quando aliado a até 15 pés seria reduzido a 0 HP, Leyn pode usar Reação para absorver metade do dano — transferindo-o para si mesmo","PRESENÇA ANCESTRAL (1x por Descanso Longo): Ação Bônus — manifesta a linhagem Sepet completa por 1 minuto; aliados a 30 pés ganham +2 em ataques e salvaguardas; inimigos que vejam Leyn fazem Salvaguarda de Sabedoria CD 14 ou ficam abalados (desvantagem em ataques contra Leyn) por 1 rodada","NOME GRAVADO (Permanente): nome de Leyn inscrito nas paredes da Câmara — magias de supressão de identidade, amnésia forçada ou dissolução de linhagem não funcionam dentro do perímetro da Vila Sepet","Aprovado por um dos Primeiros — a figura que emergiu na sala era ancestral de cinco mil anos, não construção da magia da Câmara","Marcação gravada: 'Aquele que protege porque sempre foi feliz fazendo isso. E não deixou o mundo tirar isso dele.'","Inscrição gravada logo abaixo de Kael Sepet: 'Aquele que ficou quando todos foram. Aquele que enterrou os nomes para que não fossem esquecidos.'","Condição de aprovação: honestidade sem ornamentos — resposta encontrada no meio de uma dúvida genuína, não preparada","A sala permaneceu como câmara branca por quase duas horas (externo) — internamente pareceu minutos"],descricao:"A Provação da Dignidade não testa força nem feitos. Faz uma única pergunta — por que você protege? — e aguarda a resposta verdadeira. Leyn não chegou com resposta preparada. Chegou com uma dúvida honesta e a encontrou no meio dela: protejo porque sempre fui feliz fazendo isso. Antes do massacre, antes da prisão, antes do século de escuridão. Esse algo que o mundo tentou arrancar por cem anos não saiu. Um dos Primeiros — ancestral de cinco mil anos com a dignidade específica de quem nunca teve pressa — emergiu da figura sem rosto, inclinou-se para o descendente e disse: respondeu como Sepet. Não como vampiro que decidiu ser bom. Como alguém que sempre foi isso. O nome de Leyn foi gravado nas paredes da Câmara entre milhares de outros. Logo abaixo de Kael Sepet. Como se sempre devesse estar ali."},
+  {id:57,nome:"Escudo Médio — Arsenal Sepet",tipo:"Armadura",subtipo:"Escudo · Médio",status:"Em Posse",possuidor:"Kaira Sepet",saga:"Saga 18",local:"Arsenal da Vila Sepet",raridade:"Comum",atributos:["+2 de CA quando equipado","Compatível com Estilo de Luta: Proteção — permite usar Reação para impor desvantagem em ataques de criaturas a 5 pés contra aliados adjacentes","Escolhido com orientação da Sentinela — tamanho médio equilibra proteção e mobilidade com lança de alcance","Mara comentou ao ver Kaira partir: 'bem-vinda ao problema de todo guerreiro que escolhe proteção antes de pensar na logística'","Kaira levou tempo conversando com a Sentinela sobre qual modelo combinaria melhor com uso de lança de dois metros","Completa o Estilo de Proteção — sem ele, a habilidade era apenas potencial sem função"],descricao:"Kaira escolheu Estilo de Luta: Proteção antes de ter escudo. Não por descuido — por ter escolhido primeiro o que queria proteger, e só depois percebido o que precisava para fazê-lo. A Sentinela corrigiu esse detalhe com paciência de centenária. O escudo médio do Arsenal é equilibrado: pesado o suficiente para proteger, leve o suficiente para não travar o alcance da lança de dois metros. Kaira voltou segurando os dois, um pouco envergonhada mas sorrindo, enquanto Mara ria e Leyn fingia não notar. O Estilo de Proteção agora tem sentido completo."},
+  {id:58,nome:"Pedra de Detecção",tipo:"Acessório",subtipo:"Cristal · Detecção Mágica",status:"Em Posse",possuidor:"Aldric Voss",saga:"Saga 18",local:"Cedida por Aldric Voss — Catacumbas da Vila Sepet",raridade:"Incomum",atributos:["Brilha azul quando a menos de 50 pés de magia profana ativa","Intensidade do brilho aumenta com a proximidade — guia direcional passivo","Tamanho: polegar humano; presa em corrente fina de prata","Não é precisa — indica presença geral, não localização exata","Localizou a Estaca Ritual do Culto (Ponto Alfa) ao norte da Vila Sepet em ~40 minutos de busca metódica","Arremessada como distração improvisada: Ataque à Distância 1d20+2 Dex = 3 — FALHA CRÍTICA","Ricocheteou na casca de uma árvore, girou no ar como moeda, caiu a 3 metros de Leyn dentro da Noite Eterna — ainda brilhando","O barulho alertou os cultistas; paradoxalmente a situação que se seguiu plantou dúvida em dois deles"],descricao:"Do tamanho de um polegar, azul como vidro claro em sua corrente de prata fina. Aldric a tirou da capa antes de Leyn partir sozinho — instrumento prático para trabalho que exigia pragmatismo. Cumpriu sua função com competência: guiou Leyn até a Estaca Ritual em menos de uma hora de busca. Depois, num momento de improviso questionável, foi arremessada como distração contra o conjurador cultista. O resultado foi um dos arremessos mais memoráveis de um vampiro primordial: a pedra ricocheteou em árvore, girou no ar como moeda bêbada, caiu a três metros do portador, ainda brilhando intensamente, fazendo barulho suficiente para confirmar presença de intrusos. O que deveria ser distração virou confirmação. Paradoxalmente, o desastre foi o catalisador para a conversa que se seguiu."},
+  {id:59,nome:"Estaca Ritual do Culto — Ponto Alfa",tipo:"Artefato",subtipo:"Artefato Profano · Ponto de Ancoragem",status:"Destruído",possuidor:null,saga:"Saga 19",local:"Floresta Norte — ~1km do perímetro da Vila Sepet (destruída no local)",raridade:"Raro",atributos:["Pedra negra de ~comprimento de braço — runas profanas em espiral com brilho roxo fraco","Marcador de Ponto de Ancoragem do Ritual de Convergência — vértice norte do triângulo ritual","DESTRUÍDA por Rory (Kael) — espada descendo com força total, som de CRACK, runas explodindo em luz roxa violenta como gêiser antes de se dissipar","Estaca rachada ao meio, depois despedaçada em fragmentos de pedra negra no musgo","Explosão alertou TODOS os cristais de comunicação da operação simultaneamente — a 'Mestra' respondeu com múltiplas vozes sobrepostas: 'IMPOSSÍVEL. BARREIRA ESTAVA ATIVA.'","Cristal de comunicação da Equipe Três esmagado por Teren imediatamente após — silêncio de rádio completo","[TRIÂNGULO QUEBRADO] Ritual de Convergência não pode ser executado sem os três pontos — contingência inimiga: novo ponto pode ser criado em ~1 semana","Contingência do Culto confirmada por Aldric: destruição de um ponto não cancela o plano, apenas o atrasa"],descricao:"Kael disse 'que os deuses me perdoem, ou não, tanto faz' e desceu a espada. O CRACK foi o som de seis anos de servilidade sendo cortados ao meio junto com a pedra. A explosão roxa varreu a floresta por meio segundo. Os fragmentos de pedra negra caíram no musgo. Todos os cristais de comunicação do Culto dispararam ao mesmo tempo — a 'Mestra' com múltiplas vozes sobrepostas declarando impossível o que acabou de acontecer. Teren esmagou o cristal sob a bota. O triângulo ritual está quebrado. O Ponto Alfa não existe mais. O Culto pode reconstruir em uma semana — mas essa semana agora pertence à família Sepet."},
+  {id:60,nome:"Mantos de Contenção Mágica",tipo:"Armadura",subtipo:"Manto · Proteção Arcana Solar",status:"Em Posse",possuidor:"Arsenal da Vila Sepet",saga:"Saga 18",local:"Arsenal da Vila Sepet — prateleiras dos Fundadores",raridade:"Raro",atributos:["Bloqueiam radiação solar por tempo limitado — duração exata não especificada; estimada em minutos","Reduzem (não eliminam) dano e efeitos de relíquias solares como A Lança do Amanhecer","Contramedida específica contra Arcebispo Davren Solharte — estimativa de chegada: próximo amanhecer","Não são solução completa — são margem de sobrevivência; a ameaça persiste durante a duração","Quantidade no Arsenal: indeterminada","Identificados pela Sentinela como única contramedida disponível contra fontes de luz solar aprisionada","Providência prática dos Fundadores: equiparam o Arsenal prevendo ataques com luz sagrada"],descricao:"Os Fundadores eram práticos. Quando construíram o Arsenal, não presumiram que inimigos seriam gentis o suficiente para não usar luz solar contra vampiros. Os mantos não foram feitos para eliminar o perigo — foram feitos para dar tempo: segundos extras, metros extras, a diferença entre desviar de A Lança do Amanhecer e ser incinerado por ela. A Sentinela os identificou como única contramedida disponível no Arsenal. Não são solução. São a margem entre sobrevivência e não sobrevivência quando o Arcebispo chegar. Pequena margem. Mas margem."},
+  {id:61,nome:"A Lança do Amanhecer",tipo:"Arma",subtipo:"Relíquia Solar · Ameaça Inimiga",status:"Localização Desconhecida",possuidor:"Arcebispo Davren Solharte",saga:"Saga 18",local:"Em posse do Arcebispo Davren Solharte — Igreja do Sol Agonizante (a caminho da Vila)",raridade:"Lendário",atributos:["Fragmento de luz solar aprisionada em cristal","Queima mortos-vivos em raio de 30 pés simplesmente por existir próxima — sem ativação necessária","Portador: Arcebispo Davren Solharte — líder da ala militar da Igreja do Sol Agonizante","Davren: fanático de 'pureza absoluta' e 'eficiência brutal' — declara região contaminada, população desaparece em menos de uma semana","Luz solar aprisionada ainda é luz — pode ser bloqueada, desviada ou absorvida com materiais adequados","Contramedida disponível: Mantos de Contenção Mágica do Arsenal Sepet — reduzem, não eliminam","ETA estimado: Davren chega ao amanhecer com a Igreja do Sol Agonizante","Fonte da inteligência: Aldric Voss — conhecimento direto de mais de três séculos de observação"],descricao:"Não é arma que se combate frontalmente. É ameaça de área que queima pelo simples fato de estar próxima. Aldric Voss conhece Davren Solharte — 342 anos de existência ensinam a reconhecer o que mata vampiros antes que precise ser ativado. Fragmento de luz solar aprisionada em cristal: a coisa mais hostil que pode existir próxima de um morto-vivo, carregada por fanático que não hesitaria em usá-la. Davren a porta como símbolo de autoridade e como arma simultânea — sem distinção entre os dois usos. Os Mantos de Contenção do Arsenal podem reduzir o raio de queima. Reduzir não é eliminar. A margem continua sendo pequena quando o amanhecer chegar."},
+  {id:62,nome:"Arma Morfológica",tipo:"Arma",subtipo:"Arma Espectral · Origem Desconhecida",status:"Em Posse",possuidor:"Caçadora do Luar",saga:"Sob o Luar",local:"Em posse da Caçadora do Luar — origem desconhecida",raridade:"Artefato Único",atributos:["FORMA ADAGA (preferida): +6 atq · 1d6+3 dano espectral · toca espectros em vez de ferir — não dispersa · corpo a corpo 5 pés","FORMA GANCHO: +6 atq · 1d8+3 dano espectral · ancora espectro, impede dispersão involuntária · alcance 5/10 pés","FORMA PÁ: +6 atq · 2d6+3 dano espectral · área 10 pés · desvantagem no próximo turno do alvo · forma de alta energia","FORMA AUTÔNOMA (1× por combate): muda de forma antes que a portadora forme intenção consciente — a arma concede uma Reação adicional exclusiva para Ataque de Oportunidade — não consome a Reação normal do turno.","Opera no plano espectral — distinção absoluta: ferir dispersa espectros, tocar estabelece contato sem destruição","Emite luminescência azul-fria no plano espectral — detectável por quem conhece sinais espectrais","Nenhuma arma documentada em Valtheris replica sua forma de operar — sem origem catalogada, sem marca de forja","A arma processa ameaças antes da portadora — mudança de forma é discreta, não dramática"],descricao:"Sem marca. Sem origem rastreável. Muda de forma conforme a intenção da portadora — e às vezes antes que a intenção exista. A versão autônoma ocorre em momentos de ameaça que a Caçadora ainda não processou conscientemente: quando olha, já é outra coisa. A distinção entre tocar e ferir não é técnica — é filosófica. Ferir dispersa. Tocar pergunta. A arma opera sobre essa diferença com precisão que nenhuma forja documentada em Valtheris replicou. Para quem observa de fora: a arma nunca é a mesma forma duas vezes seguidas, emite luz azul-fria no plano espectral, e parece às vezes tomar decisão própria. Nenhuma classificação da Igreja, de magos ou de arquivistas conseguiu nomeá-la adequadamente. A portadora tampouco."},
+  {id:63,nome:"Recipiente dos Cristalizados",tipo:"Artefato",subtipo:"Recipiente Espectral · Estados Emocionais Colapsados",status:"Em Posse",possuidor:"Caçadora do Luar",saga:"Sob o Luar",local:"Carregado junto da Caçadora do Luar — sempre presente",raridade:"Artefato Único",atributos:["ÓDIO (vermelho-sangue): fala com a portadora — chega a conclusões frias partindo da raiva; a raiva é motor, não método","AMOR (vermelho-vinho): contesta Ódio com frequência — perturbado pela frieza; perspectiva oposta e necessária","FELICIDADE (verde): responde ao ambiente com leveza — externamente indistinguível de Vazio sem tempo de observação","PAZ (branco): nunca disse uma palavra — presença como peso quieto que impede a portadora de desaparecer completamente no ofício","VAZIO (azul): absorve sem responder — externamente indistinguível de Felicidade; diferença só aparece com tempo","CUSTO: usar Ódio + Amor simultaneamente exige Teste de SAB CD 13 ou dissociação por 1d4 rodadas","CUSTO MÁXIMO: moldar todos os cinco numa sessão — −1d8 Sanidade permanente","Visíveis como cinco pontos de luz colorida para quem sabe o que procurar — não escondidos ativamente"],descricao:"Cinco espectros emocionais colapsados. Não ferramentas, não prisioneiros — a portadora reconhece em cada um algo que existe dentro de qualquer pessoa que preste atenção suficiente ao próprio interior. Ódio e Amor são os que mais falam: um chega a conclusões frias pela raiva, o outro contesta essa frieza com frequência. Paz nunca falou uma palavra — mas a presença dela é diferente das outras, um peso quieto que ancora. Felicidade e Vazio a confundiram por tempo suficiente para que ela aprendesse a esperar antes de nomear qual é qual. Externamente são idênticos até que o tempo revela a diferença: leveza versus absorção. O custo de moldar todos os cinco é permanente. Ela aceita esse preço como parte do ofício."},
+  {id:64,nome:"Valaquia",tipo:"Arma",subtipo:"Espada Longa · Linhagem · Vinculação Latente",status:"Em Posse",possuidor:"Leyn Sepet",saga:"Saga 20",local:"Casa dos Sepet — quarto de Leyn, Vila Sepet (esperando na parede por cem anos)",raridade:"Lendário",atributos:["Inscrição na base em vampírico antigo: 'Para Leyn. Que sua lâmina proteja os que não podem se proteger. — Pai'","Forjada por encomenda para Leyn — ferreiro que conhecia magia de vínculo; a intenção estava no metal desde o início; não era apenas presente, era preparação de missão","VINCULAÇÃO LATENTE: vínculo enfraqueceu sem portador mas não apagou — sustentado cem anos pela magia da Vila Sepet sem que a Vila soubesse; estado ao ser reencontrada: latente, estrutura intacta, faminta","ECO DO PAI: impressão deixada pelo pai de Leyn durante o forjamento — única emoção cristalizada no metal: orgulho; amplificada pelo abraço completo de Leyn na Saga 20; não é fantasma nem espírito preso, é eco de intenção",  "Teste de Arcana 19 (Sucesso Crítico): Leyn sentiu o vínculo a 2cm da lâmina — reconhecimento antes do contato; ao tocar, o vínculo pulsou uma vez, forte, como coração que lembra que existe","Nome dado por Leyn na Saga 20: 'Valaquia — aquela que mesmo em uma terra destruída permaneceu esperando seu mestre'","Resposta ao nome: calor imperceptível subindo frações de grau através da armadura; vínculo moveu de espera profunda para estado 'pronto'","PRONTA: aguarda ativação formal — requer trabalho, intenção e possivelmente custo; vínculo completo não estabelecido ainda","Dano base: 1d8+2 cortante (como espada longa com modificador de Força +2 de Leyn) — propriedades de vínculo ainda não ativas","Suporte vazio deixado na parede — Leyn decidiu não preencher o espaço; lembrete de que algo que deveria estar perdido foi encontrado"],descricao:"O pai de Leyn pagou caro por esta espada. Não pela lâmina — pela intenção dentro dela. Um ferreiro que conhecia magia de vínculo, instruções específicas gravadas em vampírico antigo, e uma data: a noite antes de Leyn partir em primeira missão solo. A missão nunca aconteceu. O massacre aconteceu. A espada ficou na parede do quarto por cem anos, dentro do perímetro que os Fundadores construíram, sustentada pela magia da Vila que preservava tudo sem saber o que cada coisa significava. Leyn a encontrou pelo toque — sentiu o vínculo antes mesmo de tocar. Abraçou a lâmina como filho abraça objeto que carrega as mãos do pai. O eco respondeu com orgulho cristalizado em metal frio. Ela disse seu nome em voz baixa: Valaquia. Aquela que esperou. A lâmina aqueceu frações de grau. Cem anos é muito tempo para esperar. Mas ela esperou."},
+  {id:65,nome:"Faca de Reserva",tipo:"Arma",subtipo:"Faca · Mundana",status:"Em Posse",possuidor:"Caçadora do Luar",saga:"Sob o Luar",local:"Em posse da Caçadora do Luar",raridade:"Comum",atributos:["1d4+3 de dano perfurante · bônus de ataque +6 (DEX +3 + Proficiência +3)","Alcance: 5 / 20 pés","Mundana — não opera no plano espectral","Para situações onde a arma morfológica não é o instrumento certo — problemas inteiramente físicos","Reserva por design: a arma morfológica é a ferramenta principal; a faca existe para o que ela não alcança"],descricao:"Para o plano dos vivos, quando necessário. A arma morfológica opera no espectral — quando o problema é inteiramente físico, a faca entra. Sem história. Sem propriedades. O tipo de ferramenta que qualquer pessoa sensata carrega quando trabalha em lugares onde as coisas que matam ainda têm corpo. Não há nada de especial nela. Esse é o ponto."},
+  {id:66,nome:"Capa Escura de Viagem",tipo:"Acessório",subtipo:"Manto · Vestuário",status:"Em Posse",possuidor:"Caçadora do Luar",saga:"Sob o Luar",local:"Em posse da Caçadora do Luar",raridade:"Comum",atributos:["Escura — sem insígnia, sem marca de afiliação, guilda, Igreja ou qualquer outra instituição","Sem rastro documental — nenhuma filiação visível para quem examinar","A imagem gravada em quem a encontrou: cabelos pretos, capa escura, nenhum nome","Não é afetação — é o uniforme de quem trabalha no escuro por necessidade operacional"],descricao:"Escura. Sem marca. Parte da metodologia de quem não deixa nome. Em múltiplas regiões de Valtheris há relatos de presença espectral resolvida, cabelos pretos, nenhuma conta pendente — e a capa aparece em todos eles. Não como detalhe ornamental. Como instrumento: quem trabalha no escuro veste o escuro. Não é afetação. É o mesmo raciocínio que aboliu o nome."},
+  {id:67,nome:"Diário de Campo — Cifrado",tipo:"Outro",subtipo:"Documento · Diário Operacional",status:"Em Posse",possuidor:"Caçadora do Luar",saga:"Sob o Luar",local:"Em posse da Caçadora do Luar",raridade:"Incomum",atributos:["Cifrado — escrita inteligível apenas para a portadora; cifra personalizada, não sistema conhecido","Registra instalações espectrais — locais de atividade e padrões documentados ao longo de anos de trabalho","Registra comportamento dos Cristalizados — observações sobre Ódio, Amor, Felicidade, Paz e Vazio","Cobre múltiplas regiões de Valtheris — registro operacional cumulativo de anos de caçadas","Decifrar sem chave: provavelmente impossível — não é código padrão que analistas ou magos reconheceriam"],descricao:"O único registro do trabalho dela que existe. E existe apenas porque a cifra o tornou inútil para qualquer outro. Anos de operações documentadas em texto que ninguém além da portadora consegue ler: padrões de espectros, comportamentos dos Cristalizados, observações sobre instalações em dezenas de locais de Valtheris. A metodologia de uma caçadora que nunca deixa nome em lugar algum — exceto aqui, onde ninguém pode ler."},
+  {id:68,nome:"Compostos de Sal e Ferro",tipo:"Consumível",subtipo:"Material Alquímico · Barreira de Emergência",status:"Em Posse",possuidor:"Caçadora do Luar",saga:"Sob o Luar",local:"Em posse da Caçadora do Luar · 3 doses",raridade:"Comum",atributos:["Barreira de emergência contra espectros físicos — impede cruzamento espectral básico pelo tempo que durar","Uso mundano — não opera no plano espectral de forma avançada; ferramenta de último recurso","3 doses disponíveis","Última linha de defesa quando o trabalho espectral e os Cristalizados não são a resposta certa"],descricao:"Sal e ferro. A solução mais antiga de Valtheris para presença espectral indesejada, antes de qualquer magia sistematizada. Para quem opera no plano espectral diariamente, carregar os compostos mundanos é lembrete de que nem tudo que funciona é sofisticado. Três doses. Suficiente para três situações onde a arma morfológica e os Cristalizados não são a resposta certa."},
+  {id:69,nome:"Armadura de Couro Reforçado",tipo:"Armadura",subtipo:"Couro Reforçado · Mobilidade",status:"Em Posse",possuidor:"Caçadora do Luar",saga:"Sob o Luar",local:"Em posse da Caçadora do Luar",raridade:"Comum",atributos:["CA 12 base + DEX +3 = CA 15 total · Velocidade 30 pés","Couro reforçado — mais resistente que couro comum, sem restrições de movimento ou furtividade","Requisito operacional: não usa armadura pesada — mobilidade é necessária para nunca fixar o olhar diretamente no alvo","Sem emblema, sem filiação visível","Compatível com operação furtiva e iniciativa +5"],descricao:"CA 15 vem daí: couro reforçado que preserva o que importa — velocidade e a capacidade de nunca olhar diretamente para onde está indo. Armadura pesada tornaria impossível a metodologia de não-encarar. Couro reforçado é a escolha óbvia de quem entendeu que evitar ser atingida começa por não ser vista, e não ser vista começa por mover-se de forma que não chama atenção."},
+  {id:70,nome:"Lançador de Estacas de Tobias",tipo:"Arma",subtipo:"Besta de Mão · Estacas Curtas",status:"Em Posse",possuidor:"Tobias (protótipo) · Aldric Voss (aprovação de projeto)",saga:"Saga 9",local:"Forja do Ferreiro — Aldeia da Floresta de Valtheris",raridade:"Incomum",atributos:["1d6 de dano perfurante + dano de prata contra mortos-vivos corrompidos e entidades profanas","Alcance 18/54 pés — propriedades Munição e Recarga","Dispara estacas curtas de 15cm em vez de flechas — mecanismo adaptado por Tobias a partir de uma besta de mão comum","Munição: até 6 estacas por carregador de madeira e couro, recarga individual entre disparos","Ideia de Aldric, execução de Tobias — combinar o alcance da besta com o material que já provou funcionar corpo a corpo"],descricao:"Tobias olhou para o lote de estacas de prata e depois para a besta de mão enferrujada pendurada na parede da oficina, e a pergunta ficou óbvia demais para não fazer: por que só corpo a corpo? Aldric aprovou o desenho em minutos — três séculos catalogando armamento primordial tornam reconhecimento de boa engenharia quase instintivo. O resultado dispara mais devagar que um arco e erra mais fácil que ele, mas acerta com o mesmo material que já provou funcionar. Ainda em fase de teste. Tobias promete uma segunda versão assim que sobrar tempo — e prata."},
+  {id:71,nome:"Nitrato de Prata Alquímico",tipo:"Consumível",subtipo:"Material Alquímico · Refinado",status:"Em Posse",possuidor:"Tobias (produção) · Arsenal de Emergência — Catacumbas da Vila Sepet (reserva)",saga:"Saga 18",local:"Arsenal de Emergência — Catacumbas da Vila Sepet",raridade:"Raro",atributos:["Forma líquida da prata alquímica — onde o pó exige contato direto, o nitrato penetra e reage mais rápido em ferimento aberto","Pode ser aplicado a lâminas e pontas de estaca para adicionar dano de prata por até três golpes antes de se dissipar","Uso alternativo: dissolvido em água, cria barreira líquida de curto alcance contra avanço de mortos-vivos corrompidos — não impede passagem, mas causa dano a cada rodada de contato","Instável em exposição prolongada ao ar — frascos devem ser lacrados e usados em até uma semana após abertos","Encontrado na Seção Cinco — Técnicas de Proteção do Grimório de Técnicas Sepet, como nota de rodapé e não como técnica principal — recuperado do Arsenal na mesma noite em que Leyn entregou essa seção a Mara"],descricao:"O pó de prata que Tobias fundia na forja funcionava, mas exigia contato — golpe direto, aplicação manual, tempo que nem sempre existe em combate. A Seção Cinco do Grimório de Técnicas Sepet guardava a resposta havia sete séculos, escrita como observação lateral por algum ancestral que preferiu não explicar como chegou à fórmula: prata dissolvida reage mais rápido que prata sólida, e reage em qualquer coisa que toque, não apenas onde a lâmina alcança. Kaira, acompanhando a leitura ao lado de Mara, traduziu o suficiente do primordial antigo para reconhecer o processo. Tobias forneceu as mãos. O resultado queima em segundos o que o pó levava golpes inteiros para causar — ao custo de um frasco que não dura mais que uma semana depois de aberto."},
+  {id:72,nome:"Minério de Retenção Solar",tipo:"Artefato",subtipo:"Material Bruto · Origem Geológica",status:"Em Posse",possuidor:"Arsenal de Emergência — Catacumbas da Vila Sepet",saga:"Saga 14",local:"Veio mineral — Catacumbas da Vila Sepet, nível mais profundo",raridade:"Muito Raro",atributos:["Rocha cristalina que absorve e retém luz solar direta por até 72 horas antes de dissipar o brilho gradualmente","Não queima mortos-vivos por proximidade como A Lança do Amanhecer — a energia retida é passiva, não uma arma ativa","Pode ser lapidado e engastado em armas ou armaduras para liberar luz retida em explosão única e controlada — uso documentado apenas uma vez, em teste","Encontrado exclusivamente nas galerias mais profundas das Catacumbas Sepet, abaixo até do Cofre Principal — ninguém documentou como ou quando foi minerado originalmente","Kaira encontrou o primeiro veio por acidente, seguindo uma rachadura que 'parecia brilhar mesmo sem luz nenhuma por perto'"],descricao:"A Lança do Amanhecer é arma: luz solar aprisionada para ferir. O que Kaira encontrou nas profundezas das Catacumbas é outra coisa — rocha que bebe sol e o guarda, devagar, sem violência nenhuma no processo. Os Fundadores que sacrificaram sangue nos quatro pontos cardinais sabiam da existência do veio; nenhum registro explica por que nunca o exploraram além do necessário. Kaira suspeita que os Sepet, cuja Vontade Absoluta sempre foi Preservar, entenderam a rocha exatamente pelo que ela é — não uma arma para forjar, mas uma reserva para guardar, do jeito que a própria linhagem tentou guardar tudo que amava."}
+];
+
+function sagaOrder(s) { const n = (s||"").replace(/[^0-9]/g,""); return n ? parseInt(n) : 999; }
+
+function getFiltered() {
+  const q = state.busca.toLowerCase();
+  const filtered = ITEMS.filter(item => {
+    const matchPossuidor = state.possuidor === "Todos" || (item.possuidor && item.possuidor.includes(state.possuidor));
+    return (!q || [item.nome, item.descricao, item.possuidor, item.local].some(f => f?.toLowerCase().includes(q)))
+      && (state.tipo === "Todos" || item.tipo === state.tipo)
+      && (state.status === "Todos" || item.status === state.status)
+      && (state.raridade === "Todas" || item.raridade === state.raridade)
+      && matchPossuidor;
+  });
+  return [...filtered].sort((a,b) => {
+    switch(state.ordem) {
+      case "nome-asc": return a.nome.localeCompare(b.nome,"pt");
+      case "nome-desc": return b.nome.localeCompare(a.nome,"pt");
+      case "raridade-asc": return RARIDADE_ORDER.indexOf(a.raridade) - RARIDADE_ORDER.indexOf(b.raridade);
+      case "raridade-desc": return RARIDADE_ORDER.indexOf(b.raridade) - RARIDADE_ORDER.indexOf(a.raridade);
+      case "saga-asc": return sagaOrder(a.saga) - sagaOrder(b.saga);
+      case "saga-desc": return sagaOrder(b.saga) - sagaOrder(a.saga);
+      default: return 0;
+    }
+  });
+}
+
+function esc(s) {
+  if (!s) return "";
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function renderCardBody(item) {
+  const rar = RARIDADE_COLORS[item.raridade] || "#b0a89a";
+  const tipo = item.tipo;
+  let localColor = "#7a5030", attrColor = "#c09070", descColor = "#5a3020", bullet = "▶";
+  let sectionLabelColor = "#4a1818";
+
+  // Raridade override: Lendário e Artefato Único dominam o interior
+  if (item.raridade === "Lendário") {
+    localColor = rar + "bb"; attrColor = rar + "dd"; descColor = rar + "88";
+    bullet = "✦"; sectionLabelColor = rar + "66";
+  } else if (item.raridade === "Artefato Único") {
+    localColor = rar + "cc"; attrColor = rar; descColor = rar + "99";
+    bullet = "✦"; sectionLabelColor = rar + "77";
+  } else if (item.raridade === "Muito Raro") {
+    localColor = rar + "99"; attrColor = rar + "cc"; descColor = rar + "66";
+    bullet = "◆"; sectionLabelColor = rar + "55";
+  } else if (item.raridade === "Raro") {
+    localColor = rar + "88"; attrColor = rar + "bb"; descColor = rar + "55";
+    bullet = "◆"; sectionLabelColor = rar + "44";
+  } else if (item.raridade === "Incomum") {
+    localColor = rar + "77"; attrColor = rar + "aa"; descColor = rar + "44";
+    bullet = "▶"; sectionLabelColor = rar + "38";
+  } else {
+    // Comum — mais neutro, só um toque da cor
+    localColor = rar + "60"; attrColor = rar + "90"; descColor = rar + "35";
+    bullet = "▶"; sectionLabelColor = rar + "28";
+  }
+
+  let html = `<div style="border-top:1px solid ${rar}20;margin-top:2px;padding-top:12px;animation:fadeIn .2s ease">`;
+
+  // Local — label contextual por status
+  if (item.local) {
+    const localLabel = (item.status === "Destruído") ? "Local de Destruição"
+      : (item.status === "Perdido" || item.status === "Localização Desconhecida") ? "Último Local Conhecido"
+      : (item.status === "Em Posse") ? "Localização"
+      : "Local de Origem";
+    html += `<div class="section"><span class="section-label" style="color:${sectionLabelColor}">${localLabel}</span><p class="section-text" style="color:${localColor};font-size:12px">${esc(item.local)}</p></div>`;
+  }
+
+  // Atributos — separados em mecânicos (maiúsculas, dano, CA, HP, CD) vs notas narrativas
+  if (item.atributos && item.atributos.length) {
+    const mec = item.atributos.filter(a => /^\[|\d[d+]|\bCA\b|\bHP\b|\bCD\s*\d|\+\d|\bx por|\bUso Único\b|^[A-ZÁÉÍÓÚÀÃÂÊÔÛÇ]{3,}/.test(a));
+    const nar = item.atributos.filter(a => !mec.includes(a));
+
+    const mecLabel = tipo === "Armadura" ? "Atributos de Defesa" : tipo === "Consumível" ? "Efeitos" : "Propriedades";
+    const narLabel = "Notas de Campo";
+
+    if (mec.length) {
+      html += `<div class="section"><span class="section-label" style="color:${sectionLabelColor};font-weight:600">${mecLabel}</span>`;
+      mec.forEach(a => {
+        const isHighlight = /^[A-ZÁÉÍÓÚÀÃÂÊÔÛÇ\[]{2}/.test(a);
+        const bulletGlow = (item.raridade === "Lendário" || item.raridade === "Artefato Único") ? `filter:drop-shadow(0 0 3px ${rar})` : "";
+        html += `<div class="attr-row" style="color:${isHighlight ? rar+"ee" : attrColor};${isHighlight ? `font-family:'Cinzel',serif;font-size:11px;letter-spacing:.03em` : ""}"><span class="attr-bullet" style="color:${rar};${bulletGlow}">${bullet}</span>${esc(a)}</div>`;
+      });
+      html += `</div>`;
+    }
+
+    if (nar.length) {
+      html += `<div class="section" style="margin-top:6px"><span class="section-label" style="color:${sectionLabelColor};opacity:.7">${narLabel}</span>`;
+      nar.forEach(a => {
+        html += `<div class="attr-row" style="color:${attrColor}88;font-style:italic"><span class="attr-bullet" style="color:${rar}55">·</span>${esc(a)}</div>`;
+      });
+      html += `</div>`;
+    }
+  }
+
+  // Durabilidade — exibida para itens físicos ativos (não consumíveis, não destruídos, não perdidos)
+  const tiposSemDur = ["Consumível","Outro"];
+  const statusSemDur = ["Destruído","Perdido","Localização Desconhecida"];
+  if (!tiposSemDur.includes(item.tipo) && !statusSemDur.includes(item.status)) {
+    const dmap = DURABILIDADE_MAP[item.raridade];
+    if (dmap) {
+      const temAtual = item.dur_atual !== undefined;
+      const pct = temAtual && dmap.max_ref ? Math.round((item.dur_atual / dmap.max_ref) * 100) : null;
+      const barColor = pct !== null ? (pct > 60 ? dmap.cor : pct > 30 ? "#8a6a20" : "#8a2020") : dmap.cor;
+      const autoIcon = dmap.auto_reparo === "Sim" ? "↺ " : dmap.auto_reparo === "Parcial" ? "↻ " : "";
+      html += `<div style="border-top:1px solid ${rar}15;margin-top:10px;padding-top:8px">
+        <span class="section-label" style="color:${sectionLabelColor};display:block;margin-bottom:5px">Durabilidade</span>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <div style="font-size:11px;color:${dmap.cor};font-family:'Cinzel',serif;letter-spacing:.05em">${dmap.qualidade}</div>
+          <div style="font-size:11px;color:${attrColor}88">${autoIcon}${dmap.faixa} pts · Auto-reparo: ${dmap.auto_reparo}</div>`;
+      if (temAtual && dmap.max_ref) {
+        html += `<div style="display:flex;align-items:center;gap:6px;margin-left:auto">
+            <div style="font-size:11px;color:${barColor};font-family:'Fira Code',monospace">${item.dur_atual}/${dmap.max_ref}</div>
+            <div style="width:72px;height:5px;background:${rar}20;border-radius:2px;overflow:hidden">
+              <div style="width:${pct}%;height:100%;background:${barColor};transition:width .3s"></div>
+            </div>
+          </div>`;
+      } else if (dmap.faixa === "∞" || dmap.faixa === "∞/100+") {
+        html += `<div style="font-size:12px;color:${dmap.cor};margin-left:auto">∞</div>`;
+      }
+      html += `</div></div>`;
+    }
+  }
+
+  // Descrição narrativa — bloco separado com linha divisória leve
+  if (item.descricao) {
+    html += `<div style="border-top:1px solid ${rar}12;margin-top:10px;padding-top:10px">
+      <p class="card-descricao" style="color:${descColor};line-height:1.8">${esc(item.descricao)}</p>
+    </div>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+function renderCard(item) {
+  const rar = RARIDADE_COLORS[item.raridade] || "#b0a89a";
+  const st = STATUS_COLORS[item.status] || "#6a5a3a";
+  const icon = TIPO_ICONS[item.tipo] || "◈";
+  const statusIcon = STATUS_ICONS[item.status] || "?";
+  const exp = state.expanded.has(item.id);
+
+  const bodyHtml = exp ? renderCardBody(item) : "";
+
+  // ── RARIDADE OVERRIDE: Lendário ──
+  if (item.raridade === "Lendário") {
+    const rarMid  = rar + "28";
+    const particles = [
+      {l:"12%",top:"70%",s:4,dur:3.2,delay:0},
+      {l:"28%",top:"55%",s:3,dur:4.1,delay:1.1},
+      {l:"48%",top:"80%",s:5,dur:3.6,delay:.5},
+      {l:"67%",top:"60%",s:3,dur:4.8,delay:2},
+      {l:"80%",top:"75%",s:4,dur:3.9,delay:.8},
+      {l:"91%",top:"50%",s:3,dur:5.2,delay:1.6},
+    ].map(p=>`<div class="lend-particle" style="left:${p.l};top:${p.top};width:${p.s}px;height:${p.s}px;background:${rar};box-shadow:0 0 4px ${rar};animation-duration:${p.dur}s;animation-delay:${p.delay}s"></div>`).join("");
+    const subtipoCor = rar + "55";
+    const sagaCor = rar + "33";
+    return `<div class="card-lendario" id="card-${item.id}" onclick="toggleCard(${item.id})"
+      style="border:1px solid ${rarMid};box-shadow:0 0 18px ${rar}22,inset 0 0 40px ${rar}08">
+      <div class="lend-bg" style="background:linear-gradient(145deg,${rar}22 0%,${rar}08 40%,${rar}14 80%,${rar}1a 100%)"></div>
+      <div class="lend-scanline"></div>
+      <div class="lend-particles">${particles}</div>
+      <div class="lend-crown" style="color:${rar}">✦ ✦ ✦</div>
+      <div class="lend-border-glow" style="box-shadow:inset 0 0 0 1px ${rar}18,inset 0 1px 0 ${rar}50,inset 0 -1px 0 ${rar}28"></div>
+      <div class="card-lendario-inner">
+        <div class="card-header">
+          <div class="card-left">
+            <div class="card-name-row">
+              <span class="card-icon" style="color:${rar};filter:drop-shadow(0 0 6px ${rar}99)">${icon}</span>
+              <span class="card-name" style="color:#fff8e8;text-shadow:0 0 16px ${rar}60;letter-spacing:.05em">${esc(item.nome)}</span>
+            </div>
+            <div class="card-meta">
+              <span class="card-rarity" style="color:${rar};text-shadow:0 0 8px ${rar}80;font-weight:700">${esc(item.raridade)}</span>
+              ${item.subtipo ? `<span class="card-subtipo" style="color:${subtipoCor}">· ${esc(item.subtipo)}</span>` : ""}
+              <span class="card-saga" style="color:${sagaCor}">${esc(item.saga)}</span>
+            </div>
+          </div>
+          <div class="card-right">
+            <div class="card-status" style="color:${st}">${statusIcon} ${esc(item.status)}</div>
+            ${item.possuidor ? `<div class="card-possuidor" style="color:${st}55">${esc(item.possuidor)}</div>` : ""}
+          </div>
+        </div>${bodyHtml}
+        <div class="card-toggle" style="color:${rar}66">${exp ? "▲" : "▼"}</div>
+      </div>
+    </div>`;
+  }
+
+  // ── RARIDADE OVERRIDE: Artefato Único ──
+  if (item.raridade === "Artefato Único") {
+    const rarMid  = rar + "30";
+    const subtipoCor = rar + "50";
+    const sagaCor = rar + "30";
+    const cornerSvg = `<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2 L2 14 L14 2 Z" stroke="${rar}" stroke-width="1" fill="${rar}20"/><circle cx="2" cy="2" r="2" fill="${rar}"/></svg>`;
+    return `<div class="card-artefato-unico" id="card-${item.id}" onclick="toggleCard(${item.id})"
+      style="border:1px solid ${rar}40;box-shadow:0 0 28px ${rar}30,0 0 60px ${rar}10,inset 0 0 60px ${rar}08">
+      <div class="uniq-bg" style="background:radial-gradient(ellipse at 20% 20%,${rar}30 0%,${rar}12 35%,#080610 70%,${rar}08 100%)"></div>
+      <div class="uniq-pulse" style="background:radial-gradient(ellipse at 50% 50%,${rar}40,transparent 70%)"></div>
+      <div class="uniq-vignette"></div>
+      <div class="uniq-corner-tl">${cornerSvg}</div>
+      <div class="uniq-corner-tr">${cornerSvg}</div>
+      <div class="uniq-runes" style="color:${rar}">ᚨᚱᚦᛖᚠᚨᚲᛏ ᚢᚾᛁᚲᚢᛗ</div>
+      <div class="card-artefato-unico-inner">
+        <div class="card-header">
+          <div class="card-left">
+            <div class="card-name-row">
+              <span class="card-icon" style="color:${rar};filter:drop-shadow(0 0 8px ${rar})">${icon}</span>
+              <span class="card-name" style="color:#fff0f0;text-shadow:0 0 24px ${rar}80,0 0 4px ${rar}40;letter-spacing:.06em">${esc(item.nome)}</span>
+            </div>
+            <div class="card-meta">
+              <span class="card-rarity" style="color:${rar};text-shadow:0 0 10px ${rar};font-weight:700;letter-spacing:.12em">${esc(item.raridade)}</span>
+              ${item.subtipo ? `<span class="card-subtipo" style="color:${subtipoCor}">· ${esc(item.subtipo)}</span>` : ""}
+              <span class="card-saga" style="color:${sagaCor}">${esc(item.saga)}</span>
+            </div>
+          </div>
+          <div class="card-right">
+            <div class="card-status" style="color:${st}">${statusIcon} ${esc(item.status)}</div>
+            ${item.possuidor ? `<div class="card-possuidor" style="color:${st}55">${esc(item.possuidor)}</div>` : ""}
+          </div>
+        </div>${bodyHtml}
+        <div class="card-toggle" style="color:${rar}55">${exp ? "▲" : "▼"}</div>
+      </div>
+    </div>`;
+  }
+
+  // ── RARIDADE: Comum — fundo quase neutro, toque sutil da cor no lado esquerdo ──
+  if (item.raridade === "Comum") {
+    return `<div id="card-${item.id}" onclick="toggleCard(${item.id})" class="card-shell"
+        style="border-left:3px solid ${rar}55;background:linear-gradient(100deg,${rar}0a 0%,#0f0b1c 100%);transition:box-shadow .18s,border-left-color .18s;"
+        onmouseenter="this.style.boxShadow='inset 3px 0 12px ${rar}18,0 2px 12px rgba(0,0,0,.5)'"
+        onmouseleave="this.style.boxShadow=''">
+      <div style="position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:48px;opacity:.03;color:${rar};user-select:none;pointer-events:none">${icon}</div>
+      <div class="card-inner" style="position:relative">
+        <div class="card-header">
+          <div class="card-left">
+            <div class="card-name-row">
+              <span class="card-icon" style="color:${rar};opacity:.8">${icon}</span>
+              <span class="card-name">${esc(item.nome)}</span>
+            </div>
+            <div class="card-meta">
+              <span class="card-rarity" style="color:${rar};opacity:.8">${esc(item.raridade)}</span>
+              ${item.subtipo ? `<span class="card-subtipo">· ${esc(item.subtipo)}</span>` : ""}
+              <span class="card-saga">${esc(item.saga)}</span>
+            </div>
+          </div>
+          <div class="card-right">
+            <div class="card-status" style="color:${st}">${statusIcon} ${esc(item.status)}</div>
+            ${item.possuidor ? `<div class="card-possuidor">${esc(item.possuidor)}</div>` : ""}
+          </div>
+        </div>${bodyHtml}
+        <div class="card-toggle">${exp ? "▲" : "▼"}</div>
+      </div>
+    </div>`;
+  }
+
+  // ── RARIDADE: Incomum ──
+  if (item.raridade === "Incomum") {
+    return `<div id="card-${item.id}" onclick="toggleCard(${item.id})" class="card-shell"
+        style="border-left:3px solid ${rar}77;background:linear-gradient(135deg,${rar}10 0%,#0f0b1c 30%,#100c1e 100%);box-shadow:0 1px 6px rgba(0,0,0,.4);transition:box-shadow .18s,border-left-color .18s;"
+        onmouseenter="this.style.boxShadow='inset 3px 0 16px ${rar}20,0 4px 18px rgba(0,0,0,.6)'"
+        onmouseleave="this.style.boxShadow='0 1px 6px rgba(0,0,0,.4)'">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,${rar}44,${rar}66,${rar}44);pointer-events:none"></div>
+      <div style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:50px;opacity:.04;color:${rar};user-select:none;pointer-events:none">${icon}</div>
+      <div class="card-inner" style="position:relative">
+        <div class="card-header">
+          <div class="card-left">
+            <div class="card-name-row">
+              <span class="card-icon" style="color:${rar};filter:drop-shadow(0 0 4px ${rar}55)">${icon}</span>
+              <span class="card-name" style="color:#d8d0ec">${esc(item.nome)}</span>
+            </div>
+            <div class="card-meta">
+              <span class="card-rarity" style="color:${rar}">${esc(item.raridade)}</span>
+              ${item.subtipo ? `<span class="card-subtipo" style="color:${rar}55">· ${esc(item.subtipo)}</span>` : ""}
+              <span class="card-saga">${esc(item.saga)}</span>
+            </div>
+          </div>
+          <div class="card-right">
+            <div class="card-status" style="color:${st}">${statusIcon} ${esc(item.status)}</div>
+            ${item.possuidor ? `<div class="card-possuidor">${esc(item.possuidor)}</div>` : ""}
+          </div>
+        </div>${bodyHtml}
+        <div class="card-toggle">${exp ? "▲" : "▼"}</div>
+      </div>
+    </div>`;
+  }
+
+  // ── RARIDADE: Raro ──
+  if (item.raridade === "Raro") {
+    return `<div id="card-${item.id}" onclick="toggleCard(${item.id})" class="card-shell"
+        style="border-left:3px solid ${rar}aa;background:linear-gradient(120deg,${rar}18 0%,#100c20 25%,#0f0b1e 70%,${rar}10 100%);box-shadow:0 0 14px ${rar}14,inset 3px 0 20px ${rar}0a;transition:filter .2s,box-shadow .2s;"
+        onmouseenter="this.style.boxShadow='inset 3px 0 24px ${rar}22,0 4px 20px ${rar}20'"
+        onmouseleave="this.style.boxShadow='0 0 14px ${rar}14,inset 3px 0 20px ${rar}0a'">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,${rar}60,${rar}99,${rar}60);pointer-events:none"></div>
+      <div style="position:absolute;top:8px;left:8px;width:4px;height:4px;border-radius:50%;background:${rar}60;box-shadow:0 0 6px ${rar}90;pointer-events:none"></div>
+      <div style="position:absolute;top:8px;right:8px;width:4px;height:4px;border-radius:50%;background:${rar}60;box-shadow:0 0 6px ${rar}90;pointer-events:none"></div>
+      <div style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:52px;opacity:.06;color:${rar};user-select:none;pointer-events:none;filter:blur(1px)">${icon}</div>
+      <div class="card-inner" style="position:relative">
+        <div class="card-header">
+          <div class="card-left">
+            <div class="card-name-row">
+              <span class="card-icon" style="color:${rar};filter:drop-shadow(0 0 6px ${rar}88)">${icon}</span>
+              <span class="card-name" style="color:#e8e0f8;text-shadow:0 0 12px ${rar}25">${esc(item.nome)}</span>
+            </div>
+            <div class="card-meta">
+              <span class="card-rarity" style="color:${rar};text-shadow:0 0 6px ${rar}55">${esc(item.raridade)}</span>
+              ${item.subtipo ? `<span class="card-subtipo" style="color:${rar}66">· ${esc(item.subtipo)}</span>` : ""}
+              <span class="card-saga" style="color:${rar}55">${esc(item.saga)}</span>
+            </div>
+          </div>
+          <div class="card-right">
+            <div class="card-status" style="color:${st}">${statusIcon} ${esc(item.status)}</div>
+            ${item.possuidor ? `<div class="card-possuidor">${esc(item.possuidor)}</div>` : ""}
+          </div>
+        </div>${bodyHtml}
+        <div class="card-toggle" style="color:${rar}66">${exp ? "▲" : "▼"}</div>
+      </div>
+    </div>`;
+  }
+
+  // ── RARIDADE: Muito Raro ──
+  if (item.raridade === "Muito Raro") {
+    return `<div id="card-${item.id}" onclick="toggleCard(${item.id})" class="card-shell"
+        style="border-left:3px solid ${rar}cc;background:linear-gradient(125deg,${rar}22 0%,#120e26 30%,#100c22 65%,${rar}18 100%);box-shadow:0 0 24px ${rar}20,inset 3px 0 28px ${rar}10;transition:filter .2s,box-shadow .2s;"
+        onmouseenter="this.style.boxShadow='inset 3px 0 32px ${rar}28,0 6px 28px ${rar}30'"
+        onmouseleave="this.style.boxShadow='0 0 24px ${rar}20,inset 3px 0 28px ${rar}10'">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,${rar}88,${rar}cc,${rar}88,transparent);pointer-events:none"></div>
+      <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,${rar}44,transparent);pointer-events:none"></div>
+      <div style="position:absolute;top:7px;left:9px;width:5px;height:5px;border-radius:50%;background:${rar}70;box-shadow:0 0 8px ${rar}aa;pointer-events:none;animation:pulse-border 3s ease-in-out infinite"></div>
+      <div style="position:absolute;top:7px;right:9px;width:5px;height:5px;border-radius:50%;background:${rar}70;box-shadow:0 0 8px ${rar}aa;pointer-events:none;animation:pulse-border 3s 1.5s ease-in-out infinite"></div>
+      <div style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:52px;opacity:.07;color:${rar};user-select:none;pointer-events:none;filter:blur(.5px)">${icon}</div>
+      <div class="card-inner" style="position:relative">
+        <div class="card-header">
+          <div class="card-left">
+            <div class="card-name-row">
+              <span class="card-icon" style="color:${rar};filter:drop-shadow(0 0 8px ${rar}aa)">${icon}</span>
+              <span class="card-name" style="color:#f0e8ff;text-shadow:0 0 16px ${rar}38">${esc(item.nome)}</span>
+            </div>
+            <div class="card-meta">
+              <span class="card-rarity" style="color:${rar};text-shadow:0 0 8px ${rar}77">${esc(item.raridade)}</span>
+              ${item.subtipo ? `<span class="card-subtipo" style="color:${rar}77">· ${esc(item.subtipo)}</span>` : ""}
+              <span class="card-saga" style="color:${rar}60">${esc(item.saga)}</span>
+            </div>
+          </div>
+          <div class="card-right">
+            <div class="card-status" style="color:${st}">${statusIcon} ${esc(item.status)}</div>
+            ${item.possuidor ? `<div class="card-possuidor">${esc(item.possuidor)}</div>` : ""}
+          </div>
+        </div>${bodyHtml}
+        <div class="card-toggle" style="color:${rar}77">${exp ? "▲" : "▼"}</div>
+      </div>
+    </div>`;
+  }
+
+  // fallback (não deve ser atingido)
+  return `<div id="card-${item.id}" onclick="toggleCard(${item.id})" style="
+      position:relative;cursor:pointer;background:#0e0c09;border:1px solid ${rar}22;border-radius:2px;">
+    <div style="padding:14px 18px 10px">
+      <div class="card-header">
+        <div class="card-left">
+          <div class="card-name-row">
+            <span class="card-icon" style="color:${rar}">${icon}</span>
+            <span class="card-name" style="color:#d0c8b8">${esc(item.nome)}</span>
+          </div>
+          <div class="card-meta">
+            <span class="card-rarity" style="color:${rar}">${esc(item.raridade)}</span>
+            ${item.subtipo ? `<span class="card-subtipo" style="color:${rar}44">· ${esc(item.subtipo)}</span>` : ""}
+            <span class="card-saga" style="color:${rar}30">${esc(item.saga)}</span>
+          </div>
+        </div>
+        <div class="card-right">
+          <div class="card-status" style="color:${st}">${statusIcon} ${esc(item.status)}</div>
+          ${item.possuidor ? `<div class="card-possuidor" style="color:${st}44">${esc(item.possuidor)}</div>` : ""}
+        </div>
+      </div>${bodyHtml}
+      <div class="card-toggle" style="color:${rar}33;font-size:8px;text-align:center;margin-top:8px">${exp ? "▲" : "▼"}</div>
+    </div>
+  </div>`;
+}
+
+function toggleCard(id) {
+  if (state.expanded.has(id)) state.expanded.delete(id);
+  else state.expanded.add(id);
+  render();
+}
+
+function buildChips(containerId, options, currentVal, field, colorMap) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = "";
+  options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "filter-chip" + (currentVal === opt ? " active" : "");
+    btn.textContent = opt;
+    const col = colorMap && opt !== "Todos" && opt !== "Todas" ? colorMap[opt] : null;
+    if (currentVal === opt) {
+      if (col) {
+        btn.style.background = col + "18";
+        btn.style.borderColor = col;
+        btn.style.color = col;
+      } else {
+        btn.style.background = "rgba(139,26,40,.18)";
+        btn.style.borderColor = "var(--blood)";
+        btn.style.color = "#e88090";
+      }
+    } else if (col) {
+      btn.style.borderColor = col + "40";
+      btn.style.color = col + "aa";
+    }
+    btn.addEventListener("click", () => { state[field] = opt; render(); });
+    container.appendChild(btn);
+  });
+}
+
+function buildTipoTabs(currentVal) {
+  const container = document.getElementById("filter-tipo");
+  if (!container) return;
+  container.innerHTML = "";
+  TIPOS.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "tipo-tab" + (currentVal === opt ? " active" : "");
+    const icon = opt === "Todos" ? "◈" : (TIPO_ICONS[opt] || "◈");
+    btn.innerHTML = `<span class="tipo-icon">${icon}</span><span>${opt}</span>`;
+    btn.addEventListener("click", () => { state.tipo = opt; render(); });
+    container.appendChild(btn);
+  });
+}
+
+function buildOrdemChips() {
+  const container = document.getElementById("filter-ordem");
+  if (!container) return;
+  container.innerHTML = "";
+  ORDENS.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "filter-chip" + (state.ordem === opt.value ? " active" : "");
+    btn.textContent = opt.label;
+    if (state.ordem === opt.value) {
+      btn.style.background = "rgba(139,26,40,.18)";
+      btn.style.borderColor = "var(--blood)";
+      btn.style.color = "#e88090";
+    }
+    btn.addEventListener("click", () => { state.ordem = opt.value; render(); });
+    container.appendChild(btn);
+  });
+}
+
+function render() {
+  state.busca = document.getElementById("busca").value;
+
+  buildTipoTabs(state.tipo);
+  buildChips("filter-status",    STATUS_LIST,     state.status,    "status",    STATUS_COLORS);
+  buildChips("filter-raridade",  RARIDADES,       state.raridade,  "raridade",  RARIDADE_COLORS);
+  buildChips("filter-possuidor", getPossuidores(), state.possuidor, "possuidor", null);
+  buildOrdemChips();
+
+  // Active filter count badge
+  const activeFilters = [
+    state.status !== "Todos",
+    state.raridade !== "Todas",
+    state.possuidor !== "Todos",
+    state.ordem !== "saga-asc"
+  ].filter(Boolean).length;
+
+  const badge = document.getElementById("filter-active-count");
+  const clearBtn = document.getElementById("filter-clear-btn");
+  const toggleBtn = document.getElementById("filter-toggle-btn");
+  if (badge) {
+    badge.style.display = activeFilters > 0 ? "inline-flex" : "none";
+    badge.textContent = activeFilters;
+  }
+  if (clearBtn) clearBtn.style.display = activeFilters > 0 ? "inline-block" : "none";
+  if (toggleBtn) toggleBtn.classList.toggle("has-active", activeFilters > 0);
+
+  // Header counts
+  const rarCounts = {};
+  ITEMS.forEach(i => { rarCounts[i.raridade] = (rarCounts[i.raridade] || 0) + 1; });
+  document.getElementById("header-count").textContent = `${ITEMS.length} itens registrados`;
+  document.getElementById("header-type-counts").innerHTML = RARIDADE_ORDER
+    .filter(r => rarCounts[r])
+    .map(r => {
+      const col = RARIDADE_COLORS[r] || "#b0a89a";
+      return `<span class="header-type-count" style="color:${col};border-color:${col}40">${r} <strong>${rarCounts[r]}</strong></span>`;
+    }).join("");
+
+  const filtrados = getFiltered();
+  document.getElementById("divider-count").textContent = filtrados.length > 0
+    ? `${filtrados.length} ITEM${filtrados.length !== 1 ? "S" : ""}`
+    : "—";
+
+  const cardsEl = document.getElementById("cards");
+  if (filtrados.length === 0) {
+    cardsEl.innerHTML = `<div class="empty"><div class="empty-icon">◇</div><p class="empty-body">Nenhum item corresponde aos filtros selecionados.</p></div>`;
+  } else {
+    cardsEl.innerHTML = filtrados.map(renderCard).join("");
+  }
+}
+
+
+function toggleFilterDrawer() {
+  const drawer = document.getElementById("filter-drawer");
+  const btn = document.getElementById("filter-toggle-btn");
+  drawer.classList.toggle("open");
+  btn.style.borderColor = drawer.classList.contains("open") ? "var(--blood)" : "";
+  btn.style.color = drawer.classList.contains("open") ? "#e88090" : "";
+}
+
+function clearFilters() {
+  state.status = "Todos";
+  state.raridade = "Todas";
+  state.possuidor = "Todos";
+  state.ordem = "saga-asc";
+  render();
+}
+
+render();
+</script>
+
+<script>
+// Notifica o hub quando o leitor clica em qualquer link desta página
+document.addEventListener('click', function(e) {
+  const a = e.target.closest('a[href]');
+  if (!a) return;
+  const to = a.getAttribute('href');
+  if (!to || to.startsWith('#') || to.startsWith('javascript')) return;
+  try { window.parent.postMessage({ type: 'nav', to: to }, '*'); } catch(e2) {}
+});
+</script>
+</body>
+</html>

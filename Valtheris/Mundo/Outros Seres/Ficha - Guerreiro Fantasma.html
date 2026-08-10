@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guerreiro Fantasma — Referência do Mestre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&family=UnifrakturMaguntia:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:      #040406;
+    --hollow:    #161620;
+
+    --spectral:  #283848;
+    --spectral-l:#4870a0;
+    --spectral-d:#0c1018;
+    --spectral-p:#90c0e0;
+    --steel-l:   #506870;
+    --steel-d:   #0e1418;
+    --steel-p:   #90b0b8;
+
+    --ether:     #202840;
+    --ether-l:   #384868;
+    --ether-d:   #0a0e18;
+    --ether-p:   #8090b8;
+
+    --bone:      #383428;
+    --bone-l:    #686050;
+    --bone-d:    #100e0a;
+    --bone-p:    #a89880;
+
+    --text:      #909898;
+    --text-dim:  #282c30;
+    --text-faint:#0e1010;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:#040406;
+    background-image:
+      radial-gradient(ellipse 120% 50% at 50% -5%,#0c1018 0%,transparent 55%),
+      radial-gradient(ellipse 50% 60% at 90% 100%,#080c12 0%,transparent 50%),
+      radial-gradient(ellipse 40% 60% at 10%  80%,#0a0e14 0%,transparent 50%);
+    color:var(--text);
+    font-family:'EB Garamond',Georgia,serif;
+    font-size:17px;line-height:1.8;min-height:100vh;overflow-x:hidden
+  }
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:.65}
+
+  .top-bar{height:4px;background:linear-gradient(90deg,var(--spectral-d),var(--spectral-l),var(--ether-l),var(--spectral-l),var(--spectral-d));box-shadow:0 0 30px rgba(40,56,72,.6)}
+
+  header{position:relative;text-align:center;padding:80px 20px 70px;overflow:hidden}
+  header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(30,44,64,.14) 0%,transparent 65%);pointer-events:none}
+  header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--spectral-d),var(--ether-d),transparent)}
+  .header-pulse{position:absolute;inset:0;background:radial-gradient(ellipse 60% 45% at 50% 45%,rgba(40,56,80,.06) 0%,transparent 70%);animation:breathe 12s ease-in-out infinite;pointer-events:none}
+  @keyframes breathe{0%,100%{opacity:.4}50%{opacity:1}}
+  .header-symbol{display:block;font-size:2.8rem;margin-bottom:18px;filter:drop-shadow(0 0 20px rgba(72,112,160,.6));animation:crest-pulse 10s ease-in-out infinite}
+  @keyframes crest-pulse{0%,100%{filter:drop-shadow(0 0 16px rgba(72,112,160,.5))}50%{filter:drop-shadow(0 0 30px rgba(96,144,200,.7))}}
+  .header-fraktur{font-family:'UnifrakturMaguntia',serif;font-size:clamp(2rem,7vw,4rem);line-height:1.05;margin-bottom:6px;background:linear-gradient(135deg,#90c0e0 0%,#4870a0 30%,#8090b8 60%,#90b0b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .header-eyebrow{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.45em;text-transform:uppercase;color:var(--text-faint);margin-bottom:18px}
+  .header-classification{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:var(--spectral-p);margin-bottom:10px;opacity:.8}
+  .header-title-sub{font-family:'Cinzel',serif;font-size:clamp(.85rem,2vw,1rem);letter-spacing:.18em;text-transform:uppercase;color:var(--bone-p);margin-bottom:8px}
+  .header-tagline{font-style:italic;color:#141820;font-size:1.05rem;max-width:580px;margin:0 auto 28px}
+  .header-crests{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px}
+  .crest-badge{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:4px 14px;border-radius:1px}
+  .crest-badge.spectral{border:1px solid var(--spectral-d);color:var(--spectral-p)}
+  .crest-badge.steel   {border:1px solid var(--steel-d);   color:var(--steel-p)}
+  .crest-badge.ether   {border:1px solid var(--ether-d);   color:var(--ether-p)}
+  .crest-badge.bone    {border:1px solid var(--bone-d);    color:var(--bone-p)}
+
+  .divider{display:flex;align-items:center;gap:14px;max-width:940px;margin:0 auto;padding:40px 20px 48px}
+  .divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--spectral-d),var(--ether-d),transparent)}
+  .divider-glyph{color:var(--spectral-l);font-size:1rem;opacity:.7}
+  .breadcrumb{max-width:940px;margin:0 auto;padding:20px 20px 0;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}
+  .breadcrumb span{color:var(--spectral-d);margin:0 6px}.breadcrumb .current{color:var(--spectral-p)}
+  main{max-width:940px;margin:0 auto;padding:0 20px 90px;display:flex;flex-direction:column}
+  section{margin-bottom:56px;animation:fade-in .5s ease both}
+  @keyframes fade-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  section:nth-child(1){animation-delay:.05s}section:nth-child(2){animation-delay:.10s}
+  section:nth-child(3){animation-delay:.15s}section:nth-child(4){animation-delay:.20s}
+  section:nth-child(5){animation-delay:.25s}section:nth-child(6){animation-delay:.30s}section:nth-child(7){animation-delay:.35s}
+  p{margin-bottom:10px}p:last-child{margin-bottom:0}
+
+  .section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .section-icon{font-size:1.2rem;flex-shrink:0}
+  .section-icon.spectral{filter:drop-shadow(0 0 8px rgba(72,112,160,.6))}
+  .section-icon.steel   {filter:drop-shadow(0 0 8px rgba(80,104,112,.5))}
+  .section-icon.ether   {filter:drop-shadow(0 0 8px rgba(56,72,104,.5))}
+  .section-icon.bone    {filter:drop-shadow(0 0 8px rgba(104,96,80,.4))}
+  h2{font-family:'Cinzel',serif;font-size:.9rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+  h2.spectral{color:#90c0e0;text-shadow:0 0 20px rgba(72,112,160,.4)}
+  h2.steel   {color:#90b0b8;text-shadow:0 0 18px rgba(80,104,112,.3)}
+  h2.ether   {color:#8090b8;text-shadow:0 0 18px rgba(56,72,104,.3)}
+  h2.bone    {color:#a89880;text-shadow:0 0 16px rgba(104,96,80,.25)}
+  .section-line{flex:1;height:1px}
+  .section-line.spectral{background:linear-gradient(90deg,var(--spectral-d),rgba(12,16,24,.3),transparent)}
+  .section-line.steel   {background:linear-gradient(90deg,var(--steel-d),   rgba(14,20,24,.3),transparent)}
+  .section-line.ether   {background:linear-gradient(90deg,var(--ether-d),   rgba(10,14,24,.3),transparent)}
+
+  /* IDENTITY */
+  .identity{position:relative;background:linear-gradient(145deg,rgba(10,12,18,.98) 0%,rgba(6,8,12,.99) 100%);border:1px solid rgba(28,36,56,.5);border-top:4px solid var(--spectral-d);border-bottom:3px solid var(--ether-d);padding:32px 36px;margin-bottom:14px;overflow:hidden}
+  .identity::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0% 0%,rgba(48,72,112,.06) 0%,transparent 45%),radial-gradient(circle at 100% 0%,rgba(40,64,96,.04) 0%,transparent 45%);pointer-events:none}
+  .identity-corner{position:absolute;font-family:'Fira Code',monospace;font-size:.58rem;letter-spacing:.15em;color:var(--text-faint);opacity:.6}
+  .identity-corner.tl{top:10px;left:14px}.identity-corner.tr{top:10px;right:14px}
+  .identity-corner.bl{bottom:10px;left:14px}.identity-corner.br{bottom:10px;right:14px}
+  .monster-name{font-family:'UnifrakturMaguntia',serif;font-size:clamp(1.8rem,4vw,2.8rem);background:linear-gradient(135deg,#90c0e0 0%,#4870a0 35%,#8090b8 70%,#90b0b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;line-height:1.1}
+  .monster-epithet{font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:.2em;text-transform:uppercase;color:var(--bone-p);opacity:.85;margin-bottom:14px}
+  .monster-type-line{margin-bottom:16px}
+  .monster-lore{font-style:italic;color:#909898;font-size:.97rem;border-left:2px solid var(--spectral-d);padding-left:16px;margin-top:14px;line-height:1.75}
+  .monster-lore+.monster-lore{border-left-color:var(--ether-d);margin-top:10px}
+
+  .tag{display:inline-block;font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:2px 8px;border-radius:1px;margin-right:5px;margin-bottom:5px;vertical-align:middle}
+  .tag.undead{border:1px solid #182028;color:#607080}
+  .tag.any   {border:1px solid #182028;color:#708090}
+  .tag.nd3   {border:1px solid #3a2808;color:#c09030}
+  .tag.medium{border:1px solid #182028;color:#607080}
+
+  .monster-vitals{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+  @media(max-width:600px){.monster-vitals{grid-template-columns:1fr 1fr}}
+  .mvital-card{background:rgba(8,10,16,.9);border:1px solid var(--hollow);border-radius:3px;padding:16px 14px;position:relative;overflow:hidden;text-align:center}
+  .mvital-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+  .mvital-card.spectral::after{background:linear-gradient(90deg,transparent,var(--spectral-l),transparent)}
+  .mvital-card.steel::after   {background:linear-gradient(90deg,transparent,var(--steel-l),   transparent)}
+  .mvital-card.ether::after   {background:linear-gradient(90deg,transparent,var(--ether-l),   transparent)}
+  .mvital-card.bone::after    {background:linear-gradient(90deg,transparent,var(--bone-l),    transparent)}
+  .mvital-label{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;display:block}
+  .mvital-value{font-family:'Cinzel Decorative',serif;font-size:2rem;line-height:1;display:block}
+  .mvital-value.spectral{color:var(--spectral-l);text-shadow:0 0 14px rgba(72,112,160,.4)}
+  .mvital-value.steel   {color:var(--steel-l);   text-shadow:0 0 12px rgba(80,104,112,.3)}
+  .mvital-value.ether   {color:var(--ether-l);   text-shadow:0 0 14px rgba(56,72,104,.4)}
+  .mvital-value.bone    {color:var(--bone-l);    text-shadow:0 0 12px rgba(104,96,80,.3)}
+  .mvital-note{font-size:.75rem;color:var(--text-dim);font-style:italic;margin-top:6px;display:block;line-height:1.4}
+
+  .two-col-monster{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  @media(max-width:600px){.two-col-monster{grid-template-columns:1fr}}
+  .cr-badge{display:flex;flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;background:linear-gradient(135deg,rgba(14,18,28,.18),rgba(10,14,22,.12));border:1px solid rgba(28,36,56,.4);border-top:2px solid var(--spectral-l);border-bottom:2px solid var(--ether-d);padding:14px 24px}
+  .cr-badge-label{font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.28em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;display:block}
+  .cr-badge-value{font-family:'Cinzel Decorative',serif;font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,var(--spectral-l),var(--ether-l));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;display:block}
+  .cr-badge-note{font-family:'Fira Code',monospace;font-size:.6rem;color:var(--text-dim);margin-top:4px;letter-spacing:.06em;display:block}
+
+  .attr-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px}
+  @media(max-width:560px){.attr-grid{grid-template-columns:repeat(3,1fr)}}
+  .attr-box{background:rgba(6,8,14,.9);border:1px solid var(--hollow);padding:16px 10px;text-align:center;position:relative;overflow:hidden;transition:transform .2s}
+  .attr-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .attr-box.hi::before {background:linear-gradient(90deg,transparent,var(--spectral-l),transparent)}
+  .attr-box.mid::before{background:linear-gradient(90deg,transparent,var(--steel-l),   transparent)}
+  .attr-box.lo::before {background:linear-gradient(90deg,transparent,var(--ether-l),   transparent)}
+  .attr-box.neg::before{background:linear-gradient(90deg,transparent,#706878,          transparent)}
+  .attr-box:hover{transform:translateY(-2px)}
+  .attr-name{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
+  .attr-value{font-family:'Fira Code',monospace;font-size:1.15rem;font-weight:500;color:var(--text);display:block;line-height:1}
+  .attr-value.hi {color:var(--spectral-l)}
+  .attr-value.mid{color:var(--steel-l)}
+  .attr-value.lo {color:var(--ether-l)}
+  .attr-value.neg{color:#706878}
+  .attr-mod{font-family:'Fira Code',monospace;font-size:.8rem;color:var(--text-dim);display:block;margin-top:4px}
+  .attr-mod.hi {color:var(--spectral-d)}
+  .attr-mod.neg{color:#504858}
+
+  .card{background:linear-gradient(135deg,rgba(10,12,18,.92) 0%,rgba(6,8,12,.96) 100%);border:1px solid var(--hollow);padding:20px 24px;margin-bottom:12px;position:relative;transition:box-shadow .3s}
+  .card.spectral{border-left:3px solid var(--spectral-d)}.card.spectral:hover{box-shadow:-4px 0 20px rgba(40,72,112,.2),0 4px 20px rgba(0,0,0,.6)}
+  .card.ether   {border-left:3px solid var(--ether-d)}.card.ether:hover   {box-shadow:-4px 0 20px rgba(28,48,80,.18),0 4px 20px rgba(0,0,0,.6)}
+  .card.bone    {border-left:3px solid var(--bone-d)}.card.bone:hover    {box-shadow:-4px 0 20px rgba(64,56,32,.14),0 4px 20px rgba(0,0,0,.6)}
+  .card-title{font-family:'Cinzel',serif;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+  .card-title.spectral{color:var(--spectral-p)}.card-title.ether{color:var(--ether-p)}.card-title.bone{color:var(--bone-p)}
+  .card p{font-size:.95rem;color:#8898a0;line-height:1.76}
+
+  .trait{display:grid;grid-template-columns:3px 1fr;gap:0 14px;margin-bottom:10px}
+  .tier-bar{border-radius:2px}
+  .trait-content{background:rgba(6,8,14,.78);border:1px solid var(--hollow);padding:14px 16px}
+  .trait-name{font-family:'Cinzel',serif;font-size:.74rem;letter-spacing:.1em;font-weight:900;color:var(--spectral-p);margin-bottom:5px}
+  .trait-name .sub{font-style:italic;font-weight:400;color:var(--text-dim);font-family:'EB Garamond',serif;font-size:.9rem;letter-spacing:0;text-transform:none}
+  .trait-content p{font-size:.92rem;color:#8898a0;line-height:1.72}
+  .trait-content p strong{color:var(--spectral-p)}
+
+  .action{background:linear-gradient(135deg,rgba(10,12,18,.9) 0%,rgba(6,8,12,.95) 100%);border:1px solid var(--hollow);padding:14px 18px;margin-bottom:8px;transition:box-shadow .25s}
+  .action.spectral{border-bottom:2px solid var(--spectral-d)}.action.spectral:hover{box-shadow:0 2px 16px rgba(40,72,112,.15)}
+  .action.ether   {border-bottom:2px solid var(--ether-d)}.action.ether:hover   {box-shadow:0 2px 16px rgba(28,48,80,.14)}
+  .action.steel   {border-bottom:2px solid var(--steel-d)}.action.steel:hover   {box-shadow:0 2px 16px rgba(48,64,72,.13)}
+  .action-name{font-family:'Cinzel',serif;font-size:.76rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  .action-name.spectral{color:var(--spectral-p)}.action-name.ether{color:var(--ether-p)}.action-name.steel{color:var(--steel-p)}
+  .action p{font-size:.92rem;color:#8898a0;line-height:1.72}
+  .action strong{color:var(--spectral-p)}
+
+  .table-wrap{margin:10px 0;border:1px solid var(--hollow);overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  thead tr{background:rgba(6,8,14,.98);border-bottom:2px solid var(--spectral-d)}
+  thead th{font-family:'Cinzel',serif;font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--bone-p);padding:9px 14px;text-align:left}
+  tbody tr{border-bottom:1px solid rgba(12,16,22,.9);transition:background .12s}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr:nth-child(even){background:rgba(255,255,255,.012)}
+  tbody tr:hover{background:rgba(32,48,72,.07)}
+  td{padding:8px 14px;vertical-align:top;color:#8898a0}
+  td:first-child{font-family:'Cinzel',serif;font-size:.84rem;color:var(--text)}
+
+  .mono{font-family:'Fira Code',monospace;font-size:.78rem}
+  .mono.spectral{color:var(--spectral-l)}.mono.ether{color:var(--ether-l)}.mono.steel{color:var(--steel-l)}
+
+  .callout{border-left:3px solid;padding:14px 18px;margin:12px 0;font-style:italic;font-size:.92rem;line-height:1.75}
+  .callout strong{font-style:normal;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;display:block;margin-bottom:3px}
+  .callout.spectral{background:rgba(14,20,34,.16);border-color:var(--spectral);color:#8898a0}.callout.spectral strong{color:var(--spectral-l)}
+  .callout.ether   {background:rgba(10,14,28,.16);border-color:var(--ether);   color:#8898a0}.callout.ether    strong{color:var(--ether-l)}
+  .callout.bone    {background:rgba(22,18,10,.15);border-color:var(--bone);    color:#8898a0}.callout.bone     strong{color:var(--bone-l)}
+
+  mark         {background:rgba(72,112,160,.17);color:var(--spectral-p);border-radius:1px;padding:0 2px}
+  mark.ether   {background:rgba(56,72,104,.17); color:var(--ether-p)}
+  mark.bone    {background:rgba(104,96,80,.16); color:var(--bone-p)}
+
+  .sep{height:1px;background:linear-gradient(90deg,transparent,var(--spectral-d),var(--ether-d),transparent);margin:18px 0;opacity:.5}
+
+  /* IMUNIDADES */
+  .imun-grid{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+  .imun-tag{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:1px}
+  .imun-tag.spectral{border:1px solid var(--spectral-d);color:var(--spectral-p)}
+  .imun-tag.ether   {border:1px solid var(--ether-d);   color:var(--ether-p)}
+  .imun-tag.cond    {border:1px solid var(--steel-d);   color:var(--steel-p)}
+
+  .san-table{width:100%;border-collapse:collapse;font-size:.88rem;border:1px solid var(--hollow)}
+  .san-table thead tr{background:rgba(6,8,14,.98);border-bottom:2px solid var(--spectral-d)}
+  .san-table thead th{font-family:'Cinzel',serif;font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--bone-p);padding:9px 14px;text-align:left}
+  .san-table tbody tr{border-bottom:1px solid rgba(12,16,22,.9);transition:background .12s}
+  .san-table tbody tr:last-child{border-bottom:none}
+  .san-table tbody tr:hover{background:rgba(32,48,72,.07)}
+  .san-table td{padding:8px 14px;vertical-align:top;color:#8898a0;font-size:.88rem}
+  .san-table .situation{font-style:italic;color:var(--text)}
+  .san-table .pass{color:var(--ether-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem}
+  .san-table .fail{color:#a05060;text-align:center;font-family:'Fira Code',monospace;font-size:.8rem;font-weight:600}
+  .san-table .cd{color:var(--bone-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem}
+
+  footer{text-align:center;padding:40px 20px;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}
+  footer span{color:var(--spectral-d);margin:0 6px}
+  #top-btn{position:fixed;bottom:28px;right:28px;width:42px;height:42px;background:rgba(4,4,6,.97);border:1px solid var(--spectral-d);color:var(--spectral-l);font-size:1.2rem;line-height:42px;text-align:center;text-decoration:none;transition:border-color .2s,color .2s;z-index:100; opacity:0; pointer-events:none; transition: opacity .25s, border-color .2s, color .2s;}
+  #top-btn:hover{border-color:var(--ether-l);color:var(--ether-p)}
+  #top-btn.visible { opacity: 1; pointer-events: all; }
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--void)}::-webkit-scrollbar-thumb{background:var(--spectral-d);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--spectral-l)}
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+<div class="top-bar"></div>
+<nav class="breadcrumb" aria-label="Trilha de navegação">Curse of Strahd &nbsp;/&nbsp; Barovia <span>›</span> <span class="current">Guerreiro Fantasma — Referência do Mestre</span></nav>
+
+<header>
+  <div class="header-pulse"></div>
+  <span class="header-symbol">👻</span>
+  <p class="header-eyebrow">Curse of Strahd &nbsp;⸸&nbsp; Morto-Vivo &nbsp;⸸&nbsp; Remanescente Espectral</p>
+  <p class="header-classification">⬥ Morto-Vivo Médio &nbsp;·&nbsp; Qualquer Tendência &nbsp;·&nbsp; ND 3 ⬥</p>
+  <h1 class="header-fraktur">Guerreiro Fantasma</h1>
+  <p class="header-title-sub">O Soldado que Não Aceita o Descanso — A Armadura sem Carne</p>
+  <p class="header-tagline">"Parece uma versão translúcida de seu ser vivo. Lembra como morreu. Não tem pressa em saber por que ainda está aqui."</p>
+  <div class="header-crests">
+    <span class="crest-badge spectral">👻 Morto-Vivo · ND 3</span>
+    <span class="crest-badge ether">🌫 Movimento Incorpóreo</span>
+    <span class="crest-badge steel">⚔ Armadura Espectral CA 16</span>
+    <span class="crest-badge bone">🌀 Forma Etérea</span>
+  </div>
+</header>
+
+<div class="divider"><div class="divider-line"></div><span class="divider-glyph">👻</span><div class="divider-line"></div></div>
+
+<main>
+
+  <!-- IDENTIDADE -->
+  <section id="identidade">
+    <div class="section-header"><span class="section-icon spectral">👻</span><h2 class="spectral">Identidade &amp; Lore</h2><div class="section-line spectral"></div></div>
+    <div class="identity">
+      <div class="identity-corner tl">MORTO-VIVO MÉDIO · QUALQUER TENDÊNCIA</div>
+      <div class="identity-corner tr">NÍVEL DE DESAFIO 3 · 700 XP</div>
+      <div class="identity-corner bl">CURSE OF STRAHD · CASTELO RAVENLOFT E ARREDORES</div>
+      <div class="identity-corner br">REMANESCENTE ESPECTRAL</div>
+      <div class="monster-name">Guerreiro Fantasma</div>
+      <div class="monster-epithet">⬥ O Guardião que Permaneceu — A Lealdade Além da Morte ⬥</div>
+      <div class="monster-type-line">
+        <span class="tag undead">Morto-Vivo</span>
+        <span class="tag any">Qualquer Tendência</span>
+        <span class="tag medium">Médio</span>
+        <span class="tag nd3">ND 3</span>
+      </div>
+      <p class="monster-lore">Um Guerreiro Fantasma é o remanescente espectral de um obstinado soldado ou cavaleiro que pereceu no campo de batalha ou morreu executando seu dever jurado. Parece uma versão translúcida de seu ser vivo — armadura, escudo, espada e tudo mais brilham como fantasmas de aço e couro.</p>
+      <p class="monster-lore">Diferente de fantasmas comuns, um Guerreiro Fantasma não está vinculado por um desejo de completar algum objetivo não resolvido. Ele pode escolher acabar com sua existência de morto vivo a qualquer momento. Seu espírito persiste de bom grado — por lealdade ao antigo mestre, por honra, ou por sensação de dever. Um guarda que morra defendendo uma muralha pode retornar como Guerreiro Fantasma e continuar a protegê-la, depois desaparecendo para sempre uma vez que um novo guarda assuma seu posto ou a muralha seja destruída.</p>
+      <p class="monster-lore" style="border-left-color:var(--ether-d)"><strong>Memórias Desvanecidas.</strong> O Guerreiro Fantasma mantém o alinhamento e a personalidade que teve antes de morrer. Lembra como morreu. As memórias dos últimos 1d10+10 dias de sua vida estão claras — tudo antes disso é névoa impenetrável. Um guerreiro que morreu há décadas pode não reconhecer o reino que protegia.</p>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section id="stats">
+    <div class="section-header"><span class="section-icon steel">📋</span><h2 class="steel">Estatísticas Base</h2><div class="section-line steel"></div></div>
+    <div class="monster-vitals">
+      <div class="mvital-card spectral"><span class="mvital-label">Classe de Armadura</span><span class="mvital-value spectral">16</span><span class="mvital-note">Armadura e escudo espectral</span></div>
+      <div class="mvital-card ether"><span class="mvital-label">Pontos de Vida</span><span class="mvital-value ether">45</span><span class="mvital-note">6d8 + 18</span></div>
+      <div class="mvital-card spectral"><span class="mvital-label">Deslocamento</span><span class="mvital-value spectral">9 m</span><span class="mvital-note">Terrestre</span></div>
+      <div class="mvital-card bone"><span class="mvital-label">Percepção Passiva</span><span class="mvital-value bone">12</span><span class="mvital-note">Visão no escuro 18 m</span></div>
+    </div>
+    <div class="two-col-monster">
+      <div class="cr-badge">
+        <div><span class="cr-badge-label">Challenge Rating</span><span class="cr-badge-value">3</span><span class="cr-badge-note">700 XP</span></div>
+        <div style="border-left:1px solid rgba(28,36,56,.3);padding-left:20px;">
+          <span class="cr-badge-label">Furtividade</span>
+          <span class="cr-badge-value" style="font-size:1.4rem;">+4</span>
+          <span class="cr-badge-note">Um guerreiro silencioso</span>
+        </div>
+      </div>
+      <div class="card spectral" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:center;">
+        <div class="card-title spectral">CA 16 num Fantasma — O Paradoxo Espectral</div>
+        <p style="font-size:.9rem;">A armadura espectral do Guerreiro é tão sólida em termos de proteção quanto armadura real — CA 16 é mais alta que muitos guerreiros vivos de nível equivalente. <mark>Ele combina mobilidade fantasmagórica com proteção física.</mark></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ATRIBUTOS + RESISTÊNCIAS -->
+  <div class="two-col-monster" style="align-items:start;gap:14px;margin-bottom:56px;">
+  <section id="atributos" style="margin-bottom:0;">
+    <div class="section-header"><span class="section-icon ether">◆</span><h2 class="ether">Atributos</h2><div class="section-line ether"></div></div>
+    <div class="attr-grid">
+      <div class="attr-box hi"> <div class="attr-name">For</div><span class="attr-value hi">16</span><span class="attr-mod hi">+3</span></div>
+      <div class="attr-box lo"> <div class="attr-name">Des</div><span class="attr-value lo">11</span><span class="attr-mod">+0</span></div>
+      <div class="attr-box hi"> <div class="attr-name">Con</div><span class="attr-value hi">16</span><span class="attr-mod hi">+3</span></div>
+      <div class="attr-box neg"><div class="attr-name">Int</div><span class="attr-value neg">8</span> <span class="attr-mod neg">−1</span></div>
+      <div class="attr-box lo"> <div class="attr-name">Sab</div><span class="attr-value lo">10</span><span class="attr-mod">+0</span></div>
+      <div class="attr-box mid"><div class="attr-name">Car</div><span class="attr-value mid">15</span><span class="attr-mod mid">+2</span></div>
+    </div>
+    <div class="callout ether" style="margin-top:4px;">
+      <strong>CAR 15 — A Presença do Juramento</strong> CAR 15 num morto-vivo de FOR/CON iguais é incomum — reflete que o que mantém o Guerreiro Fantasma presente não é força bruta, mas a intensidade de sua lealdade ou propósito. INT 8 confirma: ele não raciocina com complexidade. Serve. Protege. Permanece.
+    </div>
+  </section>
+  <section id="resistencias" style="margin-bottom:0;">
+    <div class="section-header"><span class="section-icon spectral">🎲</span><h2 class="spectral">Resistências, Imunidades &amp; Sentidos</h2><div class="section-line spectral"></div></div>
+    <p style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px">Resistências a Dano</p>
+    <div class="imun-grid">
+      <span class="imun-tag spectral">Concussão (não mágico)</span>
+      <span class="imun-tag spectral">Cortante (não mágico)</span>
+      <span class="imun-tag spectral">Perfurante (não mágico)</span>
+    </div>
+    <p style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);margin:10px 0 6px">Imunidades a Dano</p>
+    <div class="imun-grid">
+      <span class="imun-tag ether">Frio</span>
+      <span class="imun-tag ether">Necrótico</span>
+      <span class="imun-tag ether">Veneno</span>
+    </div>
+    <p style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);margin:10px 0 6px">Imunidades a Condições</p>
+    <div class="imun-grid" style="margin-bottom:0">
+      <span class="imun-tag cond">Amedrontado</span>
+      <span class="imun-tag cond">Agarrado</span>
+      <span class="imun-tag cond">Caído</span>
+      <span class="imun-tag cond">Enfeitiçado</span>
+      <span class="imun-tag cond">Envenenado</span>
+      <span class="imun-tag cond">Exaustão</span>
+      <span class="imun-tag cond">Impedido</span>
+      <span class="imun-tag cond">Paralisado</span>
+      <span class="imun-tag cond">Petrificado</span>
+    </div>
+  </section>
+  </div>
+
+  <!-- TRAÇOS -->
+  <section id="tracos">
+    <div class="section-header"><span class="section-icon ether">✧</span><h2 class="ether">Traços Especiais</h2><div class="section-line ether"></div></div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--spectral-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Armadura e Escudo Espectral <span class="sub">(Passivo — CA 16)</span></div>
+        <p>A CA do Guerreiro Fantasma conta para sua armadura e escudo espectral. Mesmo sendo incorpóreo, seus equipamentos espectrais funcionam como proteção real. Isso significa que ele não pode ser despido ou desarmado — sua armadura é parte de sua essência espectral, não equipamento físico que pode ser removido.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--ether-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Movimento Incorpóreo <span class="sub">(Passivo — Atravessa Objetos como Terreno Difícil)</span></div>
+        <p>O Guerreiro Fantasma pode se mover através de criaturas e objetos como se eles fossem <strong>terreno difícil</strong>. Ele sofre <strong>5 (1d10) de dano de energia</strong> se terminar seu turno dentro de um objeto. Taticamente: pode atravessar paredes, portas trancadas, grades e qualquer barreira física — mas não pode ficar parado dentro de um objeto sólido sem se machucar. Emboscadas, reposicionamentos e fuga se tornam muito mais fáceis.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--steel-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Visão Etérea <span class="sub">(Passivo — Visão de 18 m entre Planos)</span></div>
+        <p>O Guerreiro Fantasma pode ver até <strong>18 metros</strong> no Plano Etéreo quando está no Plano Material, e vice-versa. Isso lhe dá consciência de criaturas no Plano Etéreo — outros mortos-vivos, entidades etéreas, criaturas usando Passo Etéreo — que o grupo normalmente não poderia detectar. Ele não é surpreendido por criaturas que chegam do Etéreo.</p>
+      </div>
+    </div>
+
+    <div class="callout spectral">
+      <strong>Incorpóreo vs. Imunidades — O que Realmente Protege</strong> O Movimento Incorpóreo não concede imunidade a dano — apenas mobilidade. O que protege o Guerreiro é a <strong>resistência a dano não-mágico</strong> (armas mundanas causam metade do dano) combinada com <mark>imunidade total a frio, necrótico e veneno</mark>. Armas mágicas causam dano normalmente. Dano radiante funciona normalmente. Fogo funciona normalmente. O grupo que use apenas espadas não-mágicas vai notar que o Guerreiro absorve muito dano.
+    </div>
+  </section>
+
+  <!-- AÇÕES -->
+  <section id="acoes">
+    <div class="section-header"><span class="section-icon spectral">⚔</span><h2 class="spectral">Ações</h2><div class="section-line spectral"></div></div>
+
+    <div class="action spectral">
+      <div class="action-name spectral">Ataques Múltiplos</div>
+      <p>O Guerreiro Fantasma realiza <strong>dois ataques</strong> com sua Espada Longa Espectral.</p>
+    </div>
+    <div class="action ether">
+      <div class="action-name ether">Espada Longa Espectral <span style="font-family:'Fira Code',monospace;font-size:.6rem;color:var(--spectral-p);font-weight:400;">(+5 para atingir — Dano de Energia)</span></div>
+      <p><em>Ataque Corpo-a-Corpo com Arma:</em> <strong>+5 para atingir</strong>, alcance 1,5 m, um alvo. Acerto: <strong>7 (1d8 + 3)</strong> de dano de <strong>energia</strong>. O dano de energia não tem resistências comuns — a maioria das criaturas não tem resistência nem imunidade a esse tipo.</p>
+    </div>
+    <div class="action steel">
+      <div class="action-name steel">Forma Etérea <span style="font-family:'Fira Code',monospace;font-size:.6rem;color:var(--spectral-p);font-weight:400;">(Ação — Transição de Plano)</span></div>
+      <p>O Guerreiro Fantasma pode acessar o Plano Etéreo do Plano Material, ou vice-versa. Ele é <strong>invisível no Plano Material</strong> enquanto estiver na Fronteira Etérea, e vice-versa. Além de não poder afetar ou ser afetado por nada no outro plano enquanto em Forma Etérea. Usado principalmente para reposicionamento e fuga — ou para surgir inesperadamente de dentro de uma parede.</p>
+    </div>
+
+    <div class="sep"></div>
+    <div class="callout ether">
+      <strong>Turno Completo — Dois Ataques de Energia + Ameaça de Etéreo</strong> Dois ataques de 7 de dano de energia cada = <mark>média de 14 de dano por round</mark>. Para ND 3, isso é consistente e difícil de mitigar. A Forma Etérea adiciona uma dimensão tática que força o grupo a pensar em perseguição cross-planar: o Guerreiro pode recuar para o Etéreo quando estiver em desvantagem e ressurgir no próximo turno em posição diferente. <mark class="bone">Sem visão do Etéreo, o grupo não sabe onde ele vai aparecer.</mark>
+    </div>
+  </section>
+
+  <!-- NOTAS DO MESTRE -->
+  <section id="notas">
+    <div class="section-header"><span class="section-icon bone">🧠</span><h2 class="bone">Como Rodar — Notas do Mestre</h2><div class="section-line bone"></div></div>
+    <div class="card spectral">
+      <div class="card-title spectral">Tarefa Dirigida — Por Que Ele Ainda Está Aqui</div>
+      <p>O Guerreiro Fantasma pode escolher acabar com sua existência a qualquer momento. O fato de não ter feito isso significa que ele quer estar aqui. O Mestre deve ter uma resposta para "o que este guerreiro específico está protegendo ou esperando?" antes do encontro. Isso transforma um morto-vivo genérico em personagem — e pode criar dinâmicas de negociação ou resolução não-violenta.</p>
+    </div>
+    <div class="card ether">
+      <div class="card-title ether">Forma Etérea como Ferramenta de Tensão</div>
+      <p>Quando o Guerreiro usa Forma Etérea, desaparece completamente do ponto de vista do grupo. O Mestre pode descrever isso como o guerreiro dissolvendo-se — e então o grupo precisa acompanhar sua posição no Etéreo ou aceitar que não sabe de onde ele vai surgir. <mark>Essa incerteza é horror puro</mark> num espaço confinado como o Castelo Ravenloft.</p>
+    </div>
+    <div class="card bone">
+      <div class="card-title bone">Em Valtheris</div>
+      <p>O Guerreiro Fantasma é familiar ao que Valtheris conhece sobre lealdade e permanência — mas com uma diferença crucial: ele escolhe ficar. Em Valtheris, onde mortos-vivos são frequentemente involuntários, o Guerreiro Fantasma representa uma forma de existência pós-morte com agência. Para Leyn, que negociou com os Guardiões do Limiar, esse guerreiro que escolhe sua própria permanência é ao mesmo tempo admirável e perturbador.</p>
+    </div>
+  </section>
+
+  <!-- SANIDADE -->
+  <section id="sanidade">
+    <div class="section-header"><span class="section-icon ether">🌑</span><h2 class="ether">Dano de Sanidade — Regra Opcional</h2><div class="section-line ether"></div></div>
+    <table class="san-table">
+      <thead><tr><th>Situação</th><th>Sucesso (SAB)</th><th>Falha (SAB)</th><th>CD</th></tr></thead>
+      <tbody>
+        <tr><td class="situation">Primeiro encontro com um Guerreiro Fantasma — reconhecer que a armadura está vazia mas se move com propósito</td><td class="pass">—</td><td class="fail">1d4</td><td class="cd">CD 11</td></tr>
+        <tr><td class="situation">O Guerreiro Fantasma usa Forma Etérea e simplesmente desaparece dentro de uma parede sólida</td><td class="pass">—</td><td class="fail">1d6</td><td class="cd">CD 12</td></tr>
+        <tr><td class="situation">O Guerreiro ressurge do chão diretamente sob os pés de um personagem</td><td class="pass">1d4</td><td class="fail">1d8</td><td class="cd">CD 14</td></tr>
+        <tr><td class="situation">Descobrir que o Guerreiro reconhece o grupo mas não ataca — porque sua tarefa específica não inclui eles</td><td class="pass">1d4</td><td class="fail">1d6</td><td class="cd">CD 13</td></tr>
+        <tr><td class="situation">O Guerreiro Fantasma escolhe voluntariamente o descanso eterno durante ou após o encontro, e simplesmente para de existir</td><td class="pass">1d6</td><td class="fail">2d6</td><td class="cd">CD 15</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+<div style="max-width:940px;margin:0 auto;padding:0 20px;"><div class="divider" style="padding:0;margin-bottom:0;"><div class="divider-line"></div><span class="divider-glyph">👻</span><div class="divider-line"></div></div></div>
+<div class="top-bar" style="margin-top:0;"></div>
+<footer>Guerreiro Fantasma <span>⸸</span> Remanescente Espectral <span>⸸</span> Curse of Strahd</footer>
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+<script>document.getElementById('top-btn').addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});window.addEventListener('scroll',function(){document.getElementById('top-btn').classList.toggle('visible',window.scrollY>400);});</script>
+</body>
+</html>

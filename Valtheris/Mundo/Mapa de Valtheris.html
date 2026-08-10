@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa de Valtheris</title>
+<style>
+:root{--fT:'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;--fL:Georgia,'Times New Roman',serif;--bg:#0c0705;--ink:#c8a96e;--inkD:#8b6914;--inkL:#e8d5a0;--panel:rgba(12,6,2,.97);--brd:rgba(139,105,20,.4)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);font-family:var(--fL);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.hdr{text-align:center;padding:22px 18px 10px;width:100%;max-width:1240px}
+.hdr-deco{display:block;color:var(--inkD);font-size:10px;letter-spacing:10px;margin:2px 0}
+.hdr h1{font-family:var(--fT);font-size:clamp(1.8rem,4.5vw,3.4rem);color:var(--inkL);letter-spacing:4px;font-variant:small-caps;margin:4px 0}
+.hdr-sub{font-family:var(--fT);font-size:clamp(.58rem,1.2vw,.75rem);letter-spacing:7px;color:var(--inkD);text-transform:uppercase;margin-top:3px}
+.wrap{width:100%;max-width:1240px;padding:0 12px 28px;display:flex;flex-direction:column;gap:11px}
+.sec{font-family:var(--fT);font-size:.66rem;letter-spacing:5px;text-transform:uppercase;color:var(--inkD);text-align:center;padding:6px 0 3px;border-top:1px solid rgba(139,105,20,.28)}
+.leg{display:flex;flex-wrap:wrap;gap:6px 16px;padding:8px 16px;border:1px solid var(--brd);background:var(--panel);justify-content:center}
+.li{display:flex;align-items:center;gap:6px;font-size:.68rem;font-family:var(--fT);letter-spacing:1px;font-weight:500}
+.ld{width:10px;height:10px;border-radius:50%;border:2px solid currentColor;flex-shrink:0}
+/* ── mapa principal com zoom ── */
+.mc{position:relative;width:100%;aspect-ratio:16/9;background:#080301;border:1px solid var(--brd);overflow:hidden;cursor:grab}
+.mc.grabbing{cursor:grabbing}
+.mc img{width:100%;height:100%;display:block;object-fit:fill;transform-origin:0 0;transition:none;user-select:none;-webkit-user-drag:none}
+.mc img.resetting,.zm img.resetting{transition:transform .3s ease}
+.zoom-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-family:var(--fT);font-size:.58rem;letter-spacing:2px;color:rgba(139,105,20,.5);pointer-events:none;text-transform:uppercase;white-space:nowrap;z-index:20}
+/* ── zoom nos mapas internos ── */
+.zm{position:relative;border:1px solid var(--brd);background:var(--panel)}
+.zm .imt{font-family:var(--fT);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--inkD);text-align:center;padding:7px 10px;border-bottom:1px solid rgba(139,105,20,.2);background:rgba(18,9,3,.8);user-select:none;position:relative;z-index:2}
+/* viewport: área clipada da imagem — criada via JS como wrapper da img */
+.zm-vp{position:relative;overflow:hidden;width:100%;display:block}
+.zm img{width:100%;display:block;transform-origin:0 0;cursor:zoom-in;transition:none;user-select:none;-webkit-user-drag:none}
+/* barra de controles sempre visível fora do viewport clipado */
+.zm-bar{display:flex;align-items:center;justify-content:space-between;padding:4px 8px;background:rgba(10,6,2,.9);border-top:1px solid rgba(139,105,20,.15);position:relative;z-index:2}
+.zm-bar button{background:none;border:1px solid rgba(139,105,20,.4);color:var(--inkD);font-family:var(--fT);font-size:.7rem;padding:2px 8px;cursor:pointer;letter-spacing:1px}
+.zm-bar button:hover{border-color:var(--ink);color:var(--ink)}
+.zm-bar span{font-family:var(--fT);font-size:.6rem;color:rgba(139,105,20,.5);letter-spacing:2px}
+/* ── grid de mapas internos ── */
+.ig{display:grid;grid-template-columns:1fr;gap:14px}
+.im{border:1px solid var(--brd);background:var(--panel);overflow:hidden}
+.imt{font-family:var(--fT);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--inkD);text-align:center;padding:7px 10px;border-bottom:1px solid rgba(139,105,20,.2);background:rgba(18,9,3,.8)}
+.im img{width:100%;display:block}
+.ftr{text-align:center;padding:14px;font-family:var(--fT);font-size:.6rem;letter-spacing:3px;color:rgba(139,105,20,.42);text-transform:uppercase}
+
+/* Grain/parchment overlay */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23g)'/%3E%3C/svg%3E");
+  opacity:.05;mix-blend-mode:overlay
+}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:#04020a}
+::-webkit-scrollbar-thumb{background:rgba(80,58,14,.8)}
+::-webkit-scrollbar-thumb:hover{background:#8b6914}
+
+/* Map container */
+.mc{
+  box-shadow:
+    0 0 0 1px rgba(139,105,20,.35),
+    0 0 0 4px rgba(0,0,0,.95),
+    0 0 60px rgba(0,0,0,.98),
+    inset 0 0 90px rgba(0,0,0,.5)
+}
+
+/* Section dividers */
+.sec{position:relative;padding:6px 24px 3px}
+.sec::before,.sec::after{
+  content:'◆';color:rgba(139,105,20,.3);
+  position:absolute;top:50%;transform:translateY(-50%);font-size:7px
+}
+.sec::before{left:4px}.sec::after{right:4px}
+
+/* Legend */
+.leg{box-shadow:inset 0 0 35px rgba(0,0,0,.75);border-color:rgba(139,105,20,.28)}
+
+/* Interior map containers */
+.zm{box-shadow:0 0 25px rgba(0,0,0,.85)}
+.zm .imt{letter-spacing:4px;text-shadow:0 0 12px rgba(139,105,20,.22)}
+
+/* Footer */
+.ftr{letter-spacing:6px;text-shadow:0 0 22px rgba(139,105,20,.18)}
+
+/* ── ACESSIBILIDADE: MOVIMENTO REDUZIDO ─────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+</style>
+</head>
+<body>
+<!-- avisa o mapa do Nexus (se estiver por perto) que esta página foi visitada -->
+<script>try{ if (window.top !== window) window.top.postMessage({ tipo:'nexus-visita', id:'valtheris_mapa' }, '*'); }catch(e){}</script>
+
+<div class="hdr">
+  <span class="hdr-deco">&#x2756;&nbsp;&nbsp;&#x2756;&nbsp;&nbsp;&#x2756;</span>
+  <h1>Valtheris</h1>
+  <div class="hdr-sub">Mapa do Continente de Valtheris &middot; Sagas I &mdash; XXI</div>
+  <span class="hdr-deco">&#x2756;&nbsp;&nbsp;&#x2756;&nbsp;&nbsp;&#x2756;</span>
+</div>
+
+<main class="wrap">
+
+<div class="leg">
+  <div class="li" style="color:#c8a96e"><div class="ld" style="background:rgba(200,169,110,.25)"></div>Local Visitado</div>
+  <div class="li" style="color:#93cc93"><div class="ld" style="background:rgba(147,204,147,.2)"></div>Citado / Mem&oacute;ria</div>
+  <div class="li" style="color:#dd6666"><div class="ld" style="background:rgba(221,102,102,.22)"></div>Amea&ccedil;a</div>
+  <div class="li" style="color:#886655"><div class="ld" style="background:rgba(136,102,85,.2)"></div>Destru&iacute;do</div>
+  <div class="li" style="color:#c8a96e"><div style="width:22px;height:0;border-top:1px dashed #8b6914"></div>Rota de Leyn</div>
+</div>
+
+<div class="sec">Mapa Geral &mdash; Continente de Valtheris</div>
+<div class="mc" id="mainMap">
+  <span class="zoom-hint">Scroll para zoom &middot; Arraste para mover &middot; Duplo-clique para resetar</span>
+  <img src="Mapas/Continente de Valtheris.png" alt="Mapa Geral de Valtheris &mdash; Continente">
+</div>
+
+<!-- ═══════════ INTERIOR MAPS ═══════════ -->
+<div class="sec">Mapas Internos dos Locais Visitados</div>
+<div class="ig">
+
+<div class="zm">
+<div class="imt">1 &middot; Fortaleza de Conten&ccedil;&atilde;o &middot; Sagas I&ndash;III</div>
+<img src="Mapas/Fortaleza de Contenção do Culto da Verdade Profunda.png" alt="1 &middot; Fortaleza de Conten&ccedil;&atilde;o &middot; Sagas I&ndash;III">
+<div class="zm-bar"><button onclick="zmOut(1)">&#8722;</button><span id="zmlbl1">100%</span><button onclick="zmIn(1)">&#43;</button><button onclick="zmReset(1)" style="letter-spacing:0">Reset</button></div>
+</div>
+
+<div class="zm">
+<div class="imt">2 &middot; Aldeia Sem Nome &middot; Sagas IV&ndash;VII</div>
+<img src="Mapas/Aldeia Sem Nome.png" alt="2 &middot; Aldeia Sem Nome &middot; Sagas IV&ndash;VII">
+<div class="zm-bar"><button onclick="zmOut(2)">&#8722;</button><span id="zmlbl2">100%</span><button onclick="zmIn(2)">&#43;</button><button onclick="zmReset(2)" style="letter-spacing:0">Reset</button></div>
+</div>
+
+<div class="zm">
+<div class="imt">2b &middot; Clareira Derretida &amp; Rio Corvinal &middot; Sagas VII&ndash;VIII</div>
+<img src="Mapas/Clareira Derretida até o Rio Corvinal.png" alt="2b &middot; Clareira Derretida &amp; Rio Corvinal &middot; Sagas VII&ndash;VIII">
+<div class="zm-bar"><button onclick="zmOut(3)">&#8722;</button><span id="zmlbl3">100%</span><button onclick="zmIn(3)">&#43;</button><button onclick="zmReset(3)" style="letter-spacing:0">Reset</button></div>
+</div>
+
+<div class="zm">
+<div class="imt">3 &middot; Caverna de Abrigo &middot; Sagas IX&ndash;X</div>
+<img src="Mapas/Caverna de Refúgio.png" alt="3 &middot; Caverna de Abrigo &middot; Sagas IX&ndash;X">
+<div class="zm-bar"><button onclick="zmOut(4)">&#8722;</button><span id="zmlbl4">100%</span><button onclick="zmIn(4)">&#43;</button><button onclick="zmReset(4)" style="letter-spacing:0">Reset</button></div>
+</div>
+
+
+<div class="zm">
+<div class="imt">4 &middot; Vila Sepet &middot; Sagas IX&ndash;XXI</div>
+<img src="Mapas/Vila Sepet.png" alt="4 &middot; Vila Sepet &middot; Sagas IX&ndash;XXI">
+<div class="zm-bar"><button onclick="zmOut(5)">&#8722;</button><span id="zmlbl5">100%</span><button onclick="zmIn(5)">&#43;</button><button onclick="zmReset(5)" style="letter-spacing:0">Reset</button></div>
+</div>
+
+
+</div><!-- end ig -->
+
+<div class="ftr">Valtheris&middot; Campanha H&iacute;brida D&amp;D e CoC&middot; Sagas I &mdash; XXI</div>
+
+</main><!-- end wrap -->
+
+<script>
+/* ══════════════════════════════════════════
+   ZOOM — MAPA GERAL (scroll + drag)
+══════════════════════════════════════════ */
+(function(){
+  var el=document.getElementById('mainMap');
+  if(!el)return;
+  var img=el.querySelector('img');
+  if(!img)return;
+  var scale=1,tx=0,ty=0;
+  var dragging=false,startX,startY,startTx,startTy;
+  var MIN=1,MAX=8;
+
+  function apply(){img.style.transform='translate('+tx+'px,'+ty+'px) scale('+scale+')';}
+  function clamp(){
+    var cw=el.clientWidth,ch=el.clientHeight;
+    var sw=cw*scale,sh=ch*scale;
+    tx=Math.min(0,Math.max(tx,cw-sw));
+    ty=Math.min(0,Math.max(ty,ch-sh));
+  }
+
+  el.addEventListener('wheel',function(e){
+    e.preventDefault();
+    var rect=el.getBoundingClientRect();
+    var mx=e.clientX-rect.left,my=e.clientY-rect.top;
+    var delta=e.deltaY<0?1.15:1/1.15;
+    var ns=Math.min(MAX,Math.max(MIN,scale*delta));
+    tx=mx-(mx-tx)*(ns/scale);
+    ty=my-(my-ty)*(ns/scale);
+    scale=ns;clamp();apply();
+  },{passive:false});
+
+  el.addEventListener('mousedown',function(e){
+    if(e.button!==0)return;
+    dragging=true;startX=e.clientX;startY=e.clientY;startTx=tx;startTy=ty;
+    el.classList.add('grabbing');e.preventDefault();
+  });
+  window.addEventListener('mousemove',function(e){
+    if(!dragging)return;
+    tx=startTx+(e.clientX-startX);ty=startTy+(e.clientY-startY);
+    clamp();apply();
+  });
+  window.addEventListener('mouseup',function(){dragging=false;el.classList.remove('grabbing');});
+
+  el.addEventListener('dblclick',function(){
+    img.classList.add('resetting');scale=1;tx=0;ty=0;apply();
+    setTimeout(function(){img.classList.remove('resetting');},350);
+  });
+
+  /* touch */
+  var lastDist=null;
+  el.addEventListener('touchstart',function(e){
+    if(e.touches.length===1){dragging=true;startX=e.touches[0].clientX;startY=e.touches[0].clientY;startTx=tx;startTy=ty;}
+    else if(e.touches.length===2){lastDist=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,e.touches[1].clientY-e.touches[0].clientY);}
+    e.preventDefault();
+  },{passive:false});
+  el.addEventListener('touchmove',function(e){
+    if(e.touches.length===1&&dragging){tx=startTx+(e.touches[0].clientX-startX);ty=startTy+(e.touches[0].clientY-startY);clamp();apply();}
+    else if(e.touches.length===2&&lastDist){var d=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,e.touches[1].clientY-e.touches[0].clientY);var ns=Math.min(MAX,Math.max(MIN,scale*(d/lastDist)));var rect=el.getBoundingClientRect();var cx=(e.touches[0].clientX+e.touches[1].clientX)/2-rect.left;var cy=(e.touches[0].clientY+e.touches[1].clientY)/2-rect.top;tx=cx-(cx-tx)*(ns/scale);ty=cy-(cy-ty)*(ns/scale);scale=ns;lastDist=d;clamp();apply();}
+    e.preventDefault();
+  },{passive:false});
+  el.addEventListener('touchend',function(){dragging=false;lastDist=null;});
+})();
+
+/* ══════════════════════════════════════════
+   ZOOM — MAPAS INTERNOS (botões + scroll)
+══════════════════════════════════════════ */
+(function(){
+  var containers=document.querySelectorAll('.zm');
+  var states=[];
+  var activeDrag=null;
+  containers.forEach(function(c,i){
+    states[i+1]={scale:1,tx:0,ty:0,dragging:false};
+    var img=c.querySelector('img');
+    if(!img)return;
+
+    /* ── cria wrapper viewport que recebe overflow:hidden ── */
+    var vp=document.createElement('div');
+    vp.className='zm-vp';
+    img.parentNode.insertBefore(vp,img);
+    vp.appendChild(img);
+
+    img.addEventListener('wheel',function(e){
+      e.preventDefault();e.stopPropagation();
+      var st=states[i+1];
+      /* usa rect do VIEWPORT (não da img transformada) */
+      var cr=vp.getBoundingClientRect();
+      var mx=e.clientX-cr.left;
+      var my=e.clientY-cr.top;
+      var delta=e.deltaY<0?1.2:1/1.2;
+      var ns=Math.min(6,Math.max(1,st.scale*delta));
+      st.tx=mx-(mx-st.tx)*(ns/st.scale);
+      st.ty=my-(my-st.ty)*(ns/st.scale);
+      st.scale=ns;
+      _zmClamp(vp,img,st);_zmApply(img,st,i+1);
+    },{passive:false});
+
+    img.addEventListener('mousedown',function(e){
+      if(e.button!==0)return;
+      var st=states[i+1];
+      st.dragging=true;
+      activeDrag={st:st,vp:vp,img:img,idx:i+1,sx:e.clientX,sy:e.clientY,stx:st.tx,sty:st.ty};
+      e.preventDefault();
+    });
+    img.addEventListener('dblclick',function(){img.classList.add('resetting');states[i+1]={scale:1,tx:0,ty:0,dragging:false};_zmApply(img,states[i+1],i+1);setTimeout(function(){img.classList.remove('resetting');},350);});
+  });
+
+  window.addEventListener('mousemove',function(e){
+    if(!activeDrag)return;
+    var d=activeDrag;
+    d.st.tx=d.stx+(e.clientX-d.sx);d.st.ty=d.sty+(e.clientY-d.sy);
+    _zmClamp(d.vp,d.img,d.st);_zmApply(d.img,d.st,d.idx);
+  });
+  window.addEventListener('mouseup',function(){
+    if(activeDrag){activeDrag.st.dragging=false;activeDrag=null;}
+  });
+
+  function _zmApply(img,st,n){
+    img.style.transform='translate('+st.tx+'px,'+st.ty+'px) scale('+st.scale+')';
+    img.style.cursor=st.scale>1?'grab':'zoom-in';
+    var lbl=document.getElementById('zmlbl'+n);
+    if(lbl)lbl.textContent=Math.round(st.scale*100)+'%';
+  }
+  function _zmClamp(vp,img,st){
+    /* dimensões do viewport (área visível clipada), não da img */
+    var cw=vp.clientWidth;
+    var ch=vp.clientHeight;
+    /* fallback: usa naturalHeight se img ainda não renderizou */
+    if(!ch&&img.naturalHeight&&img.naturalWidth&&cw){
+      ch=Math.round(cw*img.naturalHeight/img.naturalWidth);
+    }
+    if(!cw||!ch)return;
+    st.tx=Math.min(0,Math.max(st.tx,cw*(1-st.scale)));
+    st.ty=Math.min(0,Math.max(st.ty,ch*(1-st.scale)));
+  }
+
+  window.zmIn=function(n){var s=states[n];if(!s)return;var c=document.querySelectorAll('.zm')[n-1];var img=c&&c.querySelector('img');var vp=img&&img.parentElement;if(!img||!vp)return;s.scale=Math.min(6,s.scale*1.3);_zmClamp(vp,img,s);_zmApply(img,s,n);};
+  window.zmOut=function(n){var s=states[n];if(!s)return;var c=document.querySelectorAll('.zm')[n-1];var img=c&&c.querySelector('img');var vp=img&&img.parentElement;if(!img||!vp)return;s.scale=Math.max(1,s.scale/1.3);_zmClamp(vp,img,s);_zmApply(img,s,n);};
+  window.zmReset=function(n){states[n]={scale:1,tx:0,ty:0,dragging:false};var c=document.querySelectorAll('.zm')[n-1];var img=c&&c.querySelector('img');if(img){img.classList.add('resetting');_zmApply(img,states[n],n);setTimeout(function(){img.classList.remove('resetting');},350);}};
+})();
+</script>
+
+
+<script>
+// Notifica o hub quando o leitor clica em qualquer link desta página
+document.addEventListener('click', function(e) {
+  const a = e.target.closest('a[href]');
+  if (!a) return;
+  const to = a.getAttribute('href');
+  if (!to || to.startsWith('#') || to.startsWith('javascript')) return;
+  try { window.parent.postMessage({ type: 'nav', to: to }, '*'); } catch(e2) {}
+});
+</script>
+</body>
+</html>

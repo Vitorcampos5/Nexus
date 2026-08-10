@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Árvore Infectada — Referência do Mestre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&family=UnifrakturMaguntia:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:     #030404;
+    --hollow:   #141810;
+
+    --bark:     #2c2010;
+    --bark-l:   #504030;
+    --bark-d:   #0e0c08;
+    --bark-p:   #907860;
+
+    --sap:      #1c3010;
+    --sap-l:    #385820;
+    --sap-d:    #080e04;
+    --sap-p:    #70a040;
+
+    --rot:      #301808;
+    --rot-l:    #604020;
+    --rot-d:    #0e0804;
+    --rot-p:    #a07040;
+
+    --blood:    #3c1010;
+    --blood-l:  #703020;
+    --blood-d:  #120808;
+    --blood-p:  #b06050;
+
+    --text:     #908870;
+    --text-dim: #302820;
+    --text-faint:#10100a;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background-color:var(--void);
+    background-image:
+      radial-gradient(ellipse 120% 50% at 50% -5%,#0e0c06 0%,transparent 55%),
+      radial-gradient(ellipse 50% 60% at 90% 100%,#0a0806 0%,transparent 50%),
+      radial-gradient(ellipse 40% 60% at 10%  80%,#080a04 0%,transparent 50%);
+    color:var(--text);
+    font-family:'EB Garamond',Georgia,serif;
+    font-size:17px;line-height:1.8;min-height:100vh;overflow-x:hidden
+  }
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:.7}
+
+  .top-bar{height:4px;background:linear-gradient(90deg,var(--bark-d),var(--rot-l),var(--sap-l),var(--rot-l),var(--bark-d));box-shadow:0 0 30px rgba(44,32,16,.5)}
+
+  header{position:relative;text-align:center;padding:80px 20px 70px;overflow:hidden}
+  header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(30,20,8,.14) 0%,transparent 65%);pointer-events:none}
+  header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--bark-d),var(--blood-d),transparent)}
+  .header-pulse{position:absolute;inset:0;background:radial-gradient(ellipse 60% 45% at 50% 45%,rgba(44,32,16,.06) 0%,transparent 70%);animation:breathe 14s ease-in-out infinite;pointer-events:none}
+  @keyframes breathe{0%,100%{opacity:.4}50%{opacity:1}}
+  .header-symbol{display:block;font-size:2.8rem;margin-bottom:18px;filter:drop-shadow(0 0 20px rgba(80,64,48,.6));animation:crest-pulse 12s ease-in-out infinite}
+  @keyframes crest-pulse{0%,100%{filter:drop-shadow(0 0 16px rgba(80,64,48,.5))}50%{filter:drop-shadow(0 0 30px rgba(96,80,48,.7))}}
+  .header-fraktur{font-family:'UnifrakturMaguntia',serif;font-size:clamp(2rem,7vw,4rem);line-height:1.05;margin-bottom:6px;background:linear-gradient(135deg,#907860 0%,#604020 30%,#a07040 60%,#809060 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .header-eyebrow{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.45em;text-transform:uppercase;color:var(--text-faint);margin-bottom:18px}
+  .header-classification{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:var(--bark-p);margin-bottom:10px;opacity:.8}
+  .header-title-sub{font-family:'Cinzel',serif;font-size:clamp(.85rem,2vw,1rem);letter-spacing:.18em;text-transform:uppercase;color:var(--rot-p);margin-bottom:8px}
+  .header-tagline{font-style:italic;color:#1c1808;font-size:1.05rem;max-width:580px;margin:0 auto 28px}
+  .header-crests{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:8px}
+  .crest-badge{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:4px 14px;border-radius:1px}
+  .crest-badge.bark  {border:1px solid var(--bark-d);  color:var(--bark-p)}
+  .crest-badge.sap   {border:1px solid var(--sap-d);   color:var(--sap-p)}
+  .crest-badge.rot   {border:1px solid var(--rot-d);   color:var(--rot-p)}
+  .crest-badge.blood {border:1px solid var(--blood-d); color:var(--blood-p)}
+
+  .divider{display:flex;align-items:center;gap:14px;max-width:940px;margin:0 auto;padding:40px 20px 48px}
+  .divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--bark-d),var(--rot-d),transparent)}
+  .divider-glyph{color:var(--rot-l);font-size:1rem;opacity:.7}
+  .breadcrumb{max-width:940px;margin:0 auto;padding:20px 20px 0;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}
+  .breadcrumb span{color:var(--bark-d);margin:0 6px}.breadcrumb .current{color:var(--rot-p)}
+  main{max-width:940px;margin:0 auto;padding:0 20px 90px;display:flex;flex-direction:column}
+  section{margin-bottom:56px;animation:fade-in .5s ease both}
+  @keyframes fade-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  section:nth-child(1){animation-delay:.05s}section:nth-child(2){animation-delay:.10s}
+  section:nth-child(3){animation-delay:.15s}section:nth-child(4){animation-delay:.20s}
+  section:nth-child(5){animation-delay:.25s}section:nth-child(6){animation-delay:.30s}section:nth-child(7){animation-delay:.35s}
+  p{margin-bottom:10px}p:last-child{margin-bottom:0}
+
+  .section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .section-icon{font-size:1.2rem;flex-shrink:0}
+  .section-icon.bark {filter:drop-shadow(0 0 8px rgba(80,64,48,.5))}
+  .section-icon.sap  {filter:drop-shadow(0 0 8px rgba(56,88,32,.5))}
+  .section-icon.rot  {filter:drop-shadow(0 0 8px rgba(96,64,32,.4))}
+  .section-icon.blood{filter:drop-shadow(0 0 8px rgba(112,48,32,.4))}
+  h2{font-family:'Cinzel',serif;font-size:.9rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+  h2.bark {color:#907860;text-shadow:0 0 20px rgba(80,64,48,.3)}
+  h2.sap  {color:#70a040;text-shadow:0 0 18px rgba(56,88,32,.3)}
+  h2.rot  {color:#a07040;text-shadow:0 0 18px rgba(96,64,32,.25)}
+  h2.blood{color:#b06050;text-shadow:0 0 18px rgba(112,48,32,.3)}
+  .section-line{flex:1;height:1px}
+  .section-line.bark {background:linear-gradient(90deg,var(--bark-d), rgba(22,16,8,.3),  transparent)}
+  .section-line.sap  {background:linear-gradient(90deg,var(--sap-d),  rgba(10,18,4,.3),  transparent)}
+  .section-line.rot  {background:linear-gradient(90deg,var(--rot-d),  rgba(16,10,4,.3),  transparent)}
+  .section-line.blood{background:linear-gradient(90deg,var(--blood-d),rgba(18,8,8,.3),   transparent)}
+
+  /* IDENTITY */
+  .identity{position:relative;background:linear-gradient(145deg,rgba(12,10,6,.98) 0%,rgba(8,6,4,.99) 100%);border:1px solid rgba(46,32,12,.5);border-top:4px solid var(--bark-d);border-bottom:3px solid var(--blood-d);padding:32px 36px;margin-bottom:14px;overflow:hidden}
+  .identity::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0% 0%,rgba(64,48,20,.06) 0%,transparent 45%),radial-gradient(circle at 100% 0%,rgba(56,28,12,.04) 0%,transparent 45%);pointer-events:none}
+  .identity-corner{position:absolute;font-family:'Fira Code',monospace;font-size:.58rem;letter-spacing:.15em;color:var(--text-faint);opacity:.6}
+  .identity-corner.tl{top:10px;left:14px}.identity-corner.tr{top:10px;right:14px}
+  .identity-corner.bl{bottom:10px;left:14px}.identity-corner.br{bottom:10px;right:14px}
+  .monster-name{font-family:'UnifrakturMaguntia',serif;font-size:clamp(1.8rem,4vw,2.8rem);background:linear-gradient(135deg,#907860 0%,#604020 35%,#a07040 70%,#809060 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;line-height:1.1}
+  .monster-epithet{font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:.2em;text-transform:uppercase;color:var(--rot-p);opacity:.85;margin-bottom:14px}
+  .monster-type-line{margin-bottom:16px}
+  .monster-lore{font-style:italic;color:#908870;font-size:.97rem;border-left:2px solid var(--bark-d);padding-left:16px;margin-top:14px;line-height:1.75}
+  .monster-lore+.monster-lore{border-left-color:var(--rot-d);margin-top:10px}
+
+  .tag{display:inline-block;font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;padding:2px 8px;border-radius:1px;margin-right:5px;margin-bottom:5px;vertical-align:middle}
+  .tag.plant {border:1px solid #182810;color:#607050}
+  .tag.evil  {border:1px solid #281410;color:#907050}
+  .tag.huge  {border:1px solid #282010;color:#807060}
+  .tag.nd7   {border:1px solid #3a2808;color:#c09030}
+
+  .monster-vitals{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+  @media(max-width:600px){.monster-vitals{grid-template-columns:1fr 1fr}}
+  .mvital-card{background:rgba(10,8,4,.9);border:1px solid var(--hollow);border-radius:3px;padding:16px 14px;position:relative;overflow:hidden;text-align:center}
+  .mvital-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+  .mvital-card.bark::after {background:linear-gradient(90deg,transparent,var(--bark-l), transparent)}
+  .mvital-card.sap::after  {background:linear-gradient(90deg,transparent,var(--sap-l),  transparent)}
+  .mvital-card.rot::after  {background:linear-gradient(90deg,transparent,var(--rot-l),  transparent)}
+  .mvital-card.blood::after{background:linear-gradient(90deg,transparent,var(--blood-l),transparent)}
+  .mvital-label{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;display:block}
+  .mvital-value{font-family:'Cinzel Decorative',serif;font-size:2rem;line-height:1;display:block}
+  .mvital-value.bark {color:var(--bark-l); text-shadow:0 0 14px rgba(80,64,48,.4)}
+  .mvital-value.sap  {color:var(--sap-l);  text-shadow:0 0 14px rgba(56,88,32,.4)}
+  .mvital-value.rot  {color:var(--rot-l);  text-shadow:0 0 12px rgba(96,64,32,.3)}
+  .mvital-value.blood{color:var(--blood-l);text-shadow:0 0 12px rgba(112,48,32,.3)}
+  .mvital-note{font-size:.75rem;color:var(--text-dim);font-style:italic;margin-top:6px;display:block;line-height:1.4}
+
+  .two-col-monster{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  @media(max-width:600px){.two-col-monster{grid-template-columns:1fr}}
+  .cr-badge{display:flex;flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;background:linear-gradient(135deg,rgba(18,14,6,.18),rgba(14,10,4,.12));border:1px solid rgba(46,32,12,.4);border-top:2px solid var(--rot-l);border-bottom:2px solid var(--blood-d);padding:14px 24px}
+  .cr-badge-label{font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.28em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;display:block}
+  .cr-badge-value{font-family:'Cinzel Decorative',serif;font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,var(--rot-l),var(--bark-l));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;display:block}
+  .cr-badge-note{font-family:'Fira Code',monospace;font-size:.6rem;color:var(--text-dim);margin-top:4px;letter-spacing:.06em;display:block}
+
+  .attr-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px}
+  @media(max-width:560px){.attr-grid{grid-template-columns:repeat(3,1fr)}}
+  .attr-box{background:rgba(8,6,3,.9);border:1px solid var(--hollow);padding:16px 10px;text-align:center;position:relative;overflow:hidden;transition:transform .2s}
+  .attr-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .attr-box.hi::before {background:linear-gradient(90deg,transparent,var(--rot-l),   transparent)}
+  .attr-box.mid::before{background:linear-gradient(90deg,transparent,var(--sap-l),   transparent)}
+  .attr-box.lo::before {background:linear-gradient(90deg,transparent,var(--bark-l),  transparent)}
+  .attr-box.vlo::before{background:linear-gradient(90deg,transparent,var(--blood-l), transparent)}
+  .attr-box:hover{transform:translateY(-2px)}
+  .attr-name{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
+  .attr-value{font-family:'Fira Code',monospace;font-size:1.15rem;font-weight:500;color:var(--text);display:block;line-height:1}
+  .attr-value.hi {color:var(--rot-l)}
+  .attr-value.mid{color:var(--sap-l)}
+  .attr-value.lo {color:var(--bark-l)}
+  .attr-value.vlo{color:var(--blood-l)}
+  .attr-mod{font-family:'Fira Code',monospace;font-size:.8rem;color:var(--text-dim);display:block;margin-top:4px}
+  .attr-mod.hi {color:var(--rot-d)}
+  .attr-mod.neg{color:var(--blood-d)}
+
+  .card{background:linear-gradient(135deg,rgba(12,10,5,.92) 0%,rgba(8,6,3,.96) 100%);border:1px solid var(--hollow);padding:20px 24px;margin-bottom:12px;position:relative;transition:box-shadow .3s}
+  .card.bark {border-left:3px solid var(--bark-d)}.card.bark:hover {box-shadow:-4px 0 20px rgba(60,40,16,.18),0 4px 20px rgba(0,0,0,.6)}
+  .card.sap  {border-left:3px solid var(--sap-d)}.card.sap:hover  {box-shadow:-4px 0 20px rgba(40,72,16,.18),0 4px 20px rgba(0,0,0,.6)}
+  .card.rot  {border-left:3px solid var(--rot-d)}.card.rot:hover  {box-shadow:-4px 0 20px rgba(72,40,16,.16),0 4px 20px rgba(0,0,0,.6)}
+  .card.blood{border-left:3px solid var(--blood-d)}.card.blood:hover{box-shadow:-4px 0 20px rgba(80,28,20,.16),0 4px 20px rgba(0,0,0,.6)}
+  .card-title{font-family:'Cinzel',serif;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+  .card-title.bark {color:var(--bark-p)}.card-title.sap{color:var(--sap-p)}.card-title.rot{color:var(--rot-p)}.card-title.blood{color:var(--blood-p)}
+  .card p{font-size:.95rem;color:#908068;line-height:1.76}
+
+  .trait{display:grid;grid-template-columns:3px 1fr;gap:0 14px;margin-bottom:10px}
+  .tier-bar{border-radius:2px}
+  .trait-content{background:rgba(8,6,3,.78);border:1px solid var(--hollow);padding:14px 16px}
+  .trait-name{font-family:'Cinzel',serif;font-size:.74rem;letter-spacing:.1em;font-weight:900;color:var(--bark-p);margin-bottom:5px}
+  .trait-name .sub{font-style:italic;font-weight:400;color:var(--text-dim);font-family:'EB Garamond',serif;font-size:.9rem;letter-spacing:0;text-transform:none}
+  .trait-content p{font-size:.92rem;color:#908068;line-height:1.72}
+  .trait-content p strong{color:var(--bark-p)}
+
+  /* ROOT TABLE */
+  .root-table{width:100%;border-collapse:collapse;font-size:.9rem;border:1px solid var(--hollow);margin:14px 0}
+  .root-table thead tr{background:rgba(8,6,3,.98);border-bottom:2px solid var(--blood-d)}
+  .root-table thead th{font-family:'Cinzel',serif;font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--rot-p);padding:9px 14px;text-align:left}
+  .root-table tbody tr{border-bottom:1px solid rgba(16,12,6,.9);transition:background .12s}
+  .root-table tbody tr:last-child{border-bottom:none}
+  .root-table tbody tr:nth-child(even){background:rgba(255,255,255,.012)}
+  .root-table tbody tr:hover{background:rgba(48,32,12,.08)}
+  .root-table td{padding:9px 14px;vertical-align:top;color:#908068}
+  .root-table .stat{font-family:'Fira Code',monospace;font-size:.88rem;color:var(--rot-l);font-weight:600;white-space:nowrap}
+  .root-table .effect{font-size:.9rem;color:#908068}
+
+  .action{background:linear-gradient(135deg,rgba(12,10,5,.9) 0%,rgba(8,6,3,.95) 100%);border:1px solid var(--hollow);padding:14px 18px;margin-bottom:8px;transition:box-shadow .25s}
+  .action.bark {border-bottom:2px solid var(--bark-d)}.action.bark:hover {box-shadow:0 2px 16px rgba(60,40,16,.15)}
+  .action.sap  {border-bottom:2px solid var(--sap-d)}.action.sap:hover  {box-shadow:0 2px 16px rgba(40,72,16,.14)}
+  .action.rot  {border-bottom:2px solid var(--rot-d)}.action.rot:hover  {box-shadow:0 2px 16px rgba(72,40,16,.14)}
+  .action.blood{border-bottom:2px solid var(--blood-d)}.action.blood:hover{box-shadow:0 2px 16px rgba(80,28,20,.14)}
+  .action-name{font-family:'Cinzel',serif;font-size:.76rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  .action-name.bark {color:var(--bark-p)}.action-name.sap{color:var(--sap-p)}.action-name.rot{color:var(--rot-p)}.action-name.blood{color:var(--blood-p)}
+  .action p{font-size:.92rem;color:#908068;line-height:1.72}
+  .action strong{color:var(--bark-p)}
+
+  .table-wrap{margin:10px 0;border:1px solid var(--hollow);overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  thead tr{background:rgba(8,6,3,.98);border-bottom:2px solid var(--bark-d)}
+  thead th{font-family:'Cinzel',serif;font-size:.64rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--rot-p);padding:9px 14px;text-align:left}
+  tbody tr{border-bottom:1px solid rgba(16,12,6,.9);transition:background .12s}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr:hover{background:rgba(48,32,12,.07)}
+  td{padding:8px 14px;vertical-align:top;color:#908068}
+  td:first-child{font-family:'Cinzel',serif;font-size:.84rem;color:var(--text)}
+
+  .mono{font-family:'Fira Code',monospace;font-size:.78rem}
+  .mono.bark{color:var(--bark-l)}.mono.sap{color:var(--sap-l)}.mono.rot{color:var(--rot-l)}.mono.blood{color:var(--blood-l)}
+
+  .callout{border-left:3px solid;padding:14px 18px;margin:12px 0;font-style:italic;font-size:.92rem;line-height:1.75}
+  .callout strong{font-style:normal;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;display:block;margin-bottom:3px}
+  .callout.bark {background:rgba(22,16,6,.16);border-color:var(--bark); color:#908068}.callout.bark  strong{color:var(--bark-l)}
+  .callout.sap  {background:rgba(12,22,4,.16);border-color:var(--sap);  color:#908068}.callout.sap   strong{color:var(--sap-l)}
+  .callout.rot  {background:rgba(22,12,4,.15);border-color:var(--rot);  color:#908068}.callout.rot   strong{color:var(--rot-l)}
+  .callout.blood{background:rgba(24,8,6,.15); border-color:var(--blood);color:#908068}.callout.blood strong{color:var(--blood-l)}
+
+  mark        {background:rgba(80,64,48,.18);color:var(--bark-p); border-radius:1px;padding:0 2px}
+  mark.sap    {background:rgba(56,88,32,.18);color:var(--sap-p)}
+  mark.rot    {background:rgba(96,64,32,.16);color:var(--rot-p)}
+  mark.blood  {background:rgba(112,48,32,.16);color:var(--blood-p)}
+
+  .sep{height:1px;background:linear-gradient(90deg,transparent,var(--bark-d),var(--blood-d),transparent);margin:18px 0;opacity:.5}
+
+  .san-table{width:100%;border-collapse:collapse;font-size:.88rem;border:1px solid var(--hollow)}
+  .san-table thead tr{background:rgba(8,6,3,.98);border-bottom:2px solid var(--bark-d)}
+  .san-table thead th{font-family:'Cinzel',serif;font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--rot-p);padding:9px 14px;text-align:left}
+  .san-table tbody tr{border-bottom:1px solid rgba(16,12,6,.9);transition:background .12s}
+  .san-table tbody tr:last-child{border-bottom:none}
+  .san-table tbody tr:hover{background:rgba(48,32,12,.07)}
+  .san-table td{padding:8px 14px;vertical-align:top;color:#908068;font-size:.88rem}
+  .san-table .situation{font-style:italic;color:var(--text)}
+  .san-table .pass{color:var(--sap-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem}
+  .san-table .fail{color:var(--blood-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem;font-weight:600}
+  .san-table .cd{color:var(--rot-l);text-align:center;font-family:'Fira Code',monospace;font-size:.8rem}
+
+  footer{text-align:center;padding:40px 20px;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-faint)}
+  footer span{color:var(--bark-d);margin:0 6px}
+  #top-btn{position:fixed;bottom:28px;right:28px;width:42px;height:42px;background:rgba(3,4,3,.97);border:1px solid var(--bark-d);color:var(--bark-l);font-size:1.2rem;line-height:42px;text-align:center;text-decoration:none;transition:border-color .2s,color .2s;z-index:100; opacity:0; pointer-events:none; transition: opacity .25s, border-color .2s, color .2s;}
+  #top-btn:hover{border-color:var(--rot-l);color:var(--rot-p)}
+  #top-btn.visible { opacity: 1; pointer-events: all; }
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--void)}::-webkit-scrollbar-thumb{background:var(--bark-d);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--bark-l)}
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+<nav class="breadcrumb" aria-label="Trilha de navegação">
+  Curse of Strahd &nbsp;/&nbsp; Barovia <span>›</span> <span class="current">Árvore Infectada — Referência do Mestre</span>
+</nav>
+
+<header>
+  <div class="header-pulse"></div>
+  <span class="header-symbol">🌳</span>
+  <p class="header-eyebrow">Curse of Strahd &nbsp;⸸&nbsp; Floresta de Svalich &nbsp;⸸&nbsp; Planta Ambulante</p>
+  <p class="header-classification">⬥ Planta Enorme &nbsp;·&nbsp; Neutro e Mau &nbsp;·&nbsp; ND 7 ⬥</p>
+  <h1 class="header-fraktur">Árvore Infectada</h1>
+  <p class="header-title-sub">Planta Ambulante Carnívora — Aparência Falsa de Árvore Morta</p>
+  <p class="header-tagline">"Parece uma árvore morta de 9 metros. Está saturada de sangue como seiva. Tem prazer em causar carnificina."</p>
+  <div class="header-crests">
+    <span class="crest-badge bark">🌳 Planta Enorme · ND 7</span>
+    <span class="crest-badge rot">🩸 Carnívoro Vicioso</span>
+    <span class="crest-badge sap">🌱 Aparência Falsa</span>
+    <span class="crest-badge blood">⛓ Raiz Constritora</span>
+  </div>
+</header>
+
+<div class="divider"><div class="divider-line"></div><span class="divider-glyph">🌳</span><div class="divider-line"></div></div>
+
+<main>
+
+  <!-- IDENTIDADE -->
+  <section id="identidade">
+    <div class="section-header">
+      <span class="section-icon bark">🌳</span>
+      <h2 class="bark">Identidade &amp; Lore</h2>
+      <div class="section-line bark"></div>
+    </div>
+    <div class="identity">
+      <div class="identity-corner tl">PLANTA ENORME · NEUTRO E MAU</div>
+      <div class="identity-corner tr">NÍVEL DE DESAFIO 7 · 2.700 XP</div>
+      <div class="identity-corner bl">CURSE OF STRAHD · FLORESTA DE SVALICH</div>
+      <div class="identity-corner br">CARNÍVORO VICIOSO</div>
+      <div class="monster-name">Árvore Infectada</div>
+      <div class="monster-epithet">⬥ A Árvore que Não Está Morta — O Predador que Parece Cenário ⬥</div>
+      <div class="monster-type-line">
+        <span class="tag plant">Planta</span>
+        <span class="tag huge">Enorme</span>
+        <span class="tag evil">Neutro e Mau</span>
+        <span class="tag nd7">ND 7</span>
+      </div>
+      <p class="monster-lore">Infectados são plantas ambulantes malignas do <em>Manual dos Monstros</em> — a Árvore Infectada é uma variedade particularmente enorme deles. Parece uma árvore morta de <strong>9 metros de altura</strong>, com carne de madeira esponjosa, ramos espinhosos e raízes emborrachadas que se arrastam atrás dela. Tem sangue como seiva e está tão saturada de sangue que não pega fogo facilmente.</p>
+      <p class="monster-lore">É um carnívoro vicioso que se alimenta de presas de sangue quente e tem prazer perverso em causar carnificina. Ataca com seus ramos pesados e comprime presas até a morte com as raízes. Pode abrir sua boca repleta de dentes e morder uma criatura agarrada pelas raízes. As raízes podem ser cortadas — mas cortá-las não causa dano ao Infectado.</p>
+      <p class="monster-lore" style="border-left-color:var(--rot-d)"><strong>Animosidade do Infectado.</strong> Uma Árvore Infectada muitas vezes lutará paralelamente a outros tipos de infectados, mas odeia outras árvores infectadas e as atacará quando tiver chance. As Árvores Infectadas também odeiam os Entes, e o sentimento é recíproco — usar um Ente como aliado pode criar conflitos inesperados se uma Árvore Infectada estiver presente.</p>
+      <p class="monster-lore" style="border-left-color:var(--bark-d);font-size:11px;opacity:.75">⚙ Tipo: Planta Enorme. Imunidade a Condições: cego, surdo. Percepção às cegas 18 m (cego além desse raio). Percepção passiva 10. Compreende Comum e Druídico mas não fala. Monstro de Cerco: dano dobrado a objetos e estruturas.</p>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section id="stats">
+    <div class="section-header">
+      <span class="section-icon rot">📋</span>
+      <h2 class="rot">Estatísticas Base</h2>
+      <div class="section-line rot"></div>
+    </div>
+    <div class="monster-vitals">
+      <div class="mvital-card bark"><span class="mvital-label">Classe de Armadura</span><span class="mvital-value bark">15</span><span class="mvital-note">Armadura natural</span></div>
+      <div class="mvital-card blood"><span class="mvital-label">Pontos de Vida</span><span class="mvital-value blood">149</span><span class="mvital-note">13d12 + 65</span></div>
+      <div class="mvital-card rot"><span class="mvital-label">Deslocamento</span><span class="mvital-value rot">9 m</span><span class="mvital-note">Terrestre</span></div>
+      <div class="mvital-card sap"><span class="mvital-label">Percepção Às Cegas</span><span class="mvital-value sap">18 m</span><span class="mvital-note">Cego além desse raio</span></div>
+    </div>
+    <div class="two-col-monster">
+      <div class="cr-badge">
+        <div><span class="cr-badge-label">Challenge Rating</span><span class="cr-badge-value">7</span><span class="cr-badge-note">2.700 XP</span></div>
+        <div style="border-left:1px solid rgba(46,32,12,.3);padding-left:20px;">
+          <span class="cr-badge-label">Quatro Ataques/Turno</span>
+          <span class="cr-badge-value" style="font-size:1.4rem;">+9</span>
+          <span class="cr-badge-note">para atingir</span>
+        </div>
+      </div>
+      <div class="card rot" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:center;">
+        <div class="card-title rot">O Cenário que Ataca</div>
+        <p style="font-size:.9rem;">149 PV e CA 15 tornam a Árvore um combate de desgaste. <mark>Aparência Falsa</mark> significa que o grupo pode andar ao lado dela sem perceber — o encontro começa quando ela já está adjacente. Com Raiz Constritora podendo agarrar CD 15, escalar ou recuar não é simples.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ATRIBUTOS -->
+  <div class="two-col-monster" style="align-items:start;gap:14px;margin-bottom:56px;">
+  <section id="atributos" style="margin-bottom:0;">
+    <div class="section-header">
+      <span class="section-icon rot">◆</span>
+      <h2 class="rot">Atributos</h2>
+      <div class="section-line rot"></div>
+    </div>
+    <div class="attr-grid">
+      <div class="attr-box hi"> <div class="attr-name">For</div><span class="attr-value hi">23</span> <span class="attr-mod hi">+6</span></div>
+      <div class="attr-box lo"> <div class="attr-name">Des</div><span class="attr-value lo">10</span> <span class="attr-mod">+0</span></div>
+      <div class="attr-box hi"> <div class="attr-name">Con</div><span class="attr-value hi">20</span> <span class="attr-mod hi">+5</span></div>
+      <div class="attr-box vlo"><div class="attr-name">Int</div><span class="attr-value vlo">6</span>  <span class="attr-mod neg">−2</span></div>
+      <div class="attr-box lo"> <div class="attr-name">Sab</div><span class="attr-value lo">10</span> <span class="attr-mod">+0</span></div>
+      <div class="attr-box vlo"><div class="attr-name">Car</div><span class="attr-value vlo">3</span>  <span class="attr-mod neg">−4</span></div>
+    </div>
+    <div class="callout rot" style="margin-top:4px;">
+      <strong>FOR 23 + CON 20 — Força e Resistência Puras</strong> +6 para atingir base + proficiência +3 = <mark>+9 nos ataques</mark>. CON 20 com dado d12 gera os 149 PV. INT 6 e CAR 3 confirmam: não há inteligência aqui além do instinto predatório. Compreende Comum e Druídico — mas não usa essa compreensão de forma estratégica, apenas percebe.
+    </div>
+  </section>
+  <section id="sentidos" style="margin-bottom:0;">
+    <div class="section-header">
+      <span class="section-icon sap">🎲</span>
+      <h2 class="sap">Sentidos, Imunidades &amp; Idiomas</h2>
+      <div class="section-line sap"></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+        <tbody>
+          <tr><td>Percepção às Cegas</td><td><span class="mono sap">18 m</span> <span style="font-size:.82rem;color:#908068">(cego além desse raio)</span></td></tr>
+          <tr><td>Percepção Passiva</td><td><span class="mono">10</span></td></tr>
+          <tr><td>Imunidade (Condição)</td><td>Cego, Surdo</td></tr>
+          <tr><td>Idiomas</td><td style="font-size:.86rem;color:#908068">Compreende Comum e Druídico — não fala</td></tr>
+          <tr><td>Monstro de Cerco</td><td style="font-size:.86rem;color:var(--rot-l)">Dano dobrado a objetos e estruturas</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout sap" style="margin-top:8px;">
+      <strong>Cego &amp; Surdo — Imunidades Surpreendentes</strong> Feitiços de cegueira ou ensurdecimento são completamente inúteis. <em>Escuridão</em> não afeta a Árvore — ela usa Percepção às Cegas dentro de 18 m independentemente. Invisibilidade também é inútil no raio de 18 m. Fora do raio de 18 m, a Árvore está efetivamente cega.
+    </div>
+  </section>
+  </div>
+
+  <!-- TRAÇOS -->
+  <section id="tracos">
+    <div class="section-header">
+      <span class="section-icon sap">✧</span>
+      <h2 class="sap">Traços Especiais</h2>
+      <div class="section-line sap"></div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--sap-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Aparência Falsa <span class="sub">(Passivo — Camuflagem Perfeita Estática)</span></div>
+        <p>Enquanto a Árvore Infectada permanecer imóvel, ela é <strong>indistinguível de uma árvore morta</strong>. Não há teste para percebê-la — enquanto imóvel, ela <em>é</em> uma árvore morta para todos os efeitos visuais. O grupo só sabe que está viva quando ela se move ou ataca. Isso torna encontros na Floresta de Svalich potencialmente devastadores: qualquer "árvore morta" perto do caminho pode ser uma Árvore Infectada aguardando.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--rot-l);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Monstro de Cerco <span class="sub">(Passivo)</span></div>
+        <p>A Árvore Infectada causa <strong>dano dobrado a objetos e estruturas</strong>. Em Barovia, onde portões de madeira, pontes e construções rurais são comuns, isso significa que uma Árvore Infectada pode demolir uma estrutura residencial em alguns turnos. Útil para o Mestre que quiser usar a criatura para cerco ou destruição ambiental.</p>
+      </div>
+    </div>
+
+    <div class="callout bark">
+      <strong>Emboscada na Floresta de Svalich</strong> O encontro ideal começa com o grupo caminhando por um trecho da floresta com várias "árvores mortas" à beira do caminho. A Percepção passiva do grupo (sem testes ativos) não identifica nada de errado — enquanto a Árvore está imóvel, é uma árvore. A iniciativa é rolada quando ela já está a 1,5 m do primeiro personagem. <mark>Não avise o grupo antes de descrever o ataque.</mark>
+    </div>
+  </section>
+
+  <!-- AÇÕES -->
+  <section id="acoes">
+    <div class="section-header">
+      <span class="section-icon blood">⚔</span>
+      <h2 class="blood">Ações</h2>
+      <div class="section-line blood"></div>
+    </div>
+
+    <div class="action bark">
+      <div class="action-name bark">Ataques Múltiplos</div>
+      <p>A Árvore Infectada realiza <strong>quatro ataques</strong>: dois com seus Galhos e dois com suas Raízes Constritoras. Se houver um alvo agarrado pelas raízes, a Árvore pode também realizar um ataque de Mordida contra esse alvo como <strong>ação bônus</strong>.</p>
+    </div>
+
+    <div class="action blood">
+      <div class="action-name blood">Mordida <span style="font-family:'Fira Code',monospace;font-size:.6rem;color:var(--bark-p);font-weight:400;">(+9 para atingir — Ação Bônus vs. Agarrado)</span></div>
+      <p><em>Ataque Corpo-a-Corpo:</em> <strong>+9 para atingir</strong>, alcance 1,5 m, um alvo. Acerto: <strong>19 (3d8 + 6)</strong> de dano perfurante.</p>
+    </div>
+
+    <div class="action rot">
+      <div class="action-name rot">Galhos (×2) <span style="font-family:'Fira Code',monospace;font-size:.6rem;color:var(--bark-p);font-weight:400;">(+9 para atingir)</span></div>
+      <p><em>Ataque Corpo-a-Corpo:</em> <strong>+9 para atingir</strong>, alcance 4,5 m, um alvo. Acerto: <strong>16 (3d6 + 6)</strong> de dano de concussão.</p>
+    </div>
+
+    <div class="action sap">
+      <div class="action-name sap">Raiz Constritora (×2) <span style="font-family:'Fira Code',monospace;font-size:.6rem;color:var(--bark-p);font-weight:400;">(+9 para atingir — Agarra CD 15)</span></div>
+      <p><em>Ataque Corpo-a-Corpo:</em> <strong>+9 para atingir</strong>, alcance 4,5 m, uma criatura <strong>não agarrada</strong> pelo Infectado. Acerto: o alvo fica <strong>agarrado</strong> (CD 15 para escapar). Até o agarramento terminar, o alvo sofre <strong>9 (1d6 + 6)</strong> de dano de concussão no início de cada turno da Árvore.</p>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- RAÍZES — tabela de corte -->
+    <p style="font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--rot-p);margin-bottom:10px;">Raízes — Podem Ser Cortadas</p>
+    <table class="root-table">
+      <thead>
+        <tr>
+          <th>Condição</th>
+          <th>Efeito</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="stat">Dano ≥ 6 (cortante ou mais)</td>
+          <td class="effect">A raiz é cortada — o agarramento termina. O alvo é liberado.</td>
+        </tr>
+        <tr>
+          <td class="stat">Raiz CA 15</td>
+          <td class="effect">A raiz tem CA 15. Um ataque precisa atingir a raiz especificamente (alvo declarado).</td>
+        </tr>
+        <tr>
+          <td class="stat">Dano à raiz ≠ dano ao Infectado</td>
+          <td class="effect"><strong>Cortar a raiz não causa dano à Árvore Infectada.</strong> É uma escolha tática pura — liberar o aliado vs. danificar a Árvore diretamente.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout blood">
+      <strong>Turno Máximo — Quatro Ataques + Mordida Bônus</strong> Dois Galhos (16 dano cada) + duas Raízes Constritoras (9 dano/turno cada, agarramento) + Mordida Bônus contra agarrado (19 dano). Se o grupo não tiver força para escapar das raízes (CD 15 FOR), dois PCs ficam agarrados recebendo dano automático <em>e</em> Mordida de ação bônus. Dano médio por turno com tudo acertando: <mark>16+16+9+9+19 = 69 de dano distribuído</mark>. Para ND 7, é excepcional.
+    </div>
+  </section>
+
+  <!-- NOTAS DO MESTRE -->
+  <section id="notas">
+    <div class="section-header">
+      <span class="section-icon bark">🧠</span>
+      <h2 class="bark">Como Rodar — Notas do Mestre</h2>
+      <div class="section-line bark"></div>
+    </div>
+    <div class="card sap">
+      <div class="card-title sap">Fogo — A Vulnerabilidade Implícita</div>
+      <p>A Árvore está saturada de sangue como seiva e <em>não pega fogo facilmente</em> — mas isso não a torna imune. Dano de fogo funciona normalmente. Num grupo com acesso a feitiços de fogo, a Árvore Infectada é um encontro mais gerenciável. Sem fogo, os 149 PV são um problema de desgaste real.</p>
+    </div>
+    <div class="card rot">
+      <div class="card-title rot">Animosidade Interna — Recurso Narrativo</div>
+      <p>Se houver múltiplos tipos de Infectados, eles lutam entre si quando tiverem oportunidade. Um Mestre que queira criar caos num encontro com vários Infectados pode deixar a animosidade escalar — os PCs podem aproveitar o conflito interno. Entes como aliados criam complicações adicionais dado o ódio mútuo.</p>
+    </div>
+    <div class="card blood">
+      <div class="card-title blood">Em Valtheris</div>
+      <p>A Árvore Infectada representa o tipo de horror que Valtheris conhece: o que parece inerte e morto mas está completamente vivo em função de outro propósito. O Véu da Carne distorce a linha entre vivo e morto — a Árvore Infectada é a manifestação botânica disso. Uma floresta de Valtheris corrompida pelo Culto da Verdade Profunda poderia, em teoria, produzir variantes ainda mais perturbadoras.</p>
+    </div>
+  </section>
+
+  <!-- SANIDADE -->
+  <section id="sanidade">
+    <div class="section-header">
+      <span class="section-icon rot">🌑</span>
+      <h2 class="rot">Dano de Sanidade — Regra Opcional</h2>
+      <div class="section-line rot"></div>
+    </div>
+    <table class="san-table">
+      <thead><tr><th>Situação</th><th>Sucesso (SAB)</th><th>Falha (SAB)</th><th>CD</th></tr></thead>
+      <tbody>
+        <tr><td class="situation">Uma "árvore morta" ao lado do caminho abre a boca e ataca sem aviso</td><td class="pass">—</td><td class="fail">1d6</td><td class="cd">CD 12</td></tr>
+        <tr><td class="situation">Ver que a madeira "morta" está saturada de sangue que escorre como seiva</td><td class="pass">—</td><td class="fail">1d4</td><td class="cd">CD 11</td></tr>
+        <tr><td class="situation">Um PC fica agarrado pelas raízes e começa a ser esmagado enquanto todos assistem tentando alcançá-lo</td><td class="pass">1d4</td><td class="fail">1d8</td><td class="cd">CD 14</td></tr>
+        <tr><td class="situation">Perceber que há mais "árvores mortas" na floresta ao redor — e não saber quantas estão vivas</td><td class="pass">1d4</td><td class="fail">2d6</td><td class="cd">CD 15</td></tr>
+        <tr><td class="situation">A Árvore Infectada começa a atacar outra Árvore Infectada — e o grupo percebe que nem as criaturas confiam umas nas outras</td><td class="pass">—</td><td class="fail">1d4</td><td class="cd">CD 10</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</main>
+
+<div style="max-width:940px;margin:0 auto;padding:0 20px;">
+  <div class="divider" style="padding:0;margin-bottom:0;"><div class="divider-line"></div><span class="divider-glyph">🌳</span><div class="divider-line"></div></div>
+</div>
+<div class="top-bar" style="margin-top:0;"></div>
+
+<footer>Árvore Infectada <span>⸸</span> Planta Enorme &amp; Carnívora <span>⸸</span> Curse of Strahd</footer>
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+<script>document.getElementById('top-btn').addEventListener('click',function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});window.addEventListener('scroll',function(){document.getElementById('top-btn').classList.toggle('visible',window.scrollY>400);});</script>
+</body>
+</html>

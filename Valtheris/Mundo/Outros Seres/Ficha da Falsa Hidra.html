@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Falsa Hidra — A Que Não Pode Ser Lembrada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:          #05080a;
+    --parchment:    #090d0b;
+    --fog:          #1c2620;
+
+    --ichor:        #7a9a30;
+    --ichor-light:  #a0c840;
+    --ichor-dim:    #3a5010;
+
+    --silence:      #4a7a8a;
+    --silence-light:#70a8ba;
+    --silence-dim:  #1e3c46;
+    --dirge-light:  #b0d4e4;
+
+    --bone:         #c8b88a;
+    --bone-light:   #ddd0a8;
+    --rot:          #5a3a1a;
+
+    --alert:        #8b1a1a;
+    --alert-light:  #c03030;
+
+
+    --flesh-dim:    #8a7c60;
+
+    --text:         #b8c4b0;
+    --text-dim:     #607060;
+    --text-faint:   #2d3a30;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--ink);
+    background-image:
+      radial-gradient(ellipse 140% 60% at 50% -10%, #0a1208 0%, transparent 55%),
+      radial-gradient(ellipse 60%  60% at 95% 100%, #040a06 0%, transparent 50%),
+      radial-gradient(ellipse 50%  70% at 5%  85%,  #080e08 0%, transparent 50%),
+      radial-gradient(ellipse 40%  40% at 50% 60%,  #0a1208 0%, transparent 40%);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 17px; line-height: 1.8;
+    min-height: 100vh; overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 999; opacity: .5;
+  }
+
+  /* ══ HEADER ══ */
+  header {
+    position: relative; text-align: center;
+    padding: 80px 20px 70px; overflow: hidden;
+  }
+  header::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(100,160,80,.06) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 40% at 50% 80%, rgba(60,80,50,.06) 0%, transparent 60%);
+  }
+  header::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--ichor-dim), var(--silence-dim), var(--ichor-dim), transparent);
+    box-shadow: 0 0 30px rgba(120,160,40,.15), 0 0 60px rgba(70,120,140,.1);
+  }
+
+  .header-bg-pulse {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 50% 50%, rgba(74,122,138,.04) 0%, transparent 70%);
+    animation: song-breathe 8s ease-in-out infinite; pointer-events: none;
+  }
+  @keyframes song-breathe {
+    0%,100% { opacity: .4; transform: scale(1); }
+    50%      { opacity: 1;  transform: scale(1.06); }
+  }
+
+  .header-symbol {
+    display: block; font-size: 3rem; margin-bottom: 18px;
+    filter: drop-shadow(0 0 18px rgba(120,170,40,.5)) drop-shadow(0 0 40px rgba(70,120,140,.3));
+    animation: hydra-pulse 6s ease-in-out infinite;
+  }
+  @keyframes hydra-pulse {
+    0%,100% {
+      filter: drop-shadow(0 0 12px rgba(120,170,40,.4)) drop-shadow(0 0 30px rgba(70,120,140,.2));
+      transform: scale(1);
+    }
+    50% {
+      filter: drop-shadow(0 0 28px rgba(120,170,40,.7)) drop-shadow(0 0 60px rgba(70,120,140,.4));
+      transform: scale(1.05);
+    }
+  }
+
+  .header-eyebrow { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .45em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 18px; }
+  .header-classification { font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .25em; text-transform: uppercase; color: var(--silence-light); margin-bottom: 10px; opacity: .8; }
+
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.8rem, 6vw, 3.4rem); font-weight: 900; line-height: 1.1; margin-bottom: 6px;
+    background: linear-gradient(135deg, #d8e8c0 0%, #80c0a0 35%, #a8d890 65%, #c0e8b0 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(120,180,60,.25));
+  }
+  .header-title-sub { font-family: 'Cinzel', serif; font-size: clamp(.85rem, 2.5vw, 1.1rem); letter-spacing: .18em; text-transform: uppercase; color: var(--silence); margin-bottom: 8px; }
+  .header-tagline { font-style: italic; color: #607868; font-size: 1rem; max-width: 520px; margin: 0 auto 32px; }
+
+  /* ══ WARNING BANNER ══ */
+  .warning-banner { max-width: 860px; margin: 0 auto 0; padding: 0 20px; }
+  .warning-banner-inner {
+    background: rgba(20,40,20,.3); border: 1px solid var(--ichor-dim);
+    border-left: 4px solid var(--ichor); padding: 16px 24px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .warning-icon { font-size: 1.4rem; flex-shrink: 0; line-height: 1.6; }
+  .warning-text { font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .08em; color: #90a878; line-height: 1.7; }
+  .warning-text strong { color: var(--ichor-light); letter-spacing: .15em; display: block; margin-bottom: 4px; }
+
+  /* ══ DIVIDER ══ */
+  .divider { display: flex; align-items: center; gap: 14px; max-width: 860px; margin: 0 auto; padding: 40px 20px 48px; }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--ichor-dim), var(--silence-dim), transparent); }
+  .divider-glyph { color: var(--silence-light); font-size: 1rem; opacity: .6; }
+
+  /* ══ LAYOUT ══ */
+  main { max-width: 860px; margin: 0 auto; padding: 0 20px 90px; display: flex; flex-direction: column; gap: 0; }
+  section { margin-bottom: 56px; animation: fade-in .5s ease both; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  section:nth-child(1)  { animation-delay: .05s; }
+  section:nth-child(2)  { animation-delay: .10s; }
+  section:nth-child(3)  { animation-delay: .15s; }
+  section:nth-child(4)  { animation-delay: .20s; }
+  section:nth-child(5)  { animation-delay: .25s; }
+  section:nth-child(6)  { animation-delay: .30s; }
+  section:nth-child(7)  { animation-delay: .35s; }
+  section:nth-child(8)  { animation-delay: .40s; }
+  section:nth-child(9)  { animation-delay: .45s; }
+  section:nth-child(10) { animation-delay: .50s; }
+
+  /* ══ SECTION HEADER ══ */
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .section-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .section-icon.ichor   { filter: drop-shadow(0 0 8px rgba(120,160,40,.5)); }
+  .section-icon.silence { filter: drop-shadow(0 0 8px rgba(70,120,140,.5)); }
+  .section-icon.bone    { filter: drop-shadow(0 0 8px rgba(200,180,130,.4)); }
+  .section-icon.alert   { filter: drop-shadow(0 0 8px rgba(160,40,40,.5)); }
+
+  h2 { font-family: 'Cinzel', serif; font-size: .9rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+  h2.ichor   { color: #90b858; text-shadow: 0 0 20px rgba(100,140,30,.3); }
+  h2.silence { color: #70a8ba; text-shadow: 0 0 20px rgba(60,110,130,.25); }
+  h2.bone    { color: #c8b07a; text-shadow: 0 0 18px rgba(180,150,80,.2); }
+  h2.alert   { color: #b87878; text-shadow: 0 0 18px rgba(160,40,40,.25); }
+  h2.flesh   { color: #c4b898; text-shadow: 0 0 18px rgba(180,160,100,.2); }
+
+  .section-line { flex: 1; height: 1px; }
+  .section-line.ichor   { background: linear-gradient(90deg, var(--ichor-dim), rgba(70,120,140,.3), transparent); }
+  .section-line.silence { background: linear-gradient(90deg, rgba(50,100,120,.6), rgba(100,150,40,.2), transparent); }
+  .section-line.bone    { background: linear-gradient(90deg, rgba(120,100,50,.5), rgba(80,120,50,.2), transparent); }
+  .section-line.alert   { background: linear-gradient(90deg, var(--alert), rgba(80,60,40,.3), transparent); }
+  .section-line.flesh   { background: linear-gradient(90deg, rgba(120,100,60,.4), rgba(70,110,60,.2), transparent); }
+
+  p { margin-bottom: 10px; } p:last-child { margin-bottom: 0; }
+
+  /* ══ IDENTITY ══ */
+  .identity {
+    position: relative;
+    background: linear-gradient(145deg, rgba(14,20,14,.98) 0%, rgba(6,10,6,.99) 100%);
+    border: 1px solid rgba(60,90,40,.4);
+    border-top: 3px solid var(--ichor-dim);
+    border-bottom: 3px solid var(--silence-dim);
+    padding: 30px 32px; margin-bottom: 14px; overflow: hidden;
+  }
+  .identity.madura {
+    border-top-color: var(--alert);
+    border-bottom-color: var(--ichor-dim);
+  }
+  .identity::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(60,100,30,.05) 0%, transparent 50%),
+      radial-gradient(circle at 100% 100%, rgba(50,100,120,.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .identity-corner { position: absolute; font-family: 'Fira Code', monospace; font-size: .6rem; letter-spacing: .15em; color: var(--text-faint); opacity: .6; }
+  .identity-corner.tl { top: 10px; left: 14px; }
+  .identity-corner.tr { top: 10px; right: 14px; }
+  .identity-corner.bl { bottom: 10px; left: 14px; }
+  .identity-corner.br { bottom: 10px; right: 14px; }
+
+  .monster-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 3.5vw, 2.1rem); font-weight: 900;
+    background: linear-gradient(135deg, #d0e8b0 0%, #80b890 50%, #a8d878 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 2px;
+  }
+  .monster-name.madura {
+    background: linear-gradient(135deg, #e0d0a0 0%, #b08040 50%, #d0c080 100%);
+    -webkit-background-clip: text; background-clip: text;
+  }
+  .monster-epithet { font-family: 'Cinzel', serif; font-size: .82rem; letter-spacing: .2em; text-transform: uppercase; color: var(--silence-light); opacity: .85; margin-bottom: 14px; }
+  .monster-type-line { margin-bottom: 16px; }
+  .monster-lore { font-style: italic; color: #7a9080; font-size: .97rem; border-left: 2px solid var(--ichor-dim); padding-left: 16px; margin-top: 14px; line-height: 1.75; }
+  .monster-lore + .monster-lore { border-left-color: var(--silence-dim); margin-top: 10px; }
+
+  /* ══ TAGS ══ */
+  .tag { display: inline-block; font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .18em; text-transform: uppercase; padding: 2px 8px; border-radius: 1px; margin-right: 5px; margin-bottom: 5px; vertical-align: middle; }
+  .tag.dnd      { border: 1px solid #3a5020; color: #80a840; }
+  .tag.coc      { border: 1px solid #20404a; color: #508090; }
+  .tag.aberrant { border: 1px solid #3a4a28; color: #708850; }
+  .tag.horror   { border: 1px solid #5a2a2a; color: #a06060; }
+  .tag.hb       { border: 1px solid #2a5a3a; color: #50a070; }
+  .tag.lore     { border: 1px solid #4a5030; color: #909858; }
+  .tag.mythic   { border: 1px solid rgba(100,80,20,.6); color: #c0a848; }
+
+  /* ══ MONSTER VITALS ══ */
+  .monster-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  @media (max-width: 600px) { .monster-vitals { grid-template-columns: 1fr 1fr; } }
+  .mvital-card { background: rgba(8,12,8,.85); border: 1px solid rgba(40,70,30,.3); border-radius: 3px; padding: 16px 14px; position: relative; overflow: hidden; text-align: center; }
+  .mvital-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+  .mvital-card.ichor::after   { background: linear-gradient(90deg, transparent, var(--ichor-light), transparent); }
+  .mvital-card.silence::after { background: linear-gradient(90deg, transparent, var(--silence-light), transparent); }
+  .mvital-card.bone::after    { background: linear-gradient(90deg, transparent, var(--bone-light), transparent); }
+  .mvital-card.alert::after   { background: linear-gradient(90deg, transparent, var(--alert-light), transparent); }
+  .mvital-label { font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+  .mvital-value { font-family: 'Cinzel Decorative', serif; font-size: 2rem; line-height: 1; display: block; }
+  .mvital-value.ichor   { color: var(--ichor-light);   text-shadow: 0 0 20px rgba(100,150,30,.4); }
+  .mvital-value.silence { color: var(--silence-light); text-shadow: 0 0 20px rgba(60,110,130,.4); }
+  .mvital-value.bone    { color: var(--bone-light);    text-shadow: 0 0 16px rgba(180,150,80,.3); }
+  .mvital-value.alert   { color: var(--alert-light);   text-shadow: 0 0 16px rgba(160,40,40,.4); }
+  .mvital-note { font-size: .75rem; color: var(--text-dim); font-style: italic; margin-top: 6px; display: block; line-height: 1.4; }
+  .mvital-pips { display: flex; gap: 6px; justify-content: center; margin: 8px 0 4px; }
+  .mvital-pip { width: 18px; height: 18px; border: 2px solid var(--bone); border-radius: 50%; background: rgba(120,100,40,.2); box-shadow: 0 0 8px rgba(140,110,50,.3); animation: pip-pulse 3s ease-in-out infinite; }
+  .mvital-pip:nth-child(2) { animation-delay: .6s; }
+  .mvital-pip:nth-child(3) { animation-delay: 1.2s; }
+  @keyframes pip-pulse {
+    0%,100% { background: rgba(120,100,40,.2); box-shadow: 0 0 8px rgba(140,110,50,.3); }
+    50%      { background: rgba(120,100,40,.4); box-shadow: 0 0 16px rgba(140,110,50,.6); }
+  }
+
+  /* ══ TWO-COL MONSTER ══ */
+  .two-col-monster { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 600px) { .two-col-monster { grid-template-columns: 1fr; } }
+
+  /* ══ CR BADGE ══ */
+  .cr-badge {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, rgba(40,70,20,.14), rgba(30,70,90,.1));
+    border: 1px solid rgba(100,150,40,.4);
+    border-top: 2px solid var(--ichor-light);
+    border-bottom: 2px solid var(--silence-dim);
+    padding: 14px 24px; text-align: center;
+  }
+  .cr-badge-label { font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .28em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+  .cr-badge-value {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.2rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--ichor-light), var(--silence-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1;
+  }
+  .cr-badge-note { font-family: 'Fira Code', monospace; font-size: .6rem; color: var(--text-dim); margin-top: 4px; letter-spacing: .06em; }
+
+  /* ══ LEGENDARY RESISTANCE BAR ══ */
+  .leg-res-bar { display: flex; gap: 10px; align-items: center; padding: 14px 20px; background: rgba(6,10,6,.85); border: 1px solid var(--fog); border-left: 3px solid var(--bone); margin-bottom: 12px; }
+  .leg-res-label { font-family: 'Cinzel', serif; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--bone-light); flex-shrink: 0; }
+  .leg-res-pips { display: flex; gap: 8px; }
+  .pip { width: 22px; height: 22px; border: 2px solid var(--bone); border-radius: 50%; background: rgba(120,100,40,.2); box-shadow: 0 0 8px rgba(140,110,50,.3); animation: pip-pulse 3s ease-in-out infinite; }
+  .pip:nth-child(2) { animation-delay: .6s; }
+  .pip:nth-child(3) { animation-delay: 1.2s; }
+  .leg-res-note { font-size: .84rem; color: var(--text-dim); font-style: italic; }
+
+  /* ══ ATTR GRID ══ */
+  .attr-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 14px; }
+  @media (max-width: 560px) { .attr-grid { grid-template-columns: repeat(3, 1fr); } }
+  .attr-box { background: rgba(6,10,6,.9); border: 1px solid var(--fog); padding: 16px 10px; text-align: center; position: relative; overflow: hidden; transition: transform .2s; }
+  .attr-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .attr-box.max::before  { background: linear-gradient(90deg, transparent, var(--ichor-light), transparent); }
+  .attr-box.high::before { background: linear-gradient(90deg, transparent, var(--silence-light), transparent); }
+  .attr-box.low::before  { background: linear-gradient(90deg, transparent, var(--alert-light), transparent); }
+  .attr-box:hover { transform: translateY(-2px); }
+  .attr-name { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .attr-value { font-family: 'Fira Code', monospace; font-size: 1.15rem; font-weight: 500; color: var(--text); display: block; line-height: 1; }
+  .attr-value.max  { color: var(--ichor-light); }
+  .attr-value.high { color: var(--silence-light); }
+  .attr-value.low  { color: #b06060; }
+  .attr-mod { font-family: 'Fira Code', monospace; font-size: .8rem; color: var(--bone); display: block; margin-top: 4px; }
+  .attr-mod.max  { color: var(--ichor-light); }
+  .attr-mod.high { color: var(--silence-light); }
+  .attr-mod.neg  { color: #b06060; }
+
+  /* ══ TABLE WRAP ══ */
+  .table-wrap { margin: 12px 0; border: 1px solid var(--fog); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  thead tr { background: rgba(8,14,8,.97); border-bottom: 2px solid var(--ichor-dim); }
+  thead th { font-family: 'Cinzel', serif; font-size: .64rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--bone-light); padding: 9px 14px; text-align: left; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid rgba(28,38,30,.9); transition: background .12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:nth-child(even) { background: rgba(255,255,255,.012); }
+  tbody tr:hover { background: rgba(60,90,30,.07); }
+  tbody tr.current { background: rgba(60,90,30,.12); }
+  tbody tr.current td { color: #a8c090; }
+  tbody tr.thresh td  { color: #c0a030; }
+  td { padding: 8px 14px; vertical-align: top; color: #90a080; }
+  td:first-child { font-family: 'Cinzel', serif; font-size: .84rem; color: var(--text); white-space: nowrap; }
+  .mono { font-family: 'Fira Code', monospace; font-size: .78rem; color: var(--bone-light); }
+  .mono.ichor   { color: var(--ichor-light); }
+  .mono.silence { color: var(--silence-light); }
+  .mono.alert   { color: var(--alert-light); }
+  td.consumed { color: var(--flesh-dim); }
+  td.heads    { color: var(--ichor-light); font-family: 'Fira Code', monospace; font-weight: 500; }
+  td.size     { color: var(--silence-light); }
+
+  /* ══ CARDS ══ */
+  .card { background: linear-gradient(135deg, rgba(14,20,12,.92) 0%, rgba(8,12,8,.96) 100%); border: 1px solid var(--fog); padding: 20px 24px; margin-bottom: 12px; position: relative; transition: box-shadow .3s; }
+  .card.ichor   { border-left: 3px solid var(--ichor-dim); }
+  .card.ichor:hover   { box-shadow: -4px 0 20px rgba(100,140,30,.2), 0 4px 20px rgba(0,0,0,.6); }
+  .card.silence { border-left: 3px solid var(--silence-dim); }
+  .card.silence:hover { box-shadow: -4px 0 20px rgba(60,110,130,.2), 0 4px 20px rgba(0,0,0,.6); }
+  .card.bone    { border-left: 3px solid var(--rot); }
+  .card.bone:hover    { box-shadow: -4px 0 20px rgba(100,70,20,.2), 0 4px 20px rgba(0,0,0,.6); }
+  .card.alert   { border-left: 3px solid var(--alert); }
+  .card.alert:hover   { box-shadow: -4px 0 20px rgba(160,40,40,.2), 0 4px 20px rgba(0,0,0,.6); }
+  .card.flesh   { border-left: 3px solid rgba(140,110,60,.4); }
+  .card.flesh:hover   { box-shadow: -4px 0 18px rgba(120,100,50,.18), 0 4px 20px rgba(0,0,0,.6); }
+  .card.mythic  { border-left: 3px solid #5a4a10; }
+  .card.mythic:hover  { box-shadow: -4px 0 18px rgba(100,80,20,.2), 0 4px 20px rgba(0,0,0,.6); }
+  .card-title { font-family: 'Cinzel', serif; font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 10px; }
+  .card-title.ichor   { color: var(--ichor-light); }
+  .card-title.silence { color: var(--silence-light); }
+  .card-title.bone    { color: var(--bone-light); }
+  .card-title.alert   { color: var(--alert-light); }
+  .card-title.flesh   { color: #c0a870; }
+  .card-title.mythic  { color: #c0a030; }
+
+  /* ══ TRAITS ══ */
+  .trait { display: grid; grid-template-columns: 3px 1fr; gap: 0 14px; margin-bottom: 10px; }
+  .trait-bar { border-radius: 2px; }
+  .trait-content { background: rgba(10,14,8,.75); border: 1px solid var(--fog); padding: 14px 16px; }
+  .trait-name { font-family: 'Cinzel', serif; font-size: .74rem; letter-spacing: .1em; font-weight: 900; color: #b0c898; margin-bottom: 5px; }
+  .trait-name .sub { font-style: italic; font-weight: 400; color: var(--text-dim); font-family: 'EB Garamond', serif; font-size: .9rem; letter-spacing: 0; text-transform: none; }
+  .trait-content p { font-size: .92rem; color: #a0b090; }
+  .trait-content strong { color: #b0c890; }
+
+  /* ══ ACTIONS ══ */
+  .action { background: rgba(8,12,8,.88); border: 1px solid var(--fog); padding: 16px 20px; margin-bottom: 8px; transition: border-bottom-color .2s; }
+  .action.ichor     { border-bottom: 2px solid var(--ichor-dim); }
+  .action.ichor:hover     { border-bottom-color: var(--ichor-light); }
+  .action.silence   { border-bottom: 2px solid var(--silence-dim); }
+  .action.silence:hover   { border-bottom-color: var(--silence-light); }
+  .action.bone      { border-bottom: 2px solid var(--rot); }
+  .action.bone:hover      { border-bottom-color: var(--bone-light); }
+  .action.legendary { border-bottom: 2px solid #4a5a20; }
+  .action.legendary:hover { border-bottom-color: var(--ichor-light); }
+  .action.mythic    { border-bottom: 2px solid #5a4a10; }
+  .action.mythic:hover    { border-bottom-color: #c0a030; }
+  .action-name { font-family: 'Cinzel', serif; font-size: .76rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+  .action-name.ichor   { color: #90c060; }
+  .action-name.silence { color: var(--silence-light); }
+  .action-name.bone    { color: #c0a870; }
+  .action-name.legend  { color: var(--ichor-light); }
+  .action-name.mythic  { color: #c0a030; }
+  .action p { font-size: .92rem; color: #909888; }
+  .action p strong { color: #b0c898; font-weight: 600; }
+  .recharge { font-family: 'Fira Code', monospace; font-size: .62rem; border: 1px solid var(--ichor-dim); color: var(--ichor-light); padding: 1px 7px; margin-left: 8px; vertical-align: middle; }
+  .cost-badge { font-family: 'Fira Code', monospace; font-size: .6rem; padding: 1px 7px; margin-left: 6px; border: 1px solid var(--bone); color: var(--bone-light); vertical-align: middle; }
+  .tag-a { font-family: 'Fira Code', monospace; font-size: .6rem; padding: 1px 7px; margin-left: 6px; border-radius: 1px; vertical-align: middle; }
+  .tag-a.silence { border: 1px solid var(--silence-dim); color: var(--silence-light); }
+  .tag-a.mythic  { border: 1px solid #4a3a08; color: #c0a030; }
+
+  /* ══ CALLOUTS ══ */
+  .callout { border-left: 3px solid; padding: 14px 18px; margin: 12px 0; font-style: italic; font-size: .92rem; line-height: 1.75; }
+  .callout strong { font-style: normal; font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .1em; display: block; margin-bottom: 3px; }
+  .callout.tip    { border-color: var(--ichor); background: rgba(50,70,30,.15); color: #909880; }
+  .callout.tip strong    { color: var(--ichor-light); }
+  .callout.danger { border-color: var(--alert); background: rgba(80,20,20,.18); color: #9a8080; }
+  .callout.danger strong { color: var(--alert-light); }
+  .callout.silence{ border-color: var(--silence); background: rgba(20,50,60,.15); color: #7a9898; }
+  .callout.silence strong{ color: var(--dirge-light); }
+  .callout.bone   { border-color: var(--rot); background: rgba(60,30,10,.12); color: #9a9070; }
+  .callout.bone strong   { color: var(--bone-light); }
+  .callout.mythic { border-color: #6a5a10; background: rgba(70,60,10,.15); color: #b0a060; }
+  .callout.mythic strong { color: #c0a030; }
+
+  /* ══ SEP ══ */
+  .sep { height: 1px; background: linear-gradient(90deg, transparent, var(--ichor-dim), var(--silence-dim), transparent); margin: 20px 0; opacity: .6; }
+
+  /* ══ FORM DIVIDER ══ */
+  .form-divider { display: flex; align-items: center; gap: 14px; margin: 30px 0 24px; }
+  .form-divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--ichor-dim), transparent); }
+  .form-divider-label { font-family: 'Cinzel', serif; font-size: .62rem; letter-spacing: .3em; text-transform: uppercase; color: var(--ichor); padding: 4px 16px; border: 1px solid var(--ichor-dim); background: rgba(8,12,8,.95); }
+  .form-divider-label.alert { color: var(--alert-light); border-color: var(--alert); }
+
+  /* ══ PROF GRID ══ */
+  .prof-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 6px; }
+  .prof-item { background: rgba(8,12,8,.8); border: 1px solid var(--fog); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; }
+  .prof-name { font-family: 'Cinzel', serif; font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+  .prof-val  { font-family: 'Fira Code', monospace; font-size: .88rem; color: var(--ichor-light); }
+
+  /* ══ HIGHLIGHTS ══ */
+  .hl         { color: var(--ichor-light); font-weight: 600; }
+  .hl-silence { color: var(--silence-light); font-weight: 600; }
+  .hl-bone    { color: var(--bone-light); font-weight: 600; }
+  .hl-alert   { color: var(--alert-light); font-weight: 600; }
+  mark        { background: rgba(80,130,20,.15); color: var(--ichor-light); padding: .1em .3em; border-radius: 2px; }
+  mark.s      { background: rgba(50,100,120,.15); color: var(--silence-light); }
+  mark.a      { background: rgba(120,30,20,.15); color: var(--alert-light); }
+  mark.b      { background: rgba(120,100,40,.12); color: var(--bone-light); }
+
+  /* ══ SONG LINES ══ */
+  .song-lines { position: relative; overflow: hidden; height: 3px; margin: 20px 0; }
+  .song-lines::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent 0%, var(--silence-dim) 20%, var(--ichor-dim) 50%, var(--silence-dim) 80%, transparent 100%);
+    animation: song-travel 4s linear infinite;
+  }
+  @keyframes song-travel {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(100%); }
+  }
+
+  /* ══ REDACTED ══ */
+  .redacted {
+    background: rgba(14,20,12,.95); color: transparent;
+    user-select: none; display: inline; position: relative; cursor: default;
+  }
+  .redacted::before {
+    content: '██████████████';
+    color: #2d3a28;
+    font-family: 'Fira Code', monospace; font-size: .8em;
+  }
+
+  /* ══ FOOTER ══ */
+  footer { text-align: center; padding: 40px 20px 60px; font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .28em; text-transform: uppercase; color: var(--text-faint); }
+  footer span { color: var(--ichor-dim); margin: 0 6px; }
+
+  /* ══ SCROLLBAR ══ */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--ink); }
+  ::-webkit-scrollbar-thumb { background: var(--ichor-dim); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--ichor-light); }
+
+  /* ══ TOP BTN ══ */
+  #top-btn {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    width: 36px; height: 36px; background: var(--parchment); border: 1px solid var(--fog);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-dim); font-size: .9rem; text-decoration: none;
+    transition: all .2s; z-index: 100;
+  }
+  #top-btn:hover { border-color: var(--ichor-dim); color: var(--ichor-light); }
+
+/* ── ACESSIBILIDADE: MOVIMENTO REDUZIDO ─────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-bg-pulse"></div>
+  <span class="header-symbol">🐍</span>
+  <p class="header-eyebrow">Além do Véu da Carne &nbsp;⸸&nbsp; Bestiário do Esquecimento</p>
+  <p class="header-classification">⬥ Abominação Psíquica &nbsp;·&nbsp; Predadora de Memória &nbsp;·&nbsp; Canção do Fim ⬥</p>
+  <h1>Falsa Hidra</h1>
+  <p class="header-title-sub">"A Que Não Pode Ser Lembrada"</p>
+  <p class="header-tagline">Ela não está invisível. Você apenas não consegue vê-la.</p>
+</header>
+
+<div class="warning-banner">
+  <div class="warning-banner-inner">
+    <span class="warning-icon">🎵</span>
+    <div class="warning-text">
+      <strong>Aviso ao GM — Leia Antes de Usar</strong>
+      Esta criatura não é um combate — é um <em>evento</em>. Seus jogadores não saberão que ela existe até que seja tarde demais. Os NPCs também não. Construa o horror antes do encontro, camada por camada, durante sessões. A canção já começou antes de qualquer personagem pisarem na vila.
+    </div>
+  </div>
+</div>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <span class="divider-glyph">🎵</span>
+  <div class="divider-line"></div>
+</div>
+
+<!-- PORTRAIT -->
+<div style="max-width:860px;margin:0 auto 0;padding:0 20px;">
+  <div style="position:relative;width:100%;overflow:hidden;border-radius:4px;border:1px solid rgba(180,185,190,.25);box-shadow:0 0 50px rgba(100,140,60,.12), 0 0 100px rgba(0,0,0,.9);">
+    <img src="Perfil - Falsa Hidra.png"
+         alt="Falsa Hidra"
+         style="width:100%;height:340px;object-fit:cover;object-position:center 10%;display:block;filter:grayscale(20%) contrast(110%);">
+    <div style="position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to top,rgba(8,12,8,1) 0%,rgba(8,12,8,.7) 40%,transparent 100%);"></div>
+    <div style="position:absolute;top:0;left:0;right:0;height:60px;background:linear-gradient(to bottom,rgba(8,12,8,.8),transparent);"></div>
+    <div style="position:absolute;bottom:18px;left:0;right:0;text-align:center;">
+      <span style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.4em;text-transform:uppercase;color:rgba(180,200,160,.6);text-shadow:0 0 8px rgba(120,180,60,.2);">
+        Falsa Hidra · "A que não pode ser lembrada" · Aberração
+      </span>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══════════════════════════════
+       IDENTIDADE & LORE
+  ══════════════════════════════ -->
+  <section id="identidade">
+    <div class="section-header">
+      <span class="section-icon ichor">🦴</span>
+      <h2 class="ichor">Identidade &amp; Lore</h2>
+      <div class="section-line ichor"></div>
+    </div>
+
+    <div class="identity">
+      <span class="identity-corner tl">ABERRAÇÃO · NEUTRO MALIGNO</span>
+      <span class="identity-corner tr">NÍVEL DE DESAFIO 16 · 13.000 XP</span>
+      <span class="identity-corner bl">HOMEBREW</span>
+      <span class="identity-corner br">FICHA · BESTIARIO</span>
+
+      <div class="monster-name">Falsa Hidra</div>
+      <div class="monster-epithet">⬥ A Canção que Apaga — O Vazio com Bocas ⬥</div>
+
+      <div class="monster-type-line">
+        <span class="tag dnd">D&D 5e</span>
+        <span class="tag aberrant">Aberração</span>
+        <span class="tag horror">Horror Psíquico</span>
+        <span class="tag hb">Homebrewery</span>
+        <span class="tag lore">Lore Expandido</span>
+      </div>
+
+      <p>Falsas hidras são criaturas insidiosas que se enraízam em comunidades como resultado de mentiras desenfreadas. Começam como pequenas massas de carne branca, mas crescem rapidamente a proporções colossais enquanto se alimentam de vítimas humanoides.</p>
+
+      <p class="monster-lore">Nenhum estudioso sabe ao certo o que é, de onde vem, ou como nasce. O que se sabe é que, quando sua presença se torna aparente, já é tarde demais.</p>
+      <p class="monster-lore">A canção ressoa fundo na noite. Quem a ouve não percebe que a ouviu. Quem a vê não percebe que a viu. E quem foi devorado — bem. Alguém vai inventar uma explicação.</p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       NATUREZA & CICLO DE VIDA
+  ══════════════════════════════ -->
+  <section id="lore">
+    <div class="section-header">
+      <span class="section-icon silence">📖</span>
+      <h2 class="silence">Natureza &amp; Ciclo de Vida</h2>
+      <div class="section-line silence"></div>
+    </div>
+
+    <div class="card silence">
+      <div class="card-title silence">Origem Misteriosa</div>
+      <p>A falsa hidra começa sua vida como um nódulo de carne branca, crescendo e apodrecendo sob a terra de vilas e cidades. Seu surgimento é catalisado por um excesso de mentiras e meias-verdades contadas pelos membros de uma comunidade — especialmente em reinos onde a propaganda se tornou descontrolada.</p>
+      <p style="margin-top:8px;">Eventualmente, a massa cresce ao tamanho de uma criança pequena e brota uma única cabeça num pescoço preênsil. É quando o ciclo verdadeiro começa: ela escava até a superfície e entoa uma <span class="hl-silence">cantiga gutural e profunda</span> que se ouve fracamente por quilômetros — e que apaga a si mesma da mente de todos que a escutam.</p>
+    </div>
+
+    <div class="card ichor">
+      <div class="card-title ichor">Confabulação</div>
+      <p>À medida que a hidra se alimenta, os habitantes notam que algo está errado — mas a canção os força a criar novas memórias para tornar sua nova realidade lógica. <em>"O padeiro não desapareceu; ele foi servir no exército do rei."</em> Conforme mais pessoas somem, as justificativas se tornam cada vez mais forçadas e absurdas.</p>
+      <p style="margin-top:8px;">Para um observador externo, a cidade parecerá <span class="hl">obviamente perturbada</span>. Para seus habitantes, o peso crescente da dissonância cognitiva os leva inexoravelmente à loucura.</p>
+    </div>
+
+    <div class="card bone">
+      <div class="card-title bone">Crescimento Horrendo</div>
+      <p>Ao atingir a maturidade — sete cabeças — a falsa hidra emerge completamente do solo. Abandona qualquer pretexto e começa a entoar uma <span class="hl-bone">cantiga diferente</span>: uma que domina e escraviza a maioria dos que a ouvem. Aqueles que resistem são caçados e devorados pelos próprios thralls.</p>
+      <p style="margin-top:8px;">A hidra madura se arrasta de cidade em cidade carregada nos ombros de seus servos, deixando um rastro de sangue e vazio. Eventualmente, servos envolvem correntes e cordas em seu corpo e a arrastam enquanto ela cresce grande demais para ser carregada.</p>
+    </div>
+
+    <div class="card alert">
+      <div class="card-title alert">Fim Entrópico</div>
+      <p>Uma falsa hidra sempre inexoravelmente se come até a morte. A única questão é se isso leva dias, semanas, meses ou anos. A melhor defesa não é o combate direto — é <span class="hl-alert">remover sua fonte de alimento</span> e isolá-la. A proteção definitiva, porém, é a prevenção: menos mentiras, menos terreno fértil para seu nascimento.</p>
+    </div>
+
+    <div class="callout silence">
+      <strong>Nota do Mestre</strong> Antes de revelar a hidra visualmente, construa sinais sutis: moradores respondendo a perguntas sobre pessoas desaparecidas com justificativas ensaiadas demais. Um quarto com roupas de alguém que "simplesmente foi embora". Uma criança desenhando algo com muitas bocas. Perguntas sobre a família do ferreiro que ninguém mais responde com consistência.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       TABELA DE CRESCIMENTO
+  ══════════════════════════════ -->
+  <section id="crescimento">
+    <div class="section-header">
+      <span class="section-icon ichor">📊</span>
+      <h2 class="ichor">Tabela de Crescimento</h2>
+      <div class="section-line ichor"></div>
+    </div>
+
+    <div class="card ichor" style="padding-bottom:0;">
+      <div class="card-title ichor">Humanoides Consumidos → Cabeças Crescidas</div>
+      <p style="margin-bottom:14px;font-size:.9rem;color:#8a9878;">A cada nova cabeça, o máximo de PV aumenta em 30. Ao atingir 7 cabeças, a hidra transforma-se na forma Madura após um descanso longo. A linha destacada indica o estado inicial da ficha jovem.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Criaturas Consumidas</th>
+            <th>Nº de Cabeças</th>
+            <th>Tamanho</th>
+            <th>PV Máximos</th>
+            <th>Ameaça</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="current">
+            <td class="consumed">0 criaturas</td>
+            <td class="heads">1 cabeça</td>
+            <td class="size">Pequena</td>
+            <td><span class="mono">32</span></td>
+            <td><span class="mono ichor">CR 8</span></td>
+          </tr>
+          <tr>
+            <td class="consumed">3 criaturas</td>
+            <td class="heads">2 cabeças</td>
+            <td class="size">Média</td>
+            <td><span class="mono">62</span></td>
+            <td><span class="mono ichor">CR 8</span></td>
+          </tr>
+          <tr>
+            <td class="consumed">8 criaturas</td>
+            <td class="heads">3 cabeças</td>
+            <td class="size">Média</td>
+            <td><span class="mono">92</span></td>
+            <td><span class="mono ichor">CR 8</span></td>
+          </tr>
+          <tr>
+            <td class="consumed">18 criaturas</td>
+            <td class="heads">4 cabeças</td>
+            <td class="size">Grande</td>
+            <td><span class="mono">122</span></td>
+            <td><span class="mono silence">CR 10</span></td>
+          </tr>
+          <tr>
+            <td class="consumed">35 criaturas</td>
+            <td class="heads">5 cabeças</td>
+            <td class="size">Grande</td>
+            <td><span class="mono">152</span></td>
+            <td><span class="mono silence">CR 12</span></td>
+          </tr>
+          <tr>
+            <td class="consumed">70 criaturas</td>
+            <td class="heads">6 cabeças</td>
+            <td class="size">Enorme</td>
+            <td><span class="mono">182</span></td>
+            <td><span class="mono silence">CR 14</span></td>
+          </tr>
+          <tr class="thresh">
+            <td style="color:var(--alert-light);">120 criaturas</td>
+            <td style="color:#c0a030;font-family:'Fira Code',monospace;">7 cabeças ⚠</td>
+            <td style="color:#c0a030;">Enorme → Maturidade</td>
+            <td><span class="mono" style="color:#c0a030;">212+</span></td>
+            <td><span class="mono alert">CR 16</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       ESTATÍSTICAS — FORMA JOVEM
+  ══════════════════════════════ -->
+  <section id="stats-jovem">
+    <div class="section-header">
+      <span class="section-icon ichor">⚔</span>
+      <h2 class="ichor">Estatísticas — Falsa Hidra (Forma Jovem)</h2>
+      <div class="section-line ichor"></div>
+    </div>
+
+    <div class="identity">
+      <span class="identity-corner tl">ABERRAÇÃO PEQUENA · NEUTRO MALIGNO</span>
+	  <span class="identity-corner tr">DESAFIO 8 · 3.900 XP</span>
+	  <span class="identity-corner bl">HOMEBREW</span>
+      <span class="identity-corner br">1 CABEÇA (INICIAL)</span>
+      <div class="monster-name">Falsa Hidra — Forma Jovem</div>
+      <div class="monster-epithet">Aberração Pequena · Neutro Maligno · 1–6 Cabeças</div>
+    </div>
+
+    <div class="monster-vitals">
+      <div class="mvital-card alert">
+        <span class="mvital-label">Pontos de Vida</span>
+        <span class="mvital-value alert">32</span>
+        <span class="mvital-note">5d6 + 15 · +30 PV por cabeça</span>
+      </div>
+      <div class="mvital-card silence">
+        <span class="mvital-label">Classe de Armadura</span>
+        <span class="mvital-value silence">16</span>
+        <span class="mvital-note">Armadura Natural</span>
+      </div>
+      <div class="mvital-card ichor">
+        <span class="mvital-label">Velocidade</span>
+        <span class="mvital-value ichor">25ft</span>
+        <span class="mvital-note">Escavar 25ft</span>
+      </div>
+
+    </div>
+
+    <!-- two-col: CR badge + contexto -->
+    <div class="two-col-monster">
+      <div class="cr-badge" style="flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;padding:16px 24px;">
+        <div>
+          <span class="cr-badge-label">Challenge Rating</span>
+          <span class="cr-badge-value">8</span>
+          <span class="cr-badge-note">3.900 XP</span>
+        </div>
+        <div style="border-left:1px solid rgba(100,140,30,.3);padding-left:20px;">
+          <span class="cr-badge-label">Proficiência</span>
+          <span class="cr-badge-value" style="font-size:1.6rem;">+3</span>
+          <span class="cr-badge-note">Forma Jovem</span>
+        </div>
+      </div>
+      <div class="card ichor" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:center;">
+        <div class="card-title ichor">Escala de Ameaça</div>
+        <p style="font-size:.9rem;">O CR da forma jovem é enganoso — ela nunca é enfrentada sozinha. O combate acontece <span class="hl">depois que o horror já aconteceu.</span> A ameaça real é cognitiva, não física.</p>
+      </div>
+    </div>
+
+    <!-- two-col: atributos + proficiências -->
+    <div class="two-col-monster" style="align-items:start;margin-bottom:56px;">
+      <section style="margin-bottom:0;">
+        <div class="section-header">
+          <span class="section-icon silence">◆</span>
+          <h2 class="silence">Atributos</h2>
+          <div class="section-line silence"></div>
+        </div>
+        <div class="attr-grid">
+          <div class="attr-box high">
+            <div class="attr-name">Força</div>
+            <span class="attr-value high">16</span>
+            <span class="attr-mod high">+3</span>
+          </div>
+          <div class="attr-box">
+            <div class="attr-name">Destreza</div>
+            <span class="attr-value">14</span>
+            <span class="attr-mod">+2</span>
+          </div>
+          <div class="attr-box high">
+            <div class="attr-name">Constituição</div>
+            <span class="attr-value high">16</span>
+            <span class="attr-mod high">+3</span>
+          </div>
+          <div class="attr-box">
+            <div class="attr-name">Inteligência</div>
+            <span class="attr-value">12</span>
+            <span class="attr-mod">+1</span>
+          </div>
+          <div class="attr-box max">
+            <div class="attr-name">Sabedoria</div>
+            <span class="attr-value max">20</span>
+            <span class="attr-mod max">+5</span>
+          </div>
+          <div class="attr-box low">
+            <div class="attr-name">Carisma</div>
+            <span class="attr-value low">8</span>
+            <span class="attr-mod neg">−1</span>
+          </div>
+        </div>
+        <div class="callout tip" style="margin-top:4px;">
+          <strong>Nota</strong> Sabedoria absurdamente elevada reflete sua percepção psíquica do ambiente — ela conhece cada criatura num raio de 8km que possa ouvi-la. Carisma baixo confirma que ela não <em>persuade</em>: ela apaga.
+        </div>
+      </section>
+
+      <section style="margin-bottom:0;">
+        <div class="section-header">
+          <span class="section-icon bone">🎲</span>
+          <h2 class="bone">Proficiências &amp; Sentidos</h2>
+          <div class="section-line bone"></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>Percepção</td>
+                <td><span class="mono ichor">+8</span></td>
+              </tr>
+              <tr>
+                <td>Resist. a Dano</td>
+                <td style="color:var(--silence-light);">Psíquico</td>
+              </tr>
+              <tr>
+                <td>Imun. a Condição</td>
+                <td style="color:var(--bone-light);">Petrificado</td>
+              </tr>
+              <tr>
+                <td>Visão no Escuro</td>
+                <td><span class="mono">120 ft</span></td>
+              </tr>
+              <tr>
+                <td>Percepção Passiva</td>
+                <td><span class="mono">18</span></td>
+              </tr>
+              <tr>
+                <td>Idiomas</td>
+                <td style="font-size:.86rem;color:var(--text-dim);">Qualquer idioma de criatura consumida</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       TRAÇOS — FORMA JOVEM
+  ══════════════════════════════ -->
+  <section id="tracos-jovem">
+    <div class="section-header">
+      <span class="section-icon silence">✧</span>
+      <h2 class="silence">Traços — Forma Jovem</h2>
+      <div class="section-line silence"></div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--ichor-light),var(--ichor-dim));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Múltiplas Cabeças <span class="sub">(Multiple Heads)</span></div>
+        <p>A falsa hidra começa com uma cabeça. À medida que consome criaturas humanoides, o número de cabeças aumenta e ela cresce de tamanho. A cada nova cabeça, seu máximo de PV aumenta em <strong>30</strong>. Quando atingir 7 cabeças, transforma-se na Falsa Hidra Madura após um descanso longo.</p>
+        <p style="margin-top:6px;">Enquanto tiver mais de uma cabeça, tem <strong>vantagem</strong> em testes de resistência contra ser cegada, encantada, ensurdecida, apavorada, atordoada e inconsciente.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--silence-light),var(--silence-dim));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Pescoços Preênseis <span class="sub">(Neck Stalks)</span></div>
+        <p>As cabeças se estendem a longa distância do corpo. Quando uma cabeça ataca uma criatura a mais de <strong>15ft</strong> do corpo, essa cabeça provoca um ataque de oportunidade. A geometria de ameaça da hidra é não-intuitiva — o corpo pode estar atrás de uma parede enquanto a cabeça te olha nos olhos.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--bone-light),var(--rot));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Cabeças Reativas <span class="sub">(Reactive Heads)</span></div>
+        <p>Para cada cabeça além da primeira, a falsa hidra ganha uma reação extra que pode ser usada <strong>somente</strong> para ataques de oportunidade. Com seis cabeças adicionais na forma madura, isso torna qualquer tentativa de recuo sistematicamente perigosa.</p>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <strong>Dica de Progressão</strong> Rastreie quantas pessoas sumidas os jogadores começaram a notar. Cada "explicação absurda" de um NPC para um desaparecimento é um sinal de que a hidra está crescendo. Os personagens podem nunca saber quantas cabeças ela tem — apenas sentir que algo está muito, muito errado.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       AÇÕES — FORMA JOVEM
+  ══════════════════════════════ -->
+  <section id="acoes-jovem">
+    <div class="section-header">
+      <span class="section-icon ichor">⚡</span>
+      <h2 class="ichor">Ações — Forma Jovem</h2>
+      <div class="section-line ichor"></div>
+    </div>
+
+    <div class="callout tip">
+      <strong>Multiataques</strong> A falsa hidra realiza um número de <span class="hl">ataques de Mordida</span> igual ao número de cabeças que possui. Com 1 cabeça inicial: 1 mordida por turno. A Canção Discordante interrompe todos os ataques — a hidra não pode morder e cantar ao mesmo tempo.
+    </div>
+
+    <div class="action ichor">
+      <div class="action-name ichor">Multiatacar</div>
+      <p>A falsa hidra realiza um número de <em>ataques de Mordida</em> igual ao número de cabeças que possui. Se estiver cantando a Canção Discordante, não pode realizar mordidas nesse turno.</p>
+    </div>
+
+    <div class="action silence">
+      <div class="action-name silence">Mordida <span style="font-size:.7rem;color:var(--text-dim);font-weight:400;">(Bite)</span></div>
+      <p><strong>Ataque Corpo a Corpo.</strong> <span class="mono ichor">+6 para acertar</span>, alcance 30ft, uma criatura. <strong>Acerto:</strong> <mark>8 (1d10 + 3) de dano perfurante</mark> e o alvo fica <span class="hl-alert">Agarrado</span> (CD de escape: 14).</p>
+    </div>
+
+    <div class="action bone">
+      <div class="action-name bone">Canção Discordante <span class="tag-a silence">Psíquico</span></div>
+      <p>A falsa hidra entoa uma canção discordante. Todas as criaturas que possam ouvi-la num raio de <strong>8km</strong> ficam <span class="hl-silence">encantadas automaticamente</span> — <strong>não há teste de resistência</strong>. Este é o horror fundamental da forma jovem.</p>
+      <p style="margin-top:8px;">Enquanto encantadas, as criaturas <span class="hl-alert">não podem ver ou ouvir a falsa hidra</span>, e todas as memórias de sua existência são suprimidas como se ela nunca tivesse existido. Lacunas lógicas resultantes são <em>confabuladas</em> pelo alvo para preservar coerência interna.</p>
+      <p style="margin-top:8px;">Durante um <strong>descanso longo</strong>, uma criatura encantada faz um <span class="hl-silence">TR de Sabedoria CD 20</span>. Se bem-sucedida, sua mente subconsciente tenta avisá-la — possivelmente através de uma nota escrita durante o sono ou outro meio à escolha do GM.</p>
+      <p style="margin-top:8px;color:#7a8870;font-size:.88rem;font-style:italic;">A hidra usa uma ação bônus nos turnos seguintes para continuar cantando. A canção termina imediatamente se ela realizar qualquer ataque de mordida.</p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       FORMA MADURA — SEPARADOR
+  ══════════════════════════════ -->
+  <div class="form-divider">
+    <div class="form-divider-line"></div>
+    <div class="form-divider-label alert">⚠ Transformação — Maturidade ⚠</div>
+    <div class="form-divider-line"></div>
+  </div>
+
+  <div style="max-width:860px;margin:0 auto;padding:0 20px 32px;">
+    <div class="callout danger">
+      <strong>Mudança de Regra na Transição</strong> A Cantiga de Dominação da forma madura funciona de forma diferente da Canção Discordante da jovem em dois pontos críticos. <em>(1) Save:</em> a forma jovem não tem TR — encantamento automático; a forma madura tem <span class="hl-alert">TR Sabedoria CD 16</span>. <em>(2) Encerramento:</em> a forma jovem interrompe a canção ao realizar qualquer mordida; a madura só interrompe se usar <em>todos</em> os ataques de mordida no mesmo turno. Não misturar as regras entre as formas.
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════
+       ESTATÍSTICAS — FORMA MADURA
+  ══════════════════════════════ -->
+  <section id="stats-madura">
+    <div class="section-header">
+      <span class="section-icon alert">💀</span>
+      <h2 class="alert">Falsa Hidra Madura — Estatísticas</h2>
+      <div class="section-line alert"></div>
+    </div>
+
+    <div class="identity madura">
+      <span class="identity-corner tl">ABERRAÇÃO GARGANTESCA · NEUTRO MALIGNO</span>
+      <span class="identity-corner tr">DESAFIO 16 · 13.000 XP</span>
+      <span class="identity-corner bl">HOMEBREW</span>
+      <span class="identity-corner br">7+ CABEÇAS</span>
+      <div class="monster-name madura">Falsa Hidra Madura</div>
+      <div class="monster-epithet">Aberração Gargantesca · Neutro Maligno · 7+ Cabeças</div>
+      <p class="monster-lore">Ela não se esconde mais. Ela não precisa.</p>
+    </div>
+
+    <div class="monster-vitals">
+      <div class="mvital-card alert">
+        <span class="mvital-label">Pontos de Vida</span>
+        <span class="mvital-value alert">214</span>
+        <span class="mvital-note">13d20 + 78 · +214 via Agonia</span>
+      </div>
+      <div class="mvital-card silence">
+        <span class="mvital-label">Classe de Armadura</span>
+        <span class="mvital-value silence">20</span>
+        <span class="mvital-note">Armadura Natural</span>
+      </div>
+      <div class="mvital-card bone">
+        <span class="mvital-label">Velocidade</span>
+        <span class="mvital-value bone">5ft</span>
+        <span class="mvital-note">Escavar 5ft · servos a carregam</span>
+      </div>
+      <div class="mvital-card ichor">
+        <span class="mvital-label">Resist. Lendária</span>
+        <div class="mvital-pips">
+          <div class="mvital-pip"></div>
+          <div class="mvital-pip"></div>
+          <div class="mvital-pip"></div>
+        </div>
+        <span class="mvital-note">3 / dia · falha → escolhe passar</span>
+      </div>
+    </div>
+
+    <!-- CR badge + escala -->
+    <div class="two-col-monster">
+      <div class="cr-badge" style="flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;padding:16px 24px;">
+        <div>
+          <span class="cr-badge-label">Challenge Rating</span>
+          <span class="cr-badge-value">16</span>
+          <span class="cr-badge-note">13.000 XP</span>
+        </div>
+        <div style="border-left:1px solid rgba(100,140,30,.3);padding-left:20px;">
+          <span class="cr-badge-label">Proficiência</span>
+          <span class="cr-badge-value" style="font-size:1.6rem;">+5</span>
+          <span class="cr-badge-note">Forma Madura</span>
+        </div>
+      </div>
+      <div class="card alert" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:center;">
+        <div class="card-title alert">Traço Mítico Ativo</div>
+        <p style="font-size:.9rem;">Reduzida a 0 PV, a forma madura <span class="hl-alert">não morre</span> — recupera 214 PV e ativa Agonia da Morte. O combate tem duas fases. Planejar apenas a primeira é fatal.</p>
+      </div>
+    </div>
+
+    <!-- atributos + proficiências madura -->
+    <div class="two-col-monster" style="align-items:start;margin-bottom:28px;">
+      <section style="margin-bottom:0;">
+        <div class="section-header">
+          <span class="section-icon alert">◆</span>
+          <h2 class="alert">Atributos</h2>
+          <div class="section-line alert"></div>
+        </div>
+        <div class="attr-grid">
+          <div class="attr-box max">
+            <div class="attr-name">Força</div>
+            <span class="attr-value max">30</span>
+            <span class="attr-mod max">+10</span>
+          </div>
+          <div class="attr-box">
+            <div class="attr-name">Destreza</div>
+            <span class="attr-value">14</span>
+            <span class="attr-mod">+2</span>
+          </div>
+          <div class="attr-box high">
+            <div class="attr-name">Constituição</div>
+            <span class="attr-value high">22</span>
+            <span class="attr-mod high">+6</span>
+          </div>
+          <div class="attr-box">
+            <div class="attr-name">Inteligência</div>
+            <span class="attr-value">12</span>
+            <span class="attr-mod">+1</span>
+          </div>
+          <div class="attr-box max">
+            <div class="attr-name">Sabedoria</div>
+            <span class="attr-value max">28</span>
+            <span class="attr-mod max">+9</span>
+          </div>
+          <div class="attr-box low">
+            <div class="attr-name">Carisma</div>
+            <span class="attr-value low">6</span>
+            <span class="attr-mod neg">−2</span>
+          </div>
+        </div>
+      </section>
+
+      <section style="margin-bottom:0;">
+        <div class="section-header">
+          <span class="section-icon bone">🎲</span>
+          <h2 class="bone">Proficiências &amp; Sentidos</h2>
+          <div class="section-line bone"></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>Salvaguardas</td>
+                <td><span class="mono ichor">FOR +15 &nbsp;·&nbsp; CON +11 &nbsp;·&nbsp; SAB +14 &nbsp;·&nbsp; CAR +3</span></td>
+              </tr>
+              <tr>
+                <td>Percepção</td>
+                <td><span class="mono ichor">+14 (maestria)</span></td>
+              </tr>
+              <tr>
+                <td>Resist. a Dano</td>
+                <td style="color:var(--silence-light);">Psíquico</td>
+              </tr>
+              <tr>
+                <td>Imun. a Condição</td>
+                <td style="color:var(--bone-light);">Petrificado</td>
+              </tr>
+              <tr>
+                <td>Visão no Escuro</td>
+                <td><span class="mono">120ft</span></td>
+              </tr>
+              <tr>
+                <td>Percepção Passiva</td>
+                <td><span class="mono">24</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="leg-res-bar" style="margin-top:8px;">
+          <div class="leg-res-label">Resist. Lendária</div>
+          <div class="leg-res-pips">
+            <div class="pip"></div>
+            <div class="pip"></div>
+            <div class="pip"></div>
+          </div>
+          <div class="leg-res-note">3/dia · falha vira sucesso</div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       TRAÇOS — FORMA MADURA
+  ══════════════════════════════ -->
+  <section id="tracos-madura">
+    <div class="section-header">
+      <span class="section-icon alert">✧</span>
+      <h2 class="alert">Traços — Forma Madura</h2>
+      <div class="section-line alert"></div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--alert-light),var(--alert));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Agonia da Morte <span class="sub">(Traço Mítico — Recarrega após Descanso Curto ou Longo)</span></div>
+        <p>Quando a falsa hidra é reduzida a 0 PV, ela <strong>não morre nem fica inconsciente</strong>. Em vez disso, recupera <mark class="a">214 PV</mark> e começa a uivar e se debater. Não pode mais usar a Cantiga de Dominação. <strong>24 horas</strong> após este traço se tornar ativo, a falsa hidra morre — mas durante essas horas, fica livre para usar suas Ações Míticas.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--bone-light),var(--rot));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Resistência Lendária <span class="sub">(3/Dia)</span></div>
+        <p>Se a falsa hidra falhar em um teste de resistência, ela pode escolher ser <strong>bem-sucedida</strong> em vez disso. Três usos por dia — visualizados como pips na seção de Estatísticas.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--ichor-light),var(--ichor-dim));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Múltiplas Cabeças <span class="sub">(Forma Madura)</span></div>
+        <p>A falsa hidra possui sete cabeças. A cada descanso longo, se consumiu o suficiente para se sustentar, cresce uma cabeça adicional. Enquanto tiver mais de uma cabeça, tem <strong>vantagem</strong> em TR contra cegueira, encantamento, ensurdecimento, pavor, atordoamento e inconsciência. Pescoços Preênseis e Cabeças Reativas funcionam identicamente à forma jovem.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--mold-light),var(--mold));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Monstro de Cerco <span class="sub">(Siege Monster)</span></div>
+        <p>A falsa hidra causa o <strong>dobro de dano</strong> a objetos e estruturas. Muros, portões, construções de pedra — nada foi projetado para resistir a algo desta escala que não foi projetado para ser visto.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       AÇÕES — FORMA MADURA
+  ══════════════════════════════ -->
+  <section id="acoes-madura">
+    <div class="section-header">
+      <span class="section-icon alert">⚡</span>
+      <h2 class="alert">Ações — Forma Madura</h2>
+      <div class="section-line alert"></div>
+    </div>
+
+    <div class="callout danger">
+      <strong>Multiataques</strong> A falsa hidra realiza qualquer combinação de ataques de <span class="hl-alert">Mordida ou Engolir</span> igual ao número de cabeças que possui. A Cantiga de Dominação só é interrompida se usar <em>todos</em> os ataques de mordida disponíveis no mesmo turno — com sete cabeças, isso é sete mordidas para encerrar a canção.
+    </div>
+
+    <div class="action ichor">
+      <div class="action-name ichor">Multiatacar</div>
+      <p>A falsa hidra realiza qualquer combinação de ataques de <em>Mordida</em> ou <em>Engolir</em> igual ao número de cabeças. Pode usar menos ataques para manter a Cantiga de Dominação ativa.</p>
+    </div>
+
+    <div class="action silence">
+      <div class="action-name silence">Mordida <span style="font-size:.7rem;color:var(--text-dim);font-weight:400;">(Bite)</span></div>
+      <p><strong>Ataque Corpo a Corpo.</strong> <span class="mono ichor">+15 para acertar</span>, alcance 120ft, uma criatura. <strong>Acerto:</strong> <mark>15 (1d10 + 10) de dano perfurante</mark> e o alvo fica <span class="hl-alert">Agarrado</span>.</p>
+    </div>
+
+    <div class="action bone">
+      <div class="action-name bone">Engolir <span style="font-size:.7rem;color:var(--text-dim);font-weight:400;">(Swallow)</span></div>
+      <p>A hidra faz um ataque de Mordida contra uma criatura Grande ou menor que esteja Agarrando. Se acertar, o alvo recebe o dano da mordida, é <span class="hl-alert">engolido</span> e o Agarramento termina. Enquanto engolida, a criatura fica <span class="hl-alert">Cegada e Imobilizada</span>, tem cobertura total e recebe <mark class="a">35 (10d6) de dano ácido</mark> no início de cada turno da hidra. Se morrer enquanto engolida, a hidra recupera <mark>4d6 PV</mark>.</p>
+      <p style="margin-top:8px;color:#7a8870;font-size:.88rem;font-style:italic;">Se a hidra receber 30+ de dano num único turno de uma criatura que esteja dentro dela, faz <span class="hl-silence">TR de Constituição CD 20</span> ou regurgita todas as criaturas engolidas, que caem Prostradas a até 10ft.</p>
+    </div>
+
+    <div class="action bone">
+      <div class="action-name bone">Cantiga de Dominação <span class="tag-a silence">Psíquico</span></div>
+      <p>A falsa hidra entoa uma cantiga uivante. Todas as criaturas que possam ouvir num raio de <strong>8km</strong> devem ter êxito num <span class="hl-silence">TR de Sabedoria CD 16</span> ou ficam <span class="hl-silence">encantadas</span> pela hidra até a canção terminar. Enquanto encantadas, a criatura tem um <strong>vínculo telepático</strong> com a hidra — a hidra pode emitir comandos sem ação necessária que o alvo se esforça ao máximo para obedecer.</p>
+      <p style="margin-top:8px;color:#7a8870;font-size:.88rem;font-style:italic;">A hidra usa uma ação bônus nos turnos seguintes para continuar cantando. A canção termina se ela usar <em>todos</em> os ataques de mordida num mesmo turno.</p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       AÇÕES LENDÁRIAS
+  ══════════════════════════════ -->
+  <section id="lendarias">
+    <div class="section-header">
+      <span class="section-icon bone">↺</span>
+      <h2 class="bone">Ações Lendárias</h2>
+      <div class="section-line bone"></div>
+    </div>
+
+    <div class="callout bone">
+      <strong>Ações Lendárias — 3 por rodada</strong> A falsa hidra usa no máximo 3 ações lendárias por rodada, ao final do turno de qualquer outra criatura. Não pode usar a mesma opção duas vezes consecutivas. Recupera todas ao iniciar o próprio turno.
+    </div>
+
+    <div class="action legendary">
+      <div class="action-name legend">Mordida <span class="cost-badge">Custo 1</span></div>
+      <p>A falsa hidra faz um ataque de Mordida.</p>
+    </div>
+
+    <div class="action legendary">
+      <div class="action-name legend">Comandar <span class="cost-badge">Custo 1</span></div>
+      <p>A falsa hidra comanda até <strong>6 criaturas</strong> encantadas por ela para usar uma ação. Essas criaturas usam aquela ação imediatamente. Este é um dos usos mais perturbadores da hidra madura — um grupo enfrenta potencialmente toda a população de uma cidade.</p>
+    </div>
+
+    <div class="action legendary">
+      <div class="action-name legend">Arrastar <span class="cost-badge">Custo 1</span> <span style="font-size:.7rem;color:var(--text-dim);font-weight:400;">(Drag)</span></div>
+      <p>A falsa hidra usa sua cabeça para se arrastar <strong>9 metros</strong> em qualquer direção. Sua velocidade de movimento normal é 5ft — este é o principal modo de reposicionamento.</p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       AÇÕES MÍTICAS
+  ══════════════════════════════ -->
+  <div class="form-divider">
+    <div class="form-divider-line"></div>
+    <div class="form-divider-label alert">☠ Agonia da Morte — Fase Mítica</div>
+    <div class="form-divider-line"></div>
+  </div>
+
+  <section id="miticas">
+    <div class="section-header">
+      <span class="section-icon alert">☠</span>
+      <h2 class="alert">Ações Míticas</h2>
+      <div class="section-line alert"></div>
+    </div>
+
+    <div class="card alert" style="margin-bottom:14px;">
+      <div class="card-title alert">Condição Mítica</div>
+      <p>Se o traço mítico <em>Agonia da Morte</em> estiver ativo, a falsa hidra pode usar as opções abaixo como ações lendárias durante <strong>1 hora</strong> após ativar o traço. Neste estado, ela não pode usar a Cantiga de Dominação — mas as criaturas já encantadas continuam sob seu controle até o fim.</p>
+    </div>
+
+    <div class="action mythic">
+      <div class="action-name mythic">Clamor Odioso <span class="tag-a mythic">Mítico</span> <span style="font-size:.7rem;color:var(--text-dim);font-weight:400;">(Hateful Bellow)</span></div>
+      <p>A falsa hidra solta um brado perfurante. Todas as criaturas num raio de <strong>8km</strong> que possam ouvi-la devem ter êxito num <span class="hl-bone">TR de Sabedoria CD 16</span> ou ficam <span class="hl-alert">Paralisadas até o fim de seu próximo turno.</span> Usar durante a Agonia da Morte substitui a função de dominação com puro horror instintivo.</p>
+    </div>
+
+    <div class="action mythic">
+      <div class="action-name mythic">Consumo Voraz <span class="tag-a mythic">Mítico</span> <span class="cost-badge" style="border-color:#5a4a10;color:#c0a030;">Custo 2</span> <span style="font-size:.7rem;color:var(--text-dim);font-weight:400;">(Voracious Consumption)</span></div>
+      <p>A falsa hidra faz tantos ataques de Mordida quantas cabeças possuir. Qualquer criatura Grande ou menor atingida por um desses ataques também é <span class="hl-alert">engolida automaticamente</span>. Em agonia, ela para de ser estratégica e simplesmente <em>consome tudo ao alcance</em>.</p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       COMPORTAMENTO & COMO RODAR
+  ══════════════════════════════ -->
+  <section id="taticas">
+    <div class="section-header">
+      <span class="section-icon bone">🧠</span>
+      <h2 class="bone">Comportamento &amp; Como Rodar</h2>
+      <div class="section-line bone"></div>
+    </div>
+
+    <div class="card alert">
+      <div class="card-title alert">O Que a Falsa Hidra Não É</div>
+      <p>Ela não é um monstro que os jogadores vão encontrar em combate aberto. Ela não possui motivação reconhecível, não responde a negociações, não possui território que possa ser defendido. Ela simplesmente <span class="hl-alert">é</span> — e tudo que ela faz é comer e cantar.</p>
+      <p style="margin-top:8px;">Qualquer NPC que afirmar saber "o porquê" de ela estar ali está mentindo ou delirando. O horror está exatamente na ausência de propósito compreensível.</p>
+    </div>
+
+    <div class="card silence">
+      <div class="card-title silence">Os Três Estágios do Encontro</div>
+      <ul style="list-style:none;padding:0;margin-top:4px;">
+        <li style="padding:6px 0;border-bottom:1px solid rgba(40,80,60,.3);">— <span class="hl-silence">Sussurros:</span> A cidade parece normal, mas algo está errado. NPCs citam pessoas que sumiram com justificativas que não fazem sentido. Estranhos percebem. Moradores não.</li>
+        <li style="padding:6px 0;border-bottom:1px solid rgba(40,80,60,.3);">— <span class="hl-silence">Descoberta:</span> Os jogadores encontram evidências físicas — sangue sem dono, roupas num quarto vazio, uma criança procurando um pai que "foi à guerra" mas nunca serviu. A hidra ainda está escondida. A canção, não.</li>
+        <li style="padding:6px 0;">— <span class="hl-silence">O Confronto:</span> A hidra emerge ou é descoberta. Nesse ponto, o objetivo não é matar — é sobreviver, ou melhor, privar a criatura de seu alimento e esperar.</li>
+      </ul>
+    </div>
+
+    <div class="card ichor">
+      <div class="card-title ichor">Soluções Possíveis</div>
+      <ul style="list-style:none;padding:0;margin-top:4px;">
+        <li style="padding:6px 0;border-bottom:1px solid rgba(50,70,30,.4);">— <span class="hl">Evacuação:</span> Remover o suprimento de alimento. Sem humanoides para consumir, a hidra eventualmente se devora.</li>
+        <li style="padding:6px 0;border-bottom:1px solid rgba(50,70,30,.4);">— <span class="hl">Bloqueio Auditivo:</span> Criaturas que não podem ouvir a canção são imunes ao encantamento — e podem ver a hidra normalmente. Cera de abelha nos ouvidos funciona. Surdez mágica funciona. Há uma ironia cruel em que a defesa seja precisamente não ouvir.</li>
+        <li style="padding:6px 0;border-bottom:1px solid rgba(50,70,30,.4);">— <span class="hl">Combate Direto:</span> Tecnicamente possível para a forma jovem. Para a forma madura, praticamente suicida sem preparação extensiva — especialmente considerando a fase mítica.</li>
+        <li style="padding:6px 0;">— <span class="hl">Espera:</span> A vitória de longo prazo. Uma hidra sem alimento morre. A questão é quanto tempo — e quantas pessoas serão consumidas enquanto isso não acontece.</li>
+      </ul>
+    </div>
+
+    <div class="callout danger">
+      <strong>Aviso de Atmosfera</strong> Antes que a hidra apareça, construa o anúncio dela: conversas onde pessoas mudam o assunto bruscamente quando certas perguntas são feitas, lugares na cidade que parecem "ter sido de alguém" mas ninguém sabe de quem. Uma música baixa e estranha que ninguém admite ter ouvido. Quando ela aparecer, o horror já deve ter durado semanas — o confronto físico é apenas o fim de algo que começou muito antes.
+    </div>
+
+    <div class="song-lines"></div>
+
+    <div class="card flesh">
+      <div class="card-title flesh">A Canção e a Memória — Nota Final</div>
+      <p>Personagens que fazem o TR de Sabedoria bem-sucedido durante o descanso longo <em>não recuperam as memórias apagadas</em>. Eles apenas recebem um aviso — uma nota, uma imagem fragmentada, uma sensação de que algo foi roubado de suas mentes. A memória de quem foi consumido permanece <span class="redacted">██████████████</span> para sempre.</p>
+    </div>
+  </section>
+
+</main>
+
+<div style="max-width:860px;margin:0 auto;padding:0 20px 0;">
+  <div class="divider" style="padding:0;margin-bottom:0;">
+    <div class="divider-line"></div>
+    <span class="divider-glyph">🐍</span>
+    <div class="divider-line"></div>
+  </div>
+</div>
+
+<footer>
+  Falsa Hidra <span>⸸</span> "A Que Não Pode Ser Lembrada" <span>⸸</span> Além do Véu da Carne
+</footer>
+
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+
+<script>
+(function() {
+  var topBtn = document.getElementById('top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

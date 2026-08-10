@@ -1,0 +1,2061 @@
+<!DOCTYPE html>
+<!-- você não deveria estar procurando aqui -->
+<!-- ela vê isso também -->
+<!-- quantas pessoas havia na vila? -->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Vila</title>
+<!-- a vila sempre teve catorze casas -->
+<!-- nunca existiu uma décima quinta -->
+<!-- ninguém nunca desapareceu -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+
+:root {
+  --bg:    #0c0a08;
+  --text:  #c8bdb0;
+  --dim:   #55504a;
+  --faint: #252018;
+  --acc:   #7a5540;
+  --white: #ddd5c8;
+  --red:   #601808;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:auto; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'EB Garamond', Georgia, serif;
+  min-height:100vh;
+  overflow-x: hidden;
+}
+
+/* ─── degradação visual por fase ─────────────────────────
+   IMPORTANTE: filter em body criaria novo stacking context,
+   quebrando position:fixed dos overlays (#gate, #break).
+   O filter fica nos elementos de conteúdo, não no ancestral.
+───────────────────────────────────────────────────────── */
+#page, #status-bar, .corner {
+  transition: filter 8s ease;
+}
+body.phase2 #page,
+body.phase2 #status-bar,
+body.phase2 .corner { filter: contrast(1.03) brightness(0.97); }
+
+body.phase3 #page,
+body.phase3 #status-bar,
+body.phase3 .corner { filter: contrast(1.06) brightness(0.94) saturate(0.88); }
+
+body.phase4 #page,
+body.phase4 #status-bar,
+body.phase4 .corner { filter: contrast(1.11) brightness(0.90) saturate(0.75); }
+
+/* ─── camadas de visita ──────────────────────────────── */
+body.visit2 #status-bar { border-top-color: #1e1610; }
+body.visit3 #scanline   { animation-duration: 11s; }
+body.visit3::before     { opacity: 0.44; }
+body.visit3 #status-bar { border-top-color: #2e1a10; }
+body.visit3 .eyebrow    { letter-spacing: 0.50em; color: #4a4540; }
+
+/* grain */
+body::before {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:9000;
+  opacity:0.30;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+}
+
+/* scanline */
+#scanline {
+  position:fixed; left:0; right:0; height:2px;
+  background: linear-gradient(transparent, rgba(200,189,176,0.018), transparent);
+  pointer-events:none; z-index:8999;
+  animation: scan 22s linear infinite;
+}
+@keyframes scan { from{top:-2px} to{top:100vh} }
+
+/* ─── LAYOUT PRINCIPAL ─────────────────────────────── */
+#page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 5rem 2rem 8rem;
+  position: relative;
+}
+
+/* ─── cabeçalho ─────────────────────────────────────── */
+#header {
+  margin-bottom: 4rem;
+  opacity: 1;
+}
+.eyebrow {
+  font-size: 0.66rem; letter-spacing: 0.55em;
+  color: var(--dim); font-style: italic;
+  text-transform: lowercase;
+  margin-bottom: 1.4rem;
+  transition: color 4s ease, letter-spacing 4s ease;
+}
+h1 {
+  font-size: clamp(1.9rem, 5vw, 2.8rem);
+  font-weight: 400; line-height: 1.2;
+  color: var(--white);
+  letter-spacing: 0.01em;
+}
+h1 span { font-style: italic; }
+
+/* ─── seção de texto — revela ao rolar ─────────────── */
+.section {
+  margin-bottom: 3.2rem;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 1.4s ease, transform 1.4s ease;
+  position: relative;
+}
+.section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-label {
+  font-size: 0.62rem; letter-spacing: 0.45em;
+  color: var(--dim); text-transform: lowercase;
+  margin-bottom: 1rem;
+  transition: opacity 0.5s;
+}
+.section p {
+  font-size: clamp(1rem, 2.2vw, 1.15rem);
+  line-height: 1.85;
+  color: var(--text);
+  transition: color 2s ease;
+}
+.section p + p { margin-top: 1em; }
+
+/* ─── contador de moradores ─────────────────────────── */
+#resident-count {
+  font-size: clamp(2.2rem, 8vw, 4.8rem);
+  font-weight: 400; text-align: center;
+  color: var(--dim); letter-spacing: 0.12em;
+  padding: 2.5rem 0;
+  font-style: italic;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 1.4s ease, transform 1.4s ease, color 1.8s ease, font-size 1.8s ease;
+}
+#resident-count.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+#resident-count.disturb { color: var(--acc); font-size: clamp(2rem,7vw,4.2rem); }
+#resident-count .label {
+  display: block; font-size: 0.64rem;
+  letter-spacing: 0.4em; color: var(--dim);
+  margin-top: 0.4rem;
+}
+
+/* ─── lista de moradores ────────────────────────────── */
+#residents {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2.5rem;
+}
+#residents li {
+  font-size: clamp(0.9rem, 1.9vw, 1rem);
+  color: var(--dim);
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--faint);
+  display: flex; align-items: baseline; gap: 0.8rem;
+  transition: all 1.5s ease;
+  position: relative;
+}
+#residents li::before {
+  content: attr(data-num);
+  font-size: 0.6rem; letter-spacing: 0.2em;
+  color: #2a2420;
+  min-width: 1.4rem; font-style: normal;
+}
+#residents li.gone {
+  opacity: 0; height: 0; padding: 0;
+  border-color: transparent; overflow: hidden;
+}
+#residents li.fading { opacity: 0.2; color: #2a2420; }
+
+/* ─── caixa de aviso de sistema ─────────────────────── */
+.sys-error {
+  border: 1px solid #1e1812;
+  padding: 1rem 1.2rem;
+  margin: 2rem 0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem; letter-spacing: 0.08em;
+  color: #3a3028; line-height: 1.7;
+}
+.sys-error .err-code { color: var(--acc); }
+
+/* ─── bloco de negação ──────────────────────────────── */
+.denial {
+  border-left: 2px solid var(--faint);
+  padding: 1rem 0 1rem 1.4rem;
+  margin: 2.5rem 0;
+}
+.denial p {
+  font-size: clamp(0.88rem, 1.9vw, 1rem);
+  line-height: 1.9; color: var(--dim);
+  font-style: italic;
+}
+
+/* ─── status bar ────────────────────────────────────── */
+#status-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  border-top: 1px solid var(--faint);
+  padding: 0.5rem 1.4rem;
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--bg); z-index: 100;
+  transition: border-top-color 4s ease;
+}
+.status-l, .status-r {
+  font-family: 'Courier New', monospace;
+  font-size: 0.6rem; letter-spacing: 0.12em;
+  color: var(--faint);
+}
+
+/* ─── textos de canto ───────────────────────────────── */
+.corner {
+  position: fixed;
+  font-size: 0.54rem; letter-spacing: 0.2em;
+  font-style: italic; color: var(--faint);
+  opacity: 0; pointer-events: none; z-index: 200;
+  transition: opacity 8s ease, color 6s ease;
+}
+#c-tl { top: 1.2rem; left: 1.4rem; }
+#c-tr { top: 1.2rem; right: 1.4rem; text-align: right; }
+#c-bl { bottom: 2.5rem; left: 1.4rem; }
+#c-br { bottom: 2.5rem; right: 1.4rem; text-align: right; }
+
+/* ─── texto fantasma ─────────────────────────────────── */
+.phantom {
+  color: #181210;
+  transition: color 14s ease, opacity 14s ease;
+  pointer-events: none; user-select: none;
+}
+.phantom.reveal { color: #362a22; }
+.phantom.vivid  { color: var(--dim); }
+
+/* ─── overlay de quebra ─────────────────────────────── */
+#break {
+  position: fixed; inset: 0; z-index: 9800;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 0.85rem;
+  padding: 2rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.05s;
+}
+#break.active { opacity: 1; pointer-events: auto; }
+
+#break-title {
+  font-size: clamp(0.65rem, 1.5vw, 0.78rem);
+  letter-spacing: 0.5em; color: #2e0a0a;
+  font-style: italic; text-transform: lowercase;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  transition: opacity 3s ease;
+}
+
+@keyframes blood-seep {
+  0%   { color: #8b1a1a; text-shadow: 0 0 18px #5a0a0a, 0 0 40px #3a0404; }
+  30%  { color: #6b1010; text-shadow: 0 0 12px #450808; }
+  60%  { color: #501010; text-shadow: 0 0 8px #2e0505; }
+  100% { color: #3d0c0c; text-shadow: none; }
+}
+@keyframes blood-seep-v3 {
+  0%   { color: #a02020; text-shadow: 0 0 24px #700808, 0 0 50px #500404; letter-spacing: 0.09em; }
+  20%  { color: #881818; text-shadow: 0 0 16px #550606; }
+  50%  { color: #641212; text-shadow: 0 0 10px #3a0505; letter-spacing: 0.07em; }
+  100% { color: #3d0c0c; text-shadow: none; letter-spacing: 0.06em; }
+}
+@keyframes blood-note {
+  0%   { color: #7a2020; opacity: 0.9; }
+  50%  { color: #5a1414; opacity: 0.8; }
+  100% { color: #3a0e0e; opacity: 0.65; }
+}
+
+#break-main {
+  font-size: clamp(2.2rem, 8vw, 4.8rem);
+  font-weight: 400;
+  color: #3d0c0c;
+  letter-spacing: 0.06em; text-align: center;
+  font-style: italic; line-height: 1.15;
+  margin: 0.5rem 0;
+}
+#break-main.blood    { animation: blood-seep    6s ease forwards; }
+#break-main.blood-v3 { animation: blood-seep-v3 7s ease forwards; }
+
+#break-note {
+  font-size: 0.78rem; color: #3a0e0e;
+  font-style: italic; letter-spacing: 0.3em;
+  margin-top: 1rem; text-align: center;
+  max-width: 420px; line-height: 1.8;
+  opacity: 0;
+}
+#break-note.blood {
+  animation: blood-note 5s ease forwards;
+  animation-delay: 1.2s;
+}
+
+#break-sub {
+  margin-top: 2.5rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.6rem; color: #2a2018;
+  letter-spacing: 0.15em; text-align: center;
+}
+
+#break-prev-time {
+  margin-top: 0.6rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.55rem; color: #1e1410;
+  letter-spacing: 0.12em; text-align: center;
+  opacity: 0; transition: opacity 4s ease;
+}
+#break-prev-time.show { opacity: 1; }
+
+#break-btn {
+  margin-top: 1.8rem;
+  background: none; border: 1px solid #201810;
+  color: #2e2018;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 0.75rem; font-style: italic;
+  letter-spacing: 0.25em; padding: 0.5rem 1.8rem;
+  cursor: pointer; opacity: 0;
+  pointer-events: none;
+  transition: opacity 3s ease;
+  flex-shrink: 0;
+}
+#break-btn.show { opacity: 1; pointer-events: auto; }
+#break-btn:hover { border-color: var(--acc); color: var(--acc); }
+
+#break-lie {
+  margin-top: 1.2rem;
+  font-size: 0.58rem; color: #3a1a1a;
+  font-style: italic; letter-spacing: 0.32em;
+  opacity: 0; transition: opacity 4s ease;
+  text-align: center;
+}
+#break-lie.show { opacity: 1; }
+
+/* ─── cursor fantasma (fase 3+) ─────────────────────── */
+#ghost-cursor {
+  position: fixed; width: 6px; height: 6px;
+  border: 1px solid var(--dim); border-radius: 50%;
+  pointer-events: none; z-index: 9500;
+  transform: translate(-50%, -50%);
+  opacity: 0; transition: opacity 3s ease;
+}
+
+/* ─── glitch ─────────────────────────────────────────── */
+@keyframes glitch-anim {
+  0%,100% { transform: translate(0,0); opacity: 1; clip-path: none; }
+  15%      { transform: translate(-4px,1px); opacity: 0.85; clip-path: polygon(0 0,100% 0,100% 22%,0 22%); }
+  30%      { transform: translate(4px,-2px); clip-path: polygon(0 35%,100% 35%,100% 60%,0 60%); }
+  50%      { transform: translate(-2px,3px); opacity: 0.9; clip-path: polygon(0 75%,100% 75%,100% 100%,0 100%); }
+  70%      { transform: translate(3px,-1px); opacity: 0.75; clip-path: none; }
+}
+.glitching { animation: glitch-anim 0.22s steps(1) forwards; }
+
+@keyframes drift {
+  0%,100% { transform: translateX(0); }
+  25%     { transform: translateX(2px); }
+  75%     { transform: translateX(-1px); }
+}
+.drifting { animation: drift 0.3s ease infinite; }
+
+/* ─── subliminar flash ───────────────────────────────── */
+#subliminal {
+  position: fixed; inset: 0; z-index: 7999;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none; opacity: 0;
+}
+#subliminal span {
+  font-size: clamp(3rem, 15vw, 9rem);
+  font-weight: 600; color: var(--faint);
+  letter-spacing: -0.02em; font-style: italic;
+  text-align: center; white-space: nowrap;
+}
+
+/* ─── shift sutil ────────────────────────────────────── */
+.drift-1 { transition: transform 4s ease; }
+.drift-2 { transition: transform 6s ease; }
+
+/* ─── overlay de fala — posição fixa acima da status bar ── */
+#speech-overlay {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 4.8rem;
+  width: 100%;
+  max-width: 640px;
+  padding: 0.6rem 2rem 1rem;
+  z-index: 500;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  background: linear-gradient(transparent, rgba(12,10,8,0.92) 28%);
+}
+#speech-overlay .speaker-name {
+  display: block;
+  font-size: 0.60rem;
+  letter-spacing: 0.42em;
+  color: var(--acc);
+  font-style: normal;
+  margin-bottom: 0.4rem;
+  text-transform: lowercase;
+}
+#speech-overlay .speaker-text {
+  display: block;
+  font-size: clamp(0.88rem, 1.9vw, 1rem);
+  font-style: italic;
+  color: var(--dim);
+  line-height: 1.85;
+  letter-spacing: 0.02em;
+}
+
+/* ─── aviso final — último restante ─────────────────── */
+#last-warning {
+  margin: 3.5rem 0 2rem;
+  padding: 1.4rem 0 1.4rem 1.4rem;
+  border-left: 2px solid var(--red);
+  opacity: 0;
+  transition: opacity 5s ease;
+}
+#last-warning .lw-line {
+  font-size: clamp(1rem, 2.2vw, 1.18rem);
+  line-height: 1.95;
+  color: #3a1010;
+  font-style: italic;
+  display: block;
+  transition: color 4s ease;
+}
+#last-warning .lw-main {
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  color: var(--red);
+  margin-bottom: 0.6rem;
+}
+#last-warning .lw-delay {
+  opacity: 0;
+  transition: opacity 0s;
+}
+#audio-btn {
+  cursor: pointer;
+  user-select: none;
+  transition: color 1.8s ease, opacity 1.8s ease;
+  font-style: italic;
+  letter-spacing: 0.12em;
+  opacity: 0.5;
+}
+#audio-btn:hover { color: var(--acc); opacity: 0.85; }
+#audio-btn.playing { opacity: 0.28; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
+/* ─── PORTÃO DE ENTRADA ─────────────────────────────────── */
+#gate {
+  position: fixed; inset: 0; z-index: 10000;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  padding: 2rem;
+  transition: opacity 2.2s ease;
+}
+#gate.closing { opacity: 0; pointer-events: none; }
+
+#gate-inner { text-align: center; max-width: 460px; width: 100%; }
+
+@keyframes gateIn { from { opacity: 0; } to { opacity: 1; } }
+
+.gate-label {
+  font-family: 'Courier New', monospace;
+  font-size: 0.55rem; letter-spacing: 0.32em;
+  color: var(--faint); text-transform: lowercase;
+  margin-bottom: 2.8rem;
+  opacity: 0;
+  animation: gateIn 1.5s ease 0.5s both;
+}
+
+.gate-q {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+  font-weight: 400; line-height: 1.25;
+  color: var(--white); letter-spacing: 0.01em;
+  margin-bottom: 2.4rem;
+  opacity: 0;
+  animation: gateIn 2s ease 1.4s both;
+}
+
+.gate-btns {
+  display: flex; gap: 3rem; justify-content: center;
+  margin-bottom: 2.2rem;
+  opacity: 0;
+  animation: gateIn 1.8s ease 2.6s both;
+}
+
+.gate-btn {
+  background: none; border: none; cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 0.68rem; letter-spacing: 0.38em; text-transform: lowercase;
+  color: var(--dim);
+  padding: 0.35rem 0.6rem;
+  border-bottom: 1px solid transparent;
+  transition: color 0.3s, border-color 0.3s;
+}
+.gate-btn:hover { color: var(--white); border-bottom-color: var(--dim); }
+
+.gate-hint {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-style: italic; font-size: 0.82rem;
+  color: var(--faint); letter-spacing: 0.04em;
+  min-height: 1.2em;
+  opacity: 0;
+  animation: gateIn 3s ease 4.2s both;
+}
+
+.gate-r-main {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-style: italic; letter-spacing: 0.06em;
+  color: #3d0c0c; line-height: 1.3;
+  margin-bottom: 1.2rem;
+  opacity: 0; transition: opacity 0.5s ease;
+}
+.gate-r-main.show  { opacity: 1; }
+.gate-r-main.blood { animation: blood-seep 5.5s ease forwards; }
+
+.gate-r-sub {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-style: italic; font-size: 0.9rem;
+  color: var(--acc); letter-spacing: 0.05em;
+  opacity: 0; transition: opacity 3.5s ease;
+}
+.gate-r-sub.show { opacity: 1; }
+
+
+/* ─── polimento visual ───────────────────────────────────────────── */
+
+/* Seções — transição mais suave */
+.section {
+  transition: opacity 1.2s ease, transform 1.2s ease;
+}
+
+/* Speech overlay — hierarquia visual mais clara */
+#speech-overlay {
+  bottom: 5rem;
+  background: linear-gradient(transparent, rgba(12,10,8,0.96) 22%);
+}
+
+/* last-warning: sem necessidade de margin extra, position já define */
+#s_lastwarn {
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+}
+
+/* Erros e negação: espaço aéreo adequado */
+#s_err1, #s_denial, #s_err2 {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* resident-count: alinhamento melhorado */
+#resident-count {
+  margin: 4rem 0 3rem;
+}
+
+/* s_frag: separação visual do resto */
+#s_frag {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--faint);
+  margin-top: 0.5rem;
+}
+#s_frag p:first-of-type {
+  margin-top: 0;
+}
+
+/* Fantasma: transição mais expressiva */
+.phantom {
+  transition: color 12s ease;
+}
+.phantom.reveal { color: #3a2e26; }
+.phantom.vivid  { color: var(--dim); }
+
+</style>
+</head>
+
+<!-- quantas casas havia na vila? -->
+<!-- pense bem antes de responder -->
+
+<body>
+<!-- avisa o mapa do Nexus (se estiver por perto) que esta página foi visitada -->
+<script>try{ if (window.top !== window) window.top.postMessage({ tipo:'nexus-visita', id:'valtheris_vila' }, '*'); }catch(e){}</script>
+
+<!-- ══ PORTÃO DE ENTRADA ════════════════════════════════════ -->
+<div id="gate">
+  <div id="gate-inner">
+    <p class="gate-label" id="gate-lbl">percepção · audição · registro_001</p>
+    <p class="gate-q"     id="gate-q">Você consegue ouvir?</p>
+    <div class="gate-btns" id="gate-btns">
+      <button class="gate-btn" id="gate-yes" onclick="gateAnswer(true)">sim</button>
+      <button class="gate-btn" id="gate-no"  onclick="gateAnswer(false)">não</button>
+    </div>
+    <p class="gate-hint" id="gate-hint">ela também está escutando</p>
+    <div id="gate-response">
+      <p class="gate-r-main" id="gate-r-main"></p>
+      <p class="gate-r-sub"  id="gate-r-sub"></p>
+    </div>
+  </div>
+</div>
+
+<div id="scanline"></div>
+<div id="ghost-cursor"></div>
+<div id="subliminal"><span></span></div>
+<div id="speech-overlay"></div>
+
+<!-- overlay de quebra — conteúdo substituído por JS conforme visita -->
+<div id="break">
+  <div id="break-title" style="opacity:0; transition:opacity 3s ease;">registro — vila do vau</div>
+  <div id="break-main">quantos<br>havia<br>aqui?</div>
+  <div id="break-note">você contou.<br>não era o número certo.<br>nunca foi.</div>
+  <div id="break-sub">MEMORY_CORRUPTION: hydra.entity — resident_count_mismatch — 0x0000</div>
+  <div id="break-prev-time"></div>
+  <button id="break-btn" onclick="doForget()">eu não me lembro de nada</button>
+  <div id="break-lie"></div>
+</div>
+
+<main id="page">
+
+  <div id="header">
+    <p class="eyebrow">arquivo — prefeitura da vila do vau</p>
+    <h1>Registro dos <span>Moradores</span> <span id="h1-sub" style="font-size:0.55em; color:var(--dim); font-style:normal; letter-spacing:0.08em; opacity:0; transition:opacity 3s ease;"></span></h1>
+  </div>
+
+  <!-- SEÇÃO 1 — introdução -->
+  <div class="section" id="s1">
+    <p class="section-label">nota introdutória</p>
+    <p id="p-intro">A Vila do Vau é um lugar tranquilo. Sempre foi.</p>
+    <p id="p-intro2" class="phantom">Os moradores vivem em harmonia há gerações. A vila tem uma maneira de se fechar sobre si mesma.</p>
+  </div>
+
+  <!-- contador de moradores -->
+  <div id="resident-count">
+    <span id="count-num">—</span>
+    <span class="label">moradores registrados</span>
+  </div>
+
+  <!-- LISTA DE MORADORES — scroll past aqui dispara a remoção -->
+  <div class="section" id="s2">
+    <p class="section-label" id="list-label">registro nominal — atualizado</p>
+    <ul id="residents"><!-- renderizado por JS --></ul>
+  </div>
+
+  <!-- SEÇÃO 3 — observações do pároco -->
+  <div class="section" id="s3">
+    <p class="section-label">observações do pároco</p>
+    <p id="p-obs1">Os moradores não se recordam com clareza dos últimos dias. Disseram que dormem bem. Os olhos deles dizem outra coisa.</p>
+    <p id="p-obs2">Há <span id="house-count">—</span> casas na vila. Sempre houve exatamente esse número.</p>
+    <p id="p-obs3" class="phantom" style="margin-top:1em; font-style:italic; transition:color 14s ease, opacity 14s ease;">Uma delas tem a porta aberta há três dias. Ninguém vai até lá verificar. Ninguém comenta.</p>
+  </div>
+
+  <!-- SEÇÃO 4 — testemunho -->
+  <div class="section" id="s4">
+    <p class="section-label" id="label-s4">depoimento — aldeão anônimo</p>
+    <p id="p-dep1">"Conheço todos os meus vizinhos. Somos <span id="dep-count">—</span> nesta vila."</p>
+    <p id="p-dep2" style="margin-top:1em;">"Dormimos. Acordamos. Não perguntamos o que acontece no meio."</p>
+    <p id="p-dep3" class="phantom" style="margin-top:1em; font-style:italic;">"Sonhei com alguém que não consigo descrever. De manhã tentei lembrar o rosto. Havia uma mancha onde o rosto deveria estar."</p>
+  </div>
+
+  <!-- SEÇÃO 5 — relato do viajante -->
+  <div class="section" id="s5">
+    <p class="section-label">nota de campo — viajante</p>
+    <p>"Cheguei à vila ao anoitecer. Os moradores pareciam normais. Sorriam na hora certa. Respondiam as perguntas certas."</p>
+    <p id="p-traveler2" style="margin-top:1em;">"De noite ouvi passos fora da janela. Lentos. Sem pressa. Como se soubessem que eu não ia a lugar nenhum."</p>
+    <p id="p-traveler3" class="phantom" style="margin-top:1em; font-style:italic;">"De manhã perguntei quem andava lá fora. Eles piscaram ao mesmo tempo antes de responder. Nunca tinha visto adultos piscar juntos assim."</p>
+    <p id="p-traveler4" class="phantom" style="margin-top:1em; font-style:italic;">"Não vou dormir de novo aqui. Se eu ainda puder escolher isso."</p>
+  </div>
+
+  <!-- FRAGMENTO — relato sem registro -->
+  <div class="section" id="s_frag">
+    <p class="section-label">fragmento — sem autoria, sem data</p>
+    <p>A noite chega, uma mãe canta para seu bebê e espera pela família dela na casa que fica um pouco longe da cidade.</p>
+    <p style="margin-top: 0.5em;">O filho vem com a comida junto com sua irmã.</p>
+    <p style="margin-top: 0.2em;">O pai vem com madeira recém cortada…</p>
+    <p id="song-p4" class="phantom" style="margin-top: 1.6em;">Uma mãe canta para seu bebê, o pai vem com a madeira recém cortada, e o filho traz comida…</p>
+    <p id="song-p5" class="phantom" style="margin-top: 1em;">Uma mãe canta para seu bebê, o pai vem com madeira cortada, trazendo um pouco de comida também…</p>
+    <p id="song-p6" class="phantom" style="margin-top: 1em;">Uma mãe canta para seu bebê, ela percebe que ela esqueceu de pegar madeira e comida no mercado…</p>
+    <p id="song-p7" class="phantom" style="margin-top: 1em; font-style: italic;">Uma mãe canta para uma boneca em seus braços, sentada em uma cama muito pequena para ela, em uma casa muito grande para só uma pessoa…</p>
+    <p id="song-p8" class="phantom" style="margin-top: 1em; font-style: italic; transition: color 14s ease, opacity 14s ease;">Há uma cabana abandonada longe da cidade, muitos dizem que é assombrada e que ainda podem escutar alguém cantando da floresta, ninguém foi corajoso o suficiente para investigar ou pelo menos ninguém que alguém possa lembrar…</p>
+  </div>
+
+  <!-- ERROS E NEGAÇÃO — scroll reveal, chegam ao leitor enquanto ele desce -->
+  <div class="section" id="s_err1">
+    <div class="sys-error" id="err1">
+      <span class="err-code">ERRO_LEITURA:</span> <span id="err1-entry">entrada final</span> — arquivo corrompido.<br>
+      referência cruzada falhou — nenhum osso, nenhuma cova, nenhuma família enlutada.<br>
+      <span style="color:#2a2018">como se apagar um nome pudesse apagar o que houve com ele.</span>
+    </div>
+  </div>
+
+  <div class="section" id="s_denial">
+    <div class="denial" id="denial1">
+      <p>Ninguém desapareceu.</p>
+      <p id="denial-count">A vila sempre teve <span id="denial-num">—</span> moradores.</p>
+      <p id="denial-p2">Você não se lembra de outros porque não havia outros.</p>
+      <p id="denial-extra" style="opacity:0; transition:opacity 0s;">O número que você viu antes estava errado. Este é o correto.</p>
+    </div>
+  </div>
+
+  <div class="section" id="s_err2">
+    <div class="sys-error" id="err2">
+      <span class="err-code">AVISO:</span> inconsistência detectada no registro.<br>
+      entrada anterior mencionava <span id="err-prev-count">—</span> moradores.<br>
+      <span style="color:#2a2018">o registro foi corrigido. a discrepância não existiu.</span>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 7 — entrada final — chegar aqui dispara o clímax -->
+  <div class="section" id="s7">
+    <p class="section-label">entrada final — autoria desconhecida</p>
+    <p id="p-final1" class="phantom">Os que ficaram não sabem que algo falta.</p>
+    <p id="p-final2" class="phantom" style="margin-top:1em; font-style:italic;">É a coisa que a vila não pode saber sobre si mesma.</p>
+    <p id="p-final3" class="phantom" style="margin-top:1em; font-style:italic;">Não há luto. Não há lacuna. O espaço se fecha sozinho, como carne sobre um corte.</p>
+    <p id="p-final4" style="margin-top:1em; opacity:0; transition:opacity 4s ease; color:var(--acc); font-style:italic;">Você vai esquecer os nomes que leu aqui. Ela vai guardar o seu.</p>
+  </div>
+
+  <!-- AVISO FINAL — posicionado após s7, o leitor está perto quando dispara -->
+  <div id="s_lastwarn" style="margin: 2rem 0 3rem;">
+    <div id="last-warning">
+      <span class="lw-line lw-main">Você é o único restante.</span>
+      <span class="lw-line">Ela sabe disso.</span>
+      <span class="lw-line lw-delay" id="lw-final">Logo você não saberá.<br>Nem seus entes queridos saberão.</span>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 6 — aviso ao leitor -->
+  <div class="section" id="s6" style="margin-bottom:6rem;">
+    <p class="section-label" id="label-s6">aviso ao leitor</p>
+    <p id="p-warn1">Este arquivo permaneceu aberto por <span id="read-timer">—</span> segundos.</p>
+    <p id="p-warn2" style="margin-top:1em; opacity:0; transition:opacity 3s ease;">Ela sabe quanto tempo você ficou.</p>
+    <p id="p-warn3" style="margin-top:1em; opacity:0; transition:opacity 3s ease;">Você aprendeu os nomes deles.</p>
+    <p id="p-warn4" style="margin-top:1em; opacity:0; transition:opacity 3s ease;">Ela também aprendeu o seu.</p>
+  </div>
+
+  <!-- SEÇÃO 6B — nota marginal, visível apenas a partir da 3ª visita -->
+  <div class="section" id="s6b" style="display:none; margin-bottom:6rem;">
+    <p class="section-label">nota marginal — encontrada em cópia anterior</p>
+    <p id="p-counted" style="color:var(--dim); font-style:italic;">Este arquivo foi consultado antes. O leitor foi registrado.</p>
+    <p id="p-counted2" style="margin-top:1em; opacity:0; transition:opacity 0s; font-style:italic;">Ela não espera que você esqueça. Ela espera que você volte.</p>
+    <p id="p-counted3" style="margin-top:1em; opacity:0; transition:opacity 0s; font-style:italic; color:var(--acc);">Você está sendo contado agora.</p>
+  </div>
+
+</main><!-- /#page -->
+
+<!-- barra de status -->
+<div id="status-bar">
+  <span class="status-l" id="status-l">vila_do_vau — registro_oficial.txt</span>
+  <span class="status-r" id="status-r">moradores: <span id="status-count">—</span></span>
+  <span id="audio-btn" class="status-r" role="button" tabindex="0" aria-label="Alternar áudio">◈ silêncio</span>
+</div>
+
+<!-- cantos -->
+<div class="corner" id="c-tl"></div>
+<div class="corner" id="c-tr"></div>
+<div class="corner" id="c-bl"></div>
+<div class="corner" id="c-br"></div>
+
+<!-- ÁUDIO -->
+<audio id="lullaby" loop preload="auto">
+  <source src="../Sons/Lullaby of the False Hydra (acapella).mp3" type="audio/mp3">
+</audio>
+<audio id="cry-audio" loop preload="auto">
+  <source src="../Sons/Crying Sound Effect.mp3" type="audio/mp3">
+</audio>
+
+<script>
+'use strict';
+
+/* ════════════════════════════════════════════════════════
+   CONSTANTE — número fixo de casas da vila
+   14 casas acomoda até ~40 moradores (2–3 por residência)
+════════════════════════════════════════════════════════ */
+const HOUSE_COUNT = 14;
+
+/* ════════════════════════════════════════════════════════
+   DADOS DOS MORADORES
+════════════════════════════════════════════════════════ */
+const RESIDENTS_DATA = [
+  {id:'r1',  name:'Edwyn Venn',    job:'ferreiro',           speech:'"Eu trabalho com esse ferro há quarenta anos. Aprendi a não ouvir certas coisas."'},
+  {id:'r2',  name:'Mira Cale',     job:'padeira',            speech:'"O pão de hoje não cresceu. Fiz tudo igual aos outros dias. Mas não cresceu."'},
+  {id:'r3',  name:'Oswin Thatch',  job:'pastor',             speech:'"As ovelhas não dormem faz três noites. Ficam olhando pro mesmo ponto do campo."'},
+  {id:'r4',  name:'Berta Holme',   job:'parteira',           speech:'"Já trouxe muitos a este mundo. Ultimamente ouço uma voz que não veio de nenhum deles."'},
+  {id:'r5',  name:'Tomás Weir',    job:'carpinteiro',        speech:'"Ouço algo desde ontem à noite. Mas não tem nada lá quando vou ver."'},
+  {id:'r6',  name:'Godwin Marsh',  job:'telhador',           speech:'"Estava no telhado quando vi algo no campo. Não consigo descrever o que era."'},
+  {id:'r7',  name:'Sable Frost',   job:'tecedeira',          speech:'"O tecido saiu torto hoje. Minhas mãos não param de tremer desde então."'},
+  {id:'r8',  name:'Harwick Dale',  job:'moleiro',            speech:'"A pedra do moinho parou sozinha esta manhã. Nunca fez isso em vinte anos."'},
+  {id:'r9',  name:'Elspeth Cairn', job:'ervanária',          speech:'"As ervas secaram todas na mesma noite. Sem motivo que eu possa ver."'},
+  {id:'r10', name:'Brennan Foles', job:'curtidor',           speech:'"Sinto um cheiro que não consigo nomear. Perguntei aos outros. Ninguém sente."'},
+  {id:'r11', name:'Wulfric Stone', job:'caçador',            speech:'"Nenhum animal perto da vila faz dois dias. Como se tivessem fugido de algo."'},
+  {id:'r12', name:'Peregrine Ash', job:'coveiro',            speech:'"Ontem eu cavei. Não me lembro por quem. Mas cavei fundo."'},
+  {id:'r13', name:'Nessa Holt',    job:'lavadeira',          speech:'"A água do rio ficou parada esta manhã. Nem correnteza. Só quieta e escura."'},
+  {id:'r14', name:'Crispin Forde', job:'sapateiro',          speech:'"Encontrei um sapato que não é de nenhum morador que conheço. Pequeno demais."'},
+  {id:'r15', name:'Aldous Birch',  job:'boticário',          speech:'"Minhas medidas estão todas erradas. Os remédios não fazem efeito nenhum."'},
+  {id:'r16', name:'Gwen Tallow',   job:'doceira',            speech:'"O açúcar virou cinza esta manhã. O mel também. Tudo perdeu a cor."'},
+  {id:'r17', name:'Sorrel Vane',   job:'pastora',            speech:'"Uma das cabras só olha pro norte. Faz três dias que não come, não bebe."'},
+  {id:'r18', name:'Florian Muck',  job:'aguadeiro',          speech:'"Fui entregar água numa casa. A porta estava aberta. Não havia ninguém lá."'},
+  {id:'r19', name:'Idris Peat',    job:'lenhador',           speech:'"Ouço batidas na madeira à noite. Lentas. Ritmadas. Vêm de dentro da árvore."'},
+  {id:'r20', name:'Winnie Croft',  job:'costureira',         speech:'"Costurei uma mortalha que ninguém encomendou. Ficou do tamanho certo assim mesmo."'},
+  {id:'r21', name:'Theron Gale',   job:'ferrador',           speech:'"O cavalo do pároco ficou manco sem causa. Examinei a pata. Estava completamente sã."'},
+  {id:'r22', name:'Lotte Dun',     job:'florista',           speech:'"As flores abriram de noite. Todas viradas pro mesmo lado. Para o centro da vila."'},
+  {id:'r23', name:'Cormac Sloe',   job:'taberneiro',         speech:'"Servi bebida pra alguém ontem à noite. Não consigo mais lembrar o rosto."'},
+  {id:'r24', name:'Pru Hatch',     job:'criadora de gansos', speech:'"Os gansos ficaram quietos de uma hora pra outra. Os gansos nunca ficam quietos."'},
+  {id:'r25', name:'Lachlan Brae',  job:'charreteiro',        speech:'"Encontrei minha charrete fora da estrada pela manhã. Eu não a levei pra lá."'},
+  {id:'r26', name:'Wren Sedge',    job:'oleira',             speech:'"O barro secou antes de eu moldar. Como se já soubesse a forma que queria."'},
+  {id:'r27', name:'Dunstan Mere',  job:'pescador',           speech:'"Os peixes estão de barriga pra cima no rio. Não estão mortos. Só esperando."'},
+  {id:'r28', name:'Sibyl Thorn',   job:'adivinha',           speech:'"Parei de ler as cartas há dois dias. Elas mostram a mesma coisa toda vez."'},
+  {id:'r29', name:'Roland Chalk',  job:'pintor',             speech:'"Pintei uma janela que não existe na parede. Só percebi quando terminei."'},
+  {id:'r30', name:'Feya Mist',     job:'engomadeira',        speech:'"As roupas cheiram a terra molhada mesmo depois de lavadas e secas ao sol."'},
+  {id:'r31', name:'Bertram Cole',  job:'celeireiro',         speech:'"Faltam sacos no celeiro. Não tem registro de saída. Simplesmente sumiram."'},
+  {id:'r32', name:'Ines Peel',     job:'hortelanã',          speech:'"A horta cresceu rápido demais. Não plantei metade do que está brotando."'},
+  {id:'r33', name:'Rowan Dusk',    job:'guarda noturno',     speech:'"Havia uma luz acesa onde não devia haver. Fui ver. Não tinha absolutamente nada."'},
+  {id:'r34', name:'Finn Crick',    job:'remendão',           speech:'"Remendar não resolve mais. Os buracos voltam sempre no mesmo lugar."'},
+  {id:'r35', name:'Odette Larch',  job:'enfermeira',         speech:'"Os doentes perguntam por alguém que não conheço. Todos pelo mesmo nome."'},
+  {id:'r36', name:'Colt Hollow',   job:'rodeiro',            speech:'"Fiz uma roda hoje. Ficou perfeita. Mas não sei pra qual carroça era."'},
+  {id:'r37', name:'Tamsin Ridge',  job:'bordadeira',         speech:'"Bordei um nome que não consigo ler agora. Minha própria mão fez isso."'},
+  {id:'r38', name:'Hugh Sedge',    job:'padre',              speech:'"Rezei hoje por alguém cujo nome não consigo pronunciar. Mas rezei com fervor."'},
+  {id:'r39', name:'Eda Moor',      job:'ama de leite',       speech:'"A criança parou de chorar de repente. Olhou pra porta vazia e sorriu."'},
+  {id:'r40', name:'Cian Fern',     job:'tintureiro',         speech:'"As cores saíram erradas hoje. O vermelho ficou preto. O branco virou cinza."'},
+  {id:'r_ph',name:'— [nome ilegível] —', job:'', speech:'"ela cantou para mim. só eu ouvi."', phantom:true},
+];
+
+/* ════════════════════════════════════════════════════════
+   ESTADO
+════════════════════════════════════════════════════════ */
+const ST = {
+  visits: 1, prevTime: 0, elapsed: 0,
+  active: false, broken: false,
+  phase: 0, residentCount: 0,
+  btnClicks: 0, ghost: false,
+  mouseX: 0, mouseY: 0,
+  lastMouseX: 0, lastMouseY: 0,
+  cursorLagX: 0, cursorLagY: 0,
+  residentCountOverride: 0,
+  activeResidents: [],
+  speed: 1.0,
+  listRemovalStarted: false,
+  climaxReady:  false,
+  listDepleted: false,
+};
+
+/* ════════════════════════════════════════════════════════
+   STORAGE
+════════════════════════════════════════════════════════ */
+function storageLoad() {
+  try {
+    const v = localStorage.getItem('_fh_v');
+    ST.visits = v ? Math.min(parseInt(v) + 1, 99) : 1;
+    localStorage.setItem('_fh_v', String(ST.visits));
+    ST.prevTime = parseInt(localStorage.getItem('_fh_t') || '0');
+    ST.ghost    = !!localStorage.getItem('_fh_g');
+    const rc = localStorage.getItem('_fh_rc');
+    ST.residentCountOverride = rc ? parseInt(rc) : 0;
+  } catch(e) {}
+}
+function storageSave() {
+  try { localStorage.setItem('_fh_t', String(ST.prevTime + ST.elapsed)); } catch(e) {}
+}
+function storageReset() {
+  try {
+    localStorage.removeItem('_fh_v');
+    localStorage.removeItem('_fh_t');
+    localStorage.removeItem('_fh_g');
+  } catch(e) {}
+  // algo sempre fica
+  setTimeout(() => { try { localStorage.setItem('_fh_g', '1'); } catch(e) {} }, 300);
+}
+
+/* ════════════════════════════════════════════════════════
+   INICIALIZA MORADORES
+════════════════════════════════════════════════════════ */
+function initResidents() {
+  const NUMS = ['I','II','III','IV','V','VI','VII','VIII','IX','X',
+    'XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX',
+    'XXI','XXII','XXIII','XXIV','XXV','XXVI','XXVII','XXVIII','XXIX','XXX',
+    'XXXI','XXXII','XXXIII','XXXIV','XXXV','XXXVI','XXXVII','XXXVIII','XXXIX','XL','XLI'];
+
+  const real    = RESIDENTS_DATA.filter(r => !r.phantom);
+  const phantom = RESIDENTS_DATA.find(r => r.phantom);
+
+  let target = ST.residentCountOverride > 0
+    ? Math.min(ST.residentCountOverride, real.length)
+    : real.length;
+
+  let picked;
+  if (target >= real.length) {
+    picked = [...real];
+  } else {
+    const shuffled = [...real].sort(() => 0.5 - Math.random());
+    picked = shuffled.slice(0, target)
+      .sort((a, b) => RESIDENTS_DATA.indexOf(a) - RESIDENTS_DATA.indexOf(b));
+  }
+
+  ST.activeResidents = [...picked, phantom];
+  ST.residentCount   = ST.activeResidents.length;
+
+  const ul = document.getElementById('residents');
+  if (!ul) return;
+  ul.innerHTML = '';
+  ST.activeResidents.forEach((r, i) => {
+    const li = document.createElement('li');
+    li.id           = r.id;
+    li.dataset.num  = (NUMS[i] || String(i+1)) + '.';
+    if (r.phantom)  li.classList.add('phantom');
+    li.textContent  = r.job ? r.name + ' — ' + r.job : r.name;
+    ul.appendChild(li);
+  });
+
+  // Contador de moradores — sem piscar, só atualiza o span
+  const cn = $('count-num');
+  if (cn) cn.textContent = String(ST.residentCount);
+
+  // Status bar
+  const sc = $('status-count');
+  if (sc) sc.textContent = String(ST.residentCount);
+
+  // Depoimento e erros
+  const dc  = $('dep-count');
+  if (dc)  dc.textContent  = String(ST.residentCount);
+  const epc = $('err-prev-count');
+  if (epc) epc.textContent = String(ST.residentCount);
+  const e1  = $('err1-entry');
+  if (e1)  e1.textContent  = 'entrada nº ' + String(ST.residentCount);
+
+  // Casas — número fixo, independente do total de moradores
+  const hc = $('house-count');
+  if (hc) hc.textContent = String(HOUSE_COUNT);
+
+  // denial-num: pré-preenchido aqui — quando o leitor chegar na negação o número
+  // já será contraditório com os moradores que sumiu atrás dele
+  const dn0 = $('denial-num');
+  if (dn0) dn0.textContent = String(ST.residentCount);
+}
+
+/* ════════════════════════════════════════════════════════
+   CAMADA DE VISITA
+   Aplica diferenças visíveis IMEDIATAMENTE ao carregar,
+   antes de qualquer scroll. V2 e V3 devem parecer
+   documentos distintos desde o primeiro pixel.
+════════════════════════════════════════════════════════ */
+function applyVisitLayer() {
+  const v = ST.visits;
+  if (v < 2) return;
+
+  document.body.classList.add('visit' + Math.min(v, 3));
+
+  // ── mensagem de retorno — aparece no topo ao carregar ─
+  const vl = document.createElement('div');
+  vl.className = 'eyebrow';
+  vl.style.cssText = 'margin-bottom:1.8rem; opacity:0; transition:opacity 2.5s ease; color:var(--acc);';
+  vl.textContent = v === 2 ? 'você voltou.'
+                : v === 3 ? 'ela sabia que você voltaria.'
+                : 'você sempre volta. ela também sempre esperou.';
+  const hdr = $('header');
+  if (hdr) hdr.insertBefore(vl, hdr.firstChild);
+  setTimeout(() => { vl.style.opacity = '1'; }, 300);
+
+  // ── V2 — corrupção inicial discreta ───────────────────
+  if (v === 2) {
+    const sl = $('status-l');
+    if (sl) sl.textContent = 'vila_do_vau — registro_oficial.txt [revisado]';
+
+    const pi = $('p-intro');
+    if (pi) pi.textContent = 'A Vila do Vau é um lugar tranquilo. Você já sabe disso.';
+
+    // h1-sub mostra número já com 1 a menos — discrepância imediata
+    const sub = $('h1-sub');
+    if (sub) {
+      sub.textContent = '— ' + (ST.residentCount - 1) + ' registros —';
+      sub.style.opacity = '0.6';
+    }
+
+    // 1 morador da lista já está sumindo — ainda visível mas perturbador
+    const firstLi = document.querySelector('#residents li:not(.phantom)');
+    if (firstLi) firstLi.classList.add('fading');
+
+    // err1 já existe mas quase invisível — como se sempre tivesse estado lá
+    const e1 = $('err1');
+    if (e1) { e1.style.opacity = '0.18'; e1.style.transition = 'none'; }
+
+    // canto superior — faint desde o início
+    const ctl = $('c-tl');
+    if (ctl) { ctl.textContent = 'você já leu isso'; ctl.style.opacity = '0.09'; }
+  }
+
+  // ── V3+ — corrupção evidente desde o carregamento ─────
+  if (v >= 3) {
+    const sl = $('status-l');
+    if (sl) sl.textContent = 'vila_do_vau — [acesso_repetido].txt';
+
+    const pi = $('p-intro');
+    if (pi) pi.textContent = 'A Vila do Vau é um lugar que você conhece.';
+
+    const ll = $('list-label');
+    if (ll) ll.textContent = 'registro nominal — incompleto';
+
+    // h1-sub já sumiu — o número foi apagado
+    const sub = $('h1-sub');
+    if (sub) { sub.textContent = '— [corrompido] —'; sub.style.opacity = '0.25'; }
+
+    // 3 moradores já ausentes da lista ao carregar
+    // (remove o 2º, 5º e 8º para não quebrar a fila de remoção posterior)
+    const lis = [...document.querySelectorAll('#residents li:not(.phantom)')];
+    const toRemove = [lis[1], lis[4], lis[7]].filter(Boolean);
+    toRemove.forEach(li => {
+      li.classList.add('gone');
+      ST.residentCount--;
+    });
+    // atualiza contadores imediatamente
+    const cn = $('count-num');
+    if (cn) cn.textContent = String(ST.residentCount);
+    const sc = $('status-count');
+    if (sc) sc.textContent = String(ST.residentCount);
+
+    // err1 já totalmente visível — como se sempre tivesse estado lá
+    const e1 = $('err1');
+    if (e1) { e1.style.opacity = '0.7'; e1.style.transition = 'none'; }
+
+    // denial1 já faintly visible — a negação já começou
+    const d1 = $('denial1');
+    if (d1) {
+      d1.style.opacity = '0.22'; d1.style.transition = 'none';
+      const dn = $('denial-num');
+      if (dn) dn.textContent = String(ST.residentCount + 3); // número "anterior" — errado
+    }
+
+    // phantoms já no estágio reveal desde o início
+    const phantomEls = [$('p-intro2'), $('p-obs3'), $('song-p4'), $('song-p5')];
+    phantomEls.forEach(el => { if (el) el.classList.add('reveal'); });
+
+    // cantos já presentes
+    const ctl = $('c-tl');
+    if (ctl) { ctl.textContent = 'você foi aqui antes'; ctl.style.opacity = '0.20'; }
+    const cbl = $('c-bl');
+    if (cbl) { cbl.textContent = 'ela te contou também'; cbl.style.opacity = '0.14'; }
+
+    // nota marginal visível
+    const s6b = $('s6b');
+    if (s6b) s6b.style.display = '';
+    const sc13 = $('sc-13');
+    if (sc13) sc13.style.display = '';
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   REVELAÇÃO DE SEÇÕES AO ROLAR
+════════════════════════════════════════════════════════ */
+function initSectionReveal() {
+  const targets = [
+    ...document.querySelectorAll('.section'),
+    $('resident-count')
+  ].filter(Boolean);
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+
+  targets.forEach(t => obs.observe(t));
+}
+
+/* ════════════════════════════════════════════════════════
+   ÁUDIO
+════════════════════════════════════════════════════════ */
+const audio = document.getElementById('lullaby');
+let audioStarted = false;
+
+function audioStart() {
+  if (audioStarted || !audio) return;
+  audioStarted = true;
+  audio.volume = 0;
+  audio.play().then(() => {
+    const btn = document.getElementById('audio-btn');
+    if (btn) { btn.textContent = '◈ ela canta'; btn.classList.add('playing'); }
+    const targetVol = ST.visits === 1 ? 0.18 : ST.visits === 2 ? 0.28 : 0.38;
+    const steps     = ST.visits === 1 ? 200  : ST.visits === 2 ? 80   : 25;
+    const stepVol   = targetVol / steps;
+    let count = 0;
+    const iv = setInterval(() => {
+      count++;
+      audio.volume = Math.min(targetVol, audio.volume + stepVol);
+      if (count >= steps) clearInterval(iv);
+    }, ST.visits === 1 ? 120 : ST.visits === 2 ? 60 : 30);
+  }).catch(() => {
+    audioStarted = false;
+    ['click','scroll','touchstart','keydown'].forEach(ev => {
+      document.addEventListener(ev, audioStart, { once: true, passive: true });
+    });
+  });
+}
+
+function audioSet(v, ms=800) {
+  if (!audio) return;
+  const start = audio.volume;
+  const diff  = v - start;
+  const steps = Math.round(ms / 30);
+  let  i = 0;
+  const iv = setInterval(() => {
+    i++;
+    audio.volume = Math.max(0, Math.min(1, start + diff * (i / steps)));
+    if (i >= steps) clearInterval(iv);
+  }, 30);
+}
+function audioSilence(dur=1200) {
+  if (!audio) return;
+  const vol = audio.volume;
+  audioSet(0.001, 300);
+  setTimeout(() => audioSet(vol, dur), 400);
+}
+function audioPulse(upVol=0.5, ms=60) {
+  if (!audio) return;
+  const vol = audio.volume;
+  audioSet(upVol, ms);
+  setTimeout(() => audioSet(vol, 400), ms + 80);
+}
+
+/* ════════════════════════════════════════════════════════
+   DOM HELPERS
+════════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+
+/* ════════════════════════════════════════════════════════
+   PORTÃO DE ENTRADA
+════════════════════════════════════════════════════════ */
+function gateOpen() {
+  // CSS animations cuidam da aparência dos elementos
+  // JS só precisa bloquear o scroll do documento enquanto o portão está visível
+  document.body.style.overflow              = 'hidden';
+  document.documentElement.style.overflow  = 'hidden';
+}
+
+function gateClose() {
+  const gate = $('gate');
+  if (!gate) return;
+  gate.classList.add('closing');
+  document.body.style.overflow             = '';
+  document.documentElement.style.overflow  = '';
+  // Esconde sem remover do DOM — previne problema de bfcache ao navegar de volta
+  setTimeout(() => { gate.style.display = 'none'; }, 2600);
+}
+
+async function gateMicRequest() {
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    initMic(stream);
+  } catch(e) {
+    // NotAllowedError, NotFoundError, iframe sem allow="microphone" — página continua normalmente
+  }
+}
+
+function gateAnswer(yes) {
+  const btns  = $('gate-btns');
+  const q     = $('gate-q');
+  const hint  = $('gate-hint');
+  const label = $('gate-lbl');
+
+  // Para animação CSS e inicia fade-out em ambos os caminhos
+  [btns, q, hint, label].forEach(el => {
+    if (!el) return;
+    el.style.animation  = 'none';           // cancela gateIn se ainda correndo
+    el.style.transition = 'opacity 0.6s ease';
+    el.style.opacity    = '0';
+  });
+
+  // Garante que o portão fecha independente do resultado do mic
+  const closeAfter = (ms) => () => setTimeout(gateClose, ms);
+
+  if (yes) {
+    // ── SIM — pede mic, fecha portão após resolução ──────
+    gateMicRequest().then(closeAfter(1000), closeAfter(1000));
+
+  } else {
+    // ── NÃO — revelação, depois pede mic de qualquer forma ──
+    setTimeout(() => {
+      const rm = $('gate-r-main');
+      if (rm) {
+        rm.textContent = '... Você Ouvirá ...';
+        rm.classList.add('show');
+        setTimeout(() => rm.classList.add('blood'), 80);
+      }
+    }, 900);
+
+    setTimeout(() => {
+      const rs = $('gate-r-sub');
+      if (rs) {
+        rs.textContent = 'Ela também te ouve agora.';
+        rs.classList.add('show');
+      }
+    }, 3800);
+
+    // O consentimento é irrelevante para ela
+    setTimeout(() => {
+      gateMicRequest().then(closeAfter(1600), closeAfter(1600));
+    }, 5400);
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   MICROFONE — escuta ambiente durante a leitura
+════════════════════════════════════════════════════════ */
+let micAnalyser = null;
+let micActive   = false;
+let lastMicHit  = 0;
+
+function initMic(stream) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const src = ctx.createMediaStreamSource(stream);
+    micAnalyser = ctx.createAnalyser();
+    micAnalyser.fftSize = 256;
+    src.connect(micAnalyser);
+    micActive = true;
+    runMicLoop();
+  } catch(e) {}
+}
+
+function getMicLevel() {
+  if (!micAnalyser) return 0;
+  const data = new Uint8Array(micAnalyser.frequencyBinCount);
+  micAnalyser.getByteFrequencyData(data);
+  return data.reduce((a, b) => a + b, 0) / data.length;
+}
+
+function runMicLoop() {
+  setInterval(() => {
+    if (!micActive) return;
+    const level = getMicLevel();
+    const now   = Date.now();
+    if (level < 14)              return; // silêncio — ela espera
+    if (now - lastMicHit < 4000) return; // cooldown
+    lastMicHit = now;
+    onMicSound(level);
+  }, 100);
+}
+
+function onMicSound(level) {
+  // ── Durante a tela de quebra ────────────────────────────
+  if (ST.broken) {
+    audioPulse(Math.min(0.92, (audio ? audio.volume : 0.5) + 0.28), 80);
+    flashSubliminal('ela te ouviu', 130);
+    const bm = $('break-main');
+    if (bm) {
+      bm.style.opacity = '0.6';
+      setTimeout(() => { bm.style.opacity = '1'; }, 220);
+    }
+    return;
+  }
+
+  // ── Durante a leitura normal ────────────────────────────
+  const pool = [
+    () => flashSubliminal('ela te ouviu', 90),
+    () => flashSubliminal('ela ouve', 75),
+    () => { audioSilence(900); flashSubliminal('silêncio', 70); },
+    () => flashSubliminal('ela sabe', 85),
+    () => flashSubliminal('cuidado', 65),
+  ];
+  pool[Math.floor(Math.random() * pool.length)]();
+
+  if (level > 32) audioSilence(700);
+
+  // Atualiza canto superior temporariamente
+  if (ST.elapsed > 6) {
+    const ctl = $('c-tl');
+    if (ctl) {
+      const prevText = ctl.textContent;
+      const prevOp   = ctl.style.opacity || '0';
+      ctl.textContent      = 'ela te ouviu';
+      ctl.style.opacity    = '0.36';
+      ctl.style.color      = 'var(--acc)';
+      ctl.style.transition = 'opacity 0.3s ease, color 0.3s ease';
+      setTimeout(() => {
+        ctl.textContent   = prevText;
+        ctl.style.opacity = prevOp;
+        ctl.style.color   = '';
+      }, 3800);
+    }
+  }
+}
+
+function show(el, delay=0) {
+  if (!el) return;
+  setTimeout(() => { el.style.opacity = '1'; }, delay);
+}
+function hide(el, delay=0) {
+  if (!el) return;
+  setTimeout(() => { el.style.opacity = '0'; }, delay);
+}
+function setText(el, text, delay=0) {
+  if (!el) return;
+  setTimeout(() => {
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.textContent = text;
+      el.style.opacity = '1';
+    }, 900);
+  }, delay);
+}
+function glitch(el) {
+  if (!el) return;
+  el.classList.add('glitching');
+  setTimeout(() => el.classList.remove('glitching'), 280);
+}
+function flashSubliminal(text, dur=80) {
+  const sub = $('subliminal');
+  if (!sub) return;
+  sub.querySelector('span').textContent = text;
+  sub.style.opacity = '1';
+  setTimeout(() => { sub.style.opacity = '0'; }, dur);
+}
+
+/* ════════════════════════════════════════════════════════
+   FALA DO MORADOR
+   — scroll ou clique no texto pula para o próximo
+════════════════════════════════════════════════════════ */
+function residentSpeak(resident, callback) {
+  const el = $('speech-overlay');
+  if (!el || !resident) { if (callback) callback(); return; }
+
+  const sp      = ST.speed || 1.0;
+  const fadeIn  = Math.round(1200 / sp);
+  const display = Math.max(3600, Math.round(4500 / sp)); // mínimo 3.6s para leitura
+  const fadeOut = Math.round(1000 / sp);
+
+  let skipped = false;
+  let displayTimer = null;
+
+  function finish() {
+    if (skipped) return;
+    skipped = true;
+    clearTimeout(displayTimer);
+    document.removeEventListener('scroll', onSkip);
+    el.removeEventListener('click', onSkip);
+    el.style.transition = 'opacity ' + (fadeOut / 1000).toFixed(1) + 's ease';
+    el.style.opacity = '0';
+    setTimeout(() => { el.innerHTML = ''; if (callback) callback(); }, fadeOut);
+  }
+
+  // skip ao rolar ou clicar na fala — delay de 1s para não disparar imediato
+  function onSkip() { setTimeout(finish, 280); }
+
+  const name = resident.phantom ? '— sem identificação —' : resident.name;
+  el.innerHTML =
+    '<span class="speaker-name">' + name + '</span>' +
+    '<span class="speaker-text">' + resident.speech + '</span>';
+
+  el.style.transition = 'opacity ' + (fadeIn / 1000).toFixed(1) + 's ease';
+  el.style.opacity = '1';
+
+  setTimeout(() => {
+    document.addEventListener('scroll', onSkip, { passive: true, once: true });
+    el.addEventListener('click', onSkip, { once: true });
+  }, 1000);
+
+  displayTimer = setTimeout(finish, display);
+}
+
+/* ════════════════════════════════════════════════════════
+   MORADORES — atualização de contadores
+════════════════════════════════════════════════════════ */
+function updateCounts() {
+  const n = ST.residentCount;
+
+  const countEl = $('count-num');
+  if (countEl) {
+    countEl.style.opacity = '0';
+    setTimeout(() => {
+      countEl.textContent = String(n);
+      countEl.style.opacity = '1';
+      if (n <= 4) countEl.parentElement.classList.add('disturb');
+    }, 600);
+  }
+
+  const sc = $('status-count');
+  if (sc) sc.textContent = String(n);
+
+  // err2 mostra o valor anterior (+1) para criar contradição
+  const ep = $('err-prev-count');
+  if (ep) ep.textContent = String(n + 1);
+
+  const dc = $('dep-count');
+  if (dc) {
+    dc.style.opacity = '0';
+    setTimeout(() => { dc.textContent = String(n); dc.style.opacity = '1'; }, 700);
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   PHANTOMS — texto que "sempre esteve lá"
+════════════════════════════════════════════════════════ */
+function revealPhantom(el, delay=0) {
+  if (!el) return;
+  setTimeout(() => { el.classList.add('reveal'); }, delay);
+  setTimeout(() => { el.classList.add('vivid'); },  delay + 8000);
+}
+
+/* ════════════════════════════════════════════════════════
+   TIMELINE DE EVENTOS
+   T(n) = n segundos após o leitor chegar ao fim (#s7).
+   Comprimida para leitores rápidos — clímax acessível
+   em menos de 2 minutos mesmo na primeira visita.
+════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════
+   REMOÇÃO DA LISTA — dispara quando o leitor passa pela lista
+   (scroll past #s2 descendo)
+════════════════════════════════════════════════════════ */
+function watchListPass() {
+  const target = $('s2');
+  if (!target) return;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) {
+        if (target.getBoundingClientRect().bottom < 0) {
+          obs.disconnect();
+          startListRemoval();
+        }
+      }
+    });
+  }, { threshold: 0 });
+  obs.observe(target);
+}
+
+function startListRemoval() {
+  if (ST.listRemovalStarted) return;
+  ST.listRemovalStarted = true;
+
+  const v     = ST.visits;
+  const speed = v === 1 ? 1.0 : v === 2 ? 1.25 : 1.60;
+  ST.speed    = speed;
+
+  const removalGap = v === 1 ? 1200 : v === 2 ? 700 : 350;
+  const phantom    = ST.activeResidents.find(r => r.phantom);
+  const realActv   = ST.activeResidents.filter(r => {
+    if (r.phantom) return false;
+    const li = $(r.id);
+    return li && !li.classList.contains('gone');
+  });
+
+  // Áudio sobe levemente — algo começou
+  audioSet(0.28, 3000);
+
+  // Fantasma fala primeiro
+  if (phantom) {
+    residentSpeak(phantom, () => {
+      const li = $(phantom.id);
+      if (!li) return;
+      li.classList.add('fading');
+      setTimeout(() => {
+        li.classList.remove('fading');
+        li.classList.add('gone');
+        ST.residentCount--;
+        updateCounts();
+      }, 1200);
+    });
+  }
+
+  const phantomDelay = phantom ? Math.round(6000 / speed) : 0;
+  setTimeout(() => removeNext([...realActv].reverse(), 0, removalGap), phantomDelay);
+}
+
+function removeNext(queue, idx, removalGap) {
+  if (idx >= queue.length) { onLastResidentGone(); return; }
+
+  const r = queue[idx];
+  residentSpeak(r, () => {
+    const li = $(r.id);
+    if (!li || li.classList.contains('gone')) {
+      setTimeout(() => removeNext(queue, idx + 1, removalGap), 100);
+      return;
+    }
+    li.classList.add('fading');
+    if (idx % 3 === 2) glitch($('resident-count'));
+    if (idx % 5 === 4) audioSilence(1400);
+    if (idx % 4 === 1) {
+      const sl = $('status-l');
+      if (sl) {
+        const original = sl.textContent;
+        sl.textContent = 'atualizando registro...';
+        setTimeout(() => { sl.textContent = original; }, 2000);
+      }
+    }
+    setTimeout(() => {
+      li.classList.remove('fading');
+      li.classList.add('gone');
+      ST.residentCount--;
+      updateCounts();
+      setTimeout(() => removeNext(queue, idx + 1, removalGap), removalGap);
+    }, 1200);
+  });
+}
+
+/* ════════════════════════════════════════════════════════
+   CLÍMAX — dispara quando o leitor chega à entrada final
+════════════════════════════════════════════════════════ */
+function watchFinalEntry() {
+  const target = $('s7');
+  if (!target) return;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        obs.disconnect();
+        if (!ST.listRemovalStarted) startListRemoval(); // fallback: leitor rápido
+        activateClimax();
+      }
+    });
+  }, { threshold: 0.15 });
+  obs.observe(target);
+}
+
+function activateClimax() {
+  if (ST.active) return;
+  ST.active = true;
+
+  const v     = ST.visits;
+  const speed = v === 1 ? 1.0 : v === 2 ? 1.25 : 1.60;
+  if (!ST.speed) ST.speed = speed;
+  const T = s => Math.round(s * 1000 / speed);
+
+  // h1-sub — só v1
+  if (v === 1) {
+    setTimeout(() => {
+      const sub = $('h1-sub');
+      if (sub) { sub.textContent = '— ' + ST.residentCount + ' registros —'; sub.style.opacity = '1'; }
+    }, T(3));
+  }
+
+  // house-count cai silenciosamente enquanto leitor está em s7
+  setTimeout(() => {
+    const hc = $('house-count');
+    if (hc) hc.textContent = String(HOUSE_COUNT - 1);
+  }, T(10));
+
+  // Degradação de tela
+  setTimeout(() => document.body.classList.add('phase2'), T(4));
+  setTimeout(() => document.body.classList.add('phase3'), T(14));
+  setTimeout(() => document.body.classList.add('phase4'), T(24));
+
+  // Phantoms da entrada final emergem em sequência
+  setTimeout(() => revealPhantom($('p-final1')), T(5));
+  setTimeout(() => revealPhantom($('p-final2')), T(12));
+  setTimeout(() => revealPhantom($('p-final3')), T(19));
+
+  // p-final4 aparece — break só dispara quando clímax E lista concluírem
+  setTimeout(() => {
+    const p = $('p-final4');
+    if (p) { p.style.transition = 'opacity 4s ease'; p.style.opacity = '1'; }
+    audioSet(0.72, 2200);
+    ST.climaxReady = true;
+    maybeBreak();
+  }, T(27));
+
+  // Nota de encerramento dentro de s7
+  setTimeout(() => {
+    const s7 = $('s7');
+    if (!s7) return;
+    const p = document.createElement('p');
+    p.style.cssText = 'margin-top:2.5em; opacity:0; transition:opacity 5s ease; font-size:0.72rem; letter-spacing:0.06em; color:var(--dim); font-style:italic; font-family:\'Courier New\', monospace;';
+    p.textContent = '— arquivo encerrado. próximo registro será iniciado automaticamente —';
+    s7.appendChild(p);
+    setTimeout(() => { p.style.opacity = '1'; }, 200);
+  }, T(35));
+
+  // Avisos ao leitor (s6) — abaixo de s7, leitor continua rolando
+  show($('p-warn2'), T(3));
+  show($('p-warn3'), T(6));
+  show($('p-warn4'), T(10));
+
+  // p-warn1 (tempo anterior) — v2+
+  if (v > 1 && ST.prevTime > 0) {
+    setTimeout(() => {
+      const p = $('p-warn1');
+      if (p) {
+        p.style.opacity = '0';
+        setTimeout(() => {
+          const t = ST.prevTime;
+          const display = t >= 120
+            ? `${Math.round(t / 60)} minutos acumulados`
+            : `${t}s no total`;
+          p.innerHTML = `Da última vez, você ficou aqui tempo suficiente. ${display}. Mais do que deveria.`;
+          p.style.opacity = '1';
+        }, 800);
+      }
+    }, T(4));
+  }
+
+  // Negação extra muda enquanto leitor avança
+  setTimeout(() => {
+    const de = $('denial-extra');
+    if (de) { de.style.opacity = '1'; de.style.transition = 'opacity 3s ease'; }
+    const dp = $('denial-p2');
+    if (dp) {
+      dp.style.opacity = '0'; dp.style.transition = 'opacity 1.5s ease';
+      setTimeout(() => {
+        dp.textContent = 'Nunca houve outros. O número que você leu antes estava errado.';
+        dp.style.opacity = '0.7';
+      }, 1000);
+    }
+  }, T(8));
+
+  // Labels mudam
+  setTimeout(() => {
+    const l = $('label-s4');
+    if (l) { l.style.opacity = '0'; setTimeout(() => { l.textContent = 'depoimento — identificação removida'; l.style.opacity = '1'; }, 600); }
+  }, T(6));
+  setTimeout(() => {
+    const l = $('label-s6');
+    if (l) { l.style.opacity = '0'; setTimeout(() => { l.textContent = 'aviso — você está sendo observado'; l.style.opacity = '0.8'; }, 600); }
+  }, T(16));
+
+  // p-intro muda
+  setTimeout(() => {
+    const p = $('p-intro');
+    if (!p) return;
+    p.style.opacity = '0';
+    setTimeout(() => {
+      p.textContent = v >= 3
+        ? 'A Vila do Vau é um lugar que você conhece. Ela também te conhece agora.'
+        : 'A Vila do Vau é um lugar tranquilo. Menos agitado a cada dia.';
+      p.style.opacity = '1';
+    }, 800);
+  }, T(20));
+
+  // Cursor fantasma
+  setTimeout(() => { ST.phase = 3; const gc = $('ghost-cursor'); if (gc) gc.style.opacity = '1'; }, T(15));
+
+  // Textos de canto
+  const cf = v === 1 ? 1 : v === 2 ? 1.5 : 2.2;
+  setTimeout(() => { const el = $('c-tl'); if (el) { el.textContent = 'eles tinham nomes'; el.style.opacity = '0.22'; } }, T(5 / cf));
+  setTimeout(() => { const el = $('c-bl'); if (el) { el.textContent = v >= 3 ? 'você volta sempre' : 'os corpos não precisam ir a lugar algum'; el.style.opacity = '0.20'; } }, T(12 / cf));
+  setTimeout(() => { const el = $('c-tr'); if (el) { el.textContent = v >= 3 ? 'ela te espera de novo' : 'você vai esquecer o que leu'; el.style.opacity = '0.18'; } }, T(20 / cf));
+  setTimeout(() => { const el = $('c-br'); if (el) { el.textContent = 'ela já sabe que você esteve aqui'; el.style.opacity = '0.16'; } }, T(28 / cf));
+
+  if (ST.ghost) {
+    setTimeout(() => { const el = $('c-tl'); if (el) { el.textContent = 'você tentou esquecer'; el.style.opacity = '0.30'; el.style.color = 'var(--acc)'; } }, T(v === 1 ? 2 : 1));
+  }
+
+  // Subliminares
+  setTimeout(() => flashSubliminal('ela canta',              60), T(2));
+  setTimeout(() => flashSubliminal('cadê os outros?',        70), T(9));
+  setTimeout(() => flashSubliminal('você a ouve',            80), T(16));
+  setTimeout(() => flashSubliminal('ela está aqui',         100), T(22));
+  setTimeout(() => flashSubliminal('ela aprendeu seu nome', 120), T(29));
+
+  if (v >= 3) {
+    setTimeout(() => flashSubliminal('ela te conhece',       85), T(1));
+    setTimeout(() => flashSubliminal('você foi contado',     95), T(11));
+    setTimeout(() => flashSubliminal('quantas vezes já?',    75), T(24));
+    setTimeout(() => flashSubliminal('não adianta esquecer',105), T(31));
+  }
+
+  // Seção s6b — v3+
+  if (v >= 3) {
+    setTimeout(() => { const p2 = $('p-counted2'); if (p2) { p2.style.transition = 'opacity 4s ease'; p2.style.opacity = '1'; } }, T(6));
+    setTimeout(() => { const p3 = $('p-counted3'); if (p3) { p3.style.transition = 'opacity 4s ease'; p3.style.opacity = '1'; } }, T(17));
+  }
+
+  // Glitches aleatórios
+  setInterval(() => {
+    if (!ST.active || ST.broken) return;
+    const r = Math.random();
+    if (r < 0.12 && ST.elapsed > 20) glitch($('resident-count'));
+    if (r < 0.06 && ST.elapsed > 35) glitch(document.querySelector('#residents'));
+    if (r < 0.04 && ST.elapsed > 15) audioSilence(500 + Math.random() * 1000);
+    if (r < 0.025 && ST.elapsed > 40) audioPulse(Math.min(0.8, (audio ? audio.volume : 0) * 2.5), 50);
+    if (r < 0.018 && ST.elapsed > 55) flashSubliminal([String(ST.residentCount),'ela ouve','não esqueça',String(Math.max(0,ST.residentCount-1)),'quantos restam?','você lembra deles?'][Math.floor(Math.random()*6)], 65);
+    if (r < 0.014 && ST.elapsed > 70) {
+      const sections = document.querySelectorAll('.section.visible');
+      if (sections.length > 0) {
+        const s = sections[Math.floor(Math.random() * sections.length)];
+        const dx = (Math.random() - 0.5) * 3; const dy = (Math.random() - 0.5) * 2;
+        s.style.transform = `translate(${dx}px,${dy}px)`;
+        setTimeout(() => { s.style.transform = ''; }, 3000);
+      }
+    }
+  }, 3500);
+}
+
+/* ════════════════════════════════════════════════════════
+   PHANTOMS POR SEÇÃO — cada texto fantasma revela quando
+   o leitor está na seção correspondente
+════════════════════════════════════════════════════════ */
+function initPhantomReveals() {
+  const v     = ST.visits;
+  const speed = v === 1 ? 1.0 : v === 2 ? 1.25 : 1.60;
+  const T = s => Math.round(s * 1000 / speed);
+
+  // Phantoms dos documentos — observer por seção
+  [
+    { sec: 's1',  id: 'p-intro2',    delay: T(9)  },
+    { sec: 's3',  id: 'p-obs3',      delay: T(7)  },
+    { sec: 's4',  id: 'p-dep3',      delay: T(6)  },
+    { sec: 's5',  id: 'p-traveler3', delay: T(5)  },
+    { sec: 's5',  id: 'p-traveler4', delay: T(13) },
+  ].forEach(({ sec, id, delay }) => {
+    const section = $(sec);
+    if (!section) return;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          obs.disconnect();
+          setTimeout(() => revealPhantom($(id)), delay);
+        }
+      });
+    }, { threshold: 0.15 });
+    obs.observe(section);
+  });
+
+  // Poema — cascade quando leitor chega em s_frag
+  const sfrag = $('s_frag');
+  if (sfrag) {
+    const poemObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          poemObs.disconnect();
+          setTimeout(() => revealPhantom($('song-p4')), T(4));
+          setTimeout(() => revealPhantom($('song-p5')), T(10));
+          setTimeout(() => revealPhantom($('song-p6')), T(17));
+          setTimeout(() => revealPhantom($('song-p7')), T(25));
+          setTimeout(() => revealPhantom($('song-p8')), T(34));
+        }
+      });
+    }, { threshold: 0.18 });
+    poemObs.observe(sfrag);
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   CHORO — controle de áudio
+════════════════════════════════════════════════════════ */
+const cryAudio = document.getElementById('cry-audio');
+
+function startCry() {
+  if (!cryAudio) return;
+  cryAudio.volume = 0;
+  cryAudio.play().catch(() => {});
+  let v = 0;
+  const target = 0.55;
+  const iv = setInterval(() => {
+    v = Math.min(target, v + 0.008);
+    cryAudio.volume = v;
+    if (v >= target) clearInterval(iv);
+  }, 80);
+}
+
+function stopCry(fadeMs = 2000) {
+  if (!cryAudio) return;
+  const start = cryAudio.volume;
+  const steps = Math.round(fadeMs / 40);
+  const step  = start / steps;
+  let   i     = 0;
+  const iv = setInterval(() => {
+    i++;
+    cryAudio.volume = Math.max(0, start - step * i);
+    if (i >= steps) { clearInterval(iv); cryAudio.pause(); cryAudio.currentTime = 0; }
+  }, 40);
+}
+
+/* ════════════════════════════════════════════════════════
+   ÚLTIMO MORADOR SUMIU
+   Todos foram apagados. Agora a Hidra vira para o leitor.
+════════════════════════════════════════════════════════ */
+function onLastResidentGone() {
+  const v = ST.visits;
+
+  // contador vai a zero com distúrbio visual
+  ST.residentCount = 0;
+  const countEl = $('count-num');
+  if (countEl) {
+    countEl.style.opacity = '0';
+    setTimeout(() => {
+      countEl.textContent = '0';
+      countEl.style.opacity = '1';
+      countEl.parentElement.classList.add('disturb');
+    }, 600);
+  }
+  const sc = $('status-count');
+  if (sc) sc.textContent = '0';
+
+  // atualiza status bar
+  const sl = $('status-l');
+  if (sl) {
+    setTimeout(() => {
+      sl.textContent = 'vila_do_vau — registro vazio';
+    }, 800);
+  }
+
+  // degradação máxima
+  document.body.classList.add('phase4');
+  audioSet(0.65, 3000);
+
+  // flash subliminar antes da revelação
+  setTimeout(() => flashSubliminal('ninguém restou', 120), 400);
+
+  // aviso final aparece
+  const lw = $('last-warning');
+  if (lw) {
+    setTimeout(() => {
+      lw.style.opacity = '1';
+      // segunda parte aparece depois — o leitor precisa digerir a primeira
+      const lwf = $('lw-final');
+      if (lwf) {
+        setTimeout(() => {
+          lwf.style.transition = 'opacity 4s ease';
+          lwf.style.opacity = '1';
+          // cor do texto principal vira mais intensa
+          const main = lw.querySelector('.lw-main');
+          if (main) {
+            setTimeout(() => { main.style.color = '#7a1a1a'; }, 2000);
+          }
+        }, 4000);
+      }
+    }, 1200);
+  }
+
+  // canto — texto final
+  setTimeout(() => {
+    const cbr = $('c-br');
+    if (cbr) { cbr.textContent = 'ela está esperando'; cbr.style.opacity = '0.35'; cbr.style.color = 'var(--acc)'; }
+    const ctl = $('c-tl');
+    if (ctl) { ctl.textContent = 'zero'; ctl.style.opacity = '0.30'; ctl.style.color = 'var(--acc)'; }
+  }, 1500);
+
+  ST.listDepleted = true;
+  maybeBreak();
+}
+
+/* ════════════════════════════════════════════════════════
+   TELA DE QUEBRA — conteúdo escala com o número de visitas
+════════════════════════════════════════════════════════ */
+function triggerBreak() {
+  if (ST.broken) return;
+  ST.broken = true;
+
+  const v = ST.visits;
+
+  // Substitui o conteúdo estático pelo conteúdo da visita atual
+  const bTitle = $('break-title');
+  const bMain  = $('break-main');
+  const bNote  = $('break-note');
+  const bSub   = $('break-sub');
+  const bBtn   = $('break-btn');
+  const bPrev  = $('break-prev-time');
+  const bLie   = $('break-lie');
+
+  if (v === 2) {
+    if (bTitle) bTitle.textContent = 'registro — segunda visita';
+    if (bMain)  bMain.innerHTML    = 'ela<br>lembrou<br>de você';
+    if (bNote)  bNote.innerHTML    = 'o número mudou desde a última vez.<br>ou sempre foi este?<br>você já não sabe mais.';
+    if (bSub)   bSub.textContent   = `MEMORY_CORRUPTION: hydra.entity — return_visitor_detected — elapsed_prev:${ST.prevTime}s — 0x0001`;
+    if (bBtn)   bBtn.textContent   = 'eu não lembro de ter voltado';
+    if (bPrev && ST.prevTime > 0) {
+      bPrev.textContent = `última visita: ${ST.prevTime}s registrados`;
+      setTimeout(() => bPrev.classList.add('show'), 3000);
+    }
+  } else if (v >= 3) {
+    if (bTitle) bTitle.textContent = `registro — ${v}ª visita`;
+    if (bMain)  bMain.innerHTML    = 'você<br>foi<br>contado';
+    if (bNote)  bNote.innerHTML    = `ela sabe quanto tempo você ficou.<br>ela guarda o seu nome entre os outros.<br>você nunca foi apenas um leitor.`;
+    if (bSub)   bSub.textContent   = `MEMORY_CORRUPTION: hydra.entity — reader_indexed — visits:${v} — 0x${v.toString(16).padStart(4,'0').toUpperCase()}`;
+    if (bBtn)   bBtn.textContent   = 'eu nunca estive aqui';
+    if (bPrev && ST.prevTime > 0) {
+      bPrev.textContent = `tempo acumulado: ${ST.prevTime}s — ${v} visitas registradas`;
+      setTimeout(() => bPrev.classList.add('show'), 2000);
+    }
+    // linha final que nega a negação — aparece depois do botão
+    if (bLie) {
+      bLie.textContent = '— isso também é mentira —';
+      setTimeout(() => bLie.classList.add('show'), 9500);
+    }
+  }
+
+  // Música sobe — sinal de que algo está prestes a quebrar
+  audioSet(0.72, 2200);
+
+  const elements = [
+    $('resident-count'), $('header'),
+    document.querySelector('h1'),
+    ...document.querySelectorAll('.section')
+  ].filter(Boolean);
+
+  let i = 0;
+  const iv = setInterval(() => {
+    if (i < elements.length) glitch(elements[Math.floor(Math.random() * elements.length)]);
+    i++;
+    if (i >= 12) {
+      clearInterval(iv);
+      setTimeout(() => {
+        $('break').classList.add('active');
+        // Bloqueia scroll do documento — o #break tem overflow-y:auto próprio
+        // então seu conteúdo ainda rola; só o fundo que fica travado
+        document.body.style.overflow             = 'hidden';
+        document.documentElement.style.overflow  = 'hidden';
+
+        const title = $('break-title');
+        if (title) setTimeout(() => { title.style.opacity = '1'; }, 300);
+
+        const bm = $('break-main');
+        if (bm) setTimeout(() => {
+          // v3+: animação mais agressiva
+          bm.classList.add(v >= 3 ? 'blood-v3' : 'blood');
+        }, 700);
+
+        const bn = $('break-note');
+        if (bn) setTimeout(() => { bn.classList.add('blood'); }, 1800);
+
+        setTimeout(() => startCry(), 800);
+
+        // botão aparece mais cedo nas revisitas (o leitor já sabe o que fazer)
+        const btnDelay = v === 1 ? 6000 : v === 2 ? 5000 : 4000;
+        setTimeout(() => $('break-btn').classList.add('show'), btnDelay);
+
+        setTimeout(() => audioSet(0.48, 4000), 2500);
+
+      }, 200);
+    }
+  }, 120);
+}
+
+/* ════════════════════════════════════════════════════════
+   ESQUECER — o botão que não funciona de verdade
+════════════════════════════════════════════════════════ */
+function doForget() {
+  const real = RESIDENTS_DATA.filter(r => !r.phantom);
+  const curCount = ST.residentCount; // sem subtração espúria
+  const minC = Math.max(8, Math.floor(real.length * 0.2));
+  const maxC = real.length;
+  let newCount;
+  let tries = 0;
+  do {
+    newCount = minC + Math.floor(Math.random() * (maxC - minC + 1));
+    tries++;
+  } while (Math.abs(newCount - curCount) < 5 && tries < 30);
+  try { localStorage.setItem('_fh_rc', String(newCount)); } catch(e) {}
+
+  storageReset();
+  stopCry(1200);
+  document.documentElement.style.overflow = '';
+  document.body.style.overflow = '';
+  const b = $('break');
+  b.style.transition = 'opacity 1.2s ease';
+  b.style.opacity = '0';
+  setTimeout(() => { location.reload(); }, 1400);
+}
+
+/* ════════════════════════════════════════════════════════
+   MOUSE — cursor fantasma atrasado
+════════════════════════════════════════════════════════ */
+document.addEventListener('mousemove', e => {
+  ST.mouseX = e.clientX;
+  ST.mouseY = e.clientY;
+});
+function updateGhostCursor() {
+  if (ST.phase < 3) return;
+  const gc = $('ghost-cursor');
+  if (!gc || gc.style.opacity === '0') return;
+  const lag = ST.visits >= 3 ? 0.03 : 0.06;
+  ST.cursorLagX += (ST.mouseX - ST.cursorLagX) * lag;
+  ST.cursorLagY += (ST.mouseY - ST.cursorLagY) * lag;
+  gc.style.left = ST.cursorLagX + 'px';
+  gc.style.top  = ST.cursorLagY + 'px';
+}
+setInterval(updateGhostCursor, 16);
+
+/* ════════════════════════════════════════════════════════
+   TIMER DE LEITURA — começa no carregamento da página,
+   não quando o leitor chega ao fim. A entidade sabe
+   desde quando o arquivo foi aberto.
+════════════════════════════════════════════════════════ */
+setInterval(() => {
+  ST.elapsed++;
+  const rt = $('read-timer');
+  if (rt) rt.textContent = String(ST.elapsed);
+  if (ST.elapsed % 10 === 0) storageSave();
+}, 1000);
+
+/* ════════════════════════════════════════════════════════
+   OBSERVERS — iniciados após gate fechado
+════════════════════════════════════════════════════════ */
+
+/* ════════════════════════════════════════════════════════
+   BREAK CONDICIONAL — espera ambos os gatilhos:
+   clímax concluído (p-final4 visível) + lista esgotada
+════════════════════════════════════════════════════════ */
+function maybeBreak() {
+  if (!ST.climaxReady || !ST.listDepleted || ST.broken) return;
+  const v = ST.visits;
+  setTimeout(triggerBreak, v === 1 ? 5000 : v === 2 ? 4000 : 3000);
+}
+
+/* ════════════════════════════════════════════════════════
+   INICIALIZAÇÃO
+════════════════════════════════════════════════════════ */
+storageLoad();
+initResidents();
+applyVisitLayer();   // estado inicial por visita (antes do reveal de seções)
+initSectionReveal(); // revela seções ao rolar
+gateOpen();          // portão de entrada — pergunta antes de tudo
+
+// bfcache: se o browser restaurar a página do cache em vez de recarregar,
+// o gate pode ter sido escondido. pageshow com persisted=true detecta isso.
+window.addEventListener('pageshow', (e) => {
+  if (!e.persisted) return;
+  const gate = $('gate');
+  if (!gate || gate.style.display !== 'none') return;
+  // Restaura o gate para novo ciclo
+  gate.style.display   = '';
+  gate.style.animation = '';
+  gate.classList.remove('closing');
+  gate.style.opacity   = '1';
+  gateOpen();
+});
+
+// v3+: começa levemente perturbado, mas via classe para não bloquear as transições de phase2/3/4
+if (ST.visits >= 3) {
+  document.body.classList.add('phase2');
+}
+
+// Áudio — aguarda gesto real (política de autoplay)
+['click', 'scroll', 'touchstart', 'keydown'].forEach(ev => {
+  document.addEventListener(ev, audioStart, { once: true, passive: true });
+});
+const _ab = document.getElementById('audio-btn');
+if (_ab) _ab.addEventListener('click', (e) => { e.stopPropagation(); audioStart(); });
+
+// Observers modulares
+initPhantomReveals();
+watchListPass();
+watchFinalEntry();
+
+</script>
+
+<script>
+// Notifica o hub quando o leitor clica em qualquer link desta página
+document.addEventListener('click', function(e) {
+  const a = e.target.closest('a[href]');
+  if (!a) return;
+  const to = a.getAttribute('href');
+  if (!to || to.startsWith('#') || to.startsWith('javascript')) return;
+  try { window.parent.postMessage({ type: 'nav', to: to }, '*'); } catch(e2) {}
+});
+</script>
+</body>
+</html>

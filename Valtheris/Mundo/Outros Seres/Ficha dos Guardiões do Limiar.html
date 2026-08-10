@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Os Guardiões do Limiar — Além do Véu da Carne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:        #04030a;
+    --surface:     #0e0b1c;
+    --fog:         #1c1830;
+    --limiar:      #a8b8d8;
+    --limiar-dim:  #3a4a6a;
+    --watcher:     #d8ecff;
+    --watcher-dim: #2a4060;
+    --judge:       #9090b0;
+    --judge-dim:   #18182a;
+    --keeper:      #d4aa30;
+    --keeper-dim:  #5a3a00;
+    --soul:        #7888a8;
+    --soul-dim:    #252840;
+    --text:        #c0c8dc;
+    --text-dim:    #6878a0;
+    --text-faint:  #2a3050;
+    --contract-l:  #b090e8;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--void);
+    background-image:
+      radial-gradient(ellipse 100% 50% at 50% -5%,  #0a081e 0%, transparent 60%),
+      radial-gradient(ellipse 60%  60% at 5%  90%,  #08060e 0%, transparent 55%),
+      radial-gradient(ellipse 50%  50% at 95% 10%,  #0c0818 0%, transparent 55%),
+      radial-gradient(ellipse 30%  40% at 50% 55%,  #060410 0%, transparent 40%);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 17px; line-height: 1.8;
+    min-height: 100vh; overflow-x: hidden;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 999; opacity: .5;
+  }
+
+  /* ══ STAR PARTICLES ══ */
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star { position: absolute; border-radius: 50%; background: rgba(200,220,255,.6); animation: star-flicker linear infinite; }
+  @keyframes star-flicker {
+    0%,100% { opacity: .15; transform: scale(1); }
+    50%      { opacity: .7;  transform: scale(1.3); }
+  }
+
+  /* ══ ACCENT BAR ══ */
+  .limiar-bar {
+    height: 4px;
+    background: linear-gradient(90deg, var(--watcher-dim), var(--limiar), var(--keeper), var(--limiar), var(--watcher-dim));
+    box-shadow: 0 0 20px rgba(168,184,216,.2), 0 0 40px rgba(212,170,48,.1);
+  }
+
+  /* ══ BREADCRUMB ══ */
+  .breadcrumb {
+    max-width: 860px; margin: 0 auto; padding: 20px 20px 0;
+    font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint);
+  }
+  .breadcrumb span { color: var(--limiar-dim); margin: 0 6px; }
+  .breadcrumb .current { color: var(--keeper); }
+
+  /* ══ HEADER ══ */
+  header {
+    position: relative; text-align: center;
+    padding: 70px 20px 60px; overflow: hidden;
+  }
+  header::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 70% at 50% 50%, rgba(80,60,160,.1) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 30% 80%, rgba(40,80,160,.06) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 70% 80%, rgba(200,160,40,.06) 0%, transparent 60%);
+  }
+  header::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--watcher-dim), var(--limiar-dim), var(--keeper-dim), transparent);
+  }
+
+  .header-eyebrow { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .5em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 20px; }
+  .header-classification { font-family: 'Cinzel', serif; font-size: .65rem; letter-spacing: .25em; text-transform: uppercase; color: var(--limiar-dim); margin-bottom: 12px; opacity: .9; }
+
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.6rem, 5vw, 3rem); font-weight: 900; line-height: 1.1; margin-bottom: 8px;
+    background: linear-gradient(135deg, #c8d8f8 0%, #e8c860 45%, #a0b8e0 80%, #d0e8ff 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(180,200,255,.25));
+    animation: title-breathe 8s ease-in-out infinite;
+  }
+  @keyframes title-breathe {
+    0%,100% { filter: drop-shadow(0 0 20px rgba(180,200,255,.2)); }
+    50%      { filter: drop-shadow(0 0 40px rgba(180,200,255,.4)) drop-shadow(0 0 80px rgba(200,160,40,.15)); }
+  }
+
+  .header-sub { font-family: 'Cinzel', serif; font-size: clamp(.75rem, 2vw, 1rem); letter-spacing: .2em; text-transform: uppercase; color: var(--soul); margin-bottom: 8px; }
+  .header-tagline { font-style: italic; color: #5a6888; font-size: .96rem; max-width: 520px; margin: 0 auto 28px; }
+
+  /* ══ WARNING BANNER ══ */
+  .warning-banner { max-width: 860px; margin: 0 auto 0; padding: 0 20px; }
+  .warning-banner-inner {
+    background: rgba(20,16,50,.3); border: 1px solid var(--limiar-dim);
+    border-left: 4px solid var(--limiar); padding: 16px 24px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .warning-icon { font-size: 1.4rem; flex-shrink: 0; line-height: 1.6; }
+  .warning-text { font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .08em; color: #8898b8; line-height: 1.7; }
+  .warning-text strong { color: var(--limiar); letter-spacing: .15em; display: block; margin-bottom: 4px; }
+
+  /* ══ DIVIDER ══ */
+  .divider { display: flex; align-items: center; gap: 14px; max-width: 860px; margin: 0 auto; padding: 32px 20px 40px; }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--limiar-dim), var(--keeper-dim), transparent); }
+  .divider-glyph { color: var(--keeper); font-size: .9rem; opacity: .6; }
+
+  /* ══ LAYOUT ══ */
+  main { max-width: 860px; margin: 0 auto; padding: 0 20px 100px; position: relative; z-index: 1; }
+  section { margin-bottom: 52px; animation: fade-up .5s ease both; }
+  @keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  section:nth-child(1)  { animation-delay: .05s; }
+  section:nth-child(2)  { animation-delay: .10s; }
+  section:nth-child(3)  { animation-delay: .15s; }
+  section:nth-child(4)  { animation-delay: .20s; }
+  section:nth-child(5)  { animation-delay: .25s; }
+  section:nth-child(6)  { animation-delay: .30s; }
+  section:nth-child(7)  { animation-delay: .35s; }
+  section:nth-child(8)  { animation-delay: .40s; }
+
+  /* ══ SECTION HEADER ══ */
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .section-icon { font-size: 1.15rem; flex-shrink: 0; }
+  .section-icon.limiar   { filter: drop-shadow(0 0 8px rgba(168,184,216,.4)); }
+  .section-icon.keeper   { filter: drop-shadow(0 0 8px rgba(212,170,48,.4)); }
+  .section-icon.contract { filter: drop-shadow(0 0 8px rgba(176,144,232,.4)); }
+  .section-icon.soul     { filter: drop-shadow(0 0 8px rgba(120,136,168,.35)); }
+
+  h2 { font-family: 'Cinzel', serif; font-size: .88rem; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
+  h2.limiar   { color: var(--limiar);     text-shadow: 0 0 20px rgba(168,184,216,.2); }
+  h2.watcher  { color: var(--watcher);   text-shadow: 0 0 20px rgba(216,236,255,.2); }
+  h2.judge    { color: var(--judge);     text-shadow: 0 0 18px rgba(144,144,176,.15); }
+  h2.keeper   { color: var(--keeper);    text-shadow: 0 0 18px rgba(212,170,48,.2); }
+  h2.contract { color: var(--contract-l);text-shadow: 0 0 18px rgba(176,144,232,.2); }
+  h2.soul     { color: var(--soul);      text-shadow: 0 0 18px rgba(120,136,168,.2); }
+
+  .section-line { flex: 1; height: 1px; }
+  .section-line.limiar   { background: linear-gradient(90deg, var(--limiar-dim), rgba(200,160,40,.2), transparent); }
+  .section-line.watcher  { background: linear-gradient(90deg, var(--watcher-dim), rgba(168,184,216,.15), transparent); }
+  .section-line.judge    { background: linear-gradient(90deg, var(--judge-dim), rgba(144,144,176,.15), transparent); }
+  .section-line.keeper   { background: linear-gradient(90deg, var(--keeper-dim), rgba(212,170,48,.2), transparent); }
+  .section-line.contract { background: linear-gradient(90deg, rgba(128,96,192,.4), rgba(176,144,232,.15), transparent); }
+  .section-line.soul     { background: linear-gradient(90deg, var(--soul-dim), rgba(120,136,168,.15), transparent); }
+
+  p { margin-bottom: 10px; } p:last-child { margin-bottom: 0; }
+
+  /* ══ IDENTITY ══ */
+  .identity {
+    background: linear-gradient(160deg, rgba(16,12,30,.97) 0%, rgba(8,6,16,.99) 100%);
+    border: 1px solid rgba(80,70,130,.3);
+    border-top: 2px solid rgba(168,184,216,.3);
+    border-bottom: 2px solid rgba(100,80,20,.3);
+    padding: 28px 30px; margin-bottom: 14px; position: relative; overflow: hidden;
+  }
+  .identity::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 10% 10%, rgba(160,180,220,.04) 0%, transparent 50%),
+      radial-gradient(circle at 90% 90%, rgba(200,160,40,.04) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .identity-corner { position: absolute; font-family: 'Fira Code', monospace; font-size: .55rem; letter-spacing: .15em; color: var(--text-faint); opacity: .55; }
+  .identity-corner.tl { top: 10px; left: 14px; }
+  .identity-corner.tr { top: 10px; right: 14px; }
+  .identity-corner.bl { bottom: 10px; left: 14px; }
+  .identity-corner.br { bottom: 10px; right: 14px; }
+
+  .monster-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.2rem, 3vw, 1.9rem); font-weight: 900;
+    background: linear-gradient(135deg, var(--watcher) 0%, var(--limiar) 40%, var(--keeper) 80%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 4px;
+  }
+  .monster-epithet { font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .2em; text-transform: uppercase; color: var(--soul); opacity: .85; margin-bottom: 14px; }
+  .monster-type-line { margin-bottom: 16px; }
+  .monster-lore { font-style: italic; color: #8090a8; font-size: .94rem; border-left: 2px solid var(--limiar-dim); padding-left: 16px; margin-top: 12px; line-height: 1.75; }
+  .monster-lore + .monster-lore { border-left-color: var(--keeper-dim); margin-top: 8px; }
+
+  /* ══ TAGS ══ */
+  .tag { display: inline-block; font-family: 'Fira Code', monospace; font-size: .58rem; letter-spacing: .1em; padding: 1px 7px; border-radius: 1px; margin-right: 4px; margin-bottom: 3px; vertical-align: middle; }
+  .tag.watcher  { border: 1px solid var(--watcher-dim);            color: var(--watcher); }
+  .tag.judge    { border: 1px solid rgba(100,100,160,.4);           color: var(--judge); }
+  .tag.keeper   { border: 1px solid var(--keeper-dim);              color: var(--keeper); }
+  .tag.limiar   { border: 1px solid var(--limiar-dim);              color: var(--limiar); }
+  .tag.contract { border: 1px solid rgba(128,96,192,.5);            color: var(--contract-l); }
+  .tag.void     { border: 1px solid rgba(60,50,100,.5);             color: var(--text-dim); }
+
+  /* ══ MONSTER VITALS ══ */
+  .monster-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+  @media (max-width: 600px) { .monster-vitals { grid-template-columns: 1fr 1fr; } }
+  .mvital-card { background: rgba(8,6,18,.85); border: 1px solid rgba(60,50,100,.3); border-radius: 3px; padding: 16px 12px; text-align: center; position: relative; overflow: hidden; }
+  .mvital-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+  .mvital-card.limiar::after   { background: linear-gradient(90deg, transparent, var(--limiar),     transparent); }
+  .mvital-card.watcher::after  { background: linear-gradient(90deg, transparent, var(--watcher-dim),transparent); }
+  .mvital-card.keeper::after   { background: linear-gradient(90deg, transparent, var(--keeper),     transparent); }
+  .mvital-card.contract::after { background: linear-gradient(90deg, transparent, var(--contract-l), transparent); }
+  .mvital-label { font-family: 'Cinzel', serif; font-size: .5rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+  .mvital-value { font-family: 'Cinzel Decorative', serif; font-size: 1.7rem; line-height: 1; display: block; }
+  .mvital-value.limiar   { color: var(--limiar);     text-shadow: 0 0 20px rgba(168,184,216,.3); }
+  .mvital-value.watcher  { color: var(--watcher);   text-shadow: 0 0 20px rgba(200,220,255,.3); }
+  .mvital-value.keeper   { color: var(--keeper);    text-shadow: 0 0 20px rgba(212,170,48,.3); }
+  .mvital-value.contract { color: var(--contract-l);text-shadow: 0 0 20px rgba(176,144,232,.3); }
+  .mvital-note { font-size: .72rem; color: var(--text-dim); font-style: italic; margin-top: 6px; display: block; line-height: 1.4; }
+
+  /* ══ TWO-COL MONSTER ══ */
+  .two-col-monster { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 600px) { .two-col-monster { grid-template-columns: 1fr; } }
+
+  /* ══ TRIAD GRID ══ */
+  .triad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 600px) { .triad-grid { grid-template-columns: 1fr; } }
+  .triad-card {
+    background: linear-gradient(160deg, rgba(12,10,24,.95) 0%, rgba(6,5,14,.98) 100%);
+    border: 1px solid var(--fog); border-radius: 3px; padding: 22px 18px;
+    position: relative; overflow: hidden; text-align: center; transition: box-shadow .3s, transform .3s;
+  }
+  .triad-card:hover { transform: translateY(-3px); }
+  .triad-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .triad-card.watcher { border-color: rgba(80,120,180,.3); }
+  .triad-card.watcher::before { background: linear-gradient(90deg, transparent, var(--watcher), transparent); }
+  .triad-card.watcher:hover { box-shadow: 0 -4px 30px rgba(100,150,220,.15), 0 8px 30px rgba(0,0,0,.6); }
+  .triad-card.judge { border-color: rgba(80,80,120,.3); }
+  .triad-card.judge::before { background: linear-gradient(90deg, transparent, var(--judge), transparent); }
+  .triad-card.judge:hover { box-shadow: 0 -4px 30px rgba(120,120,180,.15), 0 8px 30px rgba(0,0,0,.6); }
+  .triad-card.keeper { border-color: rgba(100,80,20,.4); }
+  .triad-card.keeper::before { background: linear-gradient(90deg, transparent, var(--keeper), transparent); }
+  .triad-card.keeper:hover { box-shadow: 0 -4px 30px rgba(200,160,40,.15), 0 8px 30px rgba(0,0,0,.6); }
+  .triad-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
+  .triad-name { font-family: 'Cinzel', serif; font-size: .78rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 4px; }
+  .triad-name.watcher { color: var(--watcher); }
+  .triad-name.judge   { color: var(--judge); }
+  .triad-name.keeper  { color: var(--keeper); }
+  .triad-epithet { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 12px; opacity: .8; }
+  .triad-desc { font-size: .88rem; color: var(--text-dim); font-style: italic; line-height: 1.6; text-align: left; }
+
+  /* ══ CARDS ══ */
+  .card { background: linear-gradient(140deg, rgba(12,10,22,.94) 0%, rgba(7,6,15,.97) 100%); border: 1px solid var(--fog); padding: 20px 22px; margin-bottom: 12px; position: relative; transition: box-shadow .25s; }
+  .card.limiar   { border-left: 3px solid var(--limiar-dim); }
+  .card.limiar:hover   { box-shadow: -4px 0 20px rgba(80,100,180,.15), 0 4px 20px rgba(0,0,0,.6); }
+  .card.watcher  { border-left: 3px solid var(--watcher-dim); }
+  .card.watcher:hover  { box-shadow: -4px 0 20px rgba(100,150,220,.12), 0 4px 20px rgba(0,0,0,.6); }
+  .card.judge    { border-left: 3px solid var(--judge-dim); }
+  .card.judge:hover    { box-shadow: -4px 0 20px rgba(100,100,150,.12), 0 4px 20px rgba(0,0,0,.6); }
+  .card.keeper   { border-left: 3px solid var(--keeper-dim); }
+  .card.keeper:hover   { box-shadow: -4px 0 20px rgba(180,140,30,.15), 0 4px 20px rgba(0,0,0,.6); }
+  .card.contract { border-left: 3px solid rgba(128,96,192,.5); }
+  .card.contract:hover { box-shadow: -4px 0 20px rgba(128,96,192,.2), 0 4px 20px rgba(0,0,0,.6); }
+  .card.soul     { border-left: 3px solid var(--soul-dim); }
+  .card-title { font-family: 'Cinzel', serif; font-size: .7rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 10px; }
+  .card-title.limiar   { color: var(--limiar); }
+  .card-title.watcher  { color: var(--watcher); }
+  .card-title.judge    { color: var(--judge); }
+  .card-title.keeper   { color: var(--keeper); }
+  .card-title.contract { color: var(--contract-l); }
+  .card-title.soul     { color: var(--soul); }
+  .card p { font-size: .92rem; color: #a8b0c8; margin-bottom: 8px; }
+  .card p:last-child { margin-bottom: 0; }
+  .card p strong { color: var(--text); }
+
+  /* ══ ABILITY BLOCK ══ */
+  .ability { background: rgba(8,6,18,.88); border: 1px solid var(--fog); padding: 14px 18px; margin-bottom: 8px; border-bottom: 2px solid transparent; transition: border-bottom-color .2s; }
+  .ability.limiar   { border-bottom-color: var(--limiar-dim); }
+  .ability.limiar:hover   { border-bottom-color: var(--limiar); }
+  .ability.watcher  { border-bottom-color: var(--watcher-dim); }
+  .ability.watcher:hover  { border-bottom-color: var(--watcher); }
+  .ability.judge    { border-bottom-color: var(--judge-dim); }
+  .ability.judge:hover    { border-bottom-color: var(--judge); }
+  .ability.keeper   { border-bottom-color: var(--keeper-dim); }
+  .ability.keeper:hover   { border-bottom-color: var(--keeper); }
+  .ability.contract { border-bottom-color: rgba(128,96,192,.5); }
+  .ability.contract:hover { border-bottom-color: var(--contract-l); }
+  .ability-name { font-family: 'Cinzel', serif; font-size: .72rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .ability-name.limiar   { color: var(--limiar); }
+  .ability-name.watcher  { color: var(--watcher); }
+  .ability-name.judge    { color: var(--judge); }
+  .ability-name.keeper   { color: var(--keeper); }
+  .ability-name.contract { color: var(--contract-l); }
+  .ability p { font-size: .9rem; color: #a0a8c0; }
+  .ability p strong { color: var(--text); }
+
+  /* ══ CONTRACT BLOCK ══ */
+  .contract-block {
+    background: linear-gradient(140deg, rgba(30,16,60,.35) 0%, rgba(10,6,20,.96) 100%);
+    border: 1px solid rgba(128,96,192,.35);
+    border-top: 2px solid rgba(176,144,232,.5);
+    border-bottom: 2px solid rgba(128,96,192,.3);
+    padding: 24px 26px; margin-bottom: 12px; position: relative; overflow: hidden;
+  }
+  .contract-block::before {
+    content: ''; position: absolute; inset: 0;
+    background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(128,96,192,.015) 20px, rgba(128,96,192,.015) 21px);
+    pointer-events: none;
+  }
+  .contract-title { font-family: 'Cinzel', serif; font-size: .68rem; font-weight: 900; letter-spacing: .2em; text-transform: uppercase; color: var(--contract-l); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  .contract-term { display: flex; align-items: flex-start; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(128,96,192,.12); font-size: .9rem; color: #9888c0; }
+  .contract-term:last-child { border-bottom: none; }
+  .contract-num { font-family: 'Fira Code', monospace; font-size: .7rem; color: var(--contract-l); flex-shrink: 0; margin-top: 3px; opacity: .8; }
+  .contract-term strong { color: var(--text); }
+
+  /* ══ INTERACTION BLOCK ══ */
+  .interaction { background: rgba(8,6,18,.85); border: 1px solid var(--fog); border-left: 3px solid rgba(128,96,192,.4); padding: 14px 18px; margin-bottom: 10px; }
+  .interaction-saga { font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .18em; text-transform: uppercase; color: var(--contract-l); margin-bottom: 5px; opacity: .8; }
+  .interaction-desc { font-size: .9rem; color: #9090b0; font-style: italic; }
+  .interaction-desc strong { color: var(--text); font-style: normal; }
+
+  /* ══ CALLOUTS ══ */
+  .callout { border-left: 3px solid; padding: 13px 17px; margin: 12px 0; font-style: italic; font-size: .9rem; line-height: 1.75; }
+  .callout strong { font-style: normal; font-family: 'Cinzel', serif; font-size: .66rem; letter-spacing: .1em; display: block; margin-bottom: 4px; }
+  .callout.limiar   { border-color: var(--limiar-dim);           background: rgba(30,40,80,.12); color: #8898b8; }
+  .callout.limiar strong   { color: var(--limiar); }
+  .callout.watcher  { border-color: var(--watcher-dim);          background: rgba(30,50,90,.1);  color: #8898b8; }
+  .callout.watcher strong  { color: var(--watcher); }
+  .callout.keeper   { border-color: var(--keeper-dim);           background: rgba(90,60,10,.1);  color: #a08840; }
+  .callout.keeper strong   { color: var(--keeper); }
+  .callout.contract { border-color: rgba(128,96,192,.4);         background: rgba(60,40,120,.1); color: #9880c0; }
+  .callout.contract strong { color: var(--contract-l); }
+  .callout.soul     { border-color: var(--soul-dim);             background: rgba(30,35,60,.1);  color: #6878a0; }
+  .callout.soul strong     { color: var(--soul); }
+
+  /* ══ HIGHLIGHTS ══ */
+  .hl   { color: var(--keeper);     font-weight: 600; }
+  .hl-w { color: var(--watcher);   font-weight: 600; }
+  .hl-l { color: var(--limiar);    font-weight: 600; }
+  .hl-c { color: var(--contract-l);font-weight: 600; }
+  mark    { background: rgba(100,120,200,.12); color: var(--limiar);     padding: .1em .3em; border-radius: 2px; }
+  mark.k  { background: rgba(200,160,40,.1);  color: var(--keeper);    }
+  mark.c  { background: rgba(128,96,192,.12); color: var(--contract-l);}
+
+  /* ══ SEP ══ */
+  .sep { height: 1px; margin: 18px 0; opacity: .5; background: linear-gradient(90deg, transparent, var(--limiar-dim), var(--keeper-dim), transparent); }
+
+  /* ══ FORM DIVIDER ══ */
+  .form-divider { display: flex; align-items: center; gap: 14px; margin: 30px 0 24px; }
+  .form-divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--limiar-dim), transparent); }
+  .form-divider-label { font-family: 'Cinzel', serif; font-size: .62rem; letter-spacing: .3em; text-transform: uppercase; color: var(--limiar); padding: 4px 16px; border: 1px solid var(--limiar-dim); background: rgba(6,5,14,.95); }
+
+  /* ══ FOOTER ══ */
+  footer { text-align: center; padding: 40px 20px 60px; font-family: 'Cinzel', serif; font-size: .55rem; letter-spacing: .3em; text-transform: uppercase; color: var(--text-faint); }
+  footer span { color: var(--limiar-dim); margin: 0 8px; }
+
+  /* ══ SCROLLBAR ══ */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--void); }
+  ::-webkit-scrollbar-thumb { background: var(--limiar-dim); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--limiar); }
+
+  /* ══ TOP BTN ══ */
+  #top-btn {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    width: 34px; height: 34px; background: var(--surface); border: 1px solid var(--fog);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-dim); font-size: .9rem; text-decoration: none;
+    transition: all .2s; z-index: 100;
+  }
+  #top-btn:hover { border-color: var(--limiar-dim); color: var(--limiar); }
+
+/* ── ACESSIBILIDADE: MOVIMENTO REDUZIDO ─────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="limiar-bar"></div>
+
+<nav class="breadcrumb" aria-label="Trilha de navegação">
+  Além do Véu da Carne / Bestiário <span>›</span> Entidades do Plano Limiar <span>›</span> <span class="current">Os Guardiões do Limiar · Árbitros da Alma · Acima da Morte</span>
+</nav>
+
+<header>
+  <p class="header-eyebrow">Além do Véu da Carne &nbsp;⸸&nbsp; Entidades do Plano Limiar</p>
+  <p class="header-classification">⬥ Guardiões da Fronteira &nbsp;·&nbsp; Árbitros da Alma &nbsp;·&nbsp; Acima da Morte ⬥</p>
+  <h1>Os Guardiões do Limiar</h1>
+  <p class="header-sub">A Vigilante · O Juiz · O Guardião do Tempo</p>
+  <p class="header-tagline">Eles não existem para julgar o bem e o mal. Existem para garantir que a fronteira se mantenha.</p>
+</header>
+
+<div class="warning-banner">
+  <div class="warning-banner-inner">
+    <span class="warning-icon">⧖</span>
+    <div class="warning-text">
+      <strong>Nota ao GM — Entidade Sem Estatísticas de Combate</strong>
+      Os Guardiões do Limiar não podem ser mortos, feridos, conjurados, banidos ou afetados por qualquer mecânica de combate. Se jogadores tentarem atacá-los, os ataques simplesmente <em>não existem</em> naquele plano. A única linguagem que entendem é negociação, argumento lógico, e — aparentemente — teimosia autêntica. Este é um encontro de roleplay puro.
+    </div>
+  </div>
+</div>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <span class="divider-glyph">⧖</span>
+  <div class="divider-line"></div>
+</div>
+
+<!-- PORTRAIT -->
+<div style="max-width:860px;margin:0 auto 0;padding:0 20px;">
+  <div style="position:relative;width:100%;overflow:hidden;border-radius:3px;border:1px solid rgba(120,140,200,.25);box-shadow:0 0 80px rgba(60,50,120,.4),0 0 160px rgba(0,0,0,.9);">
+    <img src="Perfil - Os Guardiões do Limiar.png"
+         alt="Os Guardiões do Limiar"
+         style="width:100%;height:360px;object-fit:cover;object-position:center 15%;display:block;">
+    <div style="position:absolute;bottom:0;left:0;right:0;height:140px;background:linear-gradient(to top,rgba(4,3,10,1) 0%,rgba(4,3,10,.6) 50%,transparent 100%);"></div>
+    <div style="position:absolute;top:0;left:0;right:0;height:60px;background:linear-gradient(to bottom,rgba(4,3,10,.9),transparent);"></div>
+    <div style="position:absolute;bottom:16px;left:0;right:0;text-align:center;">
+      <span style="font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.4em;text-transform:uppercase;color:rgba(168,184,216,.45);">Os Três Guardiões do Limiar · O Reino Etéreo · Fronteira entre Vida e Morte</span>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══════════════════════════════
+       IDENTIDADE
+  ══════════════════════════════ -->
+  <section id="identidade">
+    <div class="section-header">
+      <span class="section-icon limiar">✦</span>
+      <h2 class="limiar">Identidade</h2>
+      <div class="section-line limiar"></div>
+    </div>
+
+    <div class="identity">
+      <div class="identity-corner tl">ENTIDADE · PLANO LIMIAR</div>
+      <div class="identity-corner tr">ALÉM DO CICLO MORTAL</div>
+      <div class="identity-corner bl">SEM ALINHAMENTO · ÁRBITROS</div>
+      <div class="identity-corner br">EXISTEM DESDE A PRIMEIRA MORTE</div>
+
+      <div class="monster-name">Os Guardiões do Limiar</div>
+      <div class="monster-epithet">⬥ "Aqueles que Guardam a Fronteira" ⬥</div>
+
+      <div class="monster-type-line">
+        <span class="tag watcher">Entidade Cósmica</span>
+        <span class="tag limiar">Trindade</span>
+        <span class="tag void">Além da Morte</span>
+        <span class="tag keeper">Árbitros da Alma</span>
+        <span class="tag void">Sem Alinhamento</span>
+      </div>
+
+      <p class="monster-lore">
+        Não são deuses. Não são demônios. São estrutura. Existem desde que a primeira coisa morreu
+        e a segunda coisa percebeu que ela havia morrido. Operam em uníssono — três vozes, uma
+        decisão. Nunca discordam em público, mas a Criança frequentemente sorri quando os outros
+        dois hesitam. Isso diz tudo que precisa ser dito sobre como tomam suas decisões.
+      </p>
+      <p class="monster-lore" style="border-left-color:var(--keeper-dim);">
+        Processam incontáveis almas. Cada segundo de conversa com uma anomalia custa cem
+        julgamentos pendentes — e eles deixam isso claro. Não por impaciência, mas por precisão.
+        Tudo tem custo. Tudo tem contrato. Eles são a prova de que até a eternidade tem burocracia.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       A TRÍADE
+  ══════════════════════════════ -->
+  <section id="triade">
+    <div class="section-header">
+      <span class="section-icon limiar">👁</span>
+      <h2 class="limiar">A Tríade — Os Três Assentos</h2>
+      <div class="section-line limiar"></div>
+    </div>
+
+    <div class="triad-grid">
+      <div class="triad-card watcher">
+        <span class="triad-icon">🤍</span>
+        <div class="triad-name watcher">A Vigilante</div>
+        <div class="triad-epithet">"Aquela que vê tudo"</div>
+        <p class="triad-desc">Vestes brancas. Olhos que não precisam de luz para enxergar. Voz feminina, antiga — a primeira a falar, sempre. Ela <strong style="color:var(--watcher)">fala primeiro</strong> e sempre enquadra a situação com precisão cirúrgica. Não julga emocionalmente — ela apenas <em>vê</em>. O que a torna mais perturbadora do que qualquer julgamento passional. Reconhece anomalias antes dos outros dois.</p>
+      </div>
+      <div class="triad-card judge">
+        <span class="triad-icon">⚔️</span>
+        <div class="triad-name judge">O Juiz</div>
+        <div class="triad-epithet">"Aquele que corta destinos"</div>
+        <p class="triad-desc">Armadura negra. Espada que não é arma — é símbolo de autoridade sobre o que foi decidido. Voz masculina, severa. Ele <strong style="color:var(--judge)">confirma</strong> o que a Vigilante vê e transforma em sentença. Parece frio, mas tem respeito genuíno por quem age com teimosia coerente. Marca as testas. Concede proteções. É ele quem torna o contrato permanente.</p>
+      </div>
+      <div class="triad-card keeper">
+        <span class="triad-icon">⏳</span>
+        <div class="triad-name keeper">O Guardião do Tempo <span style="font-size:.6rem;color:var(--text-dim);letter-spacing:.1em;font-family:'Cinzel',serif;"> — "A Criança"</span></div>
+        <div class="triad-epithet">"Aquele que muda de idade"</div>
+        <p class="triad-desc">Criança que envelhece e rejuvenesce sem parar — cada piscar de olhos, uma era diferente. Segura a ampulheta do tempo. Voz neutra, mas é a que ri. <strong style="color:var(--keeper)">O mais imprevisível</strong> dos três. Adora anomalias. Foi o único que explicitamente disse gostar de Leyn Sepet. Dá as bênçãos. Sopra como quem liberta dente-de-leão. Sabe mais do que deixa transparecer.</p>
+      </div>
+    </div>
+
+    <div class="callout limiar">
+      <strong>Regra de Uníssono</strong> Os três Guardiões nunca contradizem um ao outro em presença de mortais. Quando um fala, os outros confirmam com silêncio ou assentem. A Criança é a única que expressa emoção livremente — o que intriga, dado que os três surgiram no mesmo instante. Mas A Criança flutua entre passado, presente e futuro simultaneamente: para ela, "quando nasceu" e "o que ainda vai acontecer" coexistem no mesmo momento. Se isso a torna mais velha, mais jovem, ou simplesmente <em>fora do eixo onde a idade faz sentido</em> — nenhum dos outros dois respondeu quando perguntados.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       ESTATÍSTICAS
+  ══════════════════════════════ -->
+  <section id="vitais">
+    <div class="section-header">
+      <span class="section-icon limiar">◆</span>
+      <h2 class="limiar">Estatísticas — O Que os Mortais Podem Medir</h2>
+      <div class="section-line limiar"></div>
+    </div>
+
+    <div class="monster-vitals">
+      <div class="mvital-card limiar">
+        <span class="mvital-label">Almas Processadas</span>
+        <span class="mvital-value limiar">∞</span>
+        <span class="mvital-note">por segundo · desde a primeira morte</span>
+      </div>
+      <div class="mvital-card watcher">
+        <span class="mvital-label">CR Efetivo</span>
+        <span class="mvital-value watcher">—</span>
+        <span class="mvital-note">acima de qualquer sistema de CR</span>
+      </div>
+      <div class="mvital-card keeper">
+        <span class="mvital-label">Contratos Ativos</span>
+        <span class="mvital-value keeper">1</span>
+        <span class="mvital-note">Leyn Sepet · missão única pendente</span>
+      </div>
+      <div class="mvital-card contract">
+        <span class="mvital-label">Anomalias Registradas</span>
+        <span class="mvital-value contract">1</span>
+        <span class="mvital-note">caso único nos registros do Limiar</span>
+      </div>
+    </div>
+
+    <div class="callout soul">
+      <strong>Por Que Não Há Stats de Combate</strong> Os Guardiões do Limiar não podem ser mortos, feridos, conjurados ou de qualquer forma afetados por mecânicas de combate. No Plano Limiar, ataques simplesmente <em>não existem</em>. A única linguagem que entendem é negociação, argumento e teimosia autêntica. Jogadores que tentarem forçar combate receberão um olhar de A Vigilante — e então serão processados como almas comuns.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       PODERES & AUTORIDADE
+  ══════════════════════════════ -->
+  <section id="poderes">
+    <div class="section-header">
+      <span class="section-icon limiar">✧</span>
+      <h2 class="limiar">Poderes &amp; Autoridade sobre o Limiar</h2>
+      <div class="section-line limiar"></div>
+    </div>
+
+    <div class="ability watcher">
+      <div class="ability-name watcher">Visão Absoluta <span class="tag void">Passivo</span></div>
+      <p>A Vigilante enxerga toda alma que existe, existiu, ou irá existir. No Plano Limiar, nenhuma ocultação, invisibilidade ou ilusão funciona. Ela vê intenções tão claramente quanto ações — e distingue as duas com facilidade. Foi ela quem primeiro identificou Leyn como <strong>anomalia</strong>, antes mesmo de sua segunda morte.</p>
+    </div>
+
+    <div class="ability judge">
+      <div class="ability-name judge">Corte de Destino <span class="tag void">Ativo</span></div>
+      <p>O Juiz pode gravar contratos diretamente na alma de um ser — tornando-os permanentes, invioláveis e rastreáveis. Contratos gravados desta forma não podem ser desfeitos por magias de qualquer nível. A única forma de cancelá-los é com consentimento do próprio Guardião que os gravou. A marca deixada na testa de Leyn é invisível a olhos comuns — mas outras entidades de poder similar a reconhecem imediatamente.</p>
+    </div>
+
+    <div class="ability keeper">
+      <div class="ability-name keeper">Controle do Fluxo Temporal <span class="tag void">Passivo</span></div>
+      <p>O Guardião do Tempo mantém a ampulheta de todas as vidas simultâneas. Ele sabe, em qualquer momento, quanto tempo resta para qualquer ser mortal. Não revela isso gratuitamente — mas usa esse conhecimento para calibrar quando intervir, quando observar e quando deixar eventos se desdobrarem naturalmente. Seu sorriso travesso geralmente indica que ele já sabe o desfecho de uma negociação antes de ela começar.</p>
+    </div>
+
+    <div class="ability limiar">
+      <div class="ability-name limiar">Retorno à Vida <span class="tag limiar">Com Custo</span></div>
+      <p>Os Guardiões podem devolver almas ao mundo físico — mas nunca gratuitamente. Todo retorno exige um preço negociado: dívida de alma, pacto de serviço, troca de memórias, ou — em casos excepcionais — <mark>contrato único com missão futura</mark>. O preço é proporcional à anomalia do caso. Leyn Sepet é o único caso registrado de retorno com termos favoráveis ao mortal.</p>
+    </div>
+
+    <div class="ability contract">
+      <div class="ability-name contract">Proteção contra Entidades Externas <span class="tag contract">Contratual</span></div>
+      <p>Almas vinculadas aos Guardiões por contrato estão sob sua proteção ativa. Entidades como o <strong>Devorador</strong>, os Mestres Antigos e outras criaturas do espaço entre planos não podem reivindicar uma alma protegida sem autorização explícita dos Guardiões. Violar essa proteção constitui uma das poucas coisas que fazem os Guardiões agir diretamente — não por justiça, mas por <em>jurisdição</em>.</p>
+    </div>
+
+    <div class="ability limiar">
+      <div class="ability-name limiar">Anomalia Irresolvível <span class="tag void">Passivo</span></div>
+      <p>Certos seres não se encaixam nos sistemas estabelecidos. Leyn Sepet é o único caso documentado: um primordial que morreu duas vezes por causas que <em>não deveriam funcionar</em> (lágrimas de compaixão genuína, teimosia existencial) e retornou ambas as vezes. Os Guardiões não sabem como processá-lo como outras almas — e é por isso que preferiram vinculá-lo a si em vez de deixá-lo solto.</p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       CONTRATO DE LEYN
+  ══════════════════════════════ -->
+  <div class="form-divider">
+    <div class="form-divider-line"></div>
+    <div class="form-divider-label">📜 Contrato Ativo — Gravado na Alma</div>
+    <div class="form-divider-line"></div>
+  </div>
+
+  <section id="contrato">
+    <div class="section-header">
+      <span class="section-icon contract">📜</span>
+      <h2 class="contract">Contrato — Leyn Sepet · Saga 8</h2>
+      <div class="section-line contract"></div>
+    </div>
+
+    <div class="contract-block">
+      <div class="contract-title">
+        ⧖ Termos do Contrato — Gravados na Alma · Saga 8
+      </div>
+      <div class="contract-term">
+        <span class="contract-num">I.</span>
+        <span>Leyn Sepet <strong>retorna à vida</strong> com memórias, poderes e HP máximo completamente intactos. Nenhum custo imediato.</span>
+      </div>
+      <div class="contract-term">
+        <span class="contract-num">II.</span>
+        <span>Em momento futuro indeterminado, os Guardiões convocam Leyn para <strong>uma única missão</strong> — algo que apenas ele, como anomalia, pode realizar.</span>
+      </div>
+      <div class="contract-term">
+        <span class="contract-num">III.</span>
+        <span>A missão <strong>não será suicida</strong>, não será contra sua família e não violará seus valores centrais. Leyn <strong>pode negociar os termos</strong> quando a convocação chegar.</span>
+      </div>
+      <div class="contract-term">
+        <span class="contract-num">IV.</span>
+        <span>Os Guardiões concedem <strong>proteção ativa de alma</strong> contra entidades externas — incluindo o Devorador de Faces — que tentem <strong>reivindicar sua alma no Plano Limiar</strong> em futuras mortes. <em style="color:var(--text-dim)">Esta proteção é jurisdicional: cobre reivindicações de alma após a morte, não ameaças físicas no plano material. Uma entidade como A Mestra pode ainda agir contra Leyn no mundo dos vivos.</em></span>
+      </div>
+      <div class="contract-term">
+        <span class="contract-num">V.</span>
+        <span>Bênção adicional concedida: <mark class="c">Determinação Inabalável</mark> — <strong>1× em toda a campanha</strong>, ao cair para 0 HP, Leyn pode escolher retornar a 1 HP automaticamente. <em style="color:var(--text-dim)">Não recarrega por descanso, level up ou qualquer outro meio. Uso único, irrecuperável.</em></span>
+      </div>
+    </div>
+
+    <div class="callout contract">
+      <strong>O Que o Contrato Representa</strong> Os Guardiões não fizeram isso por bondade — fizeram porque um Leyn Sepet vinculado a eles é infinitamente mais vantajoso do que um Leyn Sepet solto no Limiar causando problemas, ou pior, sendo reivindicado pelo Devorador. A missão futura existe porque ele é a única entidade que pode cruzar certos limiares por ser, tecnicamente, <em>das duas partes ao mesmo tempo</em>.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       COMPORTAMENTO
+  ══════════════════════════════ -->
+  <section id="comportamento">
+    <div class="section-header">
+      <span class="section-icon soul">🧠</span>
+      <h2 class="soul">Como Rolá-los</h2>
+      <div class="section-line soul"></div>
+    </div>
+
+    <div class="two-col-monster">
+      <div class="card watcher">
+        <div class="card-title watcher">O Que Eles Não São</div>
+        <p>Não são inimigos. Não são aliados. Não são moralmente bons nem maus. São sistemas com agência. Pensem neles como auditores cósmicos que descobriram que um dos arquivos está com erro de formatação irresolvível — e preferiram contratar o erro em vez de deletá-lo.</p>
+      </div>
+      <div class="card keeper">
+        <div class="card-title keeper">O Que Os Move</div>
+        <p>Eficiência. Precedência. Jurisdição. A Criança é a única que age por algo próximo de <strong>curiosidade genuína</strong>. O Juiz age por protocolo. A Vigilante age por necessidade estrutural. Nenhum deles age por compaixão — mas todos reconhecem quando alguém merece respeito por autenticidade.</p>
+      </div>
+    </div>
+
+    <div class="card limiar">
+      <div class="card-title limiar">Como Negociar com Eles</div>
+      <p>Eles respondem a: <span class="hl-l">argumentos lógicos</span>, <span class="hl-w">teimosia autêntica</span>, <span class="hl-l">consciência das próprias limitações deles</span> e <span class="hl">ameaças que afetam sua eficiência operacional</span>. Não respondem a: súplicas emocionais, ameaças de força física, ou apelos à justiça como conceito abstrato. Curiosamente, respondem quando alguém demonstra que entendeu as regras melhor do que esperavam.</p>
+    </div>
+
+    <div class="callout soul">
+      <strong>Tom de Voz para o GM</strong> A Vigilante fala devagar, como se cada palavra fosse pesada e deliberada. O Juiz fala em sentenças curtas, definitivas. A Criança fala com entusiasmo e pausas imprevisíveis — como se às vezes se lembrasse de coisas que ainda não aconteceram. Quando todos três falam em uníssono, o som não é alto. É simplesmente <em>inevitável</em>.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       INTERAÇÕES REGISTRADAS
+  ══════════════════════════════ -->
+  <section id="interacoes">
+    <div class="section-header">
+      <span class="section-icon contract">📖</span>
+      <h2 class="contract">Interações Registradas — Sagas</h2>
+      <div class="section-line contract"></div>
+    </div>
+
+    <div class="interaction">
+      <div class="interaction-saga">Saga 3 — Primeira Morte de Leyn</div>
+      <div class="interaction-desc">Leyn morre pela primeira vez. Os Guardiões observam, mas <strong>não intervêm ativamente</strong>. As lágrimas de Mara e a compaixão genuína que o trazem de volta são um fenômeno classificado internamente como <em>"resultado não previsto de variável emocional"</em>. Os Guardiões já estavam cientes do caso desde este momento. <em style="color:var(--text-dim);font-size:.86rem;">(Nota: Aldric Voss — 300 anos de vida — confirmou posteriormente, em conversa com Leyn na Saga 6, nunca ter visto um primordial morrer e ressuscitar. Ele não estava presente na Saga 3.)</em></div>
+    </div>
+
+    <div class="interaction">
+      <div class="interaction-saga">Saga 8 — Segunda Morte · Contrato do Limiar</div>
+      <div class="interaction-desc">Leyn morre pelo Arauto Ardente. Desta vez, os Guardiões estão prontos. Apresentam três opções de retorno — todas com custo. Leyn recusa as três e <strong>negocia diretamente</strong>, usando argumentos sobre a ineficiência deles e a ameaça do Devorador como alavanca. Os Guardiões reconhecem a anomalia, revisam a proposta e aceitam o contrato único. A Criança declara gostar dele. <mark class="c">Contrato gravado.</mark> Bênção da Determinação Inabalável concedida. Proteção ativa ativada.</div>
+    </div>
+
+    <div class="callout limiar" style="margin-top:4px;">
+      <strong>O Devorador — Ameaça no Limiar</strong> Durante a negociação da Saga 8, o Devorador foi visto observando Leyn no Plano Limiar — esperando que os Guardiões não o vinculassem. Entidades como o Devorador operam no espaço entre jurisdições. O contrato com os Guardiões fechou essa janela. Por enquanto.
+    </div>
+  </section>
+
+</main>
+
+<div style="max-width:860px;margin:0 auto;padding:0 20px 0;">
+  <div class="divider" style="padding:0;margin-bottom:0;">
+    <div class="divider-line"></div>
+    <span class="divider-glyph">⧖</span>
+    <div class="divider-line"></div>
+  </div>
+</div>
+
+<footer>
+  Os Guardiões do Limiar <span>⸸</span> "Aqueles que Guardam a Fronteira" <span>⸸</span> Além do Véu da Carne
+</footer>
+
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+
+<script>
+(function() {
+  /* Stars */
+  var c = document.getElementById('stars');
+  for (var i = 0; i < 90; i++) {
+    var s = document.createElement('div');
+    s.className = 'star';
+    var sz = .5 + Math.random() * 1.5;
+    s.style.cssText = [
+      'width:' + sz + 'px',
+      'height:' + sz + 'px',
+      'top:' + (Math.random() * 100) + '%',
+      'left:' + (Math.random() * 100) + '%',
+      'animation-duration:' + (3 + Math.random() * 6) + 's',
+      'animation-delay:' + (Math.random() * 6) + 's',
+    ].join(';');
+    c.appendChild(s);
+  }
+
+  /* Top btn */
+  document.getElementById('top-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+</script>
+
+</body>
+</html>

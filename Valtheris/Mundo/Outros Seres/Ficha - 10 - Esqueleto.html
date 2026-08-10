@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Esqueleto — Apêndice D · Valtheris</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:          #050507;
+    --hollow:        #1a1a22;
+
+    --bone:          #706858;
+    --bone-light:    #a09878;
+    --bone-dim:      #1e1c14;
+    --bone-pale:     #d8ceb0;
+
+    --marrow-light:  #706858;
+    --marrow-dim:    #141210;
+    --marrow-pale:   #a09070;
+
+    --necrotic:      #3a2848;
+    --necrotic-light:#6a4888;
+    --necrotic-bright:#9068b8;
+    --necrotic-dim:  #100c18;
+    --necrotic-pale: #b090d0;
+
+    --rust:          #583818;
+    --rust-light:    #886038;
+    --rust-dim:      #1c1008;
+    --rust-pale:     #c09060;
+
+    --text:          #807868;
+    --text-dim:      #2e2820;
+    --text-faint:    #100e0a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--void);
+    background-image:
+      radial-gradient(ellipse 120% 50% at 50% -5%, #0a0a10 0%, transparent 55%),
+      radial-gradient(ellipse 50%  60% at 90% 100%, #080808 0%, transparent 50%),
+      radial-gradient(ellipse 40%  60% at 10%  80%, #0a0a10 0%, transparent 50%);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 17px; line-height: 1.8;
+    min-height: 100vh; overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 999; opacity: .6;
+  }
+
+  /* ══ TOP BAR ══ */
+  .top-bar { height: 4px; background: linear-gradient(90deg, var(--bone-dim), var(--bone-light), var(--necrotic-light), var(--bone-light), var(--bone-dim)); box-shadow: 0 0 30px rgba(106,72,136,.4); }
+
+  /* ══ HEADER ══ */
+  header { position: relative; text-align: center; padding: 80px 20px 70px; overflow: hidden; }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 40%, rgba(58,40,72,.10) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 30% at 50% 60%, rgba(40,28,50,.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-pulse { position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--bone-dim), var(--necrotic-dim), var(--bone-dim), transparent); }
+  .header-symbol { display: block; font-size: 2.2rem; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(106,72,136,.5)); }
+  .header-eyebrow { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .45em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 18px; }
+  .header-classification { font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .25em; text-transform: uppercase; color: var(--bone-pale); margin-bottom: 10px; opacity: .8; }
+  .header-title-sub { font-family: 'Cinzel', serif; font-size: clamp(.85rem, 2vw, 1rem); letter-spacing: .18em; text-transform: uppercase; color: var(--necrotic-pale); margin-bottom: 8px; }
+  .header-fraktur {
+    font-family: 'Cinzel Decorative', serif; font-size: clamp(2rem, 6vw, 3.6rem);
+    font-weight: 900; line-height: 1.1; margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--bone-light) 0%, var(--necrotic-light) 40%, var(--bone-pale) 70%, var(--necrotic-bright) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .header-tagline { font-family: 'EB Garamond', serif; font-style: italic; font-size: clamp(.9rem, 2.2vw, 1.08rem); color: #2e2820; letter-spacing: .06em; margin-top: 8px; }
+  .header-crests { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 24px; }
+  .crest-badge { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; padding: 5px 14px; border-radius: 1px; }
+  .crest-badge.bone     { border: 1px solid var(--bone-dim);     color: var(--bone-light);     background: rgba(18,16,12,.4); }
+  .crest-badge.necrotic { border: 1px solid var(--necrotic-dim); color: var(--necrotic-light); background: rgba(12,10,18,.4); }
+  .crest-badge.rust     { border: 1px solid var(--rust-dim);     color: var(--rust-light);     background: rgba(18,12,6,.3); }
+  .crest-badge.marrow   { border: 1px solid var(--marrow-dim);   color: var(--marrow-light);   background: rgba(14,12,10,.3); }
+
+  /* ══ DIVIDER ══ */
+  .divider { display: flex; align-items: center; gap: 14px; padding: 0 20px; max-width: 860px; margin: 0 auto 24px; }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--bone-dim), var(--necrotic-dim), transparent); }
+  .divider-glyph { font-family: 'Cinzel', serif; font-size: .7rem; color: var(--bone-dim); }
+
+  /* ══ LAYOUT ══ */
+  main { max-width: 860px; margin: 0 auto; padding: 0 20px 90px; display: flex; flex-direction: column; gap: 0; position: relative; z-index: 1; }
+
+  section { margin-bottom: 56px; animation: fade-in .5s ease both; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  section:nth-child(1)  { animation-delay: .05s; }
+  section:nth-child(2)  { animation-delay: .12s; }
+  section:nth-child(3)  { animation-delay: .18s; }
+  section:nth-child(4)  { animation-delay: .24s; }
+  section:nth-child(5)  { animation-delay: .30s; }
+  section:nth-child(6)  { animation-delay: .36s; }
+
+  /* ══ SECTION HEADER ══ */
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .section-icon { font-size: 1.1rem; }
+  .section-icon.bone     { filter: drop-shadow(0 0 8px rgba(160,152,120,.5)); }
+  .section-icon.necrotic { filter: drop-shadow(0 0 8px rgba(106,72,136,.6)); }
+  .section-icon.rust     { filter: drop-shadow(0 0 8px rgba(136,96,56,.5)); }
+  .section-icon.marrow   { filter: drop-shadow(0 0 8px rgba(112,104,88,.4)); }
+  h2 { font-family: 'Cinzel', serif; font-size: .9rem; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; }
+  h2.bone     { color: var(--bone-light);     text-shadow: 0 0 18px rgba(160,152,120,.3); }
+  h2.necrotic { color: var(--necrotic-light); text-shadow: 0 0 18px rgba(106,72,136,.4); }
+  h2.rust     { color: var(--rust-light);     text-shadow: 0 0 18px rgba(136,96,56,.3); }
+  h2.marrow   { color: var(--marrow-light);   text-shadow: 0 0 18px rgba(112,104,88,.2); }
+  .section-line { flex: 1; height: 1px; }
+  .section-line.bone     { background: linear-gradient(90deg, var(--bone-dim),     rgba(50,46,34,.3), transparent); }
+  .section-line.necrotic { background: linear-gradient(90deg, var(--necrotic-dim), rgba(38,24,52,.3), transparent); }
+  .section-line.rust     { background: linear-gradient(90deg, var(--rust-dim),     rgba(38,26,14,.3), transparent); }
+  .section-line.marrow   { background: linear-gradient(90deg, var(--marrow-dim),   rgba(30,26,20,.3), transparent); }
+
+  /* ══ IDENTITY BLOCK ══ */
+  .identity { position: relative; background: rgba(8,8,12,.92); border: 1px solid rgba(58,52,40,.3); padding: 44px 32px 36px; text-align: center; margin-bottom: 28px; }
+  .identity::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--bone-dim), var(--necrotic-dim), transparent); }
+  .identity::after  { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--rust-dim), transparent); }
+  .identity-corner { position: absolute; font-family: 'Cinzel', serif; font-size: .48rem; letter-spacing: .22em; text-transform: uppercase; color: var(--bone-dim); }
+  .identity-corner.tl { top: 10px; left: 14px; }
+  .identity-corner.tr { top: 10px; right: 14px; }
+  .identity-corner.bl { bottom: 10px; left: 14px; }
+  .identity-corner.br { bottom: 10px; right: 14px; }
+  .monster-name { font-family: 'Cinzel Decorative', serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 900; line-height: 1.1; margin-bottom: 10px; background: linear-gradient(135deg, var(--bone-light), var(--necrotic-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .monster-epithet { font-family: 'EB Garamond', serif; font-style: italic; font-size: 1rem; color: var(--bone-dim); letter-spacing: .06em; margin-bottom: 16px; }
+  .monster-type-line { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 20px; }
+  .monster-lore { font-style: italic; color: #807868; font-size: .97rem; border-left: 2px solid var(--bone-dim); padding-left: 16px; margin-top: 14px; line-height: 1.75; text-align: left; }
+  .monster-lore + .monster-lore { border-left-color: var(--necrotic-dim); margin-top: 10px; }
+
+  /* ══ TAGS ══ */
+  .tag { display: inline-block; font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .18em; text-transform: uppercase; padding: 2px 8px; border-radius: 1px; margin-right: 4px; margin-bottom: 4px; vertical-align: middle; }
+  .tag.dnd     { border: 1px solid #503808; color: #c09030; }
+  .tag.lore    { border: 1px solid #3a3428; color: var(--bone-pale); }
+  .tag.hb      { border: 1px solid #1a3020; color: #508060; }
+  .tag.med     { border: 1px solid #28241c; color: var(--marrow-light); }
+  .tag.cr-qtr  { border: 1px solid #302848; color: var(--necrotic-light); }
+  .tag.undead  { border: 1px solid #3a2848; color: var(--necrotic-pale); }
+  .tag.minion  { border: 1px solid #3a2808; color: var(--rust-light); }
+  .tag-a { font-family: 'Fira Code', monospace; font-size: .6rem; padding: 1px 7px; margin-left: 6px; border-radius: 1px; vertical-align: middle; }
+  .tag-a.bone     { border: 1px solid var(--bone-dim);     color: var(--bone-pale); }
+  .tag-a.necrotic { border: 1px solid var(--necrotic-dim); color: var(--necrotic-pale); }
+
+  /* ══ MONSTER VITALS ══ */
+  .monster-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  @media (max-width: 600px) { .monster-vitals { grid-template-columns: 1fr 1fr; } }
+  .mvital-card { background: rgba(8,8,12,.88); border: 1px solid rgba(46,40,30,.3); border-radius: 3px; padding: 16px 14px; position: relative; overflow: hidden; text-align: center; }
+  .mvital-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+  .mvital-card.bone::after     { background: linear-gradient(90deg, transparent, var(--bone-light),     transparent); }
+  .mvital-card.necrotic::after { background: linear-gradient(90deg, transparent, var(--necrotic-light), transparent); }
+  .mvital-card.rust::after     { background: linear-gradient(90deg, transparent, var(--rust-light),     transparent); }
+  .mvital-card.marrow::after   { background: linear-gradient(90deg, transparent, var(--marrow-light),   transparent); }
+  .mvital-label { font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+  .mvital-value { font-family: 'Cinzel Decorative', serif; font-size: 2rem; line-height: 1; display: block; }
+  .mvital-value.bone     { color: var(--bone-light);     text-shadow: 0 0 18px rgba(160,152,120,.3); }
+  .mvital-value.necrotic { color: var(--necrotic-light); text-shadow: 0 0 20px rgba(106,72,136,.4); }
+  .mvital-value.rust     { color: var(--rust-light);     text-shadow: 0 0 16px rgba(136,96,56,.3); }
+  .mvital-value.marrow   { color: var(--marrow-light);   text-shadow: 0 0 14px rgba(112,104,88,.3); }
+  .mvital-note { font-size: .75rem; color: var(--text-dim); font-style: italic; margin-top: 6px; display: block; line-height: 1.4; }
+
+  /* ══ TWO-COL-MONSTER + CR BADGE ══ */
+  .two-col-monster { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 600px) { .two-col-monster { grid-template-columns: 1fr; } }
+  .cr-badge {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, rgba(28,24,18,.14), rgba(24,18,32,.12));
+    border: 1px solid rgba(58,52,40,.3);
+    border-top: 2px solid var(--bone-light);
+    border-bottom: 2px solid var(--necrotic-dim);
+    padding: 14px 24px; text-align: center;
+  }
+  .cr-badge-label { font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .28em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; display: block; }
+  .cr-badge-value {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.2rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--bone-light), var(--necrotic-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1; display: block;
+  }
+  .cr-badge-note { font-family: 'Fira Code', monospace; font-size: .6rem; color: var(--text-dim); margin-top: 4px; letter-spacing: .06em; display: block; }
+
+  /* ══ CARDS ══ */
+  .card { background: rgba(8,8,12,.90); border: 1px solid var(--hollow); padding: 20px 24px; margin-bottom: 10px; position: relative; overflow: hidden; }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .card.bone::before     { background: linear-gradient(90deg, transparent, var(--bone-dim),     transparent); }
+  .card.necrotic::before { background: linear-gradient(90deg, transparent, var(--necrotic-dim), transparent); }
+  .card.rust::before     { background: linear-gradient(90deg, transparent, var(--rust-dim),     transparent); }
+  .card-title { font-family: 'Cinzel', serif; font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 10px; }
+  .card-title.bone     { color: var(--bone-pale); }
+  .card-title.necrotic { color: var(--necrotic-pale); }
+  .card-title.rust     { color: var(--rust-pale); }
+  .card p { font-size: .94rem; color: #686058; line-height: 1.75; }
+  .card strong { color: var(--bone-pale); }
+
+  /* ══ TRAITS ══ */
+  .trait { display: grid; grid-template-columns: 3px 1fr; gap: 0 14px; margin-bottom: 10px; }
+  .tier-bar { border-radius: 2px; }
+  .trait-content { background: rgba(8,8,12,.78); border: 1px solid var(--hollow); padding: 14px 16px; }
+  .trait-name { font-family: 'Cinzel', serif; font-size: .74rem; letter-spacing: .1em; font-weight: 900; color: var(--bone-pale); margin-bottom: 5px; }
+  .trait-name .sub { font-style: italic; font-weight: 400; color: var(--text-dim); font-family: 'EB Garamond', serif; font-size: .9rem; letter-spacing: 0; text-transform: none; }
+  .trait-content p { font-size: .92rem; color: #686058; line-height: 1.72; }
+  .trait-content p strong { color: var(--bone-pale); }
+
+  /* ══ ACTIONS ══ */
+  .action { background: rgba(8,8,12,.88); border: 1px solid var(--hollow); padding: 14px 18px; margin-bottom: 8px; transition: border-bottom-color .2s; }
+  .action.bone     { border-bottom: 2px solid var(--bone-dim); }
+  .action.bone:hover     { border-bottom-color: var(--bone-light); }
+  .action.necrotic { border-bottom: 2px solid var(--necrotic-dim); }
+  .action.necrotic:hover { border-bottom-color: var(--necrotic-light); }
+  .action.rust     { border-bottom: 2px solid var(--rust-dim); }
+  .action.rust:hover     { border-bottom-color: var(--rust-light); }
+  .action-name { font-family: 'Cinzel', serif; font-size: .76rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+  .action-name.bone     { color: var(--bone-light); }
+  .action-name.necrotic { color: var(--necrotic-pale); }
+  .action-name.rust     { color: var(--rust-pale); }
+  .action p { font-size: .92rem; color: #686058; line-height: 1.72; }
+  .action strong { color: var(--bone-pale); }
+
+  /* ══ ATTR GRID ══ */
+  .attr-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 14px; }
+  @media (max-width: 500px) { .attr-grid { grid-template-columns: repeat(3, 1fr); } }
+  .attr-box { background: rgba(6,6,10,.92); border: 1px solid var(--hollow); padding: 16px 10px; text-align: center; position: relative; overflow: hidden; }
+  .attr-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; }
+  .attr-box.max::before  { background: linear-gradient(90deg, transparent, var(--bone-light),     transparent); }
+  .attr-box.high::before { background: linear-gradient(90deg, transparent, var(--necrotic-light), transparent); }
+  .attr-box.mid::before  { background: linear-gradient(90deg, transparent, var(--marrow-light),   transparent); }
+  .attr-box.low::before  { background: linear-gradient(90deg, transparent, #c05050,               transparent); }
+  .attr-name { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+  .attr-value { display: block; font-family: 'Fira Code', monospace; font-size: 1.4rem; font-weight: 500; line-height: 1; color: var(--text); }
+  .attr-value.max  { color: var(--bone-light); }
+  .attr-value.high { color: var(--necrotic-light); }
+  .attr-value.mid  { color: var(--marrow-light); }
+  .attr-value.low  { color: #c05050; }
+  .attr-mod { display: block; font-family: 'Cinzel', serif; font-size: .62rem; margin-top: 4px; color: var(--text-dim); }
+  .attr-mod.max  { color: var(--bone-dim); }
+  .attr-mod.high { color: var(--necrotic-dim); }
+  .attr-mod.mid  { color: var(--marrow-dim); }
+  .attr-mod.neg  { color: #803030; }
+
+  /* ══ SEP ══ */
+  .sep { height: 1px; background: linear-gradient(90deg, transparent, var(--bone-dim), var(--necrotic-dim), transparent); margin: 18px 0; opacity: .5; }
+
+  /* ══ TABLE ══ */
+  .table-wrap { margin: 12px 0; border: 1px solid var(--hollow); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  thead tr { background: rgba(8,8,12,.98); border-bottom: 2px solid var(--bone-dim); }
+  thead th { font-family: 'Cinzel', serif; font-size: .64rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--bone-pale); padding: 9px 14px; text-align: left; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid rgba(20,18,14,.9); transition: background .12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:nth-child(even) { background: rgba(255,255,255,.012); }
+  tbody tr:hover { background: rgba(58,40,72,.07); }
+  td { padding: 8px 14px; vertical-align: top; color: #686058; }
+  td:first-child { font-family: 'Cinzel', serif; font-size: .84rem; color: var(--text); white-space: nowrap; }
+  .mono         { font-family: 'Fira Code', monospace; font-size: .78rem; color: var(--bone-pale); }
+  .mono.bone    { color: var(--bone-light); }
+  .mono.necrotic{ color: var(--necrotic-light); }
+  .mono.rust    { color: var(--rust-light); }
+
+  /* ══ CALLOUT ══ */
+  .callout { border-left: 3px solid; padding: 14px 18px; margin: 12px 0; font-style: italic; font-size: .92rem; line-height: 1.75; }
+  .callout strong { font-style: normal; font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .1em; display: block; margin-bottom: 3px; }
+  .callout.tip     { background: rgba(20,18,14,.15);  border-color: var(--bone);     color: #686058; }
+  .callout.tip strong     { color: var(--bone-light); }
+  .callout.necrotic{ background: rgba(20,14,28,.15);  border-color: var(--necrotic); color: #606070; }
+  .callout.necrotic strong{ color: var(--necrotic-light); }
+  .callout.rust    { background: rgba(24,16,8,.14);   border-color: var(--rust);     color: #686050; }
+  .callout.rust strong    { color: var(--rust-light); }
+
+  /* ══ MARK ══ */
+  mark          { background: rgba(160,152,120,.16); color: var(--bone-pale);     border-radius: 1px; padding: 0 2px; }
+  mark.necrotic { background: rgba(106,72,136,.16);  color: var(--necrotic-pale); }
+  mark.rust     { background: rgba(136,96,56,.14);   color: var(--rust-pale); }
+
+  /* ══ HIGHLIGHT ══ */
+  .hl         { color: var(--bone-light);     font-weight: 600; }
+  .hl-bone    { color: var(--bone-light);     font-weight: 600; }
+  .hl-necrotic{ color: var(--necrotic-light); font-weight: 600; }
+  .hl-rust    { color: var(--rust-light);     font-weight: 600; }
+  .hl-red     { color: #c05050; font-weight: 600; }
+
+  /* ══ RECHARGE / COST ══ */
+  .recharge      { font-family: 'Fira Code', monospace; font-size: .62rem; border: 1px solid var(--bone-dim);     color: var(--bone-light);     padding: 1px 7px; margin-left: 8px; vertical-align: middle; }
+  .recharge.rare { border-color: var(--necrotic-dim); color: var(--necrotic-light); }
+  .cost-badge    { font-family: 'Fira Code', monospace; font-size: .6rem; padding: 1px 7px; margin-left: 6px; border: 1px solid var(--marrow-dim); color: var(--marrow-pale); vertical-align: middle; }
+
+  /* ══ IMUNIDADES ══ */
+  .imun-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .imun-tag { font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .12em; text-transform: uppercase; padding: 3px 10px; border-radius: 1px; }
+  .imun-tag.bone     { border: 1px solid var(--bone-dim);     color: var(--bone-pale); }
+  .imun-tag.necrotic { border: 1px solid var(--necrotic-dim); color: var(--necrotic-pale); }
+  .imun-tag.rust     { border: 1px solid var(--rust-dim);     color: var(--rust-pale); }
+
+  /* ══ ARMAS VARIAVEIS ══ */
+  .weapon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  @media (max-width: 560px) { .weapon-grid { grid-template-columns: 1fr; } }
+  .weapon-card { background: rgba(8,8,12,.82); border: 1px solid var(--hollow); padding: 12px 16px; }
+  .weapon-name { font-family: 'Cinzel', serif; font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--rust-pale); margin-bottom: 6px; display: block; }
+  .weapon-stat { font-family: 'Fira Code', monospace; font-size: .82rem; color: var(--bone-pale); margin-bottom: 2px; }
+  .weapon-note { font-size: .82rem; color: #586050; font-style: italic; }
+
+  /* ══ SCROLLBAR ══ */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--void); }
+  ::-webkit-scrollbar-thumb { background: var(--bone-dim); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--bone-light); }
+
+  /* ══ BREADCRUMB / FOOTER ══ */
+  .breadcrumb { max-width: 860px; margin: 0 auto; padding: 20px 20px 0; font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+  .breadcrumb span { color: var(--bone-dim); margin: 0 6px; }
+  .breadcrumb .current { color: var(--bone-light); }
+  footer { text-align: center; padding: 40px 20px; font-family: 'Cinzel', serif; font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); }
+  footer span { color: var(--bone-dim); margin: 0 6px; }
+  #top-btn { position: fixed; bottom: 28px; right: 28px; width: 42px; height: 42px; background: rgba(8,8,12,.95); border: 1px solid var(--bone-dim); color: var(--bone-light); font-size: 1.2rem; line-height: 42px; text-align: center; text-decoration: none; opacity: 0; pointer-events: none;
+    transition: border-color .2s, color .2s, opacity .3s; z-index: 100; }
+  #top-btn.visible { opacity: 1; pointer-events: auto; }
+  #top-btn:hover { border-color: var(--necrotic-light); color: var(--necrotic-light); }
+  #atributos, #perfil { margin-bottom: 0; }
+  .monster-lore.mec-note { border-left-color: var(--necrotic-dim); font-size: 11px; opacity: .75; font-style: italic; }
+  .card.flex-center { display: flex; flex-direction: column; justify-content: center; margin-bottom: 0; }
+  .text-sm { font-size: .9rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    section { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+
+<nav class="breadcrumb" aria-label="Caminho de navegação">
+  Valtheris &nbsp;/&nbsp; Apêndice D <span>›</span> <span class="current">10 — Esqueleto</span>
+</nav>
+
+<header>
+  <div class="header-pulse"></div>
+  <span class="header-symbol">💀</span>
+  <p class="header-eyebrow">Apêndice D &nbsp;⬥&nbsp; 10 / 31 &nbsp;⬥&nbsp; Além do Véu da Carne</p>
+  <p class="header-classification">⬥ Morto-Vivo Médio · Leal e Mau ⬥</p>
+  <h1 class="header-fraktur">Esqueleto</h1>
+  <p class="header-title-sub">Morto-Vivo — Servo da Necromancia</p>
+  <p class="header-tagline">"Não sente dor. Não sente medo. Não para."</p>
+  <div class="header-crests">
+    <span class="crest-badge bone">💀 Morto-Vivo</span>
+    <span class="crest-badge necrotic">☠ Imune: Veneno &amp; Exaustão</span>
+    <span class="crest-badge rust">⚔ Espada Curta ou Arco</span>
+    <span class="crest-badge marrow">ND 1/4 · 50 XP</span>
+  </div>
+</header>
+
+<div class="divider"><div class="divider-line"></div><span class="divider-glyph">⬥</span><div class="divider-line"></div></div>
+
+<main>
+
+<!-- ══ IDENTIDADE ══ -->
+<section id="identidade">
+  <div class="section-header">
+    <span class="section-icon bone">💀</span>
+    <h2 class="bone">Identidade</h2>
+    <div class="section-line bone"></div>
+  </div>
+
+  <div class="identity">
+    <div class="identity-corner tl">MORTO-VIVO MÉDIO · LEAL E MAU</div>
+    <div class="identity-corner tr">NÍVEL DE DESAFIO 1/4 · 50 XP</div>
+    <div class="identity-corner bl">APÊNDICE D · 10 / 31</div>
+    <div class="identity-corner br">FICHA · BESTIÁRIO</div>
+
+    <div class="monster-name">Esqueleto</div>
+    <div class="monster-epithet">⬥ Morto-Vivo — Servo da Necromancia ⬥</div>
+    <div class="monster-type-line">
+      <span class="tag dnd">D&D 5e</span>
+      <span class="tag undead">Morto-Vivo</span>
+      <span class="tag lore">Leal e Mau</span>
+      <span class="tag med">Médio</span>
+      <span class="tag cr-qtr">ND 1/4</span>
+      <span class="tag minion">Servo</span>
+    </div>
+
+    <p class="monster-lore">O Esqueleto é a segunda entrada não-besta do Apêndice D e o primeiro morto-vivo — marcando uma transição clara no bestiário. Onde os familiares e bestas anteriores eram recursos ou adversários naturais, o Esqueleto é <strong>produto de magia sombria</strong>: ossos animados por necromancia, sem mente própria, sem dor, sem exaustão, sem veneno que os afete. Existem apenas para obedecer.</p>
+
+    <p class="monster-lore">Em combate, o Esqueleto é deceptivamente eficaz para o seu ND. Dois ataques de Espada Curta ou um ataque de Arco a 24 metros de alcance representam opções táticas reais. Sua Vulnerabilidade a dano contundente é o contra-balanceamento mecânico — uma maça causa dano duplo, tornando qualquer combatente com arma contundente uma ameaça séria a grupos de esqueletos.</p>
+
+    <p class="monster-lore mec-note">
+      ⚙ Nota Mecânica — Tipo: Morto-Vivo Médio (Apêndice D · 10/31). Imunidade a Veneno e à condição Envenenado; imunidade a Exaustão. Vulnerabilidade a dano contundente — recebe dano dobrado de maças, bastões, martelos de guerra etc. Imune a efeitos de encantamento (Enfeitiçar Pessoa falha automaticamente). Sem necessidade de descanso, comida ou ar — pode guardar postos indefinidamente sob ordens de um mestre.
+    </p>
+  </div>
+</section>
+
+
+<!-- ══ ESTATÍSTICAS BASE ══ -->
+<section id="stats">
+  <div class="section-header">
+    <span class="section-icon rust">⚔</span>
+    <h2 class="rust">Estatísticas Base</h2>
+    <div class="section-line rust"></div>
+  </div>
+
+  <div class="monster-vitals">
+    <div class="mvital-card marrow">
+      <span class="mvital-label">Classe de Armadura</span>
+      <span class="mvital-value marrow">13</span>
+      <span class="mvital-note">Iniciativa +2 · Restos de Armadura</span>
+    </div>
+    <div class="mvital-card bone">
+      <span class="mvital-label">Pontos de Vida</span>
+      <span class="mvital-value bone">13</span>
+      <span class="mvital-note">2d8 + 4</span>
+    </div>
+    <div class="mvital-card necrotic">
+      <span class="mvital-label">Deslocamento</span>
+      <span class="mvital-value necrotic">9 m</span>
+      <span class="mvital-note">Sem natação ou voo</span>
+    </div>
+    <div class="mvital-card rust">
+      <span class="mvital-label">Percepção Passiva</span>
+      <span class="mvital-value rust">8</span>
+      <span class="mvital-note">Visão no Escuro 18 m</span>
+    </div>
+  </div>
+
+  <div class="two-col-monster">
+    <div class="cr-badge" style="flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;padding:16px 24px;">
+      <div>
+        <span class="cr-badge-label">Challenge Rating</span>
+        <span class="cr-badge-value">¼</span>
+        <span class="cr-badge-note">50 XP</span>
+      </div>
+      <div style="border-left:1px solid rgba(58,52,40,.3);padding-left:20px;">
+        <span class="cr-badge-label">Proficiência</span>
+        <span class="cr-badge-value" style="font-size:1.6rem;">+2</span>
+        <span class="cr-badge-note">CR 1/4</span>
+      </div>
+    </div>
+    <div class="card bone flex-center">
+      <div class="card-title bone">Escala de Ameaça</div>
+      <p class="text-sm">Individualmente fraco. <span class="hl-necrotic">Em grupo, perigoso</span>. Cinco esqueletos com arco a 24 m representam 5 ataques por turno que ignoram exaustão, veneno e encantamento. O DM que joga esqueletos como minions descartáveis subestima a aritmética da necromancia.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ ATRIBUTOS + PERFIL (two-col) ══ -->
+<div class="two-col-monster" style="align-items:start;gap:14px;margin-bottom:56px;">
+<section id="atributos">
+  <div class="section-header">
+    <span class="section-icon necrotic">◆</span>
+    <h2 class="necrotic">Atributos</h2>
+    <div class="section-line necrotic"></div>
+  </div>
+
+  <div class="attr-grid">
+    <div class="attr-box mid">
+      <div class="attr-name">For</div>
+      <span class="attr-value mid">10</span>
+      <span class="attr-mod mid">+0</span>
+    </div>
+    <div class="attr-box max">
+      <div class="attr-name">Des</div>
+      <span class="attr-value max">14</span>
+      <span class="attr-mod max">+2</span>
+    </div>
+    <div class="attr-box mid">
+      <div class="attr-name">Con</div>
+      <span class="attr-value mid">15</span>
+      <span class="attr-mod mid">+2</span>
+    </div>
+    <div class="attr-box low">
+      <div class="attr-name">Int</div>
+      <span class="attr-value low">6</span>
+      <span class="attr-mod neg">−2</span>
+    </div>
+    <div class="attr-box low">
+      <div class="attr-name">Sab</div>
+      <span class="attr-value low">8</span>
+      <span class="attr-mod neg">−1</span>
+    </div>
+    <div class="attr-box low">
+      <div class="attr-name">Car</div>
+      <span class="attr-value low">5</span>
+      <span class="attr-mod neg">−3</span>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <strong>Nota sobre os Atributos</strong> CON 15 em um morto-vivo é puramente estrutural — ossos densos e estrutura óssea robusta, não vitalidade biológica. DEX 14 explica a CA 13 e o bônus de ataque competente. INT 6 e SAB 8 confirmam ausência de raciocínio independente — o Esqueleto executa ordens, não elabora estratégia.
+  </div>
+</section>
+
+<section id="perfil">
+  <div class="section-header">
+    <span class="section-icon marrow">🎲</span>
+    <h2 class="marrow">Imunidades &amp; Sentidos</h2>
+    <div class="section-line marrow"></div>
+  </div>
+
+  <div class="card necrotic" style="margin-bottom:8px;">
+    <div class="card-title necrotic">Imunidades &amp; Vulnerabilidades</div>
+    <div class="imun-grid">
+      <span class="imun-tag necrotic">Imune: Veneno</span>
+      <span class="imun-tag necrotic">Imune: Envenenado</span>
+      <span class="imun-tag necrotic">Imune: Exaustão</span>
+      <span class="imun-tag bone">Imune: Encantamento</span>
+    </div>
+    <p style="margin-top:10px;font-size:.86rem;color:#604848;font-style:italic;">⚠ <span style="color:var(--rust-pale);font-family:'Cinzel',serif;font-size:.64rem;letter-spacing:.1em;">VULNERABILIDADE</span> — Dano contundente (recebe o dobro)</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+      <tbody>
+        <tr><td>Visão no Escuro</td><td><span class="mono bone">18 m</span></td></tr>
+        <tr><td>Percepção Passiva</td><td><span class="mono">8</span></td></tr>
+        <tr><td>Idiomas</td><td style="color:var(--text-dim);font-size:.88rem;">Entende os idiomas que conhecia em vida, mas não fala</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+</div><!-- end two-col -->
+
+
+<!-- ══ AÇÕES ══ -->
+<section id="acoes">
+  <div class="section-header">
+    <span class="section-icon rust">⚔</span>
+    <h2 class="rust">Ações</h2>
+    <div class="section-line rust"></div>
+  </div>
+
+  <div class="weapon-grid">
+    <div class="weapon-card">
+      <span class="weapon-name">⚔ Espada Curta</span>
+      <div class="weapon-stat">+4 para atingir · Alcance 1,5 m</div>
+      <div class="weapon-note">5 (1d6 + 2) de dano perfurante</div>
+    </div>
+    <div class="weapon-card">
+      <span class="weapon-name">🏹 Arco Curto</span>
+      <div class="weapon-stat">+4 para atingir · Alcance 24/96 m</div>
+      <div class="weapon-note">5 (1d6 + 2) de dano perfurante</div>
+    </div>
+  </div>
+
+  <div class="action bone">
+    <div class="action-name bone">Espada Curta</div>
+    <p><em>Ataque Corpo-a-Corpo com Arma:</em> <strong>+4 para atingir</strong>, alcance 1,5 m, um alvo. Acerto: <strong>5 (1d6 + 2)</strong> de dano perfurante.</p>
+  </div>
+
+  <div class="action rust">
+    <div class="action-name rust">Arco Curto</div>
+    <p><em>Ataque à Distância com Arma:</em> <strong>+4 para atingir</strong>, alcance 24/96 m, um alvo. Acerto: <strong>5 (1d6 + 2)</strong> de dano perfurante.</p>
+  </div>
+
+  <div class="sep"></div>
+
+  <div class="callout rust">
+    <strong>Duas Armas, Uma Escolha</strong> O Esqueleto usa <em>uma</em> das duas armas — não ambas no mesmo turno. A escolha depende do posicionamento: Arco Curto a <mark>24 m de alcance normal</mark> é raro no Apêndice D e torna o Esqueleto o artilheiro mais natural entre os mortos-vivos básicos. Em ambientes fechados, a Espada Curta. Em campo aberto, o Arco Curto a distância segura transforma o encontro.
+  </div>
+</section>
+
+
+<!-- ══ ESQUELETO COMO SERVO ══ -->
+<section id="necromancia">
+  <div class="section-header">
+    <span class="section-icon necrotic">🔮</span>
+    <h2 class="necrotic">Esqueleto como Servo Necromantico</h2>
+    <div class="section-line necrotic"></div>
+  </div>
+
+  <div class="callout necrotic">
+    <strong>Animar Mortos (Magia de 3º Nível)</strong> Um necromante pode animar até dois Esqueletos (ou Zumbis) com um único lançamento de <em>Animar Mortos</em>. Cada lançamento adicional refresca o controle por 24 horas. Um Mago nível 5 com três espaços de 3º nível pode controlar até <mark class="necrotic">seis esqueletos simultaneamente</mark> — 6 ataques de arco por turno, ignorando veneno, encantamento e exaustão. Matematicamente devastador em campo aberto.
+  </div>
+
+  <div class="two-col-monster">
+    <div class="card bone">
+      <div class="card-title bone">Vantagens como Servo</div>
+      <p>Não dorme. Não come. Não precisa de moral. Não pode ser Enfeitiçado ou Assustado. Guarda postos indefinidamente. Obedece ordens simples com precisão absoluta — sem interpretação, sem hesitação, sem deserção.</p>
+    </div>
+    <div class="card rust">
+      <div class="card-title rust">Limitações como Servo</div>
+      <p>INT 6 — incapaz de raciocinar sobre situações novas. Sem as ordens específicas, permanece imóvel. Vulnerabilidade a contundente é explorada por qualquer inimigo com maça. Pode ser destruído por <em>Girar Mortos-Vivos</em> de qualquer clérigo.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Valtheris <span>›</span> Apêndice D <span>›</span> <span style="color:var(--bone-dim);">10 — Esqueleto</span>
+</footer>
+
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+
+<script>
+(function() {
+  const btn = document.getElementById('top-btn');
+  btn.addEventListener('click', function(e) {
+    e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  window.addEventListener('scroll', function() {
+    btn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>

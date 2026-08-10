@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shoggoth — Valtheris · CR 12</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#03040a; --parchment:#060508; --fog:#121a14;
+  --red:#169448; --red-light:#2ec862; --red-dim:#062210;
+  --blue:#12a890; --blue-light:#2ed8c0; --blue-dim:#052618;
+  --gold:#88b018; --gold-light:#b8e038; --gold-dim:#1e2806; --gold-pale:#a4cc58; --purple-light:#9840d8; --purple-dim:#1e0838;
+  --blood:#801828; --blood-light:#c03048; --blood-dim:#200810;
+  --sanity:#3a6b8a; --sanity-light:#5a9bba;
+  --text:#96b8a8; --text-dim:#364c42; --text-faint:#162016;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background-color:var(--ink);background-image:radial-gradient(ellipse 140% 55% at 50% -8%,#020804 0%,transparent 55%),radial-gradient(ellipse 60% 60% at 95% 100%,#020604 0%,transparent 50%),radial-gradient(ellipse 45% 70% at 5% 85%,#050408 0%,transparent 50%);color:var(--text);font-family:'EB Garamond',Georgia,serif;font-size:17px;line-height:1.8;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:1;opacity:.35}
+
+/* BARRA */
+.iridescent-bar{height:4px;background:linear-gradient(90deg,var(--red) 0%,var(--blue) 22%,var(--purple-light) 45%,var(--gold-light) 65%,var(--red) 80%,var(--blue) 100%);background-size:200% 100%;animation:iridescent-shift 7s linear infinite;box-shadow:0 0 20px rgba(46,200,98,.25),0 0 40px rgba(30,216,192,.15)}
+@keyframes iridescent-shift{0%{background-position:0% 0%}100%{background-position:200% 0%}}
+
+/* BREADCRUMB */
+.breadcrumb{max-width:960px;margin:0 auto;padding:20px 20px 0;font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-faint)}
+.breadcrumb span{color:var(--gold-dim);margin:0 6px}
+.breadcrumb .current{color:var(--gold-light)}
+
+/* HEADER */
+header{position:relative;text-align:center;padding:72px 20px 60px;overflow:hidden;isolation:isolate}
+header::before{content:'';position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse 100% 70% at 50% 50%,rgba(22,148,72,.07) 0%,rgba(18,168,144,.04) 30%,rgba(104,24,160,.04) 60%,transparent 80%)}
+header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red-dim),var(--blue-dim),var(--purple-dim),var(--gold-dim),transparent)}
+.header-pulse{position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse 70% 50% at 50% 40%,rgba(22,148,72,.05) 0%,transparent 70%);animation:proto-breathe 12s ease-in-out infinite;pointer-events:none}
+@keyframes proto-breathe{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+.header-eyes{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:-1}
+.eye{position:absolute;border-radius:50%;background:radial-gradient(circle,var(--red-light),var(--red-dim));box-shadow:0 0 10px var(--red-light),0 0 20px rgba(46,200,98,.4);animation:eye-pulse var(--dur,4s) ease-in-out infinite var(--delay,0s)}
+@keyframes eye-pulse{0%,100%{opacity:0;transform:scale(.5)}30%{opacity:.8;transform:scale(1)}70%{opacity:.6;transform:scale(1.2)}85%{opacity:0;transform:scale(.3)}}
+.header-symbol{display:block;font-size:3rem;margin-bottom:16px;line-height:1;filter:drop-shadow(0 0 16px rgba(46,200,98,.6)) drop-shadow(0 0 40px rgba(30,216,192,.4)) drop-shadow(0 0 60px rgba(152,64,216,.3));animation:shog-pulse 10s ease-in-out infinite}
+@keyframes shog-pulse{0%,100%{filter:drop-shadow(0 0 14px rgba(46,200,98,.5)) drop-shadow(0 0 35px rgba(30,216,192,.3));transform:scale(1) rotate(0deg)}40%{filter:drop-shadow(0 0 30px rgba(46,200,98,.9)) drop-shadow(0 0 60px rgba(30,216,192,.5)) drop-shadow(0 0 80px rgba(152,64,216,.4));transform:scale(1.06) rotate(4deg)}70%{transform:scale(.97) rotate(-2deg)}}
+.header-eyebrow{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.4em;text-transform:uppercase;color:var(--text-faint);margin-bottom:16px}
+.header-classification{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-pale);margin-bottom:10px;opacity:.85}
+h1{font-family:'Cinzel Decorative',serif;font-size:clamp(2.2rem,7vw,4.4rem);font-weight:900;line-height:1.05;margin-bottom:6px;background:linear-gradient(135deg,#2ec862 0%,#30d8c8 28%,#9840d8 54%,#b8e038 76%,#2ec862 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header-title-sub{font-family:'Cinzel',serif;font-size:clamp(.85rem,2.5vw,1.1rem);letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.header-tagline{font-family:'Cinzel Decorative',serif;font-size:1.05rem;color:rgba(46,200,98,.45);letter-spacing:.06em;max-width:560px;margin:0 auto 24px}
+@keyframes tekeli-breathe{0%,100%{opacity:.3}50%{opacity:.75}}
+.proto-badges{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;position:relative;z-index:1}
+.proto-badge{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;padding:4px 14px;border-radius:1px}
+.proto-badge.green{border:1px solid var(--red-dim);color:var(--red-light)}
+.proto-badge.cyan{border:1px solid var(--blue-dim);color:var(--blue-light)}
+.proto-badge.purp{border:1px solid var(--purple-dim);color:var(--purple-light)}
+.proto-badge.gold{border:1px solid var(--gold-dim);color:var(--gold-light)}
+
+/* WARNING */
+.warning-banner{max-width:960px;margin:0 auto;padding:0 20px;position:relative;z-index:2}
+.warning-banner-inner{background:rgba(2,20,8,.18);border:1px solid var(--red-dim);border-left:4px solid var(--red-light);padding:16px 24px;display:flex;gap:14px;align-items:flex-start}
+.warning-icon{font-size:1.4rem;flex-shrink:0;line-height:1.6}
+.warning-text{font-family:'Cinzel',serif;font-size:.77rem;letter-spacing:.07em;color:#60a870;line-height:1.7}
+.warning-text strong{color:var(--red-light);letter-spacing:.14em;display:block;margin-bottom:4px}
+
+/* DIVIDER */
+.divider{display:flex;align-items:center;gap:14px;max-width:960px;margin:0 auto;padding:32px 20px 36px}
+.divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--red-dim),var(--blue-dim),transparent)}
+.divider-glyph{color:var(--gold);font-size:1.1rem;opacity:.8}
+
+/* SHOGGOTH VISUAL */
+.shog-visual{max-width:960px;margin:0 auto;padding:0 20px;display:flex;justify-content:center;overflow:hidden;position:relative;z-index:2}
+.shog-blob-container{position:relative;width:100%;height:260px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.shog-blob{width:360px;height:220px;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(10,40,20,.95) 0%,rgba(4,10,8,.99) 60%,rgba(3,4,6,1) 100%);border-radius:60% 40% 55% 45% / 45% 55% 60% 40%;animation:blob-morph 10s ease-in-out infinite;box-shadow:0 0 80px rgba(22,148,72,.18),0 0 160px rgba(18,168,144,.09),inset 0 0 80px rgba(0,0,0,.9);position:relative;overflow:hidden}
+@keyframes blob-morph{0%{border-radius:60% 40% 55% 45% / 45% 55% 60% 40%}20%{border-radius:45% 55% 70% 30% / 60% 40% 55% 45%}40%{border-radius:70% 30% 45% 55% / 40% 60% 45% 55%}60%{border-radius:35% 65% 60% 40% / 50% 45% 55% 50%}80%{border-radius:55% 45% 40% 60% / 65% 35% 50% 50%}100%{border-radius:60% 40% 55% 45% / 45% 55% 60% 40%}}
+.shog-blob::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 35%,rgba(46,200,98,.16) 0%,transparent 22%),radial-gradient(circle at 72% 42%,rgba(30,216,192,.13) 0%,transparent 18%),radial-gradient(circle at 50% 68%,rgba(152,64,216,.11) 0%,transparent 24%),radial-gradient(circle at 18% 62%,rgba(46,200,98,.09) 0%,transparent 16%),radial-gradient(circle at 82% 58%,rgba(30,216,192,.10) 0%,transparent 17%);animation:spots-shift 8s ease-in-out infinite}
+@keyframes spots-shift{0%,100%{opacity:.4}50%{opacity:1}}
+.shog-blob::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 28% 38%,var(--red-light) 0%,transparent 4%),radial-gradient(circle at 55% 30%,var(--red-light) 0%,transparent 3%),radial-gradient(circle at 74% 48%,var(--red-light) 0%,transparent 4%),radial-gradient(circle at 38% 65%,var(--blue-light) 0%,transparent 3%),radial-gradient(circle at 62% 60%,var(--red-light) 0%,transparent 4%);animation:eyes-appear 9s ease-in-out 1s infinite;opacity:0}
+@keyframes eyes-appear{0%,12%,88%,100%{opacity:0}35%,65%{opacity:.85}}
+.shog-caption{position:absolute;bottom:14px;left:0;right:0;text-align:center;pointer-events:none}
+.shog-caption span{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.36em;text-transform:uppercase;background:linear-gradient(90deg,var(--red),var(--blue),var(--purple-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;opacity:.7}
+.shog-fade{position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to top,rgba(3,4,10,1) 0%,transparent 100%);pointer-events:none}
+
+/* LAYOUT */
+main{max-width:960px;margin:0 auto;padding:0 20px 90px;position:relative;z-index:2}
+section{margin-bottom:52px}
+p{margin-bottom:10px}p:last-child{margin-bottom:0}
+
+/* SECTION HEADER */
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.section-icon{font-size:1.2rem;flex-shrink:0}
+.section-icon.red{filter:drop-shadow(0 0 8px rgba(46,200,98,.6))}
+.section-icon.blue{filter:drop-shadow(0 0 8px rgba(30,216,192,.6))}
+.section-icon.gold{filter:drop-shadow(0 0 8px rgba(184,224,56,.5))}
+.section-icon.san{filter:drop-shadow(0 0 8px rgba(58,107,138,.5))}
+.section-icon.purp{filter:drop-shadow(0 0 8px rgba(152,64,216,.5))}
+.section-icon.blood{filter:drop-shadow(0 0 8px rgba(192,48,72,.5))}
+h2{font-family:'Cinzel',serif;font-size:.88rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+h2.red{color:#3ae070;text-shadow:0 0 20px rgba(22,148,72,.3)}
+h2.blue{color:#40d8c8;text-shadow:0 0 20px rgba(18,168,144,.3)}
+h2.gold{color:var(--gold-light);text-shadow:0 0 20px rgba(136,176,24,.3)}
+h2.san{color:#7ab8d8;text-shadow:0 0 18px rgba(58,107,138,.3)}
+h2.purp{color:var(--purple-light);text-shadow:0 0 20px rgba(104,24,160,.3)}
+h2.blood{color:var(--blood-light);text-shadow:0 0 18px rgba(128,24,40,.3)}
+.section-line{flex:1;height:1px}
+.section-line.red{background:linear-gradient(90deg,var(--red-dim),rgba(18,168,144,.2),transparent)}
+.section-line.blue{background:linear-gradient(90deg,var(--blue-dim),rgba(22,148,72,.15),transparent)}
+.section-line.gold{background:linear-gradient(90deg,rgba(136,176,24,.5),rgba(22,148,72,.15),transparent)}
+.section-line.san{background:linear-gradient(90deg,rgba(58,107,138,.5),rgba(90,155,186,.15),transparent)}
+.section-line.purp{background:linear-gradient(90deg,var(--purple-dim),rgba(152,64,216,.15),transparent)}
+.section-line.blood{background:linear-gradient(90deg,var(--blood-dim),rgba(192,48,72,.15),transparent)}
+
+/* ══ VALTHERIS STAT BLOCK ══ */
+.vt-block{position:relative;background:linear-gradient(160deg,rgba(6,16,10,.99) 0%,rgba(4,10,6,.99) 100%);border:1px solid rgba(46,200,98,.25);border-top:none;overflow:hidden;margin-bottom:14px}
+.vt-header{background:linear-gradient(135deg,rgba(6,34,16,.9),rgba(5,38,24,.9));border-top:3px solid var(--red-light);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.vt-header-label{font-family:'Cinzel',serif;font-size:.72rem;font-weight:900;letter-spacing:.22em;text-transform:uppercase;color:var(--red-light)}
+.vt-header-sub{font-family:'Fira Code',monospace;font-size:.62rem;color:var(--text-dim);letter-spacing:.1em}
+.vt-cr-area{display:flex;align-items:center;gap:12px}
+.vt-cr-label{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-dim)}
+.vt-cr-value{font-family:'Cinzel Decorative',serif;font-size:2rem;line-height:1;background:linear-gradient(135deg,var(--gold-light),var(--red-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.vt-cr-xp{font-family:'Fira Code',monospace;font-size:.6rem;color:var(--gold-dim)}
+.vt-body{padding:20px 24px}
+.vt-vital-row{display:flex;gap:0;margin-bottom:16px;border:1px solid var(--fog);overflow:hidden}
+.vt-vital{flex:1;text-align:center;padding:12px 8px;border-right:1px solid var(--fog)}
+.vt-vital:last-child{border-right:none}
+.vt-vital-label{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);display:block;margin-bottom:4px}
+.vt-vital-value{font-family:'Cinzel Decorative',serif;font-size:1.3rem;display:block;line-height:1}
+.vt-vital-value.red{color:var(--red-light);text-shadow:0 0 14px rgba(46,200,98,.4)}
+.vt-vital-value.blue{color:var(--blue-light)}
+.vt-vital-value.gold{color:var(--gold-light)}
+.vt-vital-note{font-family:'Fira Code',monospace;font-size:.6rem;color:var(--text-dim);display:block;margin-top:3px}
+.vt-stat-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:14px}
+@media(max-width:560px){.vt-stat-grid{grid-template-columns:repeat(3,1fr)}}
+.vt-stat{background:rgba(4,8,6,.85);border:1px solid var(--fog);padding:11px 8px;text-align:center;position:relative;overflow:hidden}
+.vt-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.vt-stat.hi::before{background:linear-gradient(90deg,transparent,var(--red-light),transparent)}
+.vt-stat.lo::before{background:linear-gradient(90deg,transparent,var(--purple-light),transparent)}
+.vt-stat.mid::before{background:linear-gradient(90deg,transparent,var(--blue-light),transparent)}
+.vt-stat.norm::before{background:linear-gradient(90deg,transparent,var(--text-dim),transparent)}
+.vt-stat-name{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);display:block;margin-bottom:4px}
+.vt-stat-val{font-family:'Fira Code',monospace;font-size:1rem;display:block;line-height:1}
+.vt-stat-val.hi{color:var(--red-light)}.vt-stat-val.lo{color:var(--purple-light)}.vt-stat-val.mid{color:var(--blue-light)}.vt-stat-val.norm{color:var(--text)}
+.vt-stat-mod{font-family:'Fira Code',monospace;font-size:.68rem;color:var(--text-dim);display:block;margin-top:2px}
+.vt-prop{font-size:.88rem;color:#608070;margin-bottom:5px;line-height:1.6;padding:4px 0;border-bottom:1px solid rgba(18,50,30,.5)}
+.vt-prop:last-child{border-bottom:none;margin-bottom:0}
+.vt-prop strong{font-family:'Cinzel',serif;font-size:.68rem;font-weight:900;letter-spacing:.07em;color:#88a870}
+.vt-prop em{color:var(--gold-pale);font-style:normal;font-family:'Fira Code',monospace;font-size:.78rem}
+.vt-sep{height:1px;background:linear-gradient(90deg,transparent,var(--red-dim),var(--blue-dim),transparent);margin:14px 0}
+.vt-section-label{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid rgba(22,148,72,.2);padding-bottom:6px;margin:14px 0 10px}
+.vt-action{background:rgba(4,8,6,.7);border-left:2px solid var(--red-dim);padding:10px 14px;margin-bottom:8px;transition:border-left-color .2s}
+.vt-action:hover{border-left-color:var(--red-light)}
+.vt-action.blue{border-left-color:var(--blue-dim)}.vt-action.blue:hover{border-left-color:var(--blue-light)}
+.vt-action.gold{border-left-color:var(--gold-dim)}.vt-action.gold:hover{border-left-color:var(--gold-light)}
+.vt-action.purp{border-left-color:var(--purple-dim)}.vt-action.purp:hover{border-left-color:var(--purple-light)}
+.vt-action.blood{border-left-color:var(--blood-dim)}.vt-action.blood:hover{border-left-color:var(--blood-light)}
+.vt-action-name{font-family:'Cinzel',serif;font-size:.7rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--red-light);margin-bottom:4px}
+.vt-action-name.blue{color:var(--blue-light)}.vt-action-name.gold{color:var(--gold-light)}.vt-action-name.purp{color:var(--purple-light)}.vt-action-name.blood{color:var(--blood-light)}
+.vt-action p{font-size:.88rem;color:#607870}
+.vt-action p strong{color:#88a870}
+.vt-tag{font-family:'Fira Code',monospace;font-size:.6rem;border:1px solid var(--red-dim);color:var(--red-light);padding:1px 8px;margin-left:8px;vertical-align:middle}
+.vt-tag.blue{border-color:var(--blue-dim);color:var(--blue-light)}
+.vt-tag.gold{border-color:var(--gold-dim);color:var(--gold-light)}
+.vt-tag.blood{border-color:var(--blood-dim);color:var(--blood-light)}
+
+/* CoC Reference Block */
+.coc-ref{background:rgba(4,8,6,.55);border:1px solid rgba(20,40,24,.6);border-left:3px solid rgba(22,148,72,.2);padding:20px 24px;margin-bottom:12px;opacity:.7;transition:opacity .25s}
+.coc-ref:hover{opacity:1}
+.coc-ref-header{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.coc-ref-header::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--red-dim),transparent)}
+
+/* IDENTITY */
+.identity{position:relative;background:linear-gradient(145deg,rgba(8,14,10,.98) 0%,rgba(4,6,4,.99) 100%);border:1px solid rgba(30,50,30,.5);border-top:4px solid transparent;border-image:linear-gradient(90deg,var(--red),var(--blue),var(--purple-light),var(--gold-light)) 1;border-bottom:3px solid var(--gold-dim);padding:32px 36px;margin-bottom:14px;overflow:hidden;isolation:isolate}
+.identity::before{content:'';position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 0% 0%,rgba(22,148,72,.06) 0%,transparent 45%),radial-gradient(circle at 100% 0%,rgba(18,168,144,.05) 0%,transparent 45%),radial-gradient(circle at 0% 100%,rgba(104,24,160,.04) 0%,transparent 45%),radial-gradient(circle at 100% 100%,rgba(136,176,24,.05) 0%,transparent 45%);pointer-events:none}
+.identity-corner{position:absolute;font-family:'Fira Code',monospace;font-size:.55rem;letter-spacing:.12em;color:var(--text-faint);opacity:.5}
+.identity-corner.tl{top:10px;left:14px}.identity-corner.tr{top:10px;right:14px}.identity-corner.bl{bottom:10px;left:14px}.identity-corner.br{bottom:10px;right:14px}
+.monster-name{font-family:'Cinzel Decorative',serif;font-size:clamp(1.7rem,4.5vw,2.8rem);font-weight:900;background:linear-gradient(135deg,#2ec862 0%,#30d8c8 28%,#9840d8 56%,#b8e038 78%,#2ec862 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.monster-epithet{font-family:'Cinzel',serif;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-pale);opacity:.85;margin-bottom:14px}
+.monster-type-line{margin-bottom:16px}
+.monster-lore{font-style:italic;color:#506048;font-size:.97rem;border-left:2px solid var(--red-dim);padding-left:16px;margin-top:14px;line-height:1.75}
+.tag{display:inline-block;font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;padding:2px 9px;border-radius:1px;margin-right:5px;margin-bottom:5px;vertical-align:middle}
+.tag.mythos{border:1px solid rgba(22,100,40,.6);color:#50c070}
+.tag.proto{border:1px solid rgba(6,34,16,.8);color:var(--red-light)}
+.tag.void{border:1px solid var(--purple-dim);color:var(--purple-light)}
+.tag.corp{border:1px solid rgba(104,80,8,.6);color:var(--gold-light)}
+.tag.anc{border:1px solid rgba(30,60,50,.5);color:var(--blue-light)}
+.tag.cr{border:1px solid var(--blood-dim);color:var(--blood-light)}
+
+/* TRAITS */
+.trait{display:grid;grid-template-columns:3px 1fr;gap:0 14px;margin-bottom:10px}
+.trait-bar{border-radius:2px}
+.trait-content{background:rgba(4,8,5,.75);border:1px solid var(--fog);padding:14px 16px}
+.trait-name{font-family:'Cinzel',serif;font-size:.73rem;letter-spacing:.1em;font-weight:900;color:#a0c888;margin-bottom:5px}
+.trait-name .sub{font-style:italic;font-weight:400;color:var(--text-dim);font-family:'EB Garamond',serif;font-size:.9rem;letter-spacing:0;text-transform:none}
+.trait-content p{font-size:.92rem;color:#708078}
+.trait-content strong{color:#90a870}
+
+/* CALLOUTS */
+.callout{border-left:3px solid;padding:14px 18px;margin:12px 0;font-style:italic;font-size:.92rem;line-height:1.75}
+.callout strong{font-style:normal;font-family:'Cinzel',serif;font-size:.66rem;letter-spacing:.1em;display:block;margin-bottom:3px}
+.callout.red{border-color:var(--red-dim);background:rgba(4,20,8,.14);color:#60a870}
+.callout.red strong{color:var(--red-light)}
+.callout.blue{border-color:var(--blue-dim);background:rgba(4,20,18,.10);color:#50a8a0}
+.callout.blue strong{color:var(--blue-light)}
+.callout.gold{border-color:var(--gold-dim);background:rgba(60,80,4,.09);color:#90a870}
+.callout.gold strong{color:var(--gold-light)}
+.callout.san{border-color:var(--sanity);background:rgba(20,50,80,.12);color:#8abac8}
+.callout.san strong{color:var(--sanity-light)}
+.callout.tip{border-color:#2a6a4a;background:rgba(20,60,30,.09);color:#70b090}
+.callout.tip strong{color:#50b080}
+.callout.danger{border-color:var(--red);background:rgba(4,20,8,.20);color:#70a060}
+.callout.danger strong{color:var(--red-light)}
+.callout.blood{border-color:var(--blood);background:rgba(20,4,8,.18);color:#906868}
+.callout.blood strong{color:var(--blood-light)}
+
+/* SAN GRID */
+.san-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:540px){.san-grid{grid-template-columns:1fr}}
+.san-box{background:rgba(4,10,16,.9);border:1px solid rgba(58,107,138,.3);border-top:2px solid var(--sanity);padding:16px 14px;text-align:center;transition:border-top-color .2s}
+.san-box:hover{border-top-color:var(--sanity-light)}
+.san-box-label{font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;color:#4a8aaa;margin-bottom:4px}
+.san-box-dice{font-family:'Fira Code',monospace;font-size:1.1rem;color:var(--sanity-light);display:block;line-height:1.2}
+.san-box-label2{font-family:'Fira Code',monospace;font-size:.65rem;color:var(--text-dim);margin-top:3px;display:block}
+.san-box-sub{font-size:.76rem;color:var(--text-dim);font-style:italic;margin-top:3px}
+.san-box.pavor{border-top-color:var(--blood)}
+.san-box.pavor .san-box-label{color:var(--blood-light)}
+.san-box.pavor .san-box-dice{color:var(--blood-light)}
+
+/* PAVOR BOX */
+.pavor-bar{display:flex;gap:4px;margin:12px 0}
+.pavor-pip{flex:1;height:8px;border-radius:2px;background:rgba(128,24,40,.2);border:1px solid rgba(128,24,40,.3);transition:background .2s}
+.pavor-pip.active{background:var(--blood-light);box-shadow:0 0 6px rgba(192,48,72,.5)}
+.pavor-label{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
+
+/* FORM DIVIDER */
+.form-divider{display:flex;align-items:center;gap:14px;margin:36px 0 28px}
+.form-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent)}
+.form-divider-label{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);padding:4px 16px;border:1px solid var(--gold-dim);background:rgba(4,6,4,.95)}
+
+/* CARD */
+.card{background:linear-gradient(135deg,rgba(8,12,10,.92) 0%,rgba(4,6,4,.96) 100%);border:1px solid var(--fog);padding:20px 24px;margin-bottom:12px;position:relative;transition:box-shadow .3s}
+.card.red{border-left:3px solid var(--red-dim)}.card.red:hover{box-shadow:-4px 0 20px rgba(22,148,72,.2),0 4px 20px rgba(0,0,0,.6)}
+.card.blue{border-left:3px solid var(--blue-dim)}.card.blue:hover{box-shadow:-4px 0 20px rgba(18,168,144,.2),0 4px 20px rgba(0,0,0,.6)}
+.card.gold{border-left:3px solid var(--gold-dim)}.card.gold:hover{box-shadow:-4px 0 20px rgba(136,176,24,.2),0 4px 20px rgba(0,0,0,.6)}
+.card.san{border-left:3px solid var(--sanity)}.card.san:hover{box-shadow:-4px 0 20px rgba(58,107,138,.25),0 4px 20px rgba(0,0,0,.6)}
+.card-title{font-family:'Cinzel',serif;font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+.card-title.red{color:var(--red-light)}.card-title.blue{color:var(--blue-light)}.card-title.gold{color:var(--gold-light)}.card-title.san{color:var(--sanity-light)}
+
+/* TABLE */
+.table-wrap{margin:12px 0;border:1px solid var(--fog);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+thead tr{background:rgba(6,12,8,.97);border-bottom:2px solid var(--red-dim)}
+thead th{font-family:'Cinzel',serif;font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-pale);padding:9px 14px;text-align:left;white-space:nowrap}
+tbody tr{border-bottom:1px solid rgba(20,30,24,.9);transition:background .12s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(22,148,72,.05)}
+td{padding:8px 14px;vertical-align:top;color:#88a898}
+td:first-child{font-family:'Cinzel',serif;font-size:.84rem;color:var(--text);white-space:nowrap}
+.mono{font-family:'Fira Code',monospace;font-size:.78rem;color:var(--gold-pale)}
+.mono.red{color:var(--red-light)}.mono.blue{color:var(--blue-light)}.mono.san{color:var(--sanity-light)}.mono.blood{color:var(--blood-light)}
+
+/* HIGHLIGHTS */
+.hl{color:var(--gold-light);font-weight:600}.hl-r{color:var(--red-light);font-weight:600}.hl-b{color:var(--blue-light);font-weight:600}.hl-s{color:var(--sanity-light)}.hl-bl{color:var(--blood-light);font-weight:600}
+mark{background:rgba(22,148,72,.15);color:var(--red-light);padding:.1em .3em;border-radius:2px}
+mark.b{background:rgba(18,168,144,.15);color:var(--blue-light)}
+mark.s{background:rgba(58,107,138,.18);color:var(--sanity-light)}
+mark.g{background:rgba(136,176,24,.14);color:var(--gold-light)}
+mark.bl{background:rgba(128,24,40,.15);color:var(--blood-light)}
+
+/* TEKELI */
+.tekeli-banner{background:rgba(3,8,5,.97);border-top:1px solid rgba(22,148,72,.2);border-bottom:1px solid rgba(22,148,72,.2);padding:32px 36px;text-align:center;position:relative;overflow:hidden;isolation:isolate;margin-bottom:14px}
+.tekeli-banner::before{content:'';position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(22,148,72,.05) 0%,transparent 70%);animation:proto-breathe 8s ease-in-out infinite}
+.tekeli-text{font-family:'Cinzel Decorative',serif;font-size:clamp(1.4rem,5vw,2.8rem);background:linear-gradient(135deg,var(--red-dim),rgba(46,200,98,.35),var(--red-dim));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.1em;animation:tekeli-breathe 6s ease-in-out infinite}
+.tekeli-sub{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--text-faint);margin-top:10px}
+
+/* FOOTER */
+footer{text-align:center;padding:36px 20px 60px;font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.26em;text-transform:uppercase;color:var(--text-faint)}
+footer span{color:var(--gold-dim);margin:0 6px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--ink)}::-webkit-scrollbar-thumb{background:var(--red-dim);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--red-light)}
+#top-btn{position:fixed;bottom:1.5rem;right:1.5rem;width:36px;height:36px;background:var(--parchment);border:1px solid var(--fog);display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:.9rem;cursor:pointer;transition:all .2s;z-index:100; opacity:0; pointer-events:none; transition: opacity .25s, border-color .2s, color .2s;}
+#top-btn:hover{border-color:var(--red-dim);color:var(--red-light)}
+  #top-btn.visible { opacity: 1; pointer-events: all; }
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:600px){.two-col{grid-template-columns:1fr}}
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="iridescent-bar"></div>
+
+<nav class="breadcrumb" aria-label="Trilha de navegação">
+  Além do Véu da Carne — Valtheris <span>›</span> Bestiário · CoC 7e Convertido <span>›</span> <span class="current">Shoggoth — CR 12 · Iridescência Fétida</span>
+</nav>
+
+<header>
+  <div class="header-pulse"></div>
+  <div class="header-eyes">
+    <div class="eye" style="left:6%;top:42%;width:5px;height:5px;--dur:5.2s;--delay:0s;"></div>
+    <div class="eye" style="left:14%;top:28%;width:4px;height:4px;--dur:6.8s;--delay:1.2s;"></div>
+    <div class="eye" style="left:4%;top:62%;width:6px;height:6px;--dur:7.1s;--delay:2.4s;"></div>
+    <div class="eye" style="right:9%;top:37%;width:5px;height:5px;--dur:5.8s;--delay:0.8s;"></div>
+    <div class="eye" style="right:6%;top:56%;width:4px;height:4px;--dur:9.0s;--delay:3.1s;"></div>
+    <div class="eye" style="right:17%;top:24%;width:7px;height:7px;--dur:6.3s;--delay:1.8s;"></div>
+    <div class="eye" style="left:24%;top:74%;width:5px;height:5px;--dur:8.2s;--delay:4.0s;"></div>
+    <div class="eye" style="right:21%;top:70%;width:6px;height:6px;--dur:7.5s;--delay:2.7s;"></div>
+  </div>
+  <span class="header-symbol">🌑</span>
+  <p class="header-eyebrow">Além do Véu da Carne &nbsp;⸸&nbsp; Bestiário — CoC 7e Convertido para Valtheris</p>
+  <p class="header-classification">⬥ Monstro do Mythos &nbsp;·&nbsp; CR 12 &nbsp;·&nbsp; ~4,5m de diâmetro &nbsp;·&nbsp; Corpo Gargantesco &nbsp;·&nbsp; Cria dos Seres Ancestrais ⬥</p>
+  <h1>Shoggoth</h1>
+  <p class="header-title-sub">Iridescência Fétida</p>
+  <p class="header-tagline">Tekeli-li! &nbsp;&nbsp; Tekeli-li!</p>
+  <div class="proto-badges">
+    <span class="proto-badge gold">CR 12 · 8.400 XP</span>
+    <span class="proto-badge green">Regeneração 10 / turno</span>
+    <span class="proto-badge cyan">Resistência a não-mágico</span>
+    <span class="proto-badge purp">Pavor 3 níveis · CD SAB 16</span>
+  </div>
+</header>
+
+<div class="warning-banner">
+  <div class="warning-banner-inner">
+    <span class="warning-icon">⚠</span>
+    <div class="warning-text">
+      <strong>Aviso ao Mestre — CR 12 · Grupo nível 4</strong>
+      Para o grupo atual (nível 4, HP médio ~38), este é um encontro letal sem saída de combate. HP 250, Regeneração 10/turno, resistência a não-mágico, CA 17 e 4D8+9 por ataque (×2) resultam em eliminação do grupo em 3–4 rodadas. O único encontro correto é fuga, distração ou uso de fogo em escala de ambiente.
+    </div>
+  </div>
+</div>
+
+<div class="divider"><div class="divider-line"></div><span class="divider-glyph">◈</span><div class="divider-line"></div></div>
+
+<div class="shog-visual">
+  <div class="shog-blob-container">
+    <div class="shog-blob"></div>
+    <div class="shog-fade"></div>
+    <div class="shog-caption"><span>Shoggoth &nbsp;·&nbsp; CR 12 &nbsp;·&nbsp; Valtheris &nbsp;·&nbsp; Iridescência Fétida</span></div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ════ SISTEMA VALTHERIS ════ -->
+  <section id="valtheris">
+    <div class="section-header">
+      <span class="section-icon red">⚔</span>
+      <h2 class="red">Sistema Valtheris — Estatísticas de Jogo</h2>
+      <div class="section-line red"></div>
+    </div>
+
+    <div class="vt-block">
+      <div class="vt-header">
+        <div>
+          <div class="vt-header-label">⚔ Sistema Valtheris — D&amp;D 5e Adaptado</div>
+          <div class="vt-header-sub">Monstro do Mythos · Não-alinhado · Gargantesco</div>
+        </div>
+        <div class="vt-cr-area">
+          <div>
+            <div class="vt-cr-label">Nível de Ameaça</div>
+            <div class="vt-cr-value">12</div>
+            <div class="vt-cr-xp">8.400 XP · Prof. +4</div>
+          </div>
+        </div>
+      </div>
+      <div class="vt-body">
+
+        <div class="vt-vital-row">
+          <div class="vt-vital">
+            <span class="vt-vital-label">Pontos de Vida</span>
+            <span class="vt-vital-value red">250</span>
+            <span class="vt-vital-note">20d10+100</span>
+          </div>
+          <div class="vt-vital">
+            <span class="vt-vital-label">Classe de Armadura</span>
+            <span class="vt-vital-value red">17</span>
+            <span class="vt-vital-note">Armadura natural</span>
+          </div>
+          <div class="vt-vital">
+            <span class="vt-vital-label">Velocidade</span>
+            <span class="vt-vital-value blue">12m</span>
+            <span class="vt-vital-note">12m natação · Anfíbio</span>
+          </div>
+          <div class="vt-vital">
+            <span class="vt-vital-label">Iniciativa</span>
+            <span class="vt-vital-value" style="color:var(--purple-light);font-family:'Cinzel Decorative',serif;font-size:1.3rem;">−2</span>
+            <span class="vt-vital-note">DES 6</span>
+          </div>
+        </div>
+
+        <div class="vt-stat-grid">
+          <div class="vt-stat hi">
+            <span class="vt-stat-name">FOR</span>
+            <span class="vt-stat-val hi">28</span>
+            <span class="vt-stat-mod">+9</span>
+          </div>
+          <div class="vt-stat lo">
+            <span class="vt-stat-name">DES</span>
+            <span class="vt-stat-val lo">6</span>
+            <span class="vt-stat-mod">−2</span>
+          </div>
+          <div class="vt-stat hi">
+            <span class="vt-stat-name">CON</span>
+            <span class="vt-stat-val hi">24</span>
+            <span class="vt-stat-mod">+7</span>
+          </div>
+          <div class="vt-stat lo">
+            <span class="vt-stat-name">INT</span>
+            <span class="vt-stat-val lo">7</span>
+            <span class="vt-stat-mod">−2</span>
+          </div>
+          <div class="vt-stat norm">
+            <span class="vt-stat-name">SAB</span>
+            <span class="vt-stat-val norm">10</span>
+            <span class="vt-stat-mod">+0</span>
+          </div>
+          <div class="vt-stat lo">
+            <span class="vt-stat-name">CAR</span>
+            <span class="vt-stat-val lo">5</span>
+            <span class="vt-stat-mod">−3</span>
+          </div>
+        </div>
+
+        <div class="vt-sep"></div>
+
+        <p class="vt-prop"><strong>Salvaguardas</strong> FOR +13, CON +11</p>
+        <p class="vt-prop"><strong>Resistências a Dano</strong> Cortante, perfurante e contundente de fontes <em>não-mágicas</em></p>
+        <p class="vt-prop"><strong>Imunidades (Condições)</strong> Agarrado, Apavorado, Prostrado</p>
+        <p class="vt-prop"><strong>Sentidos</strong> Visão às cegas 18m, Percepção Passiva 10</p>
+        <p class="vt-prop"><strong>Idiomas</strong> Nenhum</p>
+
+        <div class="vt-sep"></div>
+        <div class="vt-section-label">Traços</div>
+
+        <div class="vt-action">
+          <div class="vt-action-name">Anfíbio</div>
+          <p>O Shoggoth pode respirar ar e água. Move-se sem penalidade em ambientes aquáticos.</p>
+        </div>
+        <div class="vt-action">
+          <div class="vt-action-name">Massa Protoplasmática</div>
+          <p>O Shoggoth pode mover-se por aberturas de no mínimo <strong>1 metro</strong> sem precisar se espremer e pode ocupar o mesmo espaço que outras criaturas.</p>
+        </div>
+        <div class="vt-action blue">
+          <div class="vt-action-name blue">Regeneração 10</div>
+          <p>O Shoggoth recupera <strong>10 PV</strong> no início de cada um de seus turnos. Se recebeu dano de <em>fogo</em> ou <em>relâmpago</em> desde o último turno, este traço não funciona nesse turno. O Shoggoth só morre se iniciar seu turno com 0 PV sem ter regenerado.</p>
+        </div>
+        <div class="vt-action">
+          <div class="vt-action-name">Resistência Protoplasmática</div>
+          <p>Armas físicas não-mágicas — incluindo prata — causam metade do dano normal. Armas mágicas e dano de fogo/relâmpago causam dano completo.</p>
+        </div>
+
+        <div class="vt-sep"></div>
+        <div class="vt-section-label">Ações</div>
+
+        <div class="vt-action">
+          <div class="vt-action-name">Ataques Múltiplos</div>
+          <p>O Shoggoth realiza <strong>dois ataques de Pseudópode</strong>. Após cada acerto, pode usar sua Ação Bônus para tentar Engolfar o alvo atingido.</p>
+        </div>
+        <div class="vt-action blood">
+          <div class="vt-action-name blood">Pseudópode <span class="vt-tag">Ataque Corpo a Corpo</span></div>
+          <p><em>Bônus de ataque:</em> <strong>+9</strong> · Alcance 3m · Um alvo.<br>
+          <em>Acerto:</em> <strong>4D8+9</strong> (27 médio) de dano contundente.</p>
+        </div>
+
+        <div class="vt-sep"></div>
+        <div class="vt-section-label">Ação Bônus</div>
+
+        <div class="vt-action blood">
+          <div class="vt-action-name blood">Engolfar <span class="vt-tag blood">Especial</span></div>
+          <p>Disponível após um acerto de Pseudópode neste turno. O alvo (tamanho Médio ou menor) faz uma <strong>Salvaguarda de FOR CD 19</strong>.<br><br>
+          <strong>Falha:</strong> o alvo fica <em>Agarrado</em> (Escape CD 19, Força), <em>Cego</em> e não consegue respirar enquanto Engolfado.<br>
+          No início de cada turno do Shoggoth, criaturas Engolfadas recebem <strong>4D8+9 de dano automático</strong>.<br>
+          O Shoggoth pode ter até <strong>4 criaturas Médias</strong> Engolfadas simultaneamente. Criaturas Grandes não podem ser Engolfadas.</p>
+        </div>
+
+        <div class="vt-sep"></div>
+        <div class="vt-section-label">Ações Lendárias — 3 por rodada (no fim do turno de outro)</div>
+
+        <div class="vt-action">
+          <div class="vt-action-name">Deslizar <span class="vt-tag">Custo 1</span></div>
+          <p>O Shoggoth move-se até sua velocidade total sem provocar Ataques de Oportunidade.</p>
+        </div>
+        <div class="vt-action">
+          <div class="vt-action-name">Pseudópode <span class="vt-tag">Custo 1</span></div>
+          <p>Realiza um ataque de Pseudópode.</p>
+        </div>
+        <div class="vt-action purp">
+          <div class="vt-action-name purp">Rugido do Vazio <span class="vt-tag" style="border-color:var(--purple-dim);color:var(--purple-light);">Custo 2</span></div>
+          <p>Todas as criaturas em um raio de 9m fazem <strong>Salvaguarda de SAB CD 16</strong>.<br>
+          <em>Falha:</em> sofrem <strong>2D8 de dano psíquico</strong> e ganham <strong>1 nível de Pavor</strong> (fonte Mythos).<br>
+          <em>Sucesso:</em> metade do dano, sem Pavor.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="callout red">
+      <strong>Nota de Conversão — Resistências</strong>
+      No CoC original, armas físicas causam apenas 1 ponto de dano. Em Valtheris, isso se traduz como <mark>Resistência</mark> (metade do dano) em vez de imunidade quase-total, pois o sistema D&D não tem a mesma escala de HP. O efeito narrativo é idêntico: armas convencionais são ineficazes. A diferença é que a matemática funciona consistentemente com o resto do sistema.
+    </div>
+  </section>
+
+
+  <!-- ════ IDENTIDADE ════ -->
+  <section id="identidade">
+    <div class="section-header">
+      <span class="section-icon purp">🌑</span>
+      <h2 class="purp">Identidade &amp; Lore</h2>
+      <div class="section-line purp"></div>
+    </div>
+
+    <div class="identity">
+      <span class="identity-corner tl">MONSTRO DO MYTHOS · PROTOPLASMA CONSCIENTE</span>
+      <span class="identity-corner tr">CR 12 · HP 250 · CA 17 · REGEN 10</span>
+      <span class="identity-corner bl">CoC 7e → Valtheris · Conversão v2</span>
+      <span class="identity-corner br">FICHA · BESTIÁRIO</span>
+      <div class="monster-name">Shoggoth</div>
+      <div class="monster-epithet">⬥ A Iridescência Fétida · Servo que Rompeu seus Grilhões · Cria das Coisas Ancestrais ⬥</div>
+      <div class="monster-type-line">
+        <span class="tag mythos">Mythos</span>
+        <span class="tag proto">Protoplasma</span>
+        <span class="tag anc">Criação Ancestral</span>
+        <span class="tag cr">CR 12</span>
+        <span class="tag void">Horror Cósmico</span>
+      </div>
+      <p class="monster-lore">A horrenda e maleável coluna de fétida iridescência negra escorreu firmemente adiante — um amontoado disforme de bolhas protoplasmáticas, levemente auto-luminosas, com miríades de olhos temporários formando-se e desformando-se como pústulas de luz esverdeada. E ainda havia aquele arcano grito zombeteiro: <em>"Tekeli-li! Tekeli-li!"</em></p>
+      <p class="monster-lore" style="border-left-color:var(--blue-dim);color:#405040;font-size:.93rem;">— H.P. Lovecraft, <em>Nas Montanhas da Loucura</em></p>
+      <p class="monster-lore" style="border-left-color:var(--blue-dim);margin-top:16px;">Shoggoths são grandiosos sacos de protoplasma de <strong>~4,5 metros de diâmetro</strong>, anfíbios, capazes de <strong>formar membros, olhos e apêndices à vontade</strong>. Criados pelos Seres Ancestrais como ferramentas biológicas, desenvolveram autoconsciência — e eventualmente se rebelaram, destruindo virtualmente a civilização de seus criadores. Em Valtheris, habitam as profundezas de estruturas pré-humanas, cavernas costeiras e catacumbas abissais.</p>
+      <p class="monster-lore" style="border-left-color:var(--gold-dim);margin-top:10px;font-size:.9rem;opacity:.85;">⚙ <em>Escala Valtheris:</em> CR 12 posiciona o Shoggoth como um encontro adequado para um grupo de nível 12+. Para o grupo atual (nível 4), representa extinção em combate direto. A única saída é fuga, armadilha de ambiente ou fogo em escala massiva.</p>
+    </div>
+  </section>
+
+
+  <!-- ════ REFERÊNCIA CoC 7e ════ -->
+  <section id="coc-ref">
+    <div class="section-header">
+      <span class="section-icon gold">📖</span>
+      <h2 class="gold">Referência — CoC 7e Original</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="coc-ref">
+      <div class="coc-ref-header">CoC 7ª Edição — Livro do Guardião · Cap. 14 · Estatísticas Originais</div>
+      <div class="two-col">
+        <div class="table-wrap" style="margin:0;">
+          <table>
+            <thead><tr><th>Atributo CoC</th><th>Valor</th><th>Fórmula</th></tr></thead>
+            <tbody>
+              <tr><td>FOR</td><td><span class="mono red">315</span></td><td>18D6×5</td></tr>
+              <tr><td>CON</td><td><span class="mono">210</span></td><td>12D6×5</td></tr>
+              <tr><td>TAM</td><td><span class="mono red">420</span></td><td>24D6×5</td></tr>
+              <tr><td>DES</td><td><span class="mono">15</span></td><td>1D6×5</td></tr>
+              <tr><td>INT</td><td><span class="mono">35</span></td><td>2D6×5</td></tr>
+              <tr><td>POD</td><td><span class="mono">50</span></td><td>3D6×5</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap" style="margin:0;">
+          <table>
+            <thead><tr><th>Campo CoC</th><th>Valor</th></tr></thead>
+            <tbody>
+              <tr><td>PV</td><td><span class="mono">63</span></td></tr>
+              <tr><td>Dano Extra</td><td><span class="mono red">8D6</span></td></tr>
+              <tr><td>Corpo</td><td><span class="mono">9</span></td></tr>
+              <tr><td>PM</td><td><span class="mono">10</span></td></tr>
+              <tr><td>Movimento</td><td><span class="mono">10 deslizando</span></td></tr>
+              <tr><td>Lutar</td><td><span class="mono red">70% (35/14)</span></td></tr>
+              <tr><td>Esquivar</td><td><span class="mono">8% (4/1)</span></td></tr>
+              <tr><td>Armadura CoC</td><td>Armas físicas → 1 ponto</td></tr>
+              <tr><td>Regeneração CoC</td><td>2 PV / rodada</td></tr>
+              <tr><td>Dano de SAN (CoC)</td><td><span class="mono san">1D6/1D20 — Teste POD</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout gold">
+      <strong>Lógica da Conversão</strong>
+      PV 63 → HP 250: a escala de HP do D&D é muito maior (grupo nível 4 tem ~150 HP combinados). Lutar 70% → +9 bônus de ataque: experts em CoC têm ~70-80%, equivalendo a um atacante de alta proficiência em 5e. Corpo 9 → CA 17: o valor mais alto de Corpo no bestiário se traduz em CA alta mais resistência a não-mágico. Regeneração 2/rodada → Regeneração 10: calibrado para ser relevante com os HP expandidos.
+    </div>
+  </section>
+
+
+  <!-- ════ SANIDADE — VALTHERIS ════ -->
+  <div class="form-divider">
+    <div class="form-divider-line"></div>
+    <div class="form-divider-label">Sanidade &amp; Pavor — Sistema Valtheris</div>
+    <div class="form-divider-line"></div>
+  </div>
+
+  <section id="sanidade">
+    <div class="section-header">
+      <span class="section-icon san">🌑</span>
+      <h2 class="san">Dano de Sanidade</h2>
+      <div class="section-line san"></div>
+    </div>
+
+    <div class="callout san">
+      <strong>Salvaguarda de SAB — Não Teste de POD</strong>
+      Em Valtheris, testes de Sanidade usam <em>Salvaguarda de Sabedoria (SAB)</em> com CD definida pela intensidade do horror — não o sistema de POD do CoC. A perda de SAN em dados permanece igual ao CoC original. O Pavor é sempre de fonte Mythos (nunca substitui pela condição Amedrontado padrão do D&D).
+    </div>
+
+    <div class="san-grid">
+      <div class="san-box pavor">
+        <div class="san-box-label">Zona de Presença (18m)</div>
+        <span class="san-box-dice">Pavor 3</span>
+        <span class="san-box-label2">Automático ao entrar</span>
+        <div class="san-box-sub">Save SAB CD 16 reduz para 1 nível</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Ver o Shoggoth</div>
+        <span class="san-box-dice">1D6 / 1D20</span>
+        <span class="san-box-label2">Save SAB CD 16</span>
+        <div class="san-box-sub">Sucesso: 1D6 SAN · Falha: 1D20 SAN</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Ser Engolfado e Sobreviver</div>
+        <span class="san-box-dice">1D10 / 1D100</span>
+        <span class="san-box-label2">Save SAB CD 18</span>
+        <div class="san-box-sub">Falha por 5+: Insanidade imediata</div>
+      </div>
+    </div>
+
+    <div class="card san">
+      <div class="card-title san">Pavor — Progressão e Insanidade</div>
+      <p><strong>Pavor 3 níveis (automático na zona de 18m):</strong> o personagem entra imediatamente em estado <em>Aterrorizado</em> (nível 3) — desvantagem em ataques enquanto o Shoggoth estiver visível. Save SAB CD 16 reduz para <em>Perturbado</em> (nível 1).</p>
+      <p style="margin-top:8px;"><strong>Insanidade por falha grave (5+ abaixo da CD):</strong> o GM escolhe entre <em>Fobia</em> (escuridão, espaços fechados, lodo) ou <em>Alucinações</em> (ver olhos se formando nas paredes, ouvir Tekeli-li). CD inicial = 16. Recuperação: 1 SAN save por 10 dias de descanso.</p>
+      <p style="margin-top:8px;"><strong>Ouvir o Tekeli-li no escuro:</strong> +1D4 de perda de SAN adicional. Personagens que já falharam uma vez por 5+ têm desvantagem em todos os saves de SAN em ambientes fechados ou escuros dali em diante.</p>
+    </div>
+  </section>
+
+
+  <!-- ════ COMO RODAR ════ -->
+  <section id="notas">
+    <div class="section-header">
+      <span class="section-icon gold">🧠</span>
+      <h2 class="gold">Como Rodar</h2>
+      <div class="section-line gold"></div>
+    </div>
+    <div class="card red">
+      <div class="card-title red">CR 12 contra Nível 4 — A Equação</div>
+      <p>Dois ataques de Pseudópode causam em média <strong>54 de dano por rodada</strong>. Com CA 17 e Resistência a não-mágico, o grupo causa em média <strong>15–20 de dano efetivo por rodada</strong> sem armas mágicas ou fogo. Com Regeneração 10, o Shoggoth recupera parte de qualquer dano. O grupo morre antes de o Shoggoth chegar à metade do HP. Esse encontro existe para ser <em>uma corrida</em>, não uma batalha.</p>
+    </div>
+    <div class="card blue">
+      <div class="card-title blue">Alertas Sensoriais — Camadas de Horror</div>
+      <p style="margin-bottom:8px;">Apresente o Shoggoth antes de mostrá-lo. Em ordem:</p>
+      <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:5px;">
+        <li style="padding:5px 10px;border-left:2px solid var(--blue-dim);background:rgba(4,8,6,.6);font-size:.9rem;color:#608070;"><strong style="color:var(--blue-light);">Cheiro:</strong> lodo oceânico, quitina, algo orgânico e antigo.</li>
+        <li style="padding:5px 10px;border-left:2px solid var(--blue-dim);background:rgba(4,8,6,.6);font-size:.9rem;color:#608070;"><strong style="color:var(--blue-light);">Vibração:</strong> o teto treme. Pó cai.</li>
+        <li style="padding:5px 10px;border-left:2px solid var(--blue-dim);background:rgba(4,8,6,.6);font-size:.9rem;color:#608070;"><strong style="color:var(--blue-light);">Luz:</strong> brilho verde-esverdeado pulsando na escuridão.</li>
+        <li style="padding:5px 10px;border-left:2px solid var(--blue-dim);background:rgba(4,8,6,.6);font-size:.9rem;color:#608070;"><strong style="color:var(--blue-light);">Som:</strong> <em>Tekeli-li. Tekeli-li.</em></li>
+      </ul>
+    </div>
+    <div class="callout tip">
+      <strong>Ações Lendárias e Presença</strong>
+      Use Rugido do Vazio (Custo 2) quando o grupo tentar reagrupar ou criar distância. O dano psíquico 2D8 mais o nível de Pavor garantem que a corrida permaneça uma corrida. Deslizar (Custo 1) evita que a fuga seja fácil demais — o Shoggoth acompanha sem se preocupar com obstáculos menores.
+    </div>
+  </section>
+
+  <div class="tekeli-banner">
+    <p class="tekeli-text">Tekeli-li ! &nbsp;&nbsp;&nbsp; Tekeli-li !</p>
+    <p class="tekeli-sub">H.P. Lovecraft · Nas Montanhas da Loucura · A Voz das Coisas que Comeu</p>
+  </div>
+
+</main>
+
+<div style="max-width:960px;margin:0 auto;padding:0 20px;"><div class="iridescent-bar"></div></div>
+
+<footer>
+  Shoggoth <span>⸸</span> CR 12 · Iridescência Fétida <span>⸸</span> Valtheris · CoC 7e Convertido
+</footer>
+
+<button id="top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const m = document.querySelector('main');
+  const valtheris = document.getElementById('valtheris');
+  const identidade = document.getElementById('identidade');
+  if (m && valtheris && identidade) m.insertBefore(identidade, valtheris);
+});
+window.addEventListener('scroll', function() {
+  document.getElementById('top-btn').classList.toggle('visible', window.scrollY > 400);
+});
+</script>
+</body>
+</html>

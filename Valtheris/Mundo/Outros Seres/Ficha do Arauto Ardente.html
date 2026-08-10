@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arauto Ardente — Além do Véu da Carne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:          #060209;
+    --parchment:    #0e0612;
+    --fog:          #241830;
+    --ember:        #cc4810;
+    --ember-light:  #f07030;
+    --ember-dim:    #3a1008;
+    --flame:        #4898e8;
+    --flame-light:  #80c0ff;
+    --flame-dim:    #102848;
+    --cinder:       #cc8820;
+    --cinder-light: #f0a840;
+    --cinder-dim:   #3a2208;
+    --ceramic:      #988070;
+    --ceramic-light:#c0a090;
+    --ceramic-dim:  #281e18;
+    --human-light:  #e8c898;
+    --human-dim:    #3a2818;
+    --prison:       #806888;
+    --prison-light: #c0a0c8;
+    --prison-dim:   #2a1830;
+    --text:         #c8b4a0;
+    --text-dim:     #786050;
+    --text-faint:   #2e1c14;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--ink);
+    background-image:
+      radial-gradient(ellipse 130% 60% at 50% -8%,  #200808 0%, transparent 55%),
+      radial-gradient(ellipse 60%  60% at 95% 100%, #0e0408 0%, transparent 50%),
+      radial-gradient(ellipse 50%  70% at 5%  85%,  #1a0606 0%, transparent 50%),
+      radial-gradient(ellipse 40%  40% at 50% 60%,  #160604 0%, transparent 40%);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 17px; line-height: 1.8;
+    min-height: 100vh; overflow-x: hidden;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 999; opacity: .55;
+  }
+
+  /* ══ EMBER PARTICLES ══ */
+  .embers { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .ember-p { position: absolute; border-radius: 50%; animation: ember-rise linear infinite; }
+  @keyframes ember-rise {
+    0%   { opacity: 0;   transform: translateY(0) scale(1); }
+    10%  { opacity: 1; }
+    80%  { opacity: .6; }
+    100% { opacity: 0;   transform: translateY(-110vh) scale(.3); }
+  }
+
+  /* ══ ACCENT BAR ══ */
+  .ember-bar {
+    height: 4px;
+    background: linear-gradient(90deg, var(--ember-dim), var(--ember), var(--cinder), var(--ember), var(--ember-dim));
+    box-shadow: 0 0 20px rgba(204,72,16,.35), 0 0 40px rgba(204,136,32,.15);
+  }
+
+  /* ══ BREADCRUMB ══ */
+  .breadcrumb {
+    max-width: 860px; margin: 0 auto; padding: 20px 20px 0;
+    font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint);
+  }
+  .breadcrumb span { color: var(--ember-dim); margin: 0 6px; }
+  .breadcrumb .current { color: var(--cinder-light); }
+
+  /* ══ HEADER ══ */
+  header {
+    position: relative; text-align: center;
+    padding: 80px 20px 70px; overflow: hidden;
+  }
+  header::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(160,50,10,.14) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 40% at 50% 80%, rgba(70,150,220,.07) 0%, transparent 60%);
+  }
+  header::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--ember-dim), var(--cinder-dim), var(--ember-dim), transparent);
+    box-shadow: 0 0 30px rgba(200,80,0,.25);
+  }
+
+  .header-symbol {
+    display: block; font-size: 2.6rem; margin-bottom: 18px;
+    filter: drop-shadow(0 0 20px rgba(208,72,24,.7)) drop-shadow(0 0 40px rgba(200,80,0,.4));
+    animation: fire-pulse 5s ease-in-out infinite;
+  }
+  @keyframes fire-pulse {
+    0%,100% { filter: drop-shadow(0 0 14px rgba(208,72,24,.6)) drop-shadow(0 0 35px rgba(200,80,0,.3)); transform: scale(1); }
+    50%      { filter: drop-shadow(0 0 30px rgba(208,72,24,.9)) drop-shadow(0 0 65px rgba(200,80,0,.55)); transform: scale(1.04); }
+  }
+
+  .header-eyebrow { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .45em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 18px; }
+  .header-classification { font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .25em; text-transform: uppercase; color: var(--ember); margin-bottom: 10px; opacity: .8; }
+
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.8rem, 6vw, 3.4rem); font-weight: 900; line-height: 1.1; margin-bottom: 6px;
+    background: linear-gradient(135deg, #f07030 0%, #e8c060 38%, #80c0ff 72%, #d04818 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(208,72,24,.3));
+    animation: title-breathe 8s ease-in-out infinite;
+  }
+  @keyframes title-breathe {
+    0%,100% { filter: drop-shadow(0 0 20px rgba(208,72,24,.25)); }
+    50%      { filter: drop-shadow(0 0 50px rgba(208,72,24,.5)) drop-shadow(0 0 80px rgba(72,152,232,.1)); }
+  }
+
+  .header-title-sub { font-family: 'Cinzel', serif; font-size: clamp(.85rem, 2.5vw, 1.1rem); letter-spacing: .18em; text-transform: uppercase; color: var(--ceramic-light); margin-bottom: 8px; }
+  .header-tagline { font-style: italic; color: #806848; font-size: 1rem; max-width: 520px; margin: 0 auto 32px; }
+
+  /* ══ WARNING BANNER ══ */
+  .warning-banner { max-width: 860px; margin: 0 auto 0; padding: 0 20px; }
+  .warning-banner-inner {
+    background: rgba(80,20,0,.18); border: 1px solid var(--ember-dim);
+    border-left: 4px solid var(--ember-light); padding: 16px 24px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .warning-icon { font-size: 1.4rem; flex-shrink: 0; line-height: 1.6; }
+  .warning-text { font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .08em; color: #c08060; line-height: 1.7; }
+  .warning-text strong { color: var(--ember-light); letter-spacing: .15em; display: block; margin-bottom: 4px; }
+
+  /* ══ DIVIDER ══ */
+  .divider { display: flex; align-items: center; gap: 14px; max-width: 860px; margin: 0 auto; padding: 40px 20px 48px; }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--ember-dim), var(--cinder-dim), transparent); }
+  .divider-glyph { color: var(--ember); font-size: 1rem; opacity: .65; }
+
+  /* ══ LAYOUT ══ */
+  main { max-width: 860px; margin: 0 auto; padding: 0 20px 90px; display: flex; flex-direction: column; gap: 0; }
+  section { margin-bottom: 56px; animation: fade-in .5s ease both; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  section:nth-child(1)  { animation-delay: .05s; }
+  section:nth-child(2)  { animation-delay: .10s; }
+  section:nth-child(3)  { animation-delay: .15s; }
+  section:nth-child(4)  { animation-delay: .20s; }
+  section:nth-child(5)  { animation-delay: .25s; }
+  section:nth-child(6)  { animation-delay: .30s; }
+  section:nth-child(7)  { animation-delay: .35s; }
+  section:nth-child(8)  { animation-delay: .40s; }
+  section:nth-child(9)  { animation-delay: .45s; }
+  section:nth-child(10) { animation-delay: .50s; }
+  section:nth-child(11) { animation-delay: .55s; }
+  section:nth-child(12) { animation-delay: .60s; }
+  section:nth-child(13) { animation-delay: .65s; }
+
+  /* ══ SECTION HEADER ══ */
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .section-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .section-icon.ember  { filter: drop-shadow(0 0 8px rgba(200,80,0,.5)); }
+  .section-icon.flame  { filter: drop-shadow(0 0 8px rgba(72,152,232,.5)); }
+  .section-icon.cinder { filter: drop-shadow(0 0 8px rgba(200,140,30,.4)); }
+  .section-icon.human  { filter: drop-shadow(0 0 8px rgba(200,168,112,.4)); }
+  .section-icon.prison { filter: drop-shadow(0 0 8px rgba(128,104,136,.5)); }
+
+  h2 { font-family: 'Cinzel', serif; font-size: .9rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+  h2.ember   { color: var(--ember-light);   text-shadow: 0 0 20px rgba(200,80,0,.25); }
+  h2.flame   { color: var(--flame-light);   text-shadow: 0 0 20px rgba(72,152,232,.25); }
+  h2.cinder  { color: var(--cinder-light);  text-shadow: 0 0 18px rgba(200,140,30,.2); }
+  h2.ceramic { color: var(--ceramic-light); text-shadow: 0 0 18px rgba(152,128,112,.2); }
+  h2.human   { color: var(--human-light);   text-shadow: 0 0 18px rgba(200,168,112,.2); }
+  h2.prison  { color: var(--prison-light);  text-shadow: 0 0 18px rgba(192,160,200,.2); }
+  h2.ash     { color: var(--ceramic);       text-shadow: 0 0 16px rgba(152,128,112,.15); }
+
+  .section-line { flex: 1; height: 1px; }
+  .section-line.ember   { background: linear-gradient(90deg, var(--ember-dim), rgba(200,140,30,.2), transparent); }
+  .section-line.flame   { background: linear-gradient(90deg, var(--flame-dim), rgba(72,152,232,.15), transparent); }
+  .section-line.cinder  { background: linear-gradient(90deg, var(--cinder-dim), rgba(200,140,30,.2), transparent); }
+  .section-line.ceramic { background: linear-gradient(90deg, var(--ceramic-dim), rgba(152,128,112,.15), transparent); }
+  .section-line.human   { background: linear-gradient(90deg, var(--human-dim), rgba(200,168,112,.15), transparent); }
+  .section-line.prison  { background: linear-gradient(90deg, var(--prison-dim), rgba(192,160,200,.15), transparent); }
+  .section-line.ash     { background: linear-gradient(90deg, var(--ceramic-dim), rgba(152,128,112,.12), transparent); }
+
+  p { margin-bottom: 10px; } p:last-child { margin-bottom: 0; }
+
+  /* ══ IDENTITY ══ */
+  .identity {
+    position: relative;
+    background: linear-gradient(145deg, rgba(20,10,6,.98) 0%, rgba(10,4,4,.99) 100%);
+    border: 1px solid rgba(140,60,20,.4);
+    border-top: 3px solid var(--ember-dim);
+    border-bottom: 3px solid var(--cinder-dim);
+    padding: 30px 32px; margin-bottom: 14px; overflow: hidden;
+  }
+  .identity::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(208,72,24,.07) 0%, transparent 50%),
+      radial-gradient(circle at 100% 100%, rgba(72,152,232,.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .identity-corner { position: absolute; font-family: 'Fira Code', monospace; font-size: .58rem; letter-spacing: .15em; color: var(--text-faint); opacity: .6; }
+  .identity-corner.tl { top: 10px; left: 14px; }
+  .identity-corner.tr { top: 10px; right: 14px; }
+  .identity-corner.bl { bottom: 10px; left: 14px; }
+  .identity-corner.br { bottom: 10px; right: 14px; }
+
+  .monster-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 3.5vw, 2.1rem); font-weight: 900;
+    background: linear-gradient(135deg, #f07030 0%, #e0b050 45%, #f07030 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 2px;
+  }
+  .monster-epithet { font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .2em; text-transform: uppercase; color: var(--ceramic-light); opacity: .8; margin-bottom: 14px; }
+  .monster-type-line { margin-bottom: 16px; }
+  .monster-lore { font-style: italic; color: var(--text-dim); font-size: .96rem; border-left: 2px solid var(--ember-dim); padding-left: 16px; margin-top: 14px; line-height: 1.75; }
+  .monster-lore + .monster-lore { border-left-color: var(--flame-dim); margin-top: 10px; }
+
+  /* ══ TAGS ══ */
+  .tag { display: inline-block; font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .18em; text-transform: uppercase; padding: 2px 8px; border-radius: 1px; margin-right: 5px; margin-bottom: 5px; vertical-align: middle; }
+  .tag.ember   { border: 1px solid rgba(200,72,16,.5);   color: var(--ember-light); }
+  .tag.flame   { border: 1px solid rgba(72,152,232,.5);  color: var(--flame-light); }
+  .tag.cinder  { border: 1px solid rgba(200,136,32,.4);  color: var(--cinder-light); }
+  .tag.ceramic { border: 1px solid rgba(152,128,112,.4); color: var(--ceramic-light); }
+  .tag.human   { border: 1px solid rgba(200,168,112,.4); color: var(--human-light); }
+  .tag.prison  { border: 1px solid rgba(192,160,200,.4); color: var(--prison-light); }
+  .tag.dnd     { border: 1px solid #7a5020; color: #c08838; }
+  .tag.lore    { border: 1px solid #582a20; color: #986050; }
+  .tag.calamity{ border: 1px solid #6a2000; color: var(--ember-light); }
+  .tag.hb      { border: 1px solid #2a4a30; color: #508060; }
+  .tag.san     { border: 1px solid rgba(128,104,136,.5); color: var(--prison-light); }
+
+  /* ══ MONSTER VITALS ══ */
+  .monster-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  @media (max-width: 600px) { .monster-vitals { grid-template-columns: 1fr 1fr; } }
+  .mvital-card { background: rgba(10,4,4,.85); border: 1px solid rgba(100,50,20,.3); border-radius: 3px; padding: 16px 14px; position: relative; overflow: hidden; text-align: center; }
+  .mvital-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+  .mvital-card.ember::after  { background: linear-gradient(90deg, transparent, var(--ember-light),  transparent); }
+  .mvital-card.flame::after  { background: linear-gradient(90deg, transparent, var(--flame-light),  transparent); }
+  .mvital-card.cinder::after { background: linear-gradient(90deg, transparent, var(--cinder-light), transparent); }
+  .mvital-card.human::after  { background: linear-gradient(90deg, transparent, var(--human-light),  transparent); }
+  .mvital-label { font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+  .mvital-value { font-family: 'Cinzel Decorative', serif; font-size: 2rem; line-height: 1; display: block; }
+  .mvital-value.ember  { color: var(--ember-light);  text-shadow: 0 0 20px rgba(200,80,0,.4); }
+  .mvital-value.flame  { color: var(--flame-light);  text-shadow: 0 0 20px rgba(72,152,232,.4); }
+  .mvital-value.cinder { color: var(--cinder-light); text-shadow: 0 0 16px rgba(200,140,30,.3); }
+  .mvital-value.human  { color: var(--human-light);  text-shadow: 0 0 16px rgba(200,168,112,.3); }
+  .mvital-note { font-size: .75rem; color: var(--text-dim); font-style: italic; margin-top: 6px; display: block; line-height: 1.4; }
+
+  /* ══ CR BADGE ══ */
+  .cr-badge {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, rgba(100,40,0,.14), rgba(60,20,0,.12));
+    border: 1px solid rgba(200,80,0,.4);
+    border-top: 2px solid var(--ember-light);
+    border-bottom: 2px solid var(--cinder-dim);
+    padding: 14px 24px; text-align: center;
+  }
+  .cr-badge-label { font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .28em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+  .cr-badge-value {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.2rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--ember-light), var(--cinder-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1;
+  }
+  .cr-badge-note { font-family: 'Fira Code', monospace; font-size: .6rem; color: var(--text-dim); margin-top: 4px; letter-spacing: .06em; }
+
+  /* ══ TWO-COL MONSTER ══ */
+  .two-col-monster { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 600px) { .two-col-monster { grid-template-columns: 1fr; } }
+
+  /* ══ TABLE WRAP ══ */
+  .table-wrap { margin: 12px 0; border: 1px solid var(--fog); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  thead tr { background: rgba(16,8,4,.97); border-bottom: 2px solid var(--ember-dim); }
+  thead th { font-family: 'Cinzel', serif; font-size: .64rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--cinder-light); padding: 9px 14px; text-align: left; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid rgba(36,24,12,.9); transition: background .12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:nth-child(even) { background: rgba(255,255,255,.012); }
+  tbody tr:hover { background: rgba(120,50,0,.07); }
+  td { padding: 8px 14px; vertical-align: top; color: #c0a888; }
+  td:first-child { font-family: 'Cinzel', serif; font-size: .84rem; color: var(--text); white-space: nowrap; }
+  .mono { font-family: 'Fira Code', monospace; font-size: .78rem; color: var(--cinder-light); }
+  .mono.ember { color: var(--ember-light); }
+  .mono.flame { color: var(--flame-light); }
+
+  /* ══ ATTR GRID ══ */
+  .attr-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 14px; }
+  @media (max-width: 560px) { .attr-grid { grid-template-columns: repeat(3, 1fr); } }
+  .attr-box { background: rgba(8,4,4,.9); border: 1px solid var(--fog); padding: 16px 10px; text-align: center; position: relative; overflow: hidden; transition: transform .2s; }
+  .attr-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .attr-box.max::before  { background: linear-gradient(90deg, transparent, var(--ember-light),  transparent); }
+  .attr-box.high::before { background: linear-gradient(90deg, transparent, var(--cinder-light), transparent); }
+  .attr-box.low::before  { background: linear-gradient(90deg, transparent, var(--flame-light),  transparent); }
+  .attr-box:hover { transform: translateY(-2px); }
+  .attr-name { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .attr-value { font-family: 'Fira Code', monospace; font-size: 1.15rem; font-weight: 500; display: block; line-height: 1; color: var(--text); }
+  .attr-value.max  { color: var(--ember-light); }
+  .attr-value.high { color: var(--cinder-light); }
+  .attr-value.low  { color: var(--flame-light); }
+  .attr-mod { font-family: 'Fira Code', monospace; font-size: .8rem; display: block; margin-top: 4px; color: var(--ceramic-light); }
+  .attr-mod.max  { color: var(--ember-light); }
+  .attr-mod.high { color: var(--cinder-light); }
+  .attr-mod.neg  { color: var(--flame); }
+
+  /* ══ CARDS ══ */
+  .card { background: linear-gradient(135deg, rgba(18,10,6,.93) 0%, rgba(10,5,4,.96) 100%); border: 1px solid var(--fog); padding: 20px 24px; margin-bottom: 12px; position: relative; transition: box-shadow .3s; }
+  .card.ember   { border-left: 3px solid var(--ember-dim); }
+  .card.ember:hover   { box-shadow: -4px 0 20px rgba(200,80,0,.2),    0 4px 20px rgba(0,0,0,.6); }
+  .card.flame   { border-left: 3px solid var(--flame-dim); }
+  .card.flame:hover   { box-shadow: -4px 0 20px rgba(72,152,232,.2),  0 4px 20px rgba(0,0,0,.6); }
+  .card.cinder  { border-left: 3px solid var(--cinder-dim); }
+  .card.cinder:hover  { box-shadow: -4px 0 20px rgba(200,140,30,.2),  0 4px 20px rgba(0,0,0,.6); }
+  .card.ceramic { border-left: 3px solid var(--ceramic-dim); }
+  .card.ceramic:hover { box-shadow: -4px 0 20px rgba(152,128,112,.18),0 4px 20px rgba(0,0,0,.6); }
+  .card.human   { border-left: 3px solid var(--human-dim); }
+  .card.human:hover   { box-shadow: -4px 0 20px rgba(200,168,112,.2), 0 4px 20px rgba(0,0,0,.6); }
+  .card.prison  { border-left: 3px solid var(--prison-dim); }
+  .card.prison:hover  { box-shadow: -4px 0 20px rgba(128,104,136,.2), 0 4px 20px rgba(0,0,0,.6); }
+  .card-title { font-family: 'Cinzel', serif; font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 10px; }
+  .card-title.ember   { color: var(--ember-light); }
+  .card-title.flame   { color: var(--flame-light); }
+  .card-title.cinder  { color: var(--cinder-light); }
+  .card-title.ceramic { color: var(--ceramic-light); }
+  .card-title.human   { color: var(--human-light); }
+  .card-title.prison  { color: var(--prison-light); }
+
+  /* ══ TRAITS ══ */
+  .trait { display: grid; grid-template-columns: 3px 1fr; gap: 0 14px; margin-bottom: 10px; }
+  .trait-bar { border-radius: 2px; }
+  .trait-content { background: rgba(10,4,4,.75); border: 1px solid var(--fog); padding: 14px 16px; }
+  .trait-name { font-family: 'Cinzel', serif; font-size: .74rem; letter-spacing: .1em; font-weight: 900; color: var(--cinder-light); margin-bottom: 5px; }
+  .trait-name .sub { font-style: italic; font-weight: 400; color: var(--text-dim); font-family: 'EB Garamond', serif; font-size: .9rem; letter-spacing: 0; text-transform: none; }
+  .trait-content p { font-size: .92rem; color: #c0aa90; }
+  .trait-content p strong { color: var(--text); }
+
+  /* ══ ACTIONS ══ */
+  .action { background: rgba(10,5,4,.88); border: 1px solid var(--fog); padding: 16px 20px; margin-bottom: 8px; transition: border-bottom-color .2s; }
+  .action.ember   { border-bottom: 2px solid var(--ember-dim); }
+  .action.ember:hover   { border-bottom-color: var(--ember-light); }
+  .action.flame   { border-bottom: 2px solid var(--flame-dim); }
+  .action.flame:hover   { border-bottom-color: var(--flame-light); }
+  .action.cinder  { border-bottom: 2px solid var(--cinder-dim); }
+  .action.cinder:hover  { border-bottom-color: var(--cinder-light); }
+  .action.territory { border-bottom: 2px solid #2a3a10; }
+  .action.territory:hover { border-bottom-color: #70a030; }
+  .action p { font-size: .92rem; color: #c0aa90; }
+  .action p strong { color: var(--text); }
+  .action-name { font-family: 'Cinzel', serif; font-size: .76rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+  .action-name.ember    { color: var(--ember-light); }
+  .action-name.flame    { color: var(--flame-light); }
+  .action-name.cinder   { color: var(--cinder-light); }
+  .action-name.territory{ color: #90c050; }
+  .recharge { font-family: 'Fira Code', monospace; font-size: .62rem; border: 1px solid var(--ember-dim); color: var(--ember-light); padding: 1px 7px; margin-left: 8px; vertical-align: middle; }
+  .recharge.rare { border-color: var(--flame-dim); color: var(--flame-light); }
+  .tag-a { font-family: 'Fira Code', monospace; font-size: .6rem; padding: 1px 7px; margin-left: 6px; border-radius: 1px; vertical-align: middle; }
+  .tag-a.san { border: 1px solid var(--prison); color: var(--prison-light); }
+  .tag-a.cor { border: 1px solid rgba(100,50,20,.5); color: var(--cinder-light); }
+
+  /* ══ CALLOUTS ══ */
+  .callout { border-left: 3px solid; padding: 14px 18px; margin: 12px 0; font-style: italic; font-size: .92rem; line-height: 1.75; }
+  .callout strong { font-style: normal; font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .1em; display: block; margin-bottom: 3px; }
+  .callout.ember   { border-color: var(--ember-dim);  background: rgba(120,40,0,.12);  color: #c89060; }
+  .callout.ember strong   { color: var(--ember-light); }
+  .callout.flame   { border-color: var(--flame-dim);  background: rgba(30,60,120,.1);  color: #90b8d8; }
+  .callout.flame strong   { color: var(--flame-light); }
+  .callout.cinder  { border-color: var(--cinder-dim); background: rgba(120,80,0,.1);   color: #c0a060; }
+  .callout.cinder strong  { color: var(--cinder-light); }
+  .callout.human   { border-color: var(--human-dim);  background: rgba(120,90,40,.1);  color: #c0a878; }
+  .callout.human strong   { color: var(--human-light); }
+  .callout.prison  { border-color: var(--prison-dim); background: rgba(80,50,100,.1);  color: #b09098; }
+  .callout.prison strong  { color: var(--prison-light); }
+  .callout.ceramic { border-color: var(--ceramic-dim);background: rgba(80,60,50,.08);  color: #b0988a; }
+  .callout.ceramic strong { color: var(--ceramic-light); }
+  .callout.tip     { border-color: #3a7a5a; background: rgba(40,100,70,.09); color: #90c0a8; }
+  .callout.tip strong { color: #60b890; }
+
+  /* ══ VOICE BLOCK ══ */
+  .voice-block {
+    border-left: 2px solid var(--ember-dim); padding: 10px 16px; margin: 10px 0;
+    background: rgba(208,72,24,.03); font-style: italic; color: var(--text-dim); font-size: .93rem; line-height: 1.7;
+  }
+  .voice-block cite {
+    display: block; margin-top: 6px; font-family: 'Cinzel', serif; font-size: .5rem;
+    letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint); font-style: normal;
+  }
+
+  /* ══ SAN GRID ══ */
+  .san-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  @media (max-width: 540px) { .san-grid { grid-template-columns: 1fr; } }
+  .san-box { background: rgba(18,8,24,.9); border: 1px solid rgba(128,104,136,.3); border-top: 2px solid var(--prison); padding: 16px 14px; text-align: center; transition: border-top-color .2s; }
+  .san-box:hover { border-top-color: var(--prison-light); }
+  .san-box-label { font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; color: var(--prison); margin-bottom: 4px; }
+  .san-box-dice  { font-family: 'Fira Code', monospace; font-size: 1.1rem; color: var(--prison-light); display: block; line-height: 1.2; }
+  .san-box-cd    { font-family: 'Fira Code', monospace; font-size: .7rem; color: var(--text-dim); margin-top: 3px; }
+  .san-box-sub   { font-size: .76rem; color: var(--text-dim); font-style: italic; margin-top: 3px; }
+
+  /* ══ FORM DIVIDER ══ */
+  .form-divider { display: flex; align-items: center; gap: 14px; margin: 30px 0 24px; }
+  .form-divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--ember-dim), transparent); }
+  .form-divider-label { font-family: 'Cinzel', serif; font-size: .62rem; letter-spacing: .3em; text-transform: uppercase; color: var(--ember); padding: 4px 16px; border: 1px solid var(--ember-dim); background: rgba(10,4,4,.95); }
+
+  /* ══ HIGHLIGHTS ══ */
+  .hl      { color: var(--ember-light); font-weight: 600; }
+  .hl-f    { color: var(--flame-light); font-weight: 600; }
+  .hl-c    { color: var(--cinder-light); font-weight: 600; }
+  .hl-h    { color: var(--human-light); font-weight: 600; }
+  mark     { background: rgba(200,72,16,.15); color: var(--ember-light); padding: .1em .3em; border-radius: 2px; }
+  mark.f   { background: rgba(72,152,232,.15);  color: var(--flame-light); }
+  mark.h   { background: rgba(200,168,112,.14); color: var(--human-light); }
+  mark.c   { background: rgba(200,136,32,.14);  color: var(--cinder-light); }
+
+  /* ══ SEP ══ */
+  .sep { height: 1px; background: linear-gradient(90deg, transparent, var(--ember-dim), var(--cinder-dim), transparent); margin: 20px 0; opacity: .6; }
+
+  /* ══ FOOTER ══ */
+  footer { text-align: center; padding: 40px 20px 60px; font-family: 'Cinzel', serif; font-size: .56rem; letter-spacing: .28em; text-transform: uppercase; color: var(--text-faint); }
+  footer span { color: var(--ember-dim); margin: 0 6px; }
+
+  /* ══ SCROLLBAR ══ */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--ink); }
+  ::-webkit-scrollbar-thumb { background: var(--ember-dim); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--ember-light); }
+
+  /* ══ TOP BTN ══ */
+  #top-btn {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    width: 36px; height: 36px; background: var(--parchment); border: 1px solid var(--fog);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-dim); font-size: .9rem; text-decoration: none;
+    transition: all .2s; z-index: 100;
+  }
+  #top-btn:hover { border-color: var(--ember-dim); color: var(--ember-light); }
+
+/* ── ACESSIBILIDADE: MOVIMENTO REDUZIDO ─────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="embers" id="embers"></div>
+
+<div class="ember-bar"></div>
+
+<nav class="breadcrumb" aria-label="Trilha de navegação">
+  Além do Véu da Carne / Bestiário <span>›</span> Culto da Verdade Profunda <span>›</span> <span class="current">Arauto Ardente · Construto Vivo · Ameaça 12–14</span>
+</nav>
+
+<header>
+  <span class="header-symbol">🔥</span>
+  <p class="header-eyebrow">Além do Véu da Carne &nbsp;⸸&nbsp; Bestiário · Culto da Verdade Profunda</p>
+  <p class="header-classification">⬥ Campeão Reforjado &nbsp;·&nbsp; Arauto Transformado &nbsp;·&nbsp; Nível de Desafio ~12–14 ⬥</p>
+  <h1>Arauto Ardente</h1>
+  <p class="header-title-sub">"O Recipiente do Fogo Profano"</p>
+  <p class="header-tagline">Humano reforjado em prisão de cerâmica e chama — que pediu obrigado antes de morrer.</p>
+</header>
+
+<div class="warning-banner">
+  <div class="warning-banner-inner">
+    <span class="warning-icon">🔥</span>
+    <div class="warning-text">
+      <strong>Nota ao GM — Como Usar Este Registro</strong>
+      O Arauto Ardente não é apenas um encontro de combate — é uma <em>revelação</em>. Um ser que agradece antes de morrer não é inimigo: é vítima com missão de inimigo. O modo como ele é destruído é tão narrativamente importante quanto o que ele faz em vida. Jogue com o humano que vaza pelas fissuras. Deixe os jogadores sentirem o peso de libertar alguém em vez de apenas vencer.
+    </div>
+  </div>
+</div>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <span class="divider-glyph">✦</span>
+  <div class="divider-line"></div>
+</div>
+
+<!-- PORTRAIT -->
+<div style="max-width:860px;margin:0 auto 0;padding:0 20px;">
+  <div style="position:relative;width:100%;overflow:hidden;border-radius:4px;border:1px solid rgba(208,72,24,.35);box-shadow:0 0 70px rgba(120,20,0,.55),0 0 140px rgba(0,0,0,.9);">
+    <img src="Perfil - Arauto Ardente.png"
+         alt="Arauto Ardente"
+         style="width:100%;height:380px;object-fit:cover;object-position:center 12%;display:block;">
+    <div style="position:absolute;bottom:0;left:0;right:0;height:130px;background:linear-gradient(to top,rgba(6,2,9,1) 0%,rgba(6,2,9,.65) 45%,transparent 100%);"></div>
+    <div style="position:absolute;top:0;left:0;right:0;height:60px;background:linear-gradient(to bottom,rgba(6,2,9,.85),transparent);"></div>
+    <div style="position:absolute;bottom:18px;left:0;right:0;text-align:center;">
+      <span style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.4em;text-transform:uppercase;color:rgba(208,72,24,.5);">Arauto Ardente &nbsp;·&nbsp; "O Recipiente do Fogo Profano" &nbsp;·&nbsp; Saga 8</span>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══════════════════════════════
+       IDENTIDADE
+  ══════════════════════════════ -->
+  <section id="identidade">
+    <div class="section-header">
+      <span class="section-icon ember">✦</span>
+      <h2 class="ember">Identidade</h2>
+      <div class="section-line ember"></div>
+    </div>
+
+    <div class="identity">
+      <div class="identity-corner tl">CONSTRUTO VIVO · SEM ALINHAMENTO</div>
+      <div class="identity-corner tr">AMEAÇA 12–14 · OBSTÁCULO NARRATIVO</div>
+      <div class="identity-corner bl">HOMEBREW · VALTHERIS</div>
+      <div class="identity-corner br">FICHA · BESTIÁRIO · SAGA 8</div>
+
+      <div class="monster-name">Arauto Ardente</div>
+      <div class="monster-epithet">⬥ "O Recipiente do Fogo Profano" ⬥</div>
+
+      <div class="monster-type-line">
+        <span class="tag dnd">5e + Call of Cthulhu</span>
+        <span class="tag lore">Arauto Transformado</span>
+        <span class="tag calamity">Ameaça ~12–14</span>
+        <span class="tag hb">Homebrew</span>
+        <span class="tag san">Dano de Sanidade</span>
+      </div>
+
+      <p class="monster-lore">
+        Não é demônio. Não é elemental. Não é morto-vivo. É <strong>híbrido</strong> — humano que foi transformado em recipiente para fogo profano pelo Culto da Verdade Profunda. O produto final de uma "bênção" de Mestre Antigo, aceita por livre vontade, desespero, ou coerção. Como Mara e Elise foram transformadas em aberrações, mas mais completo. Mais <em>perfeito</em> em sua monstruosidade.
+      </p>
+      <p class="monster-lore">
+        Tem inteligência. Tem missão. Não ataca cegamente — <em>procura</em>. Isso é o que o torna mais perigoso que um elemental comum. E é o que o torna mais trágico: em algum lugar dentro da cerâmica rachada, um ser humano ainda <mark class="h">está acordado</mark>, incapaz de agir, incapaz de recusar ordens, incapaz de escapar.
+      </p>
+      <p class="monster-lore" style="border-left-color:var(--flame-dim);font-size:11px;opacity:.75;font-style:italic;">
+        ⚙ Nota Mecânica — Tipo: Construto Vivo (Grimório de Valtheris). Efeitos de <em>Enfeitiçar Pessoa</em>, <em>Dominar Pessoa</em> e similares falham automaticamente. Efeitos que afetam construtos funcionam normalmente. Efeitos que afetam elementais de fogo funcionam parcialmente — o GM determina caso a caso com base no alvo (construto ou núcleo humano). A humanidade suprimida não é acessível por magia convencional.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       APARÊNCIA
+  ══════════════════════════════ -->
+  <section id="aparencia">
+    <div class="section-header">
+      <span class="section-icon">👁</span>
+      <h2 class="ceramic">Aparência — O Que os Mortais Veem</h2>
+      <div class="section-line ceramic"></div>
+    </div>
+
+    <div class="two-col-monster">
+      <div class="card ember">
+        <div class="card-title ember">O Corpo</div>
+        <p><span class="hl">2,20 metros</span> de altura. Humanoide, mas <em>errado</em>. A proporção está levemente distorcida — braços longos demais, pescoço rígido demais, rotação de cabeça mecânica e antinatural. Pés que não tocam o chão completamente: deixam <strong>pegadas de fogo líquido</strong> onde pisam.</p>
+      </div>
+      <div class="card flame">
+        <div class="card-title flame">Os Olhos</div>
+        <p>Onde deveriam estar órbitas, há <span class="hl-f">duas chamas azuis</span>. Não laranja, não vermelha — <em>azul</em>. Fogo profano, não natural. Olham com inteligência, com reconhecimento, com missão. No momento da morte, revelaram olhos humanos por baixo — marrons, comuns, <strong>agradecidos</strong>.</p>
+      </div>
+    </div>
+    <div class="two-col-monster">
+      <div class="card ceramic">
+        <div class="card-title ceramic">A Pele</div>
+        <p>Não é pele. É <span class="hl">cerâmica quebrada</span> — como argila queimada que rachou em mil direções. Entre as rachaduras, <strong>fogo líquido flui</strong> como sangue. Emite vapor continuamente. Crepita com som constante, como lenha verde na fogueira.</p>
+      </div>
+      <div class="card cinder">
+        <div class="card-title cinder">O Ambiente</div>
+        <p>O centro da clareira estava <span class="hl-c">derretido</span> quando encontrado — não queimado, <em>derretido</em>. Pedras viraram lava solidificada. Árvores viraram estátuas de carvão. Calor anormal a 1,5km. Cheiro de enxofre e carne queimada a 1,8km.</p>
+      </div>
+    </div>
+
+    <div class="callout ember">
+      <strong>Primeiro Contato — Reação Visceral</strong>
+      Qualquer mortal que o veja pela primeira vez deve fazer Salvaguarda de Sabedoria (CD 13) ou fica paralisado por 1 round — não por magia, mas por resposta instintiva do cérebro reptiliano ao ver algo que <em>não deveria existir</em>. Leyn falhou neste teste (5 vs CD 13). Marcus também. Mesmo o Veterano ficou visivelmente abalado.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       ESTATÍSTICAS
+  ══════════════════════════════ -->
+  <section id="estatisticas">
+    <div class="section-header">
+      <span class="section-icon ember">◆</span>
+      <h2 class="ember">Estatísticas de Combate</h2>
+      <div class="section-line ember"></div>
+    </div>
+
+    <div class="monster-vitals">
+      <div class="mvital-card ember">
+        <span class="mvital-label">Pontos de Vida</span>
+        <span class="mvital-value ember">~126</span>
+        <span class="mvital-note">12d10 + 60 · CON 20</span>
+      </div>
+      <div class="mvital-card ember">
+        <span class="mvital-label">Classe de Armadura</span>
+        <span class="mvital-value ember">16</span>
+        <span class="mvital-note">Iniciativa −1 · DEX 8</span>
+      </div>
+      <div class="mvital-card flame">
+        <span class="mvital-label">Velocidade</span>
+        <span class="mvital-value flame">9m</span>
+        <span class="mvital-note">Lento · Implacável</span>
+      </div>
+      <div class="mvital-card cinder">
+        <span class="mvital-label">Nível Equivalente</span>
+        <span class="mvital-value cinder">12–14</span>
+        <span class="mvital-note">Sem Resist. Lendária</span>
+      </div>
+    </div>
+
+    <div class="two-col-monster">
+      <div class="cr-badge" style="flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;padding:16px 24px;">
+        <div>
+          <span class="cr-badge-label">Challenge Rating</span>
+          <span class="cr-badge-value">12–14</span>
+          <span class="cr-badge-note">Obstáculo Narrativo</span>
+        </div>
+        <div style="border-left:1px solid rgba(200,80,0,.3);padding-left:20px;">
+          <span class="cr-badge-label">Proficiência</span>
+          <span class="cr-badge-value" style="font-size:1.6rem;">+4</span>
+          <span class="cr-badge-note">Bônus +10 · FOR +6</span>
+        </div>
+      </div>
+      <div class="card ember" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:center;">
+        <div class="card-title ember">Escala de Ameaça</div>
+        <p style="font-size:.9rem;">O Arauto não é um inimigo derrotável pela força bruta — é um <em>obstáculo narrativo</em>. A estratégia viável é <span class="hl">explorar suas fraquezas</span>: terreno aquático, prata, e o ponto crítico no núcleo cardíaco.</p>
+      </div>
+    </div>
+
+    <div class="callout ceramic">
+      <strong>Nota ao GM — Inteligência Operacional</strong>
+      O Arauto tem inteligência tática. Procura antes de atacar. Tem alvos de prioridade. Reconhece tipos de criaturas — identificou Leyn como "vampiro primordial" instantaneamente, sabia que devia procurar "a criança selada." Não desperdiça ataques em área quando pode usar jato concentrado. Se parecer que está perdendo, muda de alvo — priorizou Darius após duas flechas críticas.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       ATRIBUTOS + PROFICIÊNCIAS
+  ══════════════════════════════ -->
+  <div class="two-col-monster" style="align-items:start;gap:14px;margin-bottom:56px;">
+
+    <section id="atributos" style="margin-bottom:0;">
+      <div class="section-header">
+        <span class="section-icon ember">◆</span>
+        <h2 class="ember">Atributos</h2>
+        <div class="section-line ember"></div>
+      </div>
+
+      <div class="attr-grid">
+        <div class="attr-box max">
+          <div class="attr-name">Força</div>
+          <span class="attr-value max">22</span>
+          <span class="attr-mod max">+6</span>
+        </div>
+        <div class="attr-box low">
+          <div class="attr-name">Destreza</div>
+          <span class="attr-value low">8</span>
+          <span class="attr-mod neg">−1</span>
+        </div>
+        <div class="attr-box max">
+          <div class="attr-name">Constituição</div>
+          <span class="attr-value max">20</span>
+          <span class="attr-mod max">+5</span>
+        </div>
+        <div class="attr-box high">
+          <div class="attr-name">Inteligência</div>
+          <span class="attr-value high">14</span>
+          <span class="attr-mod high">+2</span>
+        </div>
+        <div class="attr-box">
+          <div class="attr-name">Sabedoria</div>
+          <span class="attr-value">12</span>
+          <span class="attr-mod">+1</span>
+        </div>
+        <div class="attr-box low">
+          <div class="attr-name">Carisma</div>
+          <span class="attr-value low">6</span>
+          <span class="attr-mod neg">−2</span>
+        </div>
+      </div>
+
+      <div class="callout ember" style="margin-top:4px;">
+        <strong>Nota sobre os Atributos</strong> Força e Constituição máximas refletem natureza de construto — não muscular, mas estrutural. Destreza baixa é intencional: o Arauto jamais esquiva. Ele absorve. Carisma baixo porque o humano interior não tem voz própria.
+      </div>
+    </section>
+
+    <section id="proficiencias" style="margin-bottom:0;">
+      <div class="section-header">
+        <span class="section-icon cinder">🎲</span>
+        <h2 class="cinder">Proficiências, Sentidos &amp; Imunidades</h2>
+        <div class="section-line cinder"></div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Salvaguardas</td>
+              <td><span class="mono ember">FOR +10 &nbsp;·&nbsp; CON +9 &nbsp;·&nbsp; SAB +5</span></td>
+            </tr>
+            <tr>
+              <td>Bônus de Ataque</td>
+              <td><span class="mono" style="font-size:.74rem;">Jato +5 (SAB+Prof) · C-a-C +10 (FOR+Prof)</span></td>
+            </tr>
+            <tr>
+              <td>Imunidades a Dano</td>
+              <td>Fogo, Veneno, Doença</td>
+            </tr>
+            <tr>
+              <td>Resistências</td>
+              <td style="font-size:.86rem;">Contuso / Cortante / Perfurante não-mágico sem prata</td>
+            </tr>
+            <tr>
+              <td>Imun. a Condição</td>
+              <td>Envenenado, Assustado, Enfeitiçado, condições mentais</td>
+            </tr>
+            <tr>
+              <td>Sentidos</td>
+              <td>Visão no Escuro 60m · Olfato Primordial <span style="color:var(--text-dim);font-size:.84rem;">(sangue: raio de km)</span></td>
+            </tr>
+            <tr>
+              <td>Idiomas</td>
+              <td style="font-size:.86rem;color:var(--text-dim);">Fragmentos de linguagem humana — o humano interior vaza pela armadura</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div><!-- end two-col atributos+prof -->
+
+
+  <!-- ══════════════════════════════
+       TRAÇOS ESPECIAIS
+  ══════════════════════════════ -->
+  <section id="tracos">
+    <div class="section-header">
+      <span class="section-icon cinder">◈</span>
+      <h2 class="cinder">Traços Especiais</h2>
+      <div class="section-line cinder"></div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--ember-light),var(--ember-dim));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Presença Aterrorizante <span class="sub">(Passivo — Primeira Visão)</span></div>
+        <p>Qualquer criatura que veja o Arauto Ardente pela primeira vez deve fazer uma <strong>Salvaguarda de Sabedoria CD 13</strong>. Em caso de falha, a criatura fica <strong>paralisada por 1 round</strong> — não por magia, mas por resposta instintiva do cérebro reptiliano ao ver algo que não deveria existir. Criaturas com Sabedoria 14+ têm vantagem neste teste.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--cinder-light),var(--cinder-dim));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Detecção de Sangue Primordial <span class="sub">(Passivo)</span></div>
+        <p>Sente a presença de sangue primordial em raio de vários quilômetros. Identifica vampiros primordiais com precisão — reconheceu Leyn a distância mesmo sem vê-lo. Sua missão original era localizar <mark class="h">a criança selada</mark> (Kaira), cujo sangue tem assinatura distinta do primordial convencional. Esta detecção funciona mesmo através de paredes, florestas e clima adverso.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--ceramic-light),var(--ceramic-dim));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Força de Construto <span class="sub">(Passivo)</span></div>
+        <p>Força física sobre-humana equivalente a um construto de pedra viva. <strong>Não sente dor convencional</strong> — ataques não mágicos sem prata causam dano reduzido. Resistência a dano contundente, perfurante e cortante de fontes não-mágicas. Imune a veneno, doença e condições mentais. O humano interior ainda sente. O construto simplesmente não responde à dor.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--flame-light),var(--flame-dim));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Pegadas de Fogo Líquido <span class="sub">(Passivo — Ambiental)</span></div>
+        <p>Terreno onde o Arauto passa fica coberto de fogo líquido por <strong>1 minuto</strong> após sua passagem. Qualquer criatura que entrar nessa área sofre <strong>1d6 dano de fogo</strong> no início de cada um dos seus turnos enquanto estiver no terreno. Durante a perseguição na Saga 8, árvores explodiam em chamas quando ele passava próximo — não por ação deliberada, mas por simples presença.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="trait-bar" style="background:linear-gradient(180deg,var(--human-light),var(--human-dim));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Ausência de Recuo <span class="sub">(Passivo)</span></div>
+        <p>O Arauto nunca recua ao ser ferido. Flechas no ombro e no pescoço fizeram-no tropeçar por um segundo — nada mais. A espada de Leyn penetrou o núcleo de fogo causando dano real e ele rugiu (o humano interior sentiu), mas não mudou de postura. Criaturas que dependem de <em>criar espaço após acertar</em> encontrarão dificuldade extrema — o Arauto simplesmente avança, sempre.</p>
+      </div>
+    </div>
+
+    <div class="callout cinder">
+      <strong>Inteligência Operacional</strong>
+      O Arauto tem inteligência tática real. Procura antes de atacar. Reconhece tipos de criaturas. Não desperdiça Explosão em Área quando pode usar Jato concentrado. Muda de alvo quando alguém interfere repetidamente. Tem missão específica — mas <em>tudo que ameaça essa missão</em> vira alvo secundário.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       AÇÕES
+  ══════════════════════════════ -->
+  <section id="acoes">
+    <div class="section-header">
+      <span class="section-icon ember">⚔</span>
+      <h2 class="ember">Ações</h2>
+      <div class="section-line ember"></div>
+    </div>
+
+    <div class="callout ember">
+      <strong>Multiattack — Não Usa</strong>
+      O Arauto não possui multiattack convencional. Cada rodada ele escolhe <em>uma</em> ação de ataque deliberada. Isso reflete sua natureza tática: ele analisa, escolhe alvo, executa. Não é frenético. É <strong>implacável</strong>. Grupos que esperam ser sobrecarregados por volume de ataques serão surpreendidos pela precisão cirúrgica de uma criatura que nunca pressa.
+    </div>
+
+    <div class="action ember">
+      <div class="action-name ember">Golpe de Construto</div>
+      <p>Ataque corpo-a-corpo. Alcance 1,5m. <span class="mono ember">+10 para acertar</span> (FOR +6 · Prof +4). <strong>Acerto:</strong> <mark>2d6+6 contundente</mark> + <mark>1d6 fogo</mark> (calor extremo do corpo). Em acerto crítico, o alvo deve fazer Salvaguarda de Constituição CD 15 ou ser arremessado 3m e cair prostrado.</p>
+    </div>
+
+    <div class="action ember">
+      <div class="action-name ember">Jato de Fogo Concentrado</div>
+      <p>Ataque de alcance, 20 metros. <span class="mono ember">+5 para acertar</span> (SAB +1 · Prof +4) — guiado pelo sentido primordial, não pela força bruta. <strong>Acerto:</strong> <mark>3d6 fogo</mark>. Pode mirar com precisão — atravessa frestas, buracos nas árvores, arestas de pedra. Leyn foi atingido pelas costas enquanto fugia com velocidade vampírica, caindo a 0 HP com 10 de dano.</p>
+    </div>
+
+    <div class="action ember">
+      <div class="action-name ember">Explosão em Área <span class="recharge">Recarga 5–6</span></div>
+      <p>Todas as criaturas em raio de <strong>4,5m (15 pés)</strong> ao redor do Arauto devem fazer <strong>Salvaguarda de Destreza CD 14</strong> ou sofrer <mark>4d6 dano de fogo</mark> (metade em sucesso). O Arauto usa esta habilidade como último recurso quando completamente cercado. Na Saga 8: Aldric passou (8 dano), Elise falhou (16 dano), Darius passou (8 dano).</p>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       REAÇÕES
+  ══════════════════════════════ -->
+  <section id="reacoes">
+    <div class="section-header">
+      <span class="section-icon ember">↺</span>
+      <h2 class="ember">Reações</h2>
+      <div class="section-line ember"></div>
+    </div>
+
+    <div class="action ember">
+      <div class="action-name ember">Jato de Fogo — Reação de Aproximação</div>
+      <p>Quando uma criatura se move em linha reta <strong>em direção ao Arauto</strong> e termina o movimento dentro de 20 metros, o Arauto pode usar sua <strong>reação</strong> para disparar um Jato de Fogo Concentrado contra ela antes que o movimento termine. Não requer preparação — abre uma fissura no peito e deixa o núcleo disparar. Leyn precisou usar <em>Parry</em> com Action Surge para desviar este ataque no round final.</p>
+    </div>
+
+    <div class="callout ember">
+      <strong>Nota Tática — A Armadilha do Avanço</strong>
+      A reação de Jato torna qualquer aproximação direta em linha reta extremamente perigosa. O contraplay correto é zig-zag entre cobertura, usar distração (como Darius fez), ou atacar primeiro de longa distância para forçar o Arauto a gastar sua reação antes do avanço.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       AÇÕES DE TERRITÓRIO
+  ══════════════════════════════ -->
+  <div class="form-divider">
+    <div class="form-divider-line"></div>
+    <div class="form-divider-label">🌋 Ações de Território — Iniciativa 20</div>
+    <div class="form-divider-line"></div>
+  </div>
+
+  <section id="territorio">
+    <div class="section-header">
+      <span class="section-icon ember">🌋</span>
+      <h2 class="ember">Ações de Território</h2>
+      <div class="section-line ember"></div>
+    </div>
+
+    <div class="card ember" style="margin-bottom:14px;">
+      <div class="card-title ember">Iniciativa 20 (perdendo empates)</div>
+      <p>O Arauto pode usar uma das seguintes ações de território gratuitamente, sem gastar sua ação principal. Ele não usa mais de uma por rodada, e não repete a mesma ação em rodadas consecutivas.</p>
+    </div>
+
+    <div class="action territory">
+      <div class="action-name territory">Erupção do Subsolo</div>
+      <p>O Arauto estampa o chão. Pedras e terra a até <strong>4,5m explodem em fagulhas</strong> — cada criatura nessa área faz <strong>Salvaguarda de Destreza CD 13</strong> ou sofre <mark>2d6 dano de fogo</mark> e fica com velocidade reduzida à metade até o início do próximo turno. Terreno afetado conta como difícil até o fim do encontro.</p>
+    </div>
+
+    <div class="action territory">
+      <div class="action-name territory">Calor Sufocante</div>
+      <p>O calor emitido pelo Arauto se intensifica momentaneamente. Todas as criaturas dentro de <strong>9m</strong> devem fazer <strong>Salvaguarda de Constituição CD 13</strong> ou sofrer <mark>1d6 dano de fogo</mark> e ter <strong>desvantagem em ataques</strong> até o início do próximo turno do Arauto. Não afeta criaturas com resistência ou imunidade a fogo.</p>
+    </div>
+
+    <div class="action territory">
+      <div class="action-name territory">Propagação de Chamas</div>
+      <p>O Arauto direciona seu calor para ignitar o ambiente. Um objeto inflamável ou estrutura dentro de <strong>18m</strong> começa a queimar intensamente. Se for uma barreira (árvore caída, porta, parede de madeira), ela colapsa em 1d4 rodadas, possivelmente afetando criaturas próximas com <mark>2d6 dano de fogo</mark> (Salvaguarda DEX CD 12 para metade).</p>
+    </div>
+
+    <div class="callout ember">
+      <strong>Ambiente como Arma</strong>
+      As Ações de Território refletem o que aconteceu na Saga 8 de forma orgânica: a clareira derretida, as pedras que viraram lava solidificada, as árvores-estátua de carvão. O ambiente ao redor do Arauto não é apenas cenário — é uma extensão do combate.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       FRAQUEZAS
+  ══════════════════════════════ -->
+  <section id="fraquezas">
+    <div class="section-header">
+      <span class="section-icon flame">💧</span>
+      <h2 class="flame">Fraquezas Conhecidas</h2>
+      <div class="section-line flame"></div>
+    </div>
+
+    <div class="two-col-monster">
+      <div class="card flame">
+        <div class="card-title flame">💧 Água Corrente</div>
+        <p>A principal vulnerabilidade. Água em grande quantidade <strong>apaga as chamas externas</strong> e causa choque térmico na cerâmica. Água corrente (não estagnada) causa dano por round de contato. Foi o método usado para derrotá-lo na Saga 8 — o corpo se desfez completamente ao cair no Rio Corvinal.</p>
+      </div>
+      <div class="card ceramic">
+        <div class="card-title ceramic">🥈 Prata</div>
+        <p>Pode ferir o <strong>núcleo humano</strong> que ainda existe dentro da cerâmica. Ataques de prata ignoram parte da resistência do construto. Estacas de prata têm chance de penetrar as fissuras e atingir pontos vitais internos diretamente.</p>
+      </div>
+    </div>
+    <div class="two-col-monster">
+      <div class="card flame">
+        <div class="card-title flame">❄️ Frio Extremo</div>
+        <p>Causa choque térmico na cerâmica — as rachaduras se expandem com variação extrema de temperatura. Magias de frio de nível 5+ teriam efeito devastador. Não elimina o fogo interno, mas <strong>impede sua regulação</strong>, fazendo o Arauto perder controle do calor liberado.</p>
+      </div>
+      <div class="card ember">
+        <div class="card-title ember">🎯 Núcleo Cardíaco</div>
+        <p>O ponto onde o fogo é mais intenso — o "coração" da transformação. Ataques concentrados causam dano adicional e afetam o núcleo humano diretamente. Leyn identificou essa fraqueza (CD 12) e a explorou na Estocada Espiral final. Localizado no centro do peito, visível pelas fissuras mais brilhantes.</p>
+      </div>
+    </div>
+
+    <div class="callout flame">
+      <strong>O Paradoxo da Água</strong>
+      O Arauto temia água corrente. Evitou o rio ativamente durante o combate — quando Aldric tentava atraí-lo, ele resistia. Isso sugere que a fraqueza é <em>conhecida pelos próprios Arautos</em>, ou programada pelos Mestres Antigos como limitação intencional para evitar que cruzem fronteiras territoriais sem permissão.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       DANO DE SANIDADE
+  ══════════════════════════════ -->
+  <section id="sanidade">
+    <div class="section-header">
+      <span class="section-icon prison">🧿</span>
+      <h2 class="prison">Dano de Sanidade</h2>
+      <div class="section-line prison"></div>
+    </div>
+
+    <p style="font-size:.92rem;color:var(--text-dim);margin-bottom:16px;">Usando o framework de Sanidade do <em>Call of Cthulhu</em> adaptado para 5e. Cada evento abaixo causa perda de SAN independente do resultado em combate. Dano de SAN não se recupera com descanso — requer resolução narrativa ou tratamento especializado.</p>
+
+    <div class="san-grid">
+      <div class="san-box">
+        <div class="san-box-label">Primeira Visão</div>
+        <span class="san-box-dice">1d6 SAN</span>
+        <div class="san-box-cd">SAB CD 13</div>
+        <div class="san-box-sub">Falha: +paralisia 1 round</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Olhos de Chama Azul</div>
+        <span class="san-box-dice">1d4 SAN</span>
+        <div class="san-box-cd">SAB CD 11</div>
+        <div class="san-box-sub">Contato visual direto</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Rosto Humano Emerge</div>
+        <span class="san-box-dice">1d4 SAN</span>
+        <div class="san-box-cd">Automático</div>
+        <div class="san-box-sub">Ver o humano morrer dentro</div>
+      </div>
+    </div>
+    <div class="san-grid">
+      <div class="san-box">
+        <div class="san-box-label">Carne Queimada em Vida</div>
+        <span class="san-box-dice">1d3 SAN</span>
+        <div class="san-box-cd">SAB CD 10</div>
+        <div class="san-box-sub">Ouvir o humano gritar</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Companheiro Derretido</div>
+        <span class="san-box-dice">1d6 SAN</span>
+        <div class="san-box-cd">Automático</div>
+        <div class="san-box-sub">Ver aliado matar pelo fogo</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Sobrevivência</div>
+        <span class="san-box-dice">−1 SAN</span>
+        <div class="san-box-cd">Fixo · inevitável</div>
+        <div class="san-box-sub">Existir depois de ver isso</div>
+      </div>
+    </div>
+
+    <div class="two-col-monster">
+      <div class="card prison">
+        <div class="card-title prison">Sintomas de Falha Severa</div>
+        <p>Personagem que perde 5+ SAN num único encontro pode desenvolver: <em>medo de fogo</em> (desvantagem em ataques com fogo por 1d6 aventuras), <em>flashbacks nocturnos</em> (interrupção de Descanso Longo em 1d4−1), ou <em>paralisia situacional</em> (falha automática na próxima Salvaguarda de Sabedoria envolvendo calor ou luz intensa).</p>
+      </div>
+      <div class="card human">
+        <div class="card-title human">O "Obrigado" — Perturbação Específica</div>
+        <p>Ver o humano emergir e agradecer não causa terror — causa algo pior: <em>empatia forçada com o inimigo que tentou te matar</em>. Personagens com Sabedoria 14+ que presenciarem isso precisam de uma rodada de ação para "se recompor" antes de agir normalmente. O custo emocional é intencional.</p>
+      </div>
+    </div>
+
+    <div class="callout prison">
+      <strong>Framework de SAN para 5e</strong>
+      Use SAN como recurso secundário: cada personagem começa com SAN = Sabedoria × 5 (máximo 100). Perda de 20% num encontro = sintoma leve. Perda de 50% total = episódio de loucura temporária. Perda de 90%+ = condição permanente ou colapso. Recuperação: 1d3 SAN por Descanso Longo em local seguro com alguém de confiança. Resolução narrativa pode restaurar mais.
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════
+       COMPORTAMENTO & COMO RODAR
+  ══════════════════════════════ -->
+  <section id="comportamento">
+    <div class="section-header">
+      <span class="section-icon">🧠</span>
+      <h2 class="ash">Comportamento &amp; Como Rodar</h2>
+      <div class="section-line ash"></div>
+    </div>
+
+    <div class="two-col-monster">
+      <div class="card ember">
+        <div class="card-title ember">Padrão de Busca</div>
+        <p>Gira lentamente no lugar enquanto fareja. Fala em voz alta sem se importar com testemunhas — não por descuido, mas porque <em>não teme nada que possa ouvi-lo</em>. Procura antes de atacar. Tem alvos específicos. Só muda para modo de combate quando confrontado diretamente ou quando sua missão é ameaçada.</p>
+      </div>
+      <div class="card ceramic">
+        <div class="card-title ceramic">Padrão de Combate</div>
+        <p>Muda de alvo quando incomodado repetidamente. Prioriza ameaças que interrompem sua missão. Se alguém interfere repetidamente (como Darius com flechas), ele caça essa pessoa. Usa Explosão em Área como último recurso quando completamente cercado — custa recursos e ele sabe disso.</p>
+      </div>
+    </div>
+
+    <p style="font-size:.93rem;color:var(--text-dim);margin-bottom:16px;">
+      <strong style="color:var(--ceramic-light);">A Voz:</strong> Como vidro quebrando misturado com rugido de fornalha. Fala em fragmentos — pausas mecânicas entre palavras como se processasse cada uma. O tom às vezes é quase <em>triste</em> — como se lamentasse ter que cumprir a missão. Isso é o humano interior vazando pela armadura.
+    </p>
+
+    <div class="voice-block">
+      "...sinto... sangue primordial... próximo..., mas não... a criança... onde... está... a selada...?"
+      <cite>— Primeira fala · girando na clareira derretida · Saga 8</cite>
+    </div>
+    <div class="voice-block">
+      "...não está aqui..., mas próximo... dias... talvez horas... ordens são claras... encontrar... capturar... levar aos Mestres..."
+      <cite>— Monólogo de busca · antes de detectar Leyn</cite>
+    </div>
+    <div class="voice-block">
+      "VOCÊ... ESTAVA MORTO... EU SENTI... IMPOSSÍVEL!"
+      <cite>— Ao ver Leyn ressuscitado · confusão genuína · hesitação real antes do ataque final</cite>
+    </div>
+    <div class="voice-block">
+      "NÃO! EU NÃO POSSO FALHAR!"
+      <cite>— Último momento antes da Estocada Espiral · não do construto — do humano</cite>
+    </div>
+
+    <div class="callout ceramic">
+      <strong>O Que o Tom Revela</strong>
+      A voz oscila entre mecânico e quase emocional. O "ordens são claras" soa como repetição de instrução memorizada. O "não posso falhar" soa como medo — não de punição, mas de <em>existir sem propósito</em>. O humano interior usa os fragmentos de fala disponíveis para comunicar mais do que a missão permite. Quanto mais ferido, mais humano vaza.
+    </div>
+  </section>
+
+</main>
+
+<div style="max-width:860px;margin:0 auto;padding:0 20px 0;">
+  <div class="divider" style="padding:0;margin-bottom:0;">
+    <div class="divider-line"></div>
+    <span class="divider-glyph">🔥</span>
+    <div class="divider-line"></div>
+  </div>
+</div>
+
+<footer>
+  Arauto Ardente <span>⸸</span> "O Recipiente do Fogo Profano" <span>⸸</span> Além do Véu da Carne · Saga 8
+</footer>
+
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+
+<script>
+(function() {
+  /* Ember particles */
+  var c = document.getElementById('embers');
+  var cols = ['rgba(204,72,16,','rgba(240,112,48,','rgba(204,136,32,','rgba(72,152,232,'];
+  for (var i = 0; i < 50; i++) {
+    var e = document.createElement('div');
+    e.className = 'ember-p';
+    var sz = .6 + Math.random() * 2;
+    var col = cols[Math.floor(Math.random() * cols.length)];
+    var isBlue = col.indexOf('72,152') > -1;
+    e.style.cssText = [
+      'width:' + sz + 'px',
+      'height:' + sz + 'px',
+      'top:' + (55 + Math.random() * 45) + '%',
+      'left:' + (Math.random() * 100) + '%',
+      'background:' + col + (isBlue ? '.45)' : '.65)'),
+      'box-shadow:0 0 ' + (sz*2) + 'px ' + col + '.35)',
+      'animation-duration:' + (5 + Math.random() * 9) + 's',
+      'animation-delay:' + (Math.random() * 9) + 's',
+    ].join(';');
+    c.appendChild(e);
+  }
+
+  /* Top btn */
+  var btn = document.getElementById('top-btn');
+  if (btn) btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+</script>
+
+</body>
+</html>

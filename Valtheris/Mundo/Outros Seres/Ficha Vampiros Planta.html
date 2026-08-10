@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vampiro da Planta Carnívora — Além do Véu da Carne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:          #030604;
+
+    --ichor:        #287838;
+    --ichor-light:  #3ea850;
+    --ichor-dim:    #0e2a14;
+
+    --sick:         #8a9e20;
+    --sick-light:   #b0c830;
+    --sick-dim:     #303808;
+    --blood-light:  #c03030;
+    --blood-dim:    #300808;
+    --moon-light:   #c8dce8;
+    --gold-light:   #e8b840;
+    --gold-dim:     #3a2408;
+    --bone-light:   #dacaa8;
+
+    --text:         #b8c4b0;
+    --text-dim:     #607060;
+    --text-faint:   #2a3820;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--ink);
+    background-image:
+      radial-gradient(ellipse 130% 60% at 50% -8%,  #061008 0%, transparent 55%),
+      radial-gradient(ellipse 60%  60% at 95% 100%, #040a06 0%, transparent 50%),
+      radial-gradient(ellipse 50%  70% at 5%  85%,  #08100a 0%, transparent 50%),
+      radial-gradient(ellipse 40%  40% at 50% 60%,  #050e06 0%, transparent 40%);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 17px; line-height: 1.8;
+    min-height: 100vh; overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 999; opacity: .5;
+  }
+
+  /* ══ ACCENT BAR ══ */
+  .accent-bar {
+    height: 4px;
+    background: linear-gradient(90deg, var(--ichor-dim), var(--ichor), var(--sick), var(--ichor), var(--ichor-dim));
+    box-shadow: 0 0 20px rgba(40,120,56,.35), 0 0 40px rgba(138,158,32,.15);
+  }
+
+  /* ══ BREADCRUMB ══ */
+  .breadcrumb {
+    max-width: 860px; margin: 0 auto; padding: 20px 20px 0;
+    font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--text-faint);
+  }
+  .breadcrumb span { color: var(--ichor-dim); margin: 0 6px; }
+  .breadcrumb .current { color: var(--ichor-light); }
+
+  /* ══ HEADER ══ */
+  header {
+    position: relative; text-align: center;
+    padding: 80px 20px 70px; overflow: hidden;
+  }
+  header::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(30,100,40,.10) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 40% at 50% 80%, rgba(100,120,20,.06) 0%, transparent 60%);
+  }
+  header::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--ichor-dim), var(--sick-dim), var(--ichor-dim), transparent);
+    box-shadow: 0 0 30px rgba(40,120,56,.18);
+  }
+
+  .header-symbol {
+    display: block; font-size: 2.8rem; margin-bottom: 18px;
+    filter: drop-shadow(0 0 20px rgba(50,160,70,.65)) drop-shadow(0 0 40px rgba(140,160,30,.4));
+    animation: plant-pulse 6s ease-in-out infinite;
+  }
+  @keyframes plant-pulse {
+    0%,100% { filter: drop-shadow(0 0 14px rgba(50,160,70,.5)) drop-shadow(0 0 32px rgba(140,160,30,.3)); transform: scale(1); }
+    50%      { filter: drop-shadow(0 0 28px rgba(50,160,70,.85)) drop-shadow(0 0 60px rgba(140,160,30,.55)); transform: scale(1.04); }
+  }
+
+  .header-eyebrow { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .45em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 18px; }
+  .header-classification { font-family: 'Cinzel', serif; font-size: .68rem; letter-spacing: .25em; text-transform: uppercase; color: var(--ichor-light); margin-bottom: 10px; opacity: .8; }
+
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.6rem, 5vw, 3rem); font-weight: 900; line-height: 1.2; margin-bottom: 6px;
+    background: linear-gradient(135deg, #c0e890 0%, #60b870 35%, #b0c830 70%, #80d090 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    filter: drop-shadow(0 0 28px rgba(50,160,70,.28));
+    animation: title-breathe 9s ease-in-out infinite;
+  }
+  @keyframes title-breathe {
+    0%,100% { filter: drop-shadow(0 0 18px rgba(50,160,70,.2)); }
+    50%      { filter: drop-shadow(0 0 46px rgba(50,160,70,.44)) drop-shadow(0 0 70px rgba(138,158,32,.12)); }
+  }
+
+  .header-title-sub { font-family: 'Cinzel', serif; font-size: clamp(.85rem, 2.5vw, 1.1rem); letter-spacing: .18em; text-transform: uppercase; color: var(--bone-light); margin-bottom: 8px; }
+  .header-tagline { font-style: italic; color: #608068; font-size: 1rem; max-width: 520px; margin: 0 auto 32px; }
+  .header-crests { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+
+  /* ══ WARNING BANNER ══ */
+  .warning-banner { max-width: 860px; margin: 0 auto 0; padding: 0 20px; }
+  .warning-banner-inner {
+    background: rgba(8,40,12,.22); border: 1px solid var(--ichor-dim);
+    border-left: 4px solid var(--ichor-light); padding: 16px 24px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .warning-icon { font-size: 1.4rem; flex-shrink: 0; line-height: 1.6; }
+  .warning-text { font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .08em; color: #80a878; line-height: 1.7; }
+  .warning-text strong { color: var(--ichor-light); letter-spacing: .15em; display: block; margin-bottom: 4px; }
+
+  /* ══ DIVIDER ══ */
+  .divider { display: flex; align-items: center; gap: 14px; max-width: 860px; margin: 0 auto; padding: 40px 20px 48px; }
+  .divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--ichor-dim), var(--sick-dim), transparent); }
+  .divider-glyph { color: var(--ichor-light); font-size: 1rem; opacity: .65; }
+
+  /* ══ LAYOUT ══ */
+  main { max-width: 860px; margin: 0 auto; padding: 0 20px 90px; display: flex; flex-direction: column; gap: 0; }
+  section { margin-bottom: 56px; animation: fade-in .5s ease both; }
+  @keyframes fade-in { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  section:nth-child(1)  { animation-delay: .05s; }
+  section:nth-child(2)  { animation-delay: .10s; }
+  section:nth-child(3)  { animation-delay: .15s; }
+  section:nth-child(4)  { animation-delay: .20s; }
+  section:nth-child(5)  { animation-delay: .25s; }
+  section:nth-child(6)  { animation-delay: .30s; }
+  section:nth-child(7)  { animation-delay: .35s; }
+  section:nth-child(8)  { animation-delay: .40s; }
+  section:nth-child(9)  { animation-delay: .45s; }
+  section:nth-child(10) { animation-delay: .50s; }
+  section:nth-child(11) { animation-delay: .55s; }
+
+  /* ══ SECTION HEADER ══ */
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .section-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .section-icon.ichor { filter: drop-shadow(0 0 8px rgba(50,160,70,.5)); }
+  .section-icon.sick  { filter: drop-shadow(0 0 8px rgba(140,160,30,.5)); }
+  .section-icon.blood { filter: drop-shadow(0 0 8px rgba(180,40,40,.5)); }
+  .section-icon.moon  { filter: drop-shadow(0 0 8px rgba(160,190,210,.5)); }
+  .section-icon.gold  { filter: drop-shadow(0 0 8px rgba(200,150,28,.5)); }
+  .section-icon.bone  { filter: drop-shadow(0 0 8px rgba(200,175,130,.4)); }
+
+  h2 { font-family: 'Cinzel', serif; font-size: .9rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+  h2.ichor { color: #60c878; text-shadow: 0 0 20px rgba(50,160,70,.3); }
+  h2.sick  { color: #c8dc40; text-shadow: 0 0 20px rgba(150,170,30,.25); }
+  h2.blood { color: #d05050; text-shadow: 0 0 18px rgba(180,40,40,.25); }
+  h2.moon  { color: #c8dce8; text-shadow: 0 0 18px rgba(160,190,210,.25); }
+  h2.gold  { color: #e8b840; text-shadow: 0 0 18px rgba(200,150,28,.25); }
+  h2.bone  { color: #dac8a8; text-shadow: 0 0 16px rgba(200,175,130,.2); }
+
+  .section-line { flex: 1; height: 1px; }
+  .section-line.ichor { background: linear-gradient(90deg, var(--ichor-dim), rgba(138,158,32,.25), transparent); }
+  .section-line.sick  { background: linear-gradient(90deg, var(--sick-dim), rgba(40,120,56,.2), transparent); }
+  .section-line.blood { background: linear-gradient(90deg, var(--blood-dim), rgba(40,120,40,.2), transparent); }
+  .section-line.moon  { background: linear-gradient(90deg, rgba(30,60,80,.5), rgba(40,120,40,.15), transparent); }
+  .section-line.gold  { background: linear-gradient(90deg, var(--gold-dim), rgba(40,120,40,.18), transparent); }
+  .section-line.bone  { background: linear-gradient(90deg, rgba(80,60,30,.5), rgba(40,120,40,.15), transparent); }
+
+  p { margin-bottom: 10px; } p:last-child { margin-bottom: 0; }
+
+  /* ══ IDENTITY ══ */
+  .identity {
+    position: relative;
+    background: linear-gradient(145deg, rgba(8,16,8,.98) 0%, rgba(4,8,4,.99) 100%);
+    border: 1px solid rgba(30,100,40,.4);
+    border-top: 3px solid var(--ichor-dim);
+    border-bottom: 3px solid var(--sick-dim);
+    padding: 30px 32px; margin-bottom: 14px; overflow: hidden;
+  }
+  .identity::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(30,100,40,.06) 0%, transparent 50%),
+      radial-gradient(circle at 100% 100%, rgba(100,120,20,.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .identity-corner { position: absolute; font-family: 'Fira Code', monospace; font-size: .6rem; letter-spacing: .15em; color: var(--text-faint); opacity: .65; }
+  .identity-corner.tl { top: 10px; left: 14px; }
+  .identity-corner.tr { top: 10px; right: 14px; }
+  .identity-corner.bl { bottom: 10px; left: 14px; }
+  .identity-corner.br { bottom: 10px; right: 14px; }
+
+  .monster-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.2rem, 3vw, 1.9rem); font-weight: 900;
+    background: linear-gradient(135deg, #c0e890 0%, #60b870 45%, #b0c830 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 2px;
+  }
+  .monster-epithet { font-family: 'Cinzel', serif; font-size: .82rem; letter-spacing: .2em; text-transform: uppercase; color: var(--moon-light); opacity: .85; margin-bottom: 14px; }
+  .monster-type-line { margin-bottom: 16px; }
+  .monster-lore { font-style: italic; color: #607868; font-size: .97rem; border-left: 2px solid var(--ichor-dim); padding-left: 16px; margin-top: 14px; line-height: 1.75; }
+  .monster-lore + .monster-lore { border-left-color: var(--sick-dim); margin-top: 10px; }
+
+  /* ══ TAGS ══ */
+  .tag { display: inline-block; font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .18em; text-transform: uppercase; padding: 2px 8px; border-radius: 1px; margin-right: 5px; margin-bottom: 5px; vertical-align: middle; }
+  .tag.dnd    { border: 1px solid #183a20; color: #60a040; }
+  .tag.coc    { border: 1px solid #1a2840; color: #5080a0; }
+  .tag.horror { border: 1px solid #3a1820; color: #a05060; }
+  .tag.hb     { border: 1px solid #283030; color: #607080; }
+  .tag.lore   { border: 1px solid #283020; color: #809060; }
+  .tag.plant  { border: 1px solid #1a3a1a; color: #60a860; }
+  .tag.victim { border: 1px solid #1a2a1a; color: #50a070; }
+
+  /* ══ MONSTER VITALS ══ */
+  .monster-vitals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  @media (max-width:600px) { .monster-vitals { grid-template-columns: 1fr 1fr; } }
+  .mvital-card { background: rgba(4,8,4,.85); border: 1px solid rgba(20,70,28,.3); border-radius: 3px; padding: 16px 14px; position: relative; overflow: hidden; text-align: center; }
+  .mvital-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+  .mvital-card.ichor::after { background: linear-gradient(90deg, transparent, var(--ichor-light), transparent); }
+  .mvital-card.sick::after  { background: linear-gradient(90deg, transparent, var(--sick-light),  transparent); }
+  .mvital-card.blood::after { background: linear-gradient(90deg, transparent, var(--blood-light), transparent); }
+  .mvital-card.moon::after  { background: linear-gradient(90deg, transparent, var(--moon-light),  transparent); }
+  .mvital-label { font-family: 'Cinzel', serif; font-size: .52rem; letter-spacing: .22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+  .mvital-value { font-family: 'Cinzel Decorative', serif; font-size: 2rem; line-height: 1; display: block; }
+  .mvital-value.ichor { color: var(--ichor-light);  text-shadow: 0 0 20px rgba(50,160,70,.4); }
+  .mvital-value.sick  { color: var(--sick-light);   text-shadow: 0 0 20px rgba(140,160,30,.4); }
+  .mvital-value.blood { color: var(--blood-light);  text-shadow: 0 0 18px rgba(180,40,40,.4); }
+  .mvital-value.moon  { color: var(--moon-light);   text-shadow: 0 0 18px rgba(160,190,210,.35); }
+  .mvital-note { font-size: .75rem; color: var(--text-dim); font-style: italic; margin-top: 6px; display: block; line-height: 1.4; }
+
+  /* ══ TWO-COL ══ */
+  .two-col-monster { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width:600px) { .two-col-monster { grid-template-columns: 1fr; } }
+
+  /* ══ CR BADGE ══ */
+  .cr-badge {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, rgba(8,40,12,.18), rgba(30,40,8,.12));
+    border: 1px solid rgba(50,150,60,.4);
+    border-top: 2px solid var(--ichor-light);
+    border-bottom: 2px solid var(--sick-dim);
+    padding: 14px 24px; text-align: center;
+  }
+  .cr-badge-label { font-family: 'Cinzel', serif; font-size: .54rem; letter-spacing: .28em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+  .cr-badge-value {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.2rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--ichor-light), var(--sick-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1;
+  }
+  .cr-badge-note { font-family: 'Fira Code', monospace; font-size: .6rem; color: var(--text-dim); margin-top: 4px; letter-spacing: .06em; }
+
+  /* ══ ATTR GRID ══ */
+  .attr-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .attr-box { background: rgba(4,8,4,.85); border: 1px solid rgba(20,70,28,.25); border-radius: 3px; padding: 14px 6px; text-align: center; transition: border-color .25s, transform .2s; }
+  .attr-box:hover { border-color: rgba(50,160,70,.45); transform: translateY(-2px); }
+  .attr-box.low { border-color: rgba(100,30,30,.35); }
+  .attr-name { font-family: 'Cinzel', serif; font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .attr-value { font-family: 'Cinzel Decorative', serif; font-size: 1.7rem; line-height: 1; display: block; color: var(--text); }
+  .attr-value.low { color: var(--blood-light); }
+  .attr-mod { font-family: 'Cinzel', serif; font-size: .75rem; color: var(--text-dim); display: block; margin-top: 3px; }
+  .attr-mod.neg { color: var(--blood-light); }
+
+  /* ══ TABLE ══ */
+  .table-wrap { border: 1px solid rgba(20,70,28,.3); border-radius: 3px; overflow: hidden; margin-bottom: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  thead tr { background: rgba(8,20,8,.85); }
+  th { font-family: 'Cinzel', serif; font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ichor-light); padding: 10px 16px; text-align: left; font-weight: 600; }
+  tbody tr { border-top: 1px solid rgba(20,70,28,.2); transition: background .2s; }
+  tbody tr:hover { background: rgba(20,70,28,.08); }
+  td { padding: 9px 16px; color: var(--text); vertical-align: top; }
+  td:first-child { color: var(--text-dim); font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .06em; }
+  .mono { font-family: 'Fira Code', monospace; font-size: .82rem; }
+  .mono.ichor { color: var(--ichor-light); }
+  .mono.sick  { color: var(--sick-light); }
+  .mono.blood { color: var(--blood-light); }
+  .mono.moon  { color: var(--moon-light); }
+
+  /* ══ FRAQUEZA ══ */
+  .fraq-row-wrap { border: 1px solid rgba(20,70,28,.22); border-radius: 3px; overflow: hidden; margin-bottom: 6px; transition: border-color .25s; }
+  .fraq-row-wrap:hover { border-color: rgba(50,160,70,.4); }
+  .fraq-row-inner { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(4,8,4,.8); }
+  .fraq-icon  { font-size: 1.25rem; flex-shrink: 0; width: 28px; text-align: center; }
+  .fraq-name  { font-family: 'Cinzel', serif; font-size: .82rem; letter-spacing: .1em; color: var(--text); flex: 1; }
+  .sev-badge  { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; padding: 3px 9px; border-radius: 2px; white-space: nowrap; flex-shrink: 0; }
+  .sev-letal  { background: rgba(90,5,5,.6);   color: #ff7070;           border: 1px solid rgba(180,20,20,.6); }
+  .sev-plant  { background: rgba(8,40,12,.55); color: var(--ichor-light); border: 1px solid rgba(30,120,50,.5); }
+  .sev-pity   { background: rgba(20,30,50,.5); color: var(--moon-light);  border: 1px solid rgba(60,90,130,.5); }
+  .fraq-desc  { font-size: .88rem; color: var(--text-dim); font-style: italic; padding: 8px 16px 12px calc(28px + 28px); background: rgba(3,6,3,.6); }
+
+  /* ══ PLANT-MÃE BOX ══ */
+  .plant-box {
+    position: relative; overflow: hidden;
+    background: linear-gradient(145deg, rgba(8,18,8,.98) 0%, rgba(4,10,4,.99) 100%);
+    border: 1px solid rgba(40,120,56,.35);
+    border-top: 3px solid var(--ichor-dim);
+    border-bottom: 3px solid var(--sick-dim);
+    padding: 28px 30px; margin-bottom: 14px;
+  }
+  .plant-box::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--ichor-light), var(--sick-light), var(--ichor-light), transparent);
+    opacity: .5;
+  }
+  .plant-rule { display: flex; gap: 14px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid rgba(40,120,56,.12); }
+  .plant-rule:last-child { border-bottom: none; }
+  .plant-rule-icon { font-size: 1.2rem; flex-shrink: 0; width: 28px; text-align: center; margin-top: 2px; }
+  .plant-rule-key { font-family: 'Cinzel', serif; font-size: .8rem; letter-spacing: .1em; color: var(--ichor-light); margin-bottom: 4px; }
+  .plant-rule-val { font-size: .93rem; color: var(--text-dim); line-height: 1.6; }
+  .plant-rule-val strong { color: var(--text); font-style: normal; }
+
+  /* ══ REVERSÃO ══ */
+  .rev-step { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; background: rgba(6,14,6,.6); border-left: 3px solid var(--ichor-dim); border-radius: 0 3px 3px 0; margin-bottom: 8px; transition: border-left-color .25s, background .25s; }
+  .rev-step:hover { border-left-color: var(--ichor-light); background: rgba(10,30,12,.6); }
+  .rev-num { font-family: 'Cinzel Decorative', serif; font-size: 1.6rem; color: var(--ichor-light); line-height: 1.1; flex-shrink: 0; width: 28px; }
+  .rev-text { font-size: .93rem; color: var(--text-dim); line-height: 1.65; }
+  .rev-text strong { color: var(--text); }
+
+  /* ══ TRAIT ══ */
+  .trait { display: flex; gap: 0; margin-bottom: 12px; background: rgba(4,8,4,.8); border: 1px solid rgba(20,70,28,.2); border-radius: 3px; overflow: hidden; }
+  .tier-bar { width: 4px; flex-shrink: 0; }
+  .trait-content { padding: 14px 18px; }
+  .trait-name { font-family: 'Cinzel', serif; font-size: .82rem; letter-spacing: .1em; font-weight: 900; margin-bottom: 6px; }
+  .trait-name.ichor { color: var(--ichor-light); }
+  .trait-name.sick  { color: var(--sick-light); }
+  .trait-name.blood { color: var(--blood-light); }
+  .trait-name.moon  { color: var(--moon-light); }
+  .trait-name.gold  { color: var(--gold-light); }
+
+  /* ══ ACTION ══ */
+  .action { padding: 16px 20px; margin-bottom: 10px; border: 1px solid; border-radius: 3px; }
+  .action.ichor { background: rgba(8,40,8,.18);  border-color: rgba(40,150,60,.3); }
+  .action.blood { background: rgba(40,8,8,.15);  border-color: rgba(150,40,40,.3); }
+  .action.gold  { background: rgba(50,35,5,.15); border-color: rgba(150,100,20,.3); }
+  .action-name { font-family: 'Cinzel', serif; font-size: .82rem; letter-spacing: .1em; font-weight: 900; margin-bottom: 8px; }
+  .action-name.ichor { color: var(--ichor-light); }
+  .action-name.blood { color: var(--blood-light); }
+  .action-name.gold  { color: var(--gold-light); }
+
+  /* ══ CARD ══ */
+  .card { background: rgba(4,8,4,.8); border: 1px solid rgba(20,70,28,.2); border-radius: 3px; padding: 18px 20px; }
+  .card.ichor { border-color: rgba(40,150,60,.35); }
+  .card.sick  { border-color: rgba(120,140,20,.3); }
+  .card.blood { border-color: rgba(140,30,30,.3); }
+  .card.moon  { border-color: rgba(60,90,130,.3); }
+  .card-title { font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 900; margin-bottom: 10px; }
+  .card-title.ichor { color: var(--ichor-light); }
+  .card-title.sick  { color: var(--sick-light); }
+  .card-title.blood { color: var(--blood-light); }
+  .card-title.moon  { color: var(--moon-light); }
+
+  /* ══ CALLOUT ══ */
+  .callout { padding: 14px 20px; border-left: 4px solid; border-radius: 0 3px 3px 0; margin-top: 14px; font-size: .9rem; }
+  .callout.ichor { background: rgba(8,40,8,.15);  border-color: var(--ichor-light); color: #80a878; }
+  .callout.sick  { background: rgba(30,40,5,.12); border-color: var(--sick-light);  color: #98a858; }
+  .callout.blood { background: rgba(40,8,8,.12);  border-color: var(--blood-light); color: #b08888; }
+  .callout.gold  { background: rgba(50,35,5,.12); border-color: var(--gold-light);  color: #b09870; }
+
+  /* ══ SAN GRID ══ */
+  .san-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+  @media (max-width:600px) { .san-grid { grid-template-columns: 1fr 1fr; } }
+  .san-box { background: rgba(4,8,4,.85); border: 1px solid rgba(20,70,28,.3); border-radius: 3px; padding: 14px 12px; text-align: center; }
+  .san-box-label { font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+  .san-box-dice  { font-family: 'Cinzel Decorative', serif; font-size: 1.6rem; color: var(--ichor-light); text-shadow: 0 0 14px rgba(50,160,70,.4); display: block; line-height: 1.1; }
+  .san-box-cd    { font-family: 'Fira Code', monospace; font-size: .68rem; color: var(--sick-light); margin-top: 4px; }
+  .san-box-sub   { font-size: .75rem; color: var(--text-dim); font-style: italic; margin-top: 3px; line-height: 1.3; }
+
+  /* ══ FOOTER ══ */
+  footer {
+    text-align: center; padding: 30px 20px;
+    font-family: 'Cinzel', serif; font-size: .62rem; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--text-faint); border-top: 1px solid rgba(20,70,28,.15);
+  }
+  footer span { color: var(--ichor-dim); margin: 0 8px; }
+
+  /* ══ TOP BTN ══ */
+  #top-btn { display: none; position: fixed; bottom: 28px; right: 28px; width: 40px; height: 40px; background: rgba(8,35,10,.85); border: 1px solid var(--ichor-dim); border-radius: 50%; color: var(--ichor-light); font-size: 1.1rem; text-decoration: none; text-align: center; line-height: 40px; transition: background .2s, border-color .2s; z-index: 100; }
+  #top-btn:hover { background: rgba(14,55,18,.95); border-color: var(--ichor-light); }
+  #top-btn.visible { display: block; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="accent-bar"></div>
+
+<nav class="breadcrumb" aria-label="Trilha de navegação">
+  Além do Véu da Carne <span>›</span> Bestiário de Valtheris <span>›</span> <span class="current">Vampiro da Planta Carnívora</span>
+</nav>
+
+<header>
+  <div class="header-eyebrow">Bestiário de Valtheris · Aberração Botânica</div>
+  <span class="header-symbol">🌿</span>
+  <div class="header-classification">Não-Morto Temporário · Vítima de Origem Botânica · Estado Reversível</div>
+  <h1>Vampiro da Planta Carnívora</h1>
+  <div class="header-title-sub">A Que Não Escolheu · A Que Pode Voltar</div>
+  <p class="header-tagline">"Não são monstros. São pessoas esperando voltar para si mesmas — desde que alguém destrua a planta antes que o sol as encontre."</p>
+  <div class="header-crests">
+    <span class="tag dnd">D&amp;D 5e</span>
+    <span class="tag coc">CoC 7e</span>
+    <span class="tag plant">Aberração Botânica</span>
+    <span class="tag victim">Vítima Reversível</span>
+    <span class="tag hb">Homebrew</span>
+  </div>
+</header>
+
+<div class="warning-banner">
+  <div class="warning-banner-inner">
+    <span class="warning-icon">🌿</span>
+    <div class="warning-text">
+      <strong>Nota do Mestre — Leia Antes do Encontro</strong>
+      Estes vampiros podem ser salvos sem combate: destruir a planta-mãe reverte todos os vinculados a ela instantaneamente. Se o grupo não souber disso, pode matar pessoas inocentes achando que não havia outra saída. Decida antes de rodar o encontro se quer que essa informação esteja disponível — e por qual meio.
+    </div>
+  </div>
+</div>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <span class="divider-glyph">🌿</span>
+  <div class="divider-line"></div>
+</div>
+
+<main>
+
+  <!-- ══ IDENTIDADE ══ -->
+  <section id="identidade">
+    <div class="section-header">
+      <span class="section-icon ichor">🌿</span>
+      <h2 class="ichor">Identidade</h2>
+      <div class="section-line ichor"></div>
+    </div>
+
+    <div class="identity">
+      <div class="identity-corner tl">BESTIÁRIO · VALTHERIS</div>
+      <div class="identity-corner tr">CR 1</div>
+      <div class="identity-corner bl">ABERRAÇÃO BOTÂNICA</div>
+      <div class="identity-corner br">NÃO-MORTO TEMPORÁRIO</div>
+      <div class="monster-name">Vampiro da Planta Carnívora</div>
+      <div class="monster-epithet">Não-Morto · Médio · Aberração Botânica · Vampiro Acidental</div>
+      <div class="monster-type-line">
+        <span class="tag dnd">D&amp;D 5e</span>
+        <span class="tag coc">CoC 7e</span>
+        <span class="tag plant">Botânico</span>
+        <span class="tag victim">Vítima</span>
+      </div>
+      <p class="monster-lore">
+        Uma planta carnívora de origem não-documentada desenvolveu, por processo desconhecido, a capacidade de transformar presas em extensões de si mesma. A mordida não mata — transforma. A vítima acorda como vampiro vinculado à planta, conservando aparência humana mas perdendo grande parte da cognição e do controle. A pessoa ainda existe lá dentro. Esse é o horror.
+      </p>
+      <p class="monster-lore">
+        Ao contrário das Proles de Necrolai, não há progressão, não há envelhecimento, não há crescimento. São criaturas em suspensão — existindo apenas em relação à planta. Se a planta morrer, elas voltam. Não há versão "antiga" desse vampiro: não sobrevivem tempo suficiente para isso.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══ VITAIS ══ -->
+  <section id="vitais">
+    <div class="section-header">
+      <span class="section-icon gold">◆</span>
+      <h2 class="gold">Vitais</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="monster-vitals">
+      <div class="mvital-card ichor">
+        <span class="mvital-label">Pontos de Vida</span>
+        <span class="mvital-value ichor">22</span>
+        <span class="mvital-note">4d8+4 · Não se recupera por descanso</span>
+      </div>
+      <div class="mvital-card sick">
+        <span class="mvital-label">Classe de Armadura</span>
+        <span class="mvital-value sick">11</span>
+        <span class="mvital-note">Sem armadura · Comportamento errático prejudica</span>
+      </div>
+      <div class="mvital-card moon">
+        <span class="mvital-label">Velocidade</span>
+        <span class="mvital-value moon" style="font-size:1.6rem">25 pés</span>
+        <span class="mvital-note">Hesitante · Para sem razão aparente</span>
+      </div>
+      <div class="mvital-card blood">
+        <span class="mvital-label">Challenge Rating</span>
+        <span class="mvital-value blood">1</span>
+        <span class="mvital-note">200 XP · Sozinho, trivial · Em grupo, perigoso</span>
+      </div>
+    </div>
+
+    <div class="two-col-monster">
+      <div class="cr-badge" style="flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;padding:16px 24px;">
+        <div>
+          <span class="cr-badge-label">Challenge Rating</span>
+          <span class="cr-badge-value">1</span>
+          <span class="cr-badge-note">200 XP · Prof. +2</span>
+        </div>
+        <div style="border-left:1px solid rgba(40,150,60,.3);padding-left:20px;">
+          <span class="cr-badge-label">Planta-Mãe</span>
+          <span class="cr-badge-value" style="font-size:1.5rem">CR ?</span>
+          <span class="cr-badge-note">Veja seção da planta</span>
+        </div>
+      </div>
+      <div class="card ichor">
+        <div class="card-title ichor">Escala de Ameaça</div>
+        <p style="font-size:.9rem">Individualmente fraco e desorientado — CR 1 é generoso. O verdadeiro perigo é o grupo: múltiplos vampiros de uma única planta atacam ao mesmo tempo. A planta em si pode ser muito mais perigosa que as criações que ela faz.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ A PLANTA-MÃE ══ -->
+  <section id="planta">
+    <div class="section-header">
+      <span class="section-icon ichor">🌱</span>
+      <h2 class="ichor">A Planta-Mãe — A Regra Central</h2>
+      <div class="section-line ichor"></div>
+    </div>
+
+    <p style="font-size:.92rem;color:var(--text-dim);margin-bottom:18px;">Todo vampiro desta categoria existe em relação à planta que o criou. Destruir a planta é o único caminho para salvar as vítimas sem matá-las. Esta seção contém as regras completas do vínculo.</p>
+
+    <div class="plant-box">
+      <div class="plant-rule">
+        <div class="plant-rule-icon">🌱</div>
+        <div>
+          <div class="plant-rule-key">Origem do Vínculo</div>
+          <div class="plant-rule-val">Cada vampiro está ligado à <strong>planta específica</strong> que o mordeu. Não existe vampiro da planta sem planta-mãe ativa. O vínculo é criado no momento da mordida e dura enquanto a planta viver.</div>
+        </div>
+      </div>
+      <div class="plant-rule">
+        <div class="plant-rule-icon">🧭</div>
+        <div>
+          <div class="plant-rule-key">Consciência de Localização</div>
+          <div class="plant-rule-val">Sente a direção e distância aproximada da planta-mãe a até <strong>1 km</strong>. Instinto, não informação precisa. É o único senso de orientação que possui em meio à desorientação geral.</div>
+        </div>
+      </div>
+      <div class="plant-rule">
+        <div class="plant-rule-icon">💔</div>
+        <div>
+          <div class="plant-rule-key">Dano à Planta — Reflexo Compartilhado</div>
+          <div class="plant-rule-val">Quando a planta-mãe recebe dano: <strong>CD 10 SAB</strong> ou o vampiro fica Amedrontado por 1 minuto, compelido a se mover em direção à planta. Múltiplos vampiros da mesma planta salvam simultaneamente.</div>
+        </div>
+      </div>
+      <div class="plant-rule">
+        <div class="plant-rule-icon">⚠️</div>
+        <div>
+          <div class="plant-rule-key">Distância Crítica — Desvitalização</div>
+          <div class="plant-rule-val">A mais de <strong>8 km</strong> da planta-mãe: o vampiro perde 1 ponto de CON por dia até retornar ou a planta morrer. CON 0 = morte definitiva — a única forma permanente de morrer além da luz solar.</div>
+        </div>
+      </div>
+      <div class="plant-rule">
+        <div class="plant-rule-icon">✨</div>
+        <div>
+          <div class="plant-rule-key">Morte da Planta — Reversão Imediata e Total</div>
+          <div class="plant-rule-val">Se a planta-mãe for destruída: <strong>reversão instantânea e completa</strong>. O vampiro retorna ao estado mortal exato de antes da mordida — vivo, confuso, sem memórias do período. Sem dano residual. Apenas o tempo perdido, e as marcas físicas da mordida original.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout ichor">
+      <strong>Sobre a Planta em Si:</strong> A planta carnívora não é uma criatura inteligente — não escolhe vítimas, não planeja, não tem motivação além de morder o que entra em alcance. O processo de vampirização parece biológico, não mágico, embora a mecânica de vínculo sugira algo além da biologia convencional. O que exatamente a planta extrai de suas criações ainda não está documentado em Valtheris.
+    </div>
+  </section>
+
+  <!-- ══ FRAQUEZAS ══ -->
+  <section id="fraquezas">
+    <div class="section-header">
+      <span class="section-icon blood">⚔️</span>
+      <h2 class="blood">Fraquezas</h2>
+      <div class="section-line blood"></div>
+    </div>
+
+    <div class="fraq-row-wrap">
+      <div class="fraq-row-inner">
+        <div class="fraq-icon">☀️</div>
+        <div class="fraq-name">Luz Solar Direta</div>
+        <span class="sev-badge sev-letal">💀 MORTE IMEDIATA</span>
+      </div>
+      <div class="fraq-desc">Sem save. Sem resistência. Sem progressão. Contato direto com luz solar = desintegração instantânea. Luz indireta (sombra, interior, nublado) não causa efeito — apenas luz solar direta. Não há versão "antiga" que desenvolva resistência.</div>
+    </div>
+
+    <div class="fraq-row-wrap">
+      <div class="fraq-row-inner">
+        <div class="fraq-icon">🌿</div>
+        <div class="fraq-name">Morte da Planta-Mãe</div>
+        <span class="sev-badge sev-plant">🌱 Reversão</span>
+      </div>
+      <div class="fraq-desc">Não é uma fraqueza no sentido clássico — é uma saída. Destruir a planta reverte todos os vampiros vinculados a ela imediatamente. Esta é a abordagem preferida se o objetivo é salvar as vítimas.</div>
+    </div>
+
+    <div class="fraq-row-wrap">
+      <div class="fraq-row-inner">
+        <div class="fraq-icon">🧠</div>
+        <div class="fraq-name">Estado Mental Comprometido</div>
+        <span class="sev-badge sev-pity">👻 Errático</span>
+      </div>
+      <div class="fraq-desc">Desvantagem permanente em todos os saves de SAB e testes de INT. Para em lugares sem motivo aparente. Não planeja, não coordena com outros vampiros da mesma planta. Responde a estímulos imediatos — som alto, cheiro de sangue, luz brilhante — mas não a estratégia.</div>
+    </div>
+
+    <div class="fraq-row-wrap">
+      <div class="fraq-row-inner">
+        <div class="fraq-icon">🪞</div>
+        <div class="fraq-name">Reflexo Ausente</div>
+        <span class="sev-badge sev-pity">👻 Revelação</span>
+      </div>
+      <div class="fraq-desc">Como as Proles de Necrolai — não aparecem em espelhos ou água parada. Diferença: eles raramente percebem isso sobre si mesmos. A ausência de reflexo pode ser a primeira pista para identificar sua natureza em contexto de investigação.</div>
+    </div>
+
+    <div class="callout blood">
+      <strong>Distinção das Proles de Necrolai:</strong> Ambos são vampiros sem reflexo. As diferenças são diagnósticas: vampiros da planta morrem instantaneamente no sol (Proles resistem progressivamente), não respondem a alho ou círculos, não têm superforça marcada, e apresentam comportamento radicalmente desorientado. Um investigador experiente distingue os dois imediatamente.
+    </div>
+  </section>
+
+  <!-- ══ CoC REFERÊNCIA ══ -->
+  <section id="coc">
+    <div class="section-header">
+      <span class="section-icon moon">🎲</span>
+      <h2 class="moon">Referência CoC 7ª Edição</h2>
+      <div class="section-line moon"></div>
+    </div>
+
+    <div class="table-wrap" style="margin-bottom:14px">
+      <table>
+        <thead><tr><th>FOR</th><th>CON</th><th>TAM</th><th>DES</th><th>INT</th><th>POD</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="mono ichor">60</span></td>
+            <td><span class="mono ichor">55</span></td>
+            <td><span class="mono">60</span></td>
+            <td><span class="mono">55</span></td>
+            <td><span class="mono blood">30</span></td>
+            <td><span class="mono blood">25</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="two-col-monster">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Derivado</th><th>Valor</th></tr></thead>
+          <tbody>
+            <tr><td>HP CoC</td><td><span class="mono">11</span></td></tr>
+            <tr><td>Bônus de Dano</td><td><span class="mono">0</span></td></tr>
+            <tr><td>Movimento</td><td><span class="mono">7</span> <em style="font-size:.8rem">(hesitante)</em></td></tr>
+            <tr><td>Briga</td><td><span class="mono blood">40%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card moon">
+        <div class="card-title moon">Teste de Sanidade — CoC</div>
+        <p style="font-size:.85rem">Ver um vampiro da planta em estado errático: <strong>CD 9 SAB</strong> · Falha: 1d3 SAN.<br>O horror é de <em>empatia</em> — uma pessoa ainda olha de dentro dessa coisa — não de poder ou escala. Médicos ou biólogos podem identificar a origem botânica sem teste com um exame de 1 minuto.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ATRIBUTOS D&D ══ -->
+  <section id="atributos">
+    <div class="section-header">
+      <span class="section-icon gold">◆</span>
+      <h2 class="gold">Atributos — Valtheris / D&amp;D 5e (Sistema Primário)</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="attr-grid" style="margin-bottom:14px">
+      <div class="attr-box">
+        <div class="attr-name">For</div>
+        <span class="attr-value">14</span>
+        <span class="attr-mod">+2</span>
+      </div>
+      <div class="attr-box">
+        <div class="attr-name">Des</div>
+        <span class="attr-value">12</span>
+        <span class="attr-mod">+1</span>
+      </div>
+      <div class="attr-box">
+        <div class="attr-name">Con</div>
+        <span class="attr-value">13</span>
+        <span class="attr-mod">+1</span>
+      </div>
+      <div class="attr-box low">
+        <div class="attr-name">Int</div>
+        <span class="attr-value low">6</span>
+        <span class="attr-mod neg">−2</span>
+      </div>
+      <div class="attr-box low">
+        <div class="attr-name">Sab</div>
+        <span class="attr-value low">6</span>
+        <span class="attr-mod neg">−2</span>
+      </div>
+      <div class="attr-box low">
+        <div class="attr-name">Car</div>
+        <span class="attr-value low">4</span>
+        <span class="attr-mod neg">−3</span>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Campo</th><th>Valor</th></tr></thead>
+        <tbody>
+          <tr><td>Salvaguardas</td><td>Força <span class="mono ichor">+4</span> (proficiente)</td></tr>
+          <tr><td>Imunidades a Dano</td><td>Necrótico · Veneno</td></tr>
+          <tr><td>Vulnerabilidades</td><td>Radiante (fogo também causa dano dobrado)</td></tr>
+          <tr><td>Morte Imediata</td><td>Luz Solar Direta (sem save, sem redução)</td></tr>
+          <tr><td>Sentidos</td><td>Visão no Escuro 9 m · Percepção Passiva 9</td></tr>
+          <tr><td>Idiomas</td><td>Entende os que conhecia · raramente fala</td></tr>
+          <tr><td>Não tem efeito</td><td>Alho · Estacas · Círculos desenhados · Água benta</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══ TRAÇOS ══ -->
+  <section id="tracos">
+    <div class="section-header">
+      <span class="section-icon ichor">✧</span>
+      <h2 class="ichor">Traços</h2>
+      <div class="section-line ichor"></div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--blood-light)"></div>
+      <div class="trait-content">
+        <div class="trait-name blood">Morte Solar — Sem Exceções</div>
+        <p>Qualquer contato com luz solar direta causa desintegração instantânea. Sem save, sem HP residual, sem resistência progressiva. A distinção é física e precisa: luz direta vs. luz indireta. Luz filtrada por vidro espesso, tecido ou sombra não causa efeito algum.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--ichor-light)"></div>
+      <div class="trait-content">
+        <div class="trait-name ichor">Fome Instintiva</div>
+        <p>Ao detectar uma criatura viva a 15 pés por olfato ou visão enquanto com fome: move-se automaticamente em direção ao alvo e tenta morder. Não é um frenesi controlável — é reflexo puro. CD 8 SAB para resistir ao instinto por um turno.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--sick-light)"></div>
+      <div class="trait-content">
+        <div class="trait-name sick">Estado Perdido</div>
+        <p>Desvantagem permanente em todos os saves de SAB e testes de INT. Para em lugares sem motivo aparente. Fala fragmentada ou ausente. Não planeja, não coordena com outros vampiros vinculados à mesma planta. Responde apenas a estímulos imediatos.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:var(--moon-light)"></div>
+      <div class="trait-content">
+        <div class="trait-name moon">Sem Recuperação Natural</div>
+        <p>Não recupera HP por descanso. O único "reparo" vem da mordida em alvos (drenagem) ou da planta-mãe (lenta, noturna: 1d4 HP por noite de contato). Se reduzido a 0 HP sem luz solar, fica Inconsciente — não morre imediatamente.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ AÇÕES ══ -->
+  <section id="acoes">
+    <div class="section-header">
+      <span class="section-icon blood">⚡</span>
+      <h2 class="blood">Ações</h2>
+      <div class="section-line blood"></div>
+    </div>
+
+    <div class="action gold">
+      <div class="action-name gold">Pancada</div>
+      <p><em>Ataque Corpo a Corpo:</em> <strong>+4 para atingir</strong>, alcance 1,5 m, um alvo.</p>
+      <p style="margin-top:4px"><em>Acerto:</em> <strong>1d6+2</strong> de dano concussivo. Se o vampiro falhou em um teste de SAB neste turno, ataca com desvantagem.</p>
+    </div>
+
+    <div class="action ichor">
+      <div class="action-name ichor">Mordida da Planta — Dreno Vegetal</div>
+      <p><em>Ataque Corpo a Corpo:</em> <strong>+4 para atingir</strong>, alcance 1,5 m, um alvo.</p>
+      <p style="margin-top:4px"><em>Acerto:</em> <strong>1d4+2 perfurante + 1d4 necrótico</strong>. O alvo fica Agarrado (CD 12 FOR para escapar). Enquanto agarrado, a mordida pode ser repetida como ação bônus sem novo teste de ataque.</p>
+      <p style="margin-top:4px"><em>Dreno Vegetal:</em> O dano necrótico alimenta a planta-mãe, não o vampiro. O vampiro <strong>não recupera HP</strong> da drenagem — ao contrário das Proles de Necrolai.</p>
+    </div>
+
+    <div class="action blood">
+      <div class="action-name blood">Reconhecimento Perturbador — Reação</div>
+      <p>Quando alguém chama o vampiro pelo nome que tinha em vida, ou menciona algo pessoal e específico: o vampiro para completamente por 1 turno, olhando fixamente para quem falou. Se o observador falhar em CD 10 SAB: 1d4 SAN adicional pelo reconhecimento.</p>
+      <p style="margin-top:4px">Não é controlado pelo vampiro — acontece como reflexo. Pode ser explorado taticamente para pausar um ataque por um turno.</p>
+    </div>
+  </section>
+
+  <!-- ══ DANO DE SANIDADE ══ -->
+  <section id="sanidade">
+    <div class="section-header">
+      <span class="section-icon moon">🧿</span>
+      <h2 class="moon">Dano de Sanidade</h2>
+      <div class="section-line moon"></div>
+    </div>
+
+    <p style="font-size:.92rem;color:var(--text-dim);margin-bottom:16px;">O horror aqui não é o poder — é o reconhecimento. A pessoa ainda está dentro. Às vezes olha para você de um jeito que a criatura nunca olharia.</p>
+
+    <div class="san-grid">
+      <div class="san-box">
+        <div class="san-box-label">Primeiro Encontro</div>
+        <span class="san-box-dice">1d3 SAN</span>
+        <div class="san-box-cd">SAB CD 9</div>
+        <div class="san-box-sub">Ver um vampiro da planta pela primeira vez</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Reconhecimento</div>
+        <span class="san-box-dice">1d6 SAN</span>
+        <div class="san-box-cd">Automático</div>
+        <div class="san-box-sub">Reconhecer quem a criatura era antes</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Morte Solar</div>
+        <span class="san-box-dice">1d4 SAN</span>
+        <div class="san-box-cd">SAB CD 10</div>
+        <div class="san-box-sub">Ver a desintegração imediata — a pessoa desaparecendo assim</div>
+      </div>
+    </div>
+
+    <div class="callout ichor">
+      <strong>O Horror Específico:</strong> Esses vampiros causam menos perda de SAN que as Proles de Necrolai. São mais fracos, mais perdidos, mais claramente vítimas. O dano emocional vem depois — de saber que eram recuperáveis, e de o grupo talvez não ter sabido disso a tempo.
+    </div>
+  </section>
+
+  <!-- ══ REVERSÃO ══ -->
+  <section id="reversao">
+    <div class="section-header">
+      <span class="section-icon ichor">✨</span>
+      <h2 class="ichor">Reversão — O Caminho de Volta</h2>
+      <div class="section-line ichor"></div>
+    </div>
+
+    <p style="font-size:.92rem;color:var(--text-dim);margin-bottom:18px;">Esta é a informação mais importante da ficha. Vampiros da planta podem ser salvos. O processo é direto — se o grupo souber que ele existe.</p>
+
+    <div class="rev-step">
+      <div class="rev-num">1</div>
+      <div class="rev-text"><strong>Identificar a existência da planta-mãe.</strong> O próprio vampiro sente a direção dela a até 1 km — se alguém conseguir comunicar com ele de alguma forma, ele pode guiar. Investigadores com Natureza (CD 13) podem identificar a origem botânica pelo comportamento e aparência.</div>
+    </div>
+    <div class="rev-step">
+      <div class="rev-num">2</div>
+      <div class="rev-text"><strong>Manter as vítimas vivas e longe do sol.</strong> Durante a busca pela planta, os vampiros vinculados devem sobreviver. Morte antes da destruição da planta é permanente — não há reversão póstuma.</div>
+    </div>
+    <div class="rev-step">
+      <div class="rev-num">3</div>
+      <div class="rev-text"><strong>Destruir a planta-mãe.</strong> Qualquer método funciona — fogo, corte, veneno herbicida. Morte da planta = reversão instantânea e simultânea de todos os vampiros vinculados a ela. Uma planta pode ter criado muitas vítimas.</div>
+    </div>
+    <div class="rev-step" style="border-left-color:var(--gold-light)">
+      <div class="rev-num" style="color:var(--gold-light)">!</div>
+      <div class="rev-text"><strong style="color:var(--gold-light)">Pós-Reversão:</strong> As vítimas revertidas não têm memórias do período. Acordam no estado físico exato de antes da mordida — incluindo ferimentos anteriores. Precisarão de orientação: quanto tempo passou, o que aconteceu, como voltar para casa. A mordida original deixa cicatriz permanente.</div>
+    </div>
+  </section>
+
+  <!-- ══ COMPORTAMENTO ══ -->
+  <section id="comportamento">
+    <div class="section-header">
+      <span class="section-icon bone">🧠</span>
+      <h2 class="bone">Comportamento &amp; Como Rodar</h2>
+      <div class="section-line bone"></div>
+    </div>
+
+    <div class="two-col-monster">
+      <div class="card ichor">
+        <div class="card-title ichor">Padrão de Comportamento</div>
+        <p>Erratico. Para no meio de percursos sem razão aparente. Às vezes fica imóvel por minutos olhando para nada. Não se comunica de forma coerente — pode emitir fragmentos de frases da vida anterior, especialmente ao ver algo familiar. Não coordena com outros vampiros da mesma planta.</p>
+      </div>
+      <div class="card blood">
+        <div class="card-title blood">Padrão de Combate</div>
+        <p>Ataca criaturas vivas que entram em 15 pés por reflexo puro. Não prioriza, não flanqueia, não recua estrategicamente. Se múltiplos vampiros da mesma planta estiverem presentes, atacam os alvos mais próximos de cada um — não o mesmo alvo.</p>
+      </div>
+    </div>
+
+    <div class="callout ichor">
+      <strong>Dica de Atmosfera:</strong> Antes de mostrar o vampiro como ameaça, mostre-o parado no meio da rua, olhando para uma janela iluminada. Talvez ele reconheça a casa. Talvez seja a dele. Quando o grupo se aproxima, ele se vira — e a pessoa que era ainda está nos olhos, mas não consegue mais controlar o corpo que a fome domina. Esse é o momento certo para o primeiro teste de SAN.
+    </div>
+  </section>
+
+</main>
+
+<div style="max-width:860px;margin:0 auto;padding:0 20px">
+  <div class="divider" style="padding:0;margin-bottom:0">
+    <div class="divider-line"></div>
+    <span class="divider-glyph">🌿</span>
+    <div class="divider-line"></div>
+  </div>
+</div>
+
+<footer>
+  Vampiro da Planta Carnívora <span>⸸</span> Aberração Botânica · CR 1 <span>⸸</span> Além do Véu da Carne · Bestiário de Valtheris
+</footer>
+
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+
+<script>
+(function() {
+  var btn = document.getElementById('top-btn');
+  if (btn) {
+    btn.addEventListener('click', function(e) { e.preventDefault(); window.scrollTo({ top:0, behavior:'smooth' }); });
+    window.addEventListener('scroll', function() { btn.classList.toggle('visible', window.scrollY > 400); }, { passive:true });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mermillion Moonlight — Além do Véu da Carne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:          #050408;
+    --parchment:    #0d0b12;
+    --fog:          #231e30;
+    --blood-dim:    #5a0f0f;
+    --blood-glow:   #c0392b;
+    --gold:         #b8960c;
+    --gold-light:   #d4aa20;
+    --gold-pale:    #c9a84c;
+    --violet-light: #a060ff;
+    --violet-dim:   #3a1a70;
+    --ember-light:  #ff7020;
+    --ember-dim:    #6a2000;
+    --text:         #ccc4d8;
+    --text-dim:     #7a7090;
+    --text-faint:   #3d3550;
+    --sanity:       #3a6b8a;
+    --sanity-light: #5a9bba;
+    --corruption:   #6a2a6a;
+    --corruption-l: #9a4a9a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--ink);
+    background-image:
+      radial-gradient(ellipse 130% 60% at 50% -8%,  #18060a 0%, transparent 55%),
+      radial-gradient(ellipse 60%  60% at 95% 100%, #08041e 0%, transparent 50%),
+      radial-gradient(ellipse 50%  70% at 5%  85%,  #1a0808 0%, transparent 50%),
+      radial-gradient(ellipse 40%  40% at 50% 60%,  #180a04 0%, transparent 40%);
+    color: var(--text);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.8;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* grain */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 999; opacity: .6;
+  }
+
+  /* ══ HEADER ══ */
+  header {
+    position: relative;
+    text-align: center;
+    padding: 80px 20px 70px;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(100,40,200,.12) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 40% at 50% 80%, rgba(180,60,0,.08) 0%, transparent 60%);
+  }
+  /* ember glow at bottom */
+  header::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--ember-dim), var(--violet-dim), var(--ember-dim), transparent);
+    box-shadow: 0 0 30px rgba(180,60,0,.3), 0 0 60px rgba(100,40,200,.2);
+  }
+
+  .header-symbol {
+    display: block;
+    font-size: 2.8rem;
+    margin-bottom: 18px;
+    filter: drop-shadow(0 0 20px rgba(160,80,255,.6)) drop-shadow(0 0 40px rgba(200,60,0,.4));
+    animation: dragon-pulse 5s ease-in-out infinite;
+  }
+  @keyframes dragon-pulse {
+    0%,100% {
+      filter: drop-shadow(0 0 14px rgba(160,80,255,.5)) drop-shadow(0 0 35px rgba(200,60,0,.3));
+      transform: scale(1);
+    }
+    50% {
+      filter: drop-shadow(0 0 28px rgba(160,80,255,.8)) drop-shadow(0 0 60px rgba(200,60,0,.5));
+      transform: scale(1.04);
+    }
+  }
+
+  .header-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: .58rem;
+    letter-spacing: .45em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 18px;
+  }
+
+  .header-classification {
+    font-family: 'Cinzel', serif;
+    font-size: .68rem; letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-light);
+    margin-bottom: 10px;
+    opacity: .8;
+  }
+
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.8rem, 6vw, 3.4rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #ff8040 0%, #cc60ff 40%, #ff4020 75%, #aa70ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(160,80,255,.3));
+  }
+
+  .header-title-sub {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(.85rem, 2.5vw, 1.15rem);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #a070d0;
+    margin-bottom: 8px;
+  }
+
+  .header-tagline {
+    font-style: italic;
+    color: #907080;
+    font-size: 1rem;
+    max-width: 520px;
+    margin: 0 auto 32px;
+  }
+
+  /* ══ WARNING BANNER ══ */
+  .warning-banner {
+    max-width: 860px; margin: 0 auto 0;
+    padding: 0 20px;
+  }
+  .warning-banner-inner {
+    background: rgba(100,30,0,.18);
+    border: 1px solid var(--ember-dim);
+    border-left: 4px solid var(--ember-light);
+    padding: 16px 24px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .warning-icon { font-size: 1.4rem; flex-shrink: 0; line-height: 1.6; }
+  .warning-text {
+    font-family: 'Cinzel', serif;
+    font-size: .78rem; letter-spacing: .08em;
+    color: #d08050;
+    line-height: 1.7;
+  }
+  .warning-text strong {
+    color: var(--ember-light);
+    letter-spacing: .15em;
+    display: block; margin-bottom: 4px;
+  }
+
+  /* ══ DIVIDER ══ */
+  .divider {
+    display: flex; align-items: center; gap: 14px;
+    max-width: 860px; margin: 0 auto;
+    padding: 40px 20px 48px;
+  }
+  .divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ember-dim), var(--violet-dim), transparent);
+  }
+  .divider-glyph { color: var(--violet-light); font-size: 1rem; opacity: .7; }
+
+  /* ══ LAYOUT ══ */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 20px 90px;
+    display: flex; flex-direction: column; gap: 0;
+  }
+
+  /* ══ SECTION ══ */
+  section {
+    margin-bottom: 56px;
+    animation: fade-in .5s ease both;
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  section:nth-child(1)  { animation-delay: .05s; }
+  section:nth-child(2)  { animation-delay: .10s; }
+  section:nth-child(3)  { animation-delay: .15s; }
+  section:nth-child(4)  { animation-delay: .20s; }
+  section:nth-child(5)  { animation-delay: .25s; }
+  section:nth-child(6)  { animation-delay: .30s; }
+  section:nth-child(7)  { animation-delay: .35s; }
+  section:nth-child(8)  { animation-delay: .40s; }
+  section:nth-child(9)  { animation-delay: .45s; }
+  section:nth-child(10) { animation-delay: .50s; }
+
+  /* ══ SECTION HEADER ══ */
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .section-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .section-icon.ember  { filter: drop-shadow(0 0 8px rgba(200,80,0,.5)); }
+  .section-icon.violet { filter: drop-shadow(0 0 8px rgba(160,80,255,.5)); }
+  .section-icon.gold   { filter: drop-shadow(0 0 8px rgba(200,160,20,.4)); }
+  .section-icon.san    { filter: drop-shadow(0 0 8px rgba(58,107,138,.5)); }
+
+  h2 {
+    font-family: 'Cinzel', serif;
+    font-size: .9rem; font-weight: 900;
+    letter-spacing: .14em; text-transform: uppercase;
+  }
+  h2.ember   { color: #e08040; text-shadow: 0 0 20px rgba(200,80,0,.25); }
+  h2.violet  { color: #b080ff; text-shadow: 0 0 20px rgba(140,60,255,.25); }
+  h2.gold    { color: #d4b868; text-shadow: 0 0 18px rgba(200,160,30,.2); }
+  h2.san     { color: #7ab8d8; text-shadow: 0 0 18px rgba(58,107,138,.3); }
+  h2.blood   { color: #c8a0a0; text-shadow: 0 0 18px rgba(180,30,30,.25); }
+
+  .section-line {
+    flex: 1; height: 1px;
+  }
+  .section-line.ember  { background: linear-gradient(90deg, var(--ember-dim), rgba(160,80,255,.25), transparent); }
+  .section-line.violet { background: linear-gradient(90deg, rgba(120,60,220,.6), rgba(200,80,0,.2), transparent); }
+  .section-line.gold   { background: linear-gradient(90deg, rgba(160,120,10,.5), rgba(200,80,0,.2), transparent); }
+  .section-line.san    { background: linear-gradient(90deg, rgba(58,107,138,.5), rgba(90,155,186,.2), transparent); }
+  .section-line.blood  { background: linear-gradient(90deg, var(--blood-dim), rgba(100,50,180,.3), transparent); }
+
+  p { margin-bottom: 10px; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ══ IDENTITY BLOCK ══ */
+  .identity {
+    position: relative;
+    background: linear-gradient(145deg, rgba(20,12,32,.98) 0%, rgba(8,4,14,.99) 100%);
+    border: 1px solid rgba(80,40,140,.4);
+    border-top: 3px solid var(--ember-dim);
+    border-bottom: 3px solid var(--violet-dim);
+    padding: 30px 32px;
+    margin-bottom: 14px;
+    overflow: hidden;
+  }
+  .identity::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(200,60,0,.06) 0%, transparent 50%),
+      radial-gradient(circle at 100% 100%, rgba(120,60,220,.07) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .identity-corner {
+    position: absolute;
+    font-family: 'Fira Code', monospace;
+    font-size: .6rem; letter-spacing: .15em;
+    color: var(--text-faint); opacity: .6;
+  }
+  .identity-corner.tl { top: 10px; left: 14px; }
+  .identity-corner.tr { top: 10px; right: 14px; }
+  .identity-corner.bl { bottom: 10px; left: 14px; }
+  .identity-corner.br { bottom: 10px; right: 14px; }
+
+  .monster-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 3.5vw, 2.1rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, #ff7030 0%, #cc60ff 55%, #ff5020 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 2px;
+  }
+  .monster-epithet {
+    font-family: 'Cinzel', serif;
+    font-size: .82rem; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--violet-light); opacity: .85;
+    margin-bottom: 14px;
+  }
+  .monster-type-line {
+    margin-bottom: 16px;
+  }
+  .monster-lore {
+    font-style: italic;
+    color: #a89098;
+    font-size: .97rem;
+    border-left: 2px solid var(--ember-dim);
+    padding-left: 16px;
+    margin-top: 14px;
+    line-height: 1.75;
+  }
+  .monster-lore + .monster-lore {
+    border-left-color: var(--violet-dim);
+    margin-top: 10px;
+  }
+
+  /* ══ TAG ══ */
+  .tag {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: .54rem; letter-spacing: .18em; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 1px; margin-right: 5px; margin-bottom: 5px;
+    vertical-align: middle;
+  }
+  .tag.dnd     { border: 1px solid #7a5a20; color: #c09840; }
+  .tag.coc     { border: 1px solid #204060; color: #5090b0; }
+  .tag.lore    { border: 1px solid #50306a; color: #9060b0; }
+  .tag.calamity{ border: 1px solid #7a2000; color: var(--ember-light); }
+  .tag.hb      { border: 1px solid #2a5a3a; color: #50a070; }
+  .tag.san     { border: 1px solid #2a5a7a; color: #5a9bba; }
+  .tag.violet  { border: 1px solid rgba(120,60,220,.6); color: var(--violet-light); }
+
+  /* ══ STAT ROW ══ */
+  .stat-row {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 12px;
+  }
+  .stat-pill {
+    background: rgba(10,6,18,.9);
+    border: 1px solid var(--fog);
+    padding: 10px 14px;
+    display: flex; flex-direction: column; align-items: center;
+    min-width: 88px; flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-pill::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  }
+  .stat-pill.ember::after  { background: linear-gradient(90deg, transparent, var(--ember-light), transparent); }
+  .stat-pill.violet::after { background: linear-gradient(90deg, transparent, var(--violet-light), transparent); }
+  .stat-pill.gold::after   { background: linear-gradient(90deg, transparent, var(--gold-light), transparent); }
+
+  .stat-pill-label {
+    font-family: 'Cinzel', serif;
+    font-size: .52rem; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 4px;
+  }
+  .stat-pill-value {
+    font-family: 'Fira Code', monospace;
+    font-size: 1.1rem; font-weight: 500; color: var(--text);
+  }
+  .stat-pill-value.ember  { color: var(--ember-light); }
+  .stat-pill-value.violet { color: var(--violet-light); }
+  .stat-pill-value.gold   { color: var(--gold-light); }
+  .stat-pill-value.san    { color: var(--sanity-light); }
+  .stat-pill-value.blood  { color: var(--blood-glow); }
+  .stat-pill-sub {
+    font-family: 'Fira Code', monospace;
+    font-size: .65rem; color: var(--text-dim); margin-top: 2px;
+  }
+
+  /* ══ ATTR GRID ══ */
+  .attr-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px; margin-bottom: 14px;
+  }
+  @media (max-width: 560px) { .attr-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  .attr-box {
+    background: rgba(8,4,16,.9);
+    border: 1px solid var(--fog);
+    padding: 16px 10px;
+    text-align: center;
+    position: relative; overflow: hidden;
+    transition: transform .2s;
+  }
+  .attr-box::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  .attr-box.max::before { background: linear-gradient(90deg, transparent, var(--ember-light), transparent); }
+  .attr-box.high::before { background: linear-gradient(90deg, transparent, var(--violet-light), transparent); }
+  .attr-box.low::before  { background: linear-gradient(90deg, transparent, var(--blood-glow), transparent); }
+  .attr-box:hover { transform: translateY(-2px); }
+
+  .attr-name {
+    font-family: 'Cinzel', serif;
+    font-size: .56rem; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 6px;
+  }
+  .attr-value {
+    font-family: 'Fira Code', monospace;
+    font-size: 1.15rem; font-weight: 500; color: var(--text);
+    display: block; line-height: 1;
+  }
+  .attr-value.max  { color: var(--ember-light); }
+  .attr-value.high { color: var(--violet-light); }
+  .attr-value.low  { color: #c05050; }
+  .attr-mod {
+    font-family: 'Fira Code', monospace;
+    font-size: .8rem; color: var(--gold-pale);
+    display: block; margin-top: 4px;
+  }
+  .attr-mod.max  { color: var(--ember-light); }
+  .attr-mod.high { color: var(--violet-light); }
+  .attr-mod.neg  { color: #c05050; }
+
+  /* ══ CARD ══ */
+  .card {
+    background: linear-gradient(135deg, rgba(18,12,26,.92) 0%, rgba(10,6,16,.96) 100%);
+    border: 1px solid var(--fog);
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    position: relative;
+    transition: box-shadow .3s;
+  }
+  .card.ember  { border-left: 3px solid var(--ember-dim); }
+  .card.ember:hover { box-shadow: -4px 0 20px rgba(200,80,0,.2), 0 4px 20px rgba(0,0,0,.6); }
+  .card.violet { border-left: 3px solid var(--violet-dim); }
+  .card.violet:hover { box-shadow: -4px 0 20px rgba(120,60,220,.2), 0 4px 20px rgba(0,0,0,.6); }
+  .card.san    { border-left: 3px solid var(--sanity); }
+  .card.san:hover { box-shadow: -4px 0 20px rgba(58,107,138,.25), 0 4px 20px rgba(0,0,0,.6); }
+  .card.gold   { border-left: 3px solid var(--gold); }
+  .card.gold:hover { box-shadow: -4px 0 20px rgba(160,120,10,.2), 0 4px 20px rgba(0,0,0,.6); }
+  .card.blood  { border-left: 3px solid var(--blood-dim); }
+  .card.blood:hover { box-shadow: -4px 0 20px rgba(180,30,30,.18), 0 4px 20px rgba(0,0,0,.6); }
+
+  .card-title {
+    font-family: 'Cinzel', serif;
+    font-size: .72rem; font-weight: 600;
+    letter-spacing: .14em; text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .card-title.ember   { color: var(--ember-light); }
+  .card-title.violet  { color: var(--violet-light); }
+  .card-title.san     { color: var(--sanity-light); }
+  .card-title.gold    { color: var(--gold-light); }
+  .card-title.blood   { color: var(--blood-glow); }
+
+  /* ══ TRAIT BLOCK ══ */
+  .trait {
+    display: grid; grid-template-columns: 3px 1fr;
+    gap: 0 14px; margin-bottom: 10px;
+  }
+  .trait-bar { border-radius: 2px; }
+  .trait-content {
+    background: rgba(12,8,20,.75);
+    border: 1px solid var(--fog);
+    padding: 14px 16px;
+  }
+  .trait-name {
+    font-family: 'Cinzel', serif;
+    font-size: .74rem; letter-spacing: .1em; font-weight: 900;
+    color: #d0b0e0; margin-bottom: 5px;
+  }
+  .trait-name .sub {
+    font-style: italic; font-weight: 400;
+    color: var(--text-dim); font-family: 'EB Garamond', serif;
+    font-size: .9rem; letter-spacing: 0; text-transform: none;
+  }
+  .trait-content p { font-size: .92rem; color: #b8b0cc; }
+
+  /* ══ ACTION BLOCK ══ */
+  .action {
+    background: rgba(10,6,18,.88);
+    border: 1px solid var(--fog);
+    padding: 16px 20px; margin-bottom: 8px;
+  }
+  .action.ember    { border-bottom: 2px solid var(--ember-dim); }
+  .action.ember:hover { border-bottom-color: var(--ember-light); }
+  .action.violet   { border-bottom: 2px solid var(--violet-dim); }
+  .action.violet:hover { border-bottom-color: var(--violet-light); }
+  .action.legendary{ border-bottom: 2px solid var(--gold); }
+  .action.legendary:hover { border-bottom-color: var(--gold-light); }
+  .action.lair     { border-bottom: 2px solid #3a4a1a; }
+  .action.lair:hover { border-bottom-color: #70a030; }
+  .action { transition: border-bottom-color .2s; }
+
+  .action-name {
+    font-family: 'Cinzel', serif;
+    font-size: .76rem; font-weight: 900;
+    letter-spacing: .1em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .action-name.ember  { color: #e09060; }
+  .action-name.violet { color: var(--violet-light); }
+  .action-name.gold   { color: var(--gold-pale); }
+  .action-name.lair   { color: #90c050; }
+
+  .recharge {
+    font-family: 'Fira Code', monospace;
+    font-size: .62rem; border: 1px solid var(--ember-dim);
+    color: var(--ember-light); padding: 1px 7px; margin-left: 8px;
+    vertical-align: middle;
+  }
+  .recharge.rare { border-color: var(--violet-dim); color: var(--violet-light); }
+  .cost-badge {
+    font-family: 'Fira Code', monospace;
+    font-size: .6rem; padding: 1px 7px; margin-left: 6px;
+    border: 1px solid var(--gold); color: var(--gold-pale);
+    vertical-align: middle;
+  }
+  .tag-a {
+    font-family: 'Fira Code', monospace;
+    font-size: .6rem; padding: 1px 7px; margin-left: 6px;
+    border-radius: 1px; vertical-align: middle;
+  }
+  .tag-a.san  { border: 1px solid var(--sanity); color: var(--sanity-light); }
+  .tag-a.cor  { border: 1px solid var(--corruption); color: var(--corruption-l); }
+  .action p   { font-size: .92rem; color: #b8b0cc; }
+  .action p strong { color: var(--text); }
+
+  /* ══ SAN GRID ══ */
+  .san-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px; margin-bottom: 14px;
+  }
+  @media (max-width: 540px) { .san-grid { grid-template-columns: 1fr; } }
+
+  .san-box {
+    background: rgba(6,14,24,.9);
+    border: 1px solid rgba(58,107,138,.3);
+    border-top: 2px solid var(--sanity);
+    padding: 16px 14px; text-align: center;
+    transition: border-top-color .2s;
+  }
+  .san-box:hover { border-top-color: var(--sanity-light); }
+  .san-box-label {
+    font-family: 'Cinzel', serif;
+    font-size: .56rem; letter-spacing: .2em; text-transform: uppercase;
+    color: #4a8aaa; margin-bottom: 4px;
+  }
+  .san-box-dice {
+    font-family: 'Fira Code', monospace;
+    font-size: 1.1rem; color: var(--sanity-light);
+    display: block; line-height: 1.2;
+  }
+  .san-box-cd {
+    font-family: 'Fira Code', monospace;
+    font-size: .7rem; color: var(--text-dim); margin-top: 3px;
+  }
+  .san-box-sub { font-size: .76rem; color: var(--text-dim); font-style: italic; margin-top: 3px; }
+
+  /* ══ TABLE ══ */
+  .table-wrap {
+    margin: 12px 0;
+    border: 1px solid var(--fog);
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  thead tr { background: rgba(16,10,26,.97); border-bottom: 2px solid var(--ember-dim); }
+  thead th {
+    font-family: 'Cinzel', serif;
+    font-size: .64rem; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold-pale); padding: 9px 14px;
+    text-align: left; white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid rgba(35,28,46,.9); transition: background .12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:nth-child(even) { background: rgba(255,255,255,.012); }
+  tbody tr:hover { background: rgba(120,50,0,.07); }
+  td { padding: 8px 14px; vertical-align: top; color: #b8b0cc; }
+  td:first-child { font-family: 'Cinzel', serif; font-size: .84rem; color: var(--text); white-space: nowrap; }
+  .mono { font-family: 'Fira Code', monospace; font-size: .78rem; color: var(--gold-pale); }
+  .mono.ember  { color: var(--ember-light); }
+  .mono.violet { color: var(--violet-light); }
+  .mono.san    { color: var(--sanity-light); }
+
+  /* ══ CALLOUT ══ */
+  .callout {
+    border-left: 3px solid; padding: 14px 18px; margin: 12px 0;
+    font-style: italic; font-size: .92rem;
+  }
+  .callout strong {
+    font-style: normal; font-family: 'Cinzel', serif;
+    font-size: .68rem; letter-spacing: .1em;
+    display: block; margin-bottom: 3px;
+  }
+  .callout.ember  { border-color: var(--ember-dim); background: rgba(100,35,0,.14); color: #c89060; }
+  .callout.ember strong { color: var(--ember-light); }
+  .callout.violet { border-color: var(--violet-dim); background: rgba(80,40,160,.1); color: #b0a0d8; }
+  .callout.violet strong { color: var(--violet-light); }
+  .callout.san    { border-color: var(--sanity); background: rgba(20,50,80,.12); color: #8abac8; }
+  .callout.san strong { color: var(--sanity-light); }
+  .callout.blood  { border-color: var(--blood-dim); background: rgba(90,15,15,.12); color: #b89090; }
+  .callout.blood strong { color: var(--blood-glow); }
+  .callout.gold   { border-color: var(--gold); background: rgba(160,120,10,.09); color: #c8b880; }
+  .callout.gold strong { color: var(--gold-light); }
+  .callout.tip    { border-color: #3a7a5a; background: rgba(40,100,70,.09); color: #90c0a8; }
+  .callout.tip strong { color: #60b890; }
+
+  /* ══ CR BADGE ══ */
+  .cr-block {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    align-items: stretch; margin-bottom: 14px;
+  }
+  .cr-badge {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, rgba(100,40,0,.14), rgba(80,30,150,.12));
+    border: 1px solid rgba(200,80,0,.4);
+    border-top: 2px solid var(--ember-light);
+    border-bottom: 2px solid var(--violet-dim);
+    padding: 14px 24px;
+    text-align: center;
+  }
+  .cr-badge-label {
+    font-family: 'Cinzel', serif;
+    font-size: .54rem; letter-spacing: .28em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 4px;
+  }
+  .cr-badge-value {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2.2rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--ember-light), var(--violet-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+  .cr-badge-note {
+    font-family: 'Fira Code', monospace;
+    font-size: .6rem; color: var(--text-dim);
+    margin-top: 4px; letter-spacing: .06em;
+  }
+
+  /* ══ SEPARATOR ══ */
+  .sep {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ember-dim), var(--violet-dim), transparent);
+    margin: 20px 0;
+    opacity: .6;
+  }
+
+  /* ══ LEGENDARY RESISTANCE BAR ══ */
+  .leg-res-bar {
+    display: flex; gap: 10px; align-items: center;
+    padding: 14px 20px;
+    background: rgba(8,4,16,.85);
+    border: 1px solid var(--fog);
+    border-left: 3px solid var(--gold);
+    margin-bottom: 12px;
+  }
+  .leg-res-label {
+    font-family: 'Cinzel', serif;
+    font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--gold-pale); flex-shrink: 0;
+  }
+  .leg-res-pips {
+    display: flex; gap: 8px;
+  }
+  .pip {
+    width: 22px; height: 22px;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    background: rgba(180,120,10,.2);
+    box-shadow: 0 0 8px rgba(180,120,10,.3);
+    animation: pip-pulse 3s ease-in-out infinite;
+  }
+  .pip:nth-child(2) { animation-delay: .6s; }
+  .pip:nth-child(3) { animation-delay: 1.2s; }
+  .pip:nth-child(4) { animation-delay: 1.8s; }
+  .pip:nth-child(5) { animation-delay: 2.4s; }
+  @keyframes pip-pulse {
+    0%,100% { background: rgba(180,120,10,.2); box-shadow: 0 0 8px rgba(180,120,10,.3); }
+    50%      { background: rgba(180,120,10,.4); box-shadow: 0 0 16px rgba(180,120,10,.6); }
+  }
+  .leg-res-note { font-size: .84rem; color: var(--text-dim); font-style: italic; }
+
+  /* ══ HIGHLIGHT ══ */
+  .hl       { color: var(--gold-light); font-weight: 600; }
+  .hl-ember { color: var(--ember-light); font-weight: 600; }
+  .hl-violet{ color: var(--violet-light); font-weight: 600; }
+  .hl-red   { color: #c05050; font-weight: 600; }
+  .hl-san   { color: var(--sanity-light); }
+  mark      { background: rgba(200,80,0,.15); color: var(--ember-light); padding: .1em .3em; border-radius: 2px; }
+  mark.v    { background: rgba(120,60,220,.15); color: var(--violet-light); }
+  mark.san  { background: rgba(58,107,138,.18); color: var(--sanity-light); }
+  mark.gold { background: rgba(201,168,76,.14); color: var(--gold-light); }
+
+  /* ══ FOOTER ══ */
+  footer {
+    text-align: center; padding: 40px 20px 60px;
+    font-family: 'Cinzel', serif;
+    font-size: .56rem; letter-spacing: .28em; text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  footer span { color: var(--ember-dim); margin: 0 6px; }
+
+  /* ══ SCROLLBAR ══ */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--ink); }
+  ::-webkit-scrollbar-thumb { background: var(--ember-dim); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--ember-light); }
+
+  /* ══ TOP BTN ══ */
+  #top-btn {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    width: 36px; height: 36px;
+    background: var(--parchment); border: 1px solid var(--fog);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-dim); font-size: .9rem; text-decoration: none;
+    transition: all .2s; z-index: 100;
+  }
+  #top-btn:hover { border-color: var(--ember-dim); color: var(--ember-light); }
+
+  @media (max-width: 600px) {
+    .stat-row { gap: 6px; }
+    .stat-pill { min-width: 70px; padding: 8px 8px; }
+  }
+
+  /* ══ FRACTURAR O DADO — Mecânica de Quebra da 4ª Parede ══ */
+
+  .action.fourth-wall {
+    border: 1px solid rgba(80,30,30,.5);
+    border-left: 3px solid #660000;
+    background: linear-gradient(135deg, rgba(14,6,6,.97) 0%, rgba(8,3,10,.99) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .action.fourth-wall::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(255,0,0,.012) 2px,
+      rgba(255,0,0,.012) 4px
+    );
+    pointer-events: none;
+  }
+  .action.fourth-wall:hover {
+    border-left-color: #cc0000;
+    box-shadow: -4px 0 30px rgba(180,0,0,.3), 0 0 60px rgba(0,0,0,.8);
+  }
+  .action-name.fourth-wall-title {
+    color: #cc3333;
+    text-shadow: 0 0 20px rgba(200,0,0,.4);
+  }
+
+  /* Die container */
+  .die-zone {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .die-wrap {
+    position: relative;
+    width: 90px; height: 90px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .die-face {
+    width: 90px; height: 90px;
+    background: linear-gradient(145deg, #1a0a0a, #0d0408);
+    border: 2px solid rgba(180,30,30,.6);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fira Code', monospace;
+    font-size: 2.2rem; font-weight: 700;
+    color: #cc4444;
+    box-shadow:
+      0 0 20px rgba(160,0,0,.3),
+      inset 0 0 20px rgba(0,0,0,.6);
+    transition: transform .1s;
+    position: relative;
+    z-index: 2;
+  }
+  .die-wrap:hover .die-face { transform: scale(1.05); box-shadow: 0 0 30px rgba(200,0,0,.4), inset 0 0 20px rgba(0,0,0,.6); }
+  .die-wrap:active .die-face  { transform: scale(.97); }
+
+  /* Crack SVG overlay */
+  .die-crack {
+    position: absolute; inset: 0; z-index: 3;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .die-wrap.breaking .die-crack { opacity: 1; }
+
+  /* Shard pieces */
+  .shard {
+    position: absolute;
+    background: linear-gradient(135deg, #1a0505, #0d0208);
+    border: 1px solid rgba(180,30,30,.5);
+    border-radius: 2px;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Glitch text */
+  @keyframes glitch-1 {
+    0%   { clip-path: inset(0 0 95% 0); transform: translate(-3px,0); }
+    20%  { clip-path: inset(30% 0 50% 0); transform: translate(3px,0); }
+    40%  { clip-path: inset(60% 0 10% 0); transform: translate(-2px,0); }
+    60%  { clip-path: inset(80% 0 5% 0); transform: translate(2px,0); }
+    80%  { clip-path: inset(10% 0 80% 0); transform: translate(-1px,0); }
+    100% { clip-path: inset(0 0 95% 0); transform: translate(0,0); }
+  }
+  @keyframes glitch-2 {
+    0%   { clip-path: inset(85% 0 0 0); transform: translate(3px,0); }
+    25%  { clip-path: inset(50% 0 30% 0); transform: translate(-3px,0); }
+    50%  { clip-path: inset(20% 0 60% 0); transform: translate(2px,0); }
+    75%  { clip-path: inset(5% 0 80% 0); transform: translate(-2px,0); }
+    100% { clip-path: inset(85% 0 0 0); transform: translate(0,0); }
+  }
+
+  .glitch-wrap {
+    position: relative;
+    display: inline-block;
+  }
+  .glitch-wrap.active::before,
+  .glitch-wrap.active::after {
+    content: attr(data-text);
+    position: absolute; left: 0; top: 0;
+    width: 100%; height: 100%;
+    font-family: inherit; font-size: inherit; font-weight: inherit;
+  }
+  .glitch-wrap.active::before {
+    color: #ff2200;
+    animation: glitch-1 .18s steps(1) infinite;
+  }
+  .glitch-wrap.active::after {
+    color: #8800ff;
+    animation: glitch-2 .22s steps(1) infinite;
+  }
+
+  /* Result banner */
+  .die-result-banner {
+    display: none;
+    text-align: center;
+    padding: 10px 16px;
+    border: 1px solid rgba(160,0,0,.4);
+    background: rgba(12,4,4,.95);
+    max-width: 420px;
+    width: 100%;
+  }
+  .die-result-banner.visible { display: block; }
+  .die-result-title {
+    font-family: 'Cinzel', serif;
+    font-size: .65rem; letter-spacing: .2em; text-transform: uppercase;
+    color: #cc2222;
+    margin-bottom: 6px;
+  }
+  .die-result-text {
+    font-size: .88rem; color: #a08080; font-style: italic; line-height: 1.6;
+  }
+  .die-result-text strong { color: #cc4444; font-style: normal; }
+
+  /* Shake animation */
+  @keyframes die-shake {
+    0%  { transform: translate(0,0) rotate(0deg); }
+    15% { transform: translate(-4px,2px) rotate(-3deg); }
+    30% { transform: translate(4px,-2px) rotate(3deg); }
+    45% { transform: translate(-3px,3px) rotate(-2deg); }
+    60% { transform: translate(3px,-1px) rotate(2deg); }
+    75% { transform: translate(-2px,2px) rotate(-1deg); }
+    90% { transform: translate(2px,0) rotate(1deg); }
+    100%{ transform: translate(0,0) rotate(0deg); }
+  }
+  @keyframes shard-fly {
+    0%   { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes die-vanish {
+    0%   { opacity: 1; transform: scale(1); filter: brightness(1); }
+    40%  { opacity: 1; transform: scale(1.08); filter: brightness(3) saturate(0); }
+    100% { opacity: 0; transform: scale(.4) rotate(15deg); filter: brightness(0); }
+  }
+  @keyframes screen-flash {
+    0%   { opacity: 0; }
+    10%  { opacity: .18; }
+    20%  { opacity: .04; }
+    30%  { opacity: .14; }
+    40%  { opacity: 0; }
+    100% { opacity: 0; }
+  }
+
+  /* Full-screen flash */
+  #merm-flash {
+    position: fixed; inset: 0; z-index: 9998;
+    background: #cc0000;
+    opacity: 0; pointer-events: none;
+  }
+
+  /* Die button hint */
+  .die-hint {
+    font-family: 'Fira Code', monospace;
+    font-size: .58rem; letter-spacing: .15em; text-transform: uppercase;
+    color: var(--text-faint); opacity: .7;
+    text-align: center;
+  }
+
+  /* Reset button */
+  .die-reset {
+    display: none;
+    font-family: 'Cinzel', serif;
+    font-size: .58rem; letter-spacing: .15em; text-transform: uppercase;
+    color: var(--text-faint);
+    border: 1px solid rgba(80,40,40,.4);
+    background: transparent;
+    padding: 4px 12px; cursor: pointer;
+    transition: color .2s, border-color .2s;
+  }
+  .die-reset:hover { color: #aa4444; border-color: rgba(160,50,50,.5); }
+  .die-reset.visible { display: inline-block; }
+
+  /* ══ MONSTER VITALS GRID ══ */
+  .monster-vitals {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 600px) { .monster-vitals { grid-template-columns: 1fr 1fr; } }
+
+  .mvital-card {
+    background: rgba(10,6,18,.85);
+    border: 1px solid rgba(80,40,140,.3);
+    border-radius: 3px;
+    padding: 16px 14px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  .mvital-card::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  }
+  .mvital-card.ember::after  { background: linear-gradient(90deg, transparent, var(--ember-light), transparent); }
+  .mvital-card.violet::after { background: linear-gradient(90deg, transparent, var(--violet-light), transparent); }
+  .mvital-card.gold::after   { background: linear-gradient(90deg, transparent, var(--gold-light), transparent); }
+  .mvital-card.san::after    { background: linear-gradient(90deg, transparent, var(--sanity-light), transparent); }
+
+  .mvital-label {
+    font-family: 'Cinzel', serif;
+    font-size: .52rem; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 8px; display: block;
+  }
+  .mvital-value {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2rem; line-height: 1; display: block;
+  }
+  .mvital-value.ember  { color: var(--ember-light);   text-shadow: 0 0 20px rgba(200,80,0,.4); }
+  .mvital-value.violet { color: var(--violet-light);  text-shadow: 0 0 20px rgba(140,60,255,.4); }
+  .mvital-value.gold   { color: var(--gold-light);    text-shadow: 0 0 16px rgba(200,160,20,.3); }
+  .mvital-value.san    { color: var(--sanity-light);  text-shadow: 0 0 16px rgba(58,107,138,.4); }
+  .mvital-note {
+    font-size: .75rem; color: var(--text-dim); font-style: italic;
+    margin-top: 6px; display: block; line-height: 1.4;
+  }
+  .mvital-pips {
+    display: flex; gap: 6px; justify-content: center; margin: 8px 0 4px;
+  }
+  .mvital-pip {
+    width: 18px; height: 18px;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    background: rgba(180,120,10,.2);
+    box-shadow: 0 0 8px rgba(180,120,10,.3);
+    animation: pip-pulse 3s ease-in-out infinite;
+  }
+  .mvital-pip:nth-child(2) { animation-delay: .6s; }
+  .mvital-pip:nth-child(3) { animation-delay: 1.2s; }
+  .mvital-pip:nth-child(4) { animation-delay: 1.8s; }
+  .mvital-pip:nth-child(5) { animation-delay: 2.4s; }
+
+  /* ══ TWO-COL MONSTER ══ */
+  .two-col-monster {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  @media (max-width: 600px) { .two-col-monster { grid-template-columns: 1fr; } }
+
+
+/* ── ACESSIBILIDADE: MOVIMENTO REDUZIDO ─────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="header-symbol">🐉</span>
+  <p class="header-eyebrow">Além do Véu da Carne &nbsp;⸸&nbsp; Bestiário Lendário</p>
+  <p class="header-classification">⬥ Registro de Calamidade &nbsp;·&nbsp; Ameaça de Extinção &nbsp;·&nbsp; Entidade Primordial ⬥</p>
+  <h1>Mermillion Moonlight</h1>
+  <p class="header-title-sub">"Aquele que Ruge"</p>
+  <p class="header-tagline">Ele não é um inimigo. Ele é o fim.</p>
+</header>
+
+<div class="warning-banner">
+  <div class="warning-banner-inner">
+    <span class="warning-icon">⚠</span>
+    <div class="warning-text">
+      <strong>Aviso ao GM — Leia Antes de Usar</strong>
+      Mermillion Moonlight não é um encontro de combate. Ele é um <em>evento</em>. Os números desta ficha existem para dar ao GM as ferramentas de impacto — não para os jogadores "derrubarem o boss". Qualquer cenário onde o grupo pense em "matar o dragão" como estratégia válida deve ser redirecionado: a única vitória possível é sobreviver, fugir, ou sacrificar algo de enorme peso narrativo para afastá-lo.
+    </div>
+  </div>
+</div>
+
+<div class="divider">
+  <div class="divider-line"></div>
+  <span class="divider-glyph">✦</span>
+  <div class="divider-line"></div>
+</div>
+
+
+<!-- PORTRAIT HERO -->
+<div style="max-width:860px;margin:0 auto 0;padding:0 20px;">
+  <div style="position:relative;width:100%;overflow:hidden;border-radius:4px;border:1px solid rgba(100,40,160,.35);box-shadow:0 0 60px rgba(80,0,0,.5),0 0 120px rgba(0,0,0,.9);">
+	<img src="Perfil - Mermillion Moonlight.png"
+         alt="Mermillion Moonlight"
+         style="width:100%;height:340px;object-fit:cover;object-position:center 30%;display:block;">
+    <!-- bottom fade -->
+    <div style="position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to top,rgba(5,4,8,1) 0%,rgba(5,4,8,.7) 40%,transparent 100%);"></div>
+    <!-- top fade -->
+    <div style="position:absolute;top:0;left:0;right:0;height:60px;background:linear-gradient(to bottom,rgba(5,4,8,.8),transparent);"></div>
+    <!-- caption -->
+    <div style="position:absolute;bottom:18px;left:0;right:0;text-align:center;">
+      <span style="font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.4em;text-transform:uppercase;color:rgba(160,80,255,.55);">Mermillion Moonlight · "Aquele que Ruge" · Dragão Primordial</span>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══════════════════════════════
+       IDENTIDADE
+  ══════════════════════════════ -->
+  <section id="identidade">
+    <div class="section-header">
+      <span class="section-icon ember">🔥</span>
+      <h2 class="ember">Identidade</h2>
+      <div class="section-line ember"></div>
+    </div>
+
+    <div class="identity">
+      <div class="identity-corner tl">DRAGÃO PRIMORDIAL · NEUTRO</div>
+      <div class="identity-corner tr">NÍVEL DE DESAFIO 28 · 120.000 XP</div>
+      <div class="identity-corner bl">HOMEBREW</div>
+      <div class="identity-corner br">FICHA · BESTIARIO</div>
+
+      <div class="monster-name">Mermillion Moonlight</div>
+      <div class="monster-epithet">⬥ "Aquele que Ruge" ⬥</div>
+
+      <div class="monster-type-line">
+        <span class="tag dnd">Gargantuesco</span>
+        <span class="tag lore">Dragão Primordial</span>
+        <span class="tag calamity">Calamidade</span>
+        <span class="tag violet">Sem Alinhamento</span>
+        <span class="tag hb">Noturno</span>
+      </div>
+
+      <p class="monster-lore">
+        Seu corpo é coberto por escamas escuras, quase negras, com textura áspera como pedra 
+        vulcânica. Espinhos projetam-se ao longo da cabeça, das costas e da cauda — não como 
+        ornamento, mas como parte da anatomia de algo que nunca precisou de armadura porque 
+        nunca precisou se defender. O olho brilha em roxo-violeta intenso, o único ponto de 
+        cor em uma criatura que parece absorver a luz ao redor.
+      </p>
+      <p class="monster-lore" style="border-left-color: var(--violet-dim);">
+        Em repouso no chão, 9 a 12 metros no quadril — 18 a 21 metros com o pescoço erguido. 
+        45 a 60 metros do focinho à ponta da cauda. Em voo, a envergadura abre entre 75 e 
+        90 metros. Quando pousa, o chão fragmenta. 
+        Quando ruge, o som chega antes que qualquer coisa possa ser vista. Ele não tem vínculos 
+        com cultos, igrejas, ou outros seres. Não existe negociação, propósito compreensível, ou 
+        fraqueza de caráter. Ele é a calamidade — uma força que faz até a natureza se curvar.
+      </p>
+      <p class="monster-lore" style="border-left-color: var(--violet-dim); font-size: 11px; opacity: 0.75; font-style: italic;">
+        ⚙ Nota Mecânica — Porte: Gargantuesco (Grimório de Valtheris). Mermillion não ocupa token no grid — ele é o ambiente. Não pode ser alvo de Grapple ou Shove por criaturas de porte Huge ou menor. Sua presença controla área por posicionamento: o simples fato de estar em uma região bloqueia corredores, separa o grupo e impede fuga sem que precise agir. O GM determina interação com o grid caso a caso.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       ESTATÍSTICAS BASE
+  ══════════════════════════════ -->
+  <section id="stats">
+    <div class="section-header">
+      <span class="section-icon ember">⚔</span>
+      <h2 class="ember">Estatísticas Base</h2>
+      <div class="section-line ember"></div>
+    </div>
+
+    <!-- Vitals Grid — 4 cards -->
+    <div class="monster-vitals">
+      <div class="mvital-card ember">
+        <span class="mvital-label">Pontos de Vida</span>
+        <span class="mvital-value ember">812</span>
+        <span class="mvital-note">35d20 + 455 · Armadura Natural</span>
+      </div>
+      <div class="mvital-card ember">
+        <span class="mvital-label">Classe de Armadura</span>
+        <span class="mvital-value ember">24</span>
+        <span class="mvital-note">Iniciativa −1 · DEX −1</span>
+      </div>
+      <div class="mvital-card violet">
+        <span class="mvital-label">Velocidade</span>
+        <span class="mvital-value violet">18m</span>
+        <span class="mvital-note">Voo 45m · Escalada 18m</span>
+      </div>
+      <div class="mvital-card gold">
+        <span class="mvital-label">Resist. Lendária</span>
+        <div class="mvital-pips">
+          <div class="mvital-pip"></div>
+          <div class="mvital-pip"></div>
+          <div class="mvital-pip"></div>
+          <div class="mvital-pip"></div>
+          <div class="mvital-pip"></div>
+        </div>
+        <span class="mvital-note">5 / dia · falha → escolhe passar</span>
+      </div>
+    </div>
+
+    <!-- CR -->
+    <div class="two-col-monster">
+      <div class="cr-badge" style="flex-direction:row;align-items:center;gap:20px;justify-content:flex-start;padding:16px 24px;">
+        <div>
+          <span class="cr-badge-label">Challenge Rating</span>
+          <span class="cr-badge-value">28</span>
+          <span class="cr-badge-note">120.000 XP</span>
+        </div>
+        <div style="border-left:1px solid rgba(200,80,0,.3);padding-left:20px;">
+          <span class="cr-badge-label">Proficiência</span>
+          <span class="cr-badge-value" style="font-size:1.6rem;">+8</span>
+          <span class="cr-badge-note">CR 28</span>
+        </div>
+      </div>
+      <div class="card ember" style="margin-bottom:0;display:flex;flex-direction:column;justify-content:center;">
+        <div class="card-title ember">Escala de Ameaça</div>
+        <p style="font-size:.9rem;">Mermillion não possui CR no sentido funcional — ele existe <em>além</em> da progressão normal. <span class="hl-ember">Isso é intencional.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       ATRIBUTOS + PROFICIÊNCIAS (two-col)
+  ══════════════════════════════ -->
+  <div class="two-col-monster" style="align-items:start;gap:14px;margin-bottom:56px;">
+  <section id="atributos" style="margin-bottom:0;">
+    <div class="section-header">
+      <span class="section-icon violet">◆</span>
+      <h2 class="violet">Atributos</h2>
+      <div class="section-line violet"></div>
+    </div>
+
+    <div class="attr-grid">
+      <div class="attr-box max">
+        <div class="attr-name">Força</div>
+        <span class="attr-value max">30</span>
+        <span class="attr-mod max">+10</span>
+      </div>
+      <div class="attr-box low">
+        <div class="attr-name">Destreza</div>
+        <span class="attr-value low">8</span>
+        <span class="attr-mod neg">−1</span>
+      </div>
+      <div class="attr-box max">
+        <div class="attr-name">Constituição</div>
+        <span class="attr-value max">30</span>
+        <span class="attr-mod max">+10</span>
+      </div>
+      <div class="attr-box high">
+        <div class="attr-name">Inteligência</div>
+        <span class="attr-value high">20</span>
+        <span class="attr-mod high">+5</span>
+      </div>
+      <div class="attr-box high">
+        <div class="attr-name">Sabedoria</div>
+        <span class="attr-value high">18</span>
+        <span class="attr-mod high">+4</span>
+      </div>
+      <div class="attr-box high">
+        <div class="attr-name">Carisma</div>
+        <span class="attr-value high">24</span>
+        <span class="attr-mod high">+7</span>
+      </div>
+    </div>
+
+    <div class="callout violet" style="margin-top:4px;">
+      <strong>Nota sobre os Atributos</strong> Força e Constituição 30 representam o <em>teto absoluto</em> do que uma criatura pode possuir. Destreza baixa é intencional — Mermillion jamais precisou ser rápido. Ele não esquiva. Ele absorve.
+    </div>
+  </section>
+
+  <!-- RIGHT COLUMN -->
+  <section id="proficiencias" style="margin-bottom:0;">
+    <div class="section-header">
+      <span class="section-icon gold">🎲</span>
+      <h2 class="gold">Proficiências, Sentidos &amp; Imunidades</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Campo</th><th>Valor</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Salvaguardas</td>
+            <td><span class="mono ember">FOR +18 &nbsp;·&nbsp; CON +18 &nbsp;·&nbsp; SAB +12 &nbsp;·&nbsp; CAR +15</span></td>
+          </tr>
+          <tr>
+            <td>Perícias</td>
+            <td><span class="mono">Percepção +20 (maestria) &nbsp;·&nbsp; Intimidação +23 (maestria)</span></td>
+          </tr>
+          <tr>
+            <td>Imunidades a Dano</td>
+            <td>Fogo, Necrótico, Psíquico, Veneno</td>
+          </tr>
+          <tr>
+            <td>Resistências a Dano</td>
+            <td>Ácido, Trovão, Relâmpago; contuso / cortante / perfurante de armas não-mágicas e não-abençoadas</td>
+          </tr>
+          <tr>
+            <td>Imunidades a Condição</td>
+            <td>Amedrontado, Enfeitiçado, Atordoado, Paralisado, Envenenado, Caído, Exausto, Inconsciente</td>
+          </tr>
+          <tr>
+            <td>Sentidos</td>
+            <td>
+              Visão no Escuro 240m &nbsp;·&nbsp; Visão Verdadeira 90m &nbsp;·&nbsp; Percepção Sísmica 120m<br>
+              <span style="color:var(--text-dim); font-size:.86rem;">Percepção Passiva 30</span>
+            </td>
+          </tr>
+          <tr>
+            <td>Idiomas</td>
+            <td>Dragônico Primordial <span style="color:var(--text-dim); font-size:.88rem;">(não se comunica com mortais — o rugido não é linguagem, é fenômeno)</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  </div><!-- end two-col-monster atributos+prof -->
+
+  <!-- ══════════════════════════════
+       TRAÇOS ESPECIAIS
+  ══════════════════════════════ -->
+  <section id="tracos">
+    <div class="section-header">
+      <span class="section-icon violet">✧</span>
+      <h2 class="violet">Traços Especiais</h2>
+      <div class="section-line violet"></div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:linear-gradient(180deg,var(--ember-light),var(--ember-dim));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Força da Natureza <span class="sub">(Passivo — Aura 5 km)</span></div>
+        <p>A presença de Mermillion em um raio de 5 quilômetros altera o ambiente: a temperatura sobe drasticamente, plantas murcham, corpos d'água agitam sem vento e animais selvagens fogem em pânico. Nenhum ser natural — animal, planta ou espírito da natureza — se aproxima voluntariamente de sua posição. Estruturas frágeis (casas de madeira, barracas, postes) vibram perceptivelmente mesmo quando ele está imóvel.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:linear-gradient(180deg,var(--violet-light),var(--violet-dim));"></div>
+      <div class="trait-content">
+        <div class="trait-name">Presença Avassaladora <span class="sub">(Passivo — Aura 120m)</span></div>
+        <p>Toda criatura que inicia seu turno dentro de 120m de Mermillion e consegue vê-lo ou ouvi-lo deve fazer uma <span class="hl-san">salvaguarda de Sabedoria CD 26</span>. Ao falhar, fica <span class="hl-red">Amedrontada</span> até o início de seu próximo turno e perde a ação desse turno de imobilidade instintiva. Em uma falha catastrófica — resultado 10 ou mais abaixo da CD — fica <span class="hl-red">Paralisada</span> por toda a rodada. Uma criatura que passar na salvaguarda é imune a este efeito por 24 horas.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:linear-gradient(180deg,#c0d040,#506000);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Pegada Sísmica <span class="sub">(Passivo)</span></div>
+        <p>Quando Mermillion se move 12m ou mais em linha reta, toda criatura em contato com o chão em 24m faz uma <span class="hl">salvaguarda de Força CD 26</span>. Ao falhar, cai Prostrada e sofre <mark>28 (8d6) de dano contuso</mark> pelo tremor. Estruturas no raio de 45m do percurso sofrem 60 de dano estrutural automático — suficiente para colapsar a maioria das construções comuns.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:linear-gradient(180deg,#8040c0,#2a0850);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Além do Alcance Mortal <span class="sub">(Passivo)</span></div>
+        <p>Magias e efeitos de <em>Aprisionamento</em>, <em>Banimento</em>, <em>Gaiola de Força</em>, <em>Polimorfismo Verdadeiro</em>, <em>Enfeitiçar</em> e quaisquer efeitos de controle, vinculação, ou convocação falham automaticamente contra Mermillion. Magias de nível 8 ou inferior que o alvejam devem superar uma <span class="hl-violet">jogada de disputa (CAR +15 do Mermillion vs. CD do conjurador)</span>. Na falha, o efeito é refletido ao conjurador.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:linear-gradient(180deg,#402080,#080420);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Aparição Noturna <span class="sub">(Passivo)</span></div>
+        <p>Mermillion existe apenas no domínio da noite. Ao primeiro raio de sol verdadeiro (não mágico), ele desaparece — dissolve-se na escuridão recuante com a mesma inevitabilidade com que chegou. Durante o dia, é completamente inacessível: não pode ser rastreado, ferido, convocado, ou alvo de qualquer efeito. Para onde vai, nenhum mortal sabe — e talvez essa seja a pergunta que não deveria ser feita.</p>
+      </div>
+    </div>
+
+    <div class="trait">
+      <div class="tier-bar" style="background:linear-gradient(180deg,var(--ember-light),#300800);"></div>
+      <div class="trait-content">
+        <div class="trait-name">Pele de Espinhos <span class="sub">(Passivo)</span></div>
+        <p>Criaturas que acertam Mermillion com ataques corpo a corpo sofrem automaticamente <mark>21 (6d6) de dano perfurante</mark> dos espinhos que projetam-se de suas escamas. Armas não-mágicas podem ser destruídas neste contato — objetos com menos de 30 de durabilidade são destruídos automaticamente.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       AÇÕES
+  ══════════════════════════════ -->
+  <section id="acoes">
+    <div class="section-header">
+      <span class="section-icon ember">⚡</span>
+      <h2 class="ember">Ações</h2>
+      <div class="section-line ember"></div>
+    </div>
+
+    <div class="callout ember">
+      <strong>Multiataques</strong> Mermillion realiza <span class="hl-ember">4 ataques por turno:</span> 1 Mordida + 2 Garras + 1 Golpe de Cauda. Pode substituir a Mordida pelo Sopro do Abismo Ardente se estiver disponível.
+    </div>
+
+    <div class="action ember">
+      <div class="action-name ember">Mordida</div>
+      <p><strong>Ataque de Corpo a Corpo.</strong> <span class="mono ember">+18 para acertar</span>, alcance 9m, um alvo. <strong>Acerto:</strong> <mark>46 (8d8 + 10) de dano perfurante</mark> + <mark>21 (6d6) de dano de fogo</mark> — as presas irregulares conduzem o calor de seu interior.</p>
+      <p style="margin-top:8px;">Qualquer criatura de tamanho Grande ou menor atingida pela Mordida deve fazer uma <span class="hl">salvaguarda de Força CD 26</span>. Ao falhar, fica <span class="hl-red">Agarrada</span> na boca de Mermillion (CD de escape: 26). Enquanto Agarrada assim, ele pode usar a Mordida novamente como ação bônus nela.</p>
+    </div>
+
+    <div class="action ember">
+      <div class="action-name ember">Garra</div>
+      <p><strong>Ataque de Corpo a Corpo.</strong> <span class="mono ember">+18 para acertar</span>, alcance 6m, um alvo. <strong>Acerto:</strong> <mark>38 (8d6 + 10) de dano cortante</mark>. Criaturas de tamanho Médio ou menor atingidas são <span class="hl-red">lançadas 9m para longe</span> pelo impacto e caem Prostradas.</p>
+    </div>
+
+    <div class="action ember">
+      <div class="action-name ember">Golpe de Cauda</div>
+      <p><strong>Ataque de Corpo a Corpo.</strong> <span class="mono ember">+18 para acertar</span>, alcance 12m, <em>todas as criaturas</em> em um arco de 12m atrás de Mermillion. <strong>Acerto:</strong> <mark>30 (8d4 + 10) de dano contuso</mark>. Criaturas que falharem em uma <span class="hl">salvaguarda de Força CD 26</span> são arremessadas até 18m de distância, caindo Prostradas e sofrendo 1d6 de dano por cada 3m percorridos.</p>
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="action violet">
+      <div class="action-name violet">
+        Sopro do Abismo Ardente
+        <span class="recharge">Recarrega 5–6</span>
+        <span class="tag-a san">SAN</span>
+        <span class="tag-a cor">Corrupção</span>
+      </div>
+      <p>Mermillion libera uma exalação de chamas negras e energia arcana corrompida em um <strong>cone de 36m</strong>. Toda criatura na área faz uma <span class="hl-san">salvaguarda de Constituição CD 26</span>.</p>
+      <p style="margin-top:8px;">
+        <strong>Falha:</strong> <mark>91 (26d6) de dano total</mark> — sendo 52 (15d6) de fogo e 39 (11d6) de dano necrótico/arcano. A criatura também perde <mark class="san">3d10 de Sanidade</mark> — este custo de SAN <strong>substitui</strong> (não se acumula com) o custo de <em>"Ao Estar em Combate"</em> da tabela de Sanidade para esse turno. Além disso, faz uma <span class="hl">salvaguarda de Constituição CD 22</span>: ao falhar, recebe uma Marca do Sopro (ver seção de Corrupção).<br>
+        <strong>Sucesso:</strong> Metade do dano, perde <mark class="san">1d10 de Sanidade</mark> — este custo de SAN também substitui o custo de combate da tabela para esse turno.
+      </p>
+      <p style="margin-top:8px; font-style:italic; color:var(--text-dim); font-size:.88rem;">Criaturas reduzidas a 0 HP pelo sopro são destruídas completamente — apenas cinzas e a marca de espinhos queimada no chão. Nenhuma forma de ressurreição é possível para estas vítimas.</p>
+    </div>
+
+    <div class="action violet">
+      <div class="action-name violet">
+        Rugido Primordial
+        <span class="recharge rare">Recarrega 6</span>
+        <span class="tag-a san">SAN</span>
+      </div>
+      <p>Mermillion ruge — não como comunicação, mas como fenômeno físico. O som propaga-se em um raio de <strong>120m</strong>. Toda criatura que ouça deve fazer uma <span class="hl-san">salvaguarda de Sabedoria CD 28</span>.</p>
+      <p style="margin-top:8px;">
+        <strong>Falha:</strong> Perde <mark class="san">2d10 de Sanidade</mark>, fica <span class="hl-red">Amedrontada por 1 minuto</span> (nova salvaguarda no fim de cada turno para encerrar) e <span class="hl-red">perde a ação no primeiro turno</span> de paralisia instintiva. Criaturas com SAN abaixo de 25% do máximo que falharem ficam <span class="hl-red">Inconscientes por 1d4 horas</span>.<br>
+        <strong>Sucesso:</strong> Perde <mark class="san">1d10 de Sanidade</mark>.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       REAÇÕES & LENDÁRIAS
+  ══════════════════════════════ -->
+  <section id="lendarias">
+    <div class="section-header">
+      <span class="section-icon gold">↺</span>
+      <h2 class="gold">Reações &amp; Ações Lendárias</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="card ember">
+      <div class="card-title ember">Reação — Batida de Asa</div>
+      <p><strong>Gatilho:</strong> Uma criatura em 12m entra no espaço de Mermillion ou acerta um ataque corpo a corpo nele. <strong>Resposta:</strong> Mermillion bate uma das asas. Todas as criaturas em 12m de sua posição fazem <span class="hl">salvaguarda de Destreza CD 24</span>. Ao falhar: <mark>28 (6d8) de dano contuso</mark> e são arremessadas 9m para longe, caindo Prostradas.</p>
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="callout gold">
+      <strong>Ações Lendárias — 5 por rodada</strong> Mermillion usa no máximo 5 ações lendárias por rodada, ao final do turno de qualquer outra criatura. Não pode usar a mesma opção duas vezes consecutivas. Recupera todas ao iniciar o próprio turno.
+    </div>
+
+    <div class="action legendary">
+      <div class="action-name gold">Detectar <span class="cost-badge">Custo 1</span></div>
+      <p>Mermillion usa a Percepção Sísmica para localizar toda criatura em 120m, independente de invisibilidade ou ocultação. Até o final de seu próximo turno, nenhuma criatura nessa área pode estar Oculta para ele.</p>
+    </div>
+
+    <div class="action legendary">
+      <div class="action-name gold">Garra <span class="cost-badge">Custo 1</span></div>
+      <p>Realiza um ataque de Garra.</p>
+    </div>
+
+    <div class="action legendary">
+      <div class="action-name gold">Passo Sísmico <span class="cost-badge">Custo 2</span></div>
+      <p>Mermillion se move até sua velocidade. O traço Pegada Sísmica é ativado com desvantagem na salvaguarda para criaturas ao longo do percurso.</p>
+    </div>
+
+    <div class="action legendary">
+      <div class="action-name gold">
+        Olho do Abismo
+        <span class="cost-badge">Custo 2</span>
+        <span class="tag-a san">SAN</span>
+      </div>
+      <p>O olho violeta de Mermillion fixa em uma criatura visível em 90m. Ela faz uma <span class="hl-san">salvaguarda de Sabedoria CD 28</span>. Ao falhar: perde <mark class="san">2d10 de Sanidade</mark> e fica <span class="hl-red">Paralisada até o final de seu próximo turno</span> — a mente simplesmente colapsa diante daquela presença antiga.</p>
+    </div>
+
+    <div class="action legendary">
+      <div class="action-name gold">Rugido <span class="cost-badge">Custo 3</span></div>
+      <p>Usa o Rugido Primordial se estiver disponível.</p>
+    </div>
+
+    <div class="sep" style="border-color: rgba(100,0,0,.3);"></div>
+
+    <!-- ══ MECÂNICA DE 4ª PAREDE ══ -->
+    <div class="action fourth-wall">
+      <div class="action-name fourth-wall-title">
+        ⌧ Fracturar o Dado
+        <span class="cost-badge" style="border-color:#660000;color:#cc3333">Custo 2</span>
+        <span style="font-family:'Fira Code',monospace;font-size:.55rem;color:#550000;border:1px solid #330000;padding:1px 7px;margin-left:6px;vertical-align:middle;letter-spacing:.1em;">4ª PAREDE</span>
+      </div>
+      <p style="color:#907070;">Mermillion não reconhece os resultados que os mortais chamam de "sorte". Quando um personagem usa uma Ação Lendária — ou qualquer dado especial que mude o curso do encontro — ele pode simplesmente <strong style="color:#cc3333">desfazer aquele número</strong>.</p>
+      <p style="margin-top:8px;color:#907070;">O dado que você rolou <em>existia</em>. Agora não existe mais.</p>
+
+      <div class="die-zone">
+        <div class="die-hint">▸ clique no dado para ativar a mecânica</div>
+
+        <div class="die-wrap" id="dieWrap" onclick="fracturarDado()" title="Fracturar o Dado">
+          <div class="die-face" id="dieFace">d20</div>
+          <!-- Crack SVG -->
+          <svg class="die-crack" id="dieCrack" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+            <polyline points="45,0 38,22 52,30 30,55 44,58 20,90"
+              fill="none" stroke="#cc0000" stroke-width="2.5" stroke-linecap="round"
+              stroke-dasharray="120" stroke-dashoffset="120"
+              style="transition: stroke-dashoffset .3s ease;">
+            </polyline>
+            <polyline points="52,30 65,40 58,55 72,68"
+              fill="none" stroke="#880000" stroke-width="1.5" stroke-linecap="round"
+              stroke-dasharray="80" stroke-dashoffset="80"
+              style="transition: stroke-dashoffset .35s ease .1s;">
+            </polyline>
+          </svg>
+        </div>
+
+        <div class="die-result-banner" id="dieResult">
+          <div class="die-result-title">⌧ Dado Destruído — Resultado Anulado</div>
+          <div class="die-result-text" id="dieResultText"></div>
+        </div>
+
+        <button class="die-reset" id="dieReset" onclick="resetDado()">↺ restaurar dado</button>
+      </div>
+
+      <div style="margin-top:18px;padding:10px 14px;border-left:2px solid rgba(100,0,0,.4);background:rgba(8,2,2,.7);">
+        <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#663333;margin-bottom:4px;">Regra — Como Aplicar à Mesa</div>
+        <p style="font-size:.85rem;color:#806060;">Quando ativada, escolha <strong style="color:#aa4444">um único dado</strong> rolado nesta rodada por qualquer personagem — incluindo dados de Ação Lendária, de dano crítico, ou de efeitos narrativos de alto impacto. Esse resultado é <strong style="color:#aa4444">cancelado e re-rolado</strong> com desvantagem. Se o novo resultado ainda for acima de 15, Mermillion o cancela novamente, forçando uma falha automática. Ele não escolhe por conveniência — ele não <em>aceita</em> aquele número. O mundo que o gerou é o problema.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Flash overlay -->
+  <div id="merm-flash"></div>
+
+  <!-- ══════════════════════════════
+       AÇÕES DE TOCA
+  ══════════════════════════════ -->
+  <section id="toca">
+    <div class="section-header">
+      <span class="section-icon ember">🌋</span>
+      <h2 class="ember">Ações de Território</h2>
+      <div class="section-line ember"></div>
+    </div>
+
+    <div class="callout ember">
+      <strong>Quando Usar</strong> Se Mermillion estiver no mesmo local por mais de 3 rodadas (ou se o GM quiser marcar o território como <em>domínio ativo</em>), estas ações ocorrem na Iniciativa 20 de cada rodada, independente do turno de Mermillion.
+    </div>
+
+    <div class="action lair">
+      <div class="action-name lair">Erupção do Solo</div>
+      <p>O chão racha em uma linha de 45m × 4,5m à escolha de Mermillion. Criaturas na linha fazem <span class="hl">salvaguarda de Destreza CD 24</span>. Ao falhar: caem na fenda sofrendo <mark>28 (8d6) de dano de queda</mark> + <mark>21 (6d6) de dano de fogo</mark> da lava incandescente no fundo. Ao passar: são arremessadas para uma das laterais, caindo Prostradas.</p>
+    </div>
+
+    <div class="action lair">
+      <div class="action-name lair">Escuridão Sobrenatural</div>
+      <p>Toda fonte de luz não-mágica em 120m é extinta imediatamente e não pode ser reacesa até o próximo turno de Mermillion. Fontes mágicas de luz (como o feitiço <em>Daylight</em>) devem superar uma <span class="hl-violet">jogada de disputa (CAR +15 do Mermillion vs. CD do conjurador)</span> ou são apagadas também.</p>
+    </div>
+
+    <div class="action lair">
+      <div class="action-name lair">Tremor Expansivo</div>
+      <p>Toda estrutura construída (muros, casas, torres, pontes) em 90m sofre <mark>60 de dano estrutural</mark> — suficiente para colapsar a maioria das edificações comuns imediatamente. Criaturas dentro ou sobre estruturas que colapsem sofrem o dano de desabamento (determinado pelo GM pela estrutura específica).</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       DANO DE SANIDADE
+  ══════════════════════════════ -->
+  <section id="sanidade">
+    <div class="section-header">
+      <span class="section-icon san">🌑</span>
+      <h2 class="san">Dano de Sanidade</h2>
+      <div class="section-line san"></div>
+    </div>
+
+    <div class="callout san">
+      <strong>Formato — Sucesso / Falha na Salvaguarda de SAB</strong> O primeiro valor é a perda mínima (ao <em>passar</em> na salvaguarda). O segundo é a perda total (ao <em>falhar</em>). Cada situação tem uma CD diferente — quanto mais próximo e íntimo o contato com Mermillion, mais devastadora a erosão psíquica.
+    </div>
+    <div class="callout violet" style="margin-top:-4px;">
+      <strong>Regra de Acúmulo de SAN</strong> — Os custos da tabela abaixo e os custos de ações específicas (Sopro, Rugido, Olho do Abismo) <strong>não se acumulam no mesmo turno</strong>: quando uma ação específica gerar custo de SAN, ele <em>substitui</em> o custo de categoria correspondente da tabela naquele turno. O valor mais alto sempre prevalece. Isso evita dupla-penalização por estar em combate <em>e</em> ser acertado pelo Sopro simultaneamente.
+    </div>
+
+    <div class="san-grid">
+      <div class="san-box">
+        <div class="san-box-label">Ao Avistar ao Longe</div>
+        <span class="san-box-dice">1d6 / 2d10</span>
+        <div class="san-box-cd">CD SAB 18</div>
+        <div class="san-box-sub">Silhueta no horizonte, a mais de 1km</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Ao Avistar de Perto</div>
+        <span class="san-box-dice">2d10 / 4d10</span>
+        <div class="san-box-cd">CD SAB 22</div>
+        <div class="san-box-sub">Dentro da cidade, alcance de voz</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Ao Estar em Combate</div>
+        <span class="san-box-dice">3d10 / 5d10+10</span>
+        <div class="san-box-cd">CD SAB 26</div>
+        <div class="san-box-sub">Dentro de 45m, alvo direto</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Ao Ver um Aliado Morrer</div>
+        <span class="san-box-dice">2d10 / 4d10</span>
+        <div class="san-box-cd">CD SAB 22</div>
+        <div class="san-box-sub">Morte causada diretamente por ele</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Ao Ver a Destruição</div>
+        <span class="san-box-dice">2d10 / 4d10</span>
+        <div class="san-box-cd">CD SAB 22</div>
+        <div class="san-box-sub">Assistir à cidade ser devastada</div>
+      </div>
+      <div class="san-box">
+        <div class="san-box-label">Trauma Residual</div>
+        <span class="san-box-dice">1d10 / 2d10</span>
+        <div class="san-box-cd">CD SAB 20</div>
+        <div class="san-box-sub">Ao sobreviver ao encontro (teste na manhã seguinte)</div>
+      </div>
+    </div>
+
+    <div class="card san">
+      <div class="card-title san">Conhecimento do Mythos — Mermillion</div>
+      <p>Não existe corpo de Mermillion para estudar. Mas rastros permanecem — pegadas fundidas no basalto, marcas de chamas negras em pedra que não queima normalmente, o silêncio absoluto de uma área de 200m onde até insetos param de existir.</p>
+      <p style="margin-top:8px;">Um personagem que examine esses rastros com sucesso em <span class="hl-san">Arcana ou Ocultismo CD 20</span> ganha <mark class="san">2d6 pontos de Conhecimento do Mythos</mark> sobre Mermillion — reduzindo permanentemente o SAN máximo nesse valor, mas concedendo imunidade ao efeito de Presença Avassaladora (e apenas este) por 30 dias, e vantagem em qualquer teste relacionado a prever ou identificar seus movimentos.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       CORRUPÇÃO
+  ══════════════════════════════ -->
+  <section id="corrupcao">
+    <div class="section-header">
+      <span class="section-icon ember">☣</span>
+      <h2 class="ember">Corrupção &amp; Marcas do Dragão</h2>
+      <div class="section-line ember"></div>
+    </div>
+
+    <div class="callout ember">
+      <strong>Gatilho de Corrupção</strong> Ocorre ao falhar na salvaguarda de Constituição CD 22 após ser atingido pelo Sopro do Abismo Ardente, ou ao sobreviver a contato direto (mordida ou garra) sem morrer. A corrupção de Mermillion é <em>ígnea e arcana</em> — diferente de outras, ela não escurece: ela acende.
+    </div>
+
+    <div class="card ember">
+      <div class="card-title ember">Marca do Sopro — 1d4</div>
+      <div class="trait">
+        <div class="tier-bar" style="background: var(--ember-light);"></div>
+        <div class="trait-content" style="padding:10px 14px;">
+          <div class="trait-name" style="font-size:.68rem;">Resultado 1 — Veias Incandescentes</div>
+          <p>As veias do personagem ficam visíveis sob a pele, brilhando levemente em laranja-âmbar nas noites frias. A temperatura corporal sobe 2°C de forma permanente. NPCs percebem algo estranho ao toque.</p>
+        </div>
+      </div>
+      <div class="trait" style="margin-top:8px;">
+        <div class="tier-bar" style="background: #c06020;"></div>
+        <div class="trait-content" style="padding:10px 14px;">
+          <div class="trait-name" style="font-size:.68rem;">Resultado 2 — Sentido do Dragão</div>
+          <p>O personagem passa a sentir a presença de Mermillion a quilômetros de distância — como um calor surdo no peito que aumenta conforme ele se aproxima. Esse sentido não pode ser desligado e ocorre mesmo durante o sono, causando pesadelos.</p>
+        </div>
+      </div>
+      <div class="trait" style="margin-top:8px;">
+        <div class="tier-bar" style="background: var(--violet-light);"></div>
+        <div class="trait-content" style="padding:10px 14px;">
+          <div class="trait-name" style="font-size:.68rem;">Resultado 3 — Olho Marcado</div>
+          <p>Um dos olhos do personagem ganha reflexos violeta-âmbar visíveis em locais escuros. Ele passa a ter Visão no Escuro de 18m se não tiver — mas toda fonte de luz brilhante causa <span class="hl-red">desvantagem em testes de Percepção visual</span> por 1 rodada após a exposição.</p>
+        </div>
+      </div>
+      <div class="trait" style="margin-top:8px;">
+        <div class="tier-bar" style="background: #3a0a00;"></div>
+        <div class="trait-content" style="padding:10px 14px;">
+          <div class="trait-name" style="font-size:.68rem;">Resultado 4 — Escama Primordial</div>
+          <p>Uma escama do tamanho de uma moeda cresce na pele do personagem — negra, pontiaguda, impossível de remover sem cirurgia grave. Ela é resistente a fogo (o personagem ganha resistência a fogo em uma única parte do corpo) mas repele animais e crianças instintivamente.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout ember" style="margin-top:4px;">
+      <strong>Acúmulo de Marcas</strong> Um personagem pode receber múltiplas marcas ao longo da campanha. Com 3 ou mais, o GM pode introduzir consequências narrativas maiores — como Mermillion demonstrar algum nível de <em>"reconhecimento"</em> do personagem ao próximo encontro, ou outras entidades noturnas evitarem ou reverenciarem o portador.
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       COMPORTAMENTO & TÁTICAS
+  ══════════════════════════════ -->
+  <section id="taticas">
+    <div class="section-header">
+      <span class="section-icon gold">🧠</span>
+      <h2 class="gold">Comportamento &amp; Como Rodar</h2>
+      <div class="section-line gold"></div>
+    </div>
+
+    <div class="card blood">
+      <div class="card-title blood">O Que Mermillion Não É</div>
+      <p>Ele não é maligno da forma que os jogadores reconhecem. Não está com raiva, não tem objetivo, não pode ser negociado, enganado, distraído ou convencido. Não é territorial — ele não <em>está</em> em nenhum lugar de forma permanente. Ele <span class="hl-ember">aparece, destrói, desaparece ao amanhecer.</span> Razão? Nenhuma identificável.</p>
+      <p style="margin-top:8px;">Qualquer NPC que afirmar saber o "porquê" de Mermillion aparecer está mentindo ou delirando. O horror é exatamente a ausência de propósito compreensível.</p>
+      <div style="font-size:.82rem;color:var(--text-dim);border-left:2px solid #553333;padding-left:.8rem;margin-top:.9rem;">
+        <strong>Rastreamento Narrativo — GM:</strong> A ausência de territorialidade não implica ausência de registro histórico. Último avistamento confirmado: <strong>Saga 11</strong> — rugido ouvido a aproximadamente 30–40 km ao sul da região. Isso não é posição fixa; é o ponto de referência mais recente disponível. Durante o dia, Mermillion é completamente inacessível (ver <em>Aparição Noturna</em>) e não pode ser rastreado por nenhum meio. Qualquer estimativa de localização atual deve ser tratada como inferência narrativa, não como dado mecânico.
+      </div>
+    </div>
+
+    <div class="card ember">
+      <div class="card-title ember">Prioridade de Alvos</div>
+      <p>Se forçado a "escolher" entre alvos, Mermillion demonstra um padrão — mas não intencional:</p>
+      <ul style="list-style:none; padding:0; margin-top:8px;">
+        <li style="padding:5px 0; border-bottom:1px solid rgba(60,40,10,.4);">— Criaturas com SAN abaixo de 25% atraem o Olho do Abismo mais frequentemente — algo nelas ressoa.</li>
+        <li style="padding:5px 0; border-bottom:1px solid rgba(60,40,10,.4);">— Portadores de múltiplas Marcas do Dragão não são atacados na primeira rodada — como se ele os <em>reconhecesse</em>.</li>
+        <li style="padding:5px 0; border-bottom:1px solid rgba(60,40,10,.4);">— Luz mágica brilhante (<em>Daylight</em>, itens radiantes) atraem ataques imediatos — não como fraqueza, como irritação.</li>
+        <li style="padding:5px 0;">— Conjuradores que tentam controlá-lo recebem o próximo Sopro disponível.</li>
+      </ul>
+    </div>
+
+    <div class="card violet">
+      <div class="card-title violet">Como Estruturar o Encontro</div>
+      <p>Mermillion não deve ser um "combate" na cena — deve ser um <span class="hl-violet">evento de sobrevivência</span>. As possibilidades de resolução são:</p>
+      <ul style="list-style:none; padding:0; margin-top:8px;">
+        <li style="padding:6px 0; border-bottom:1px solid rgba(50,30,80,.4);">— <span class="hl">Fugir:</span> O objetivo primário. Mermillion se move lentamente — um grupo determinado <em>pode</em> sair do raio de destruição se não perder tempo em combate.</li>
+        <li style="padding:6px 0; border-bottom:1px solid rgba(50,30,80,.4);">— <span class="hl">Desviar:</span> Distrações massivas (explosões, luz concentrada, seres grandes no caminho) podem atrasar sua progressão por 1d4 rodadas — mas não redirecionam.</li>
+        <li style="padding:6px 0; border-bottom:1px solid rgba(50,30,80,.4);">— <span class="hl">Sacrifício Narrativo:</span> Se o GM permitir, um item de imenso poder cósmico (ou um personagem que faça um sacrifício deliberado e irrevogável) pode "satisfazê-lo" por uma noite — ele se vai, mas a resolução tem custo permanente.</li>
+        <li style="padding:6px 0;">— <span class="hl">Amanhecer:</span> A vitória técnica padrão. Sobreviver até o sol nascer. Mermillion desaparece — mas voltará.</li>
+      </ul>
+    </div>
+
+    <div class="callout tip">
+      <strong>Dica de Atmosfera</strong> — Antes de Mermillion aparecer visualmente, construa o anúncio dele: o calor que chega sem fonte, os animais que somem, o silêncio que engole os sons noturnos um a um, o cheiro de pedra quente no ar frio da noite. O rugido deve chegar <em>antes</em> que qualquer personagem possa vê-lo. Quando ele aparecer, ele já deveria ser a coisa mais aterrorizante que os jogadores já viram — mesmo antes de rolar qualquer dado.
+    </div>
+  </section>
+
+
+</main>
+
+<div style="max-width:860px; margin:0 auto; padding:0 20px 0;">
+  <div class="divider" style="padding:0; margin-bottom:0;">
+    <div class="divider-line"></div>
+    <span class="divider-glyph">🐉</span>
+    <div class="divider-line"></div>
+  </div>
+</div>
+
+<footer>
+  Mermillion Moonlight <span>⸸</span> "Aquele que Ruge" <span>⸸</span> Além do Véu da Carne
+</footer>
+
+<a href="#" id="top-btn" title="Voltar ao topo">↑</a>
+
+<script>
+(function() {
+  var topBtn = document.getElementById('top-btn');
+  if (topBtn) {
+    topBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+})();
+
+/* ══ FRACTURAR O DADO ══ */
+var dieMessages = [
+  { rolled: "20", msg: "<strong>20.</strong> O crítico que iria salvar o encontro. Mermillion olhou para o número. O número deixou de existir. Re-role com desvantagem — e se passar de 15 novamente, é falha automática." },
+  { rolled: "18", msg: "<strong>18.</strong> Quase suficiente. Quase. Mermillion não aceita 'quase'. O dado está quebrado. Esse número nunca aconteceu." },
+  { rolled: "15", msg: "<strong>15.</strong> Um resultado decente. Irrelevante agora. Mermillion não reconhece a sorte dos mortais. Re-role com desvantagem." },
+  { rolled: "17", msg: "<strong>17.</strong> Você estava perto. Perto de quê, exatamente? O dado foi destruído antes que qualquer resultado pudesse importar." },
+  { rolled: "19", msg: "<strong>19.</strong> Um a menos que o impossível. Mermillion não diferencia. O dado que gerou esse número foi o último erro que ele vai tolerar esta rodada." },
+];
+var msgIdx = 0;
+
+function fracturarDado() {
+  var wrap = document.getElementById('dieWrap');
+  var face = document.getElementById('dieFace');
+  var crack = document.getElementById('dieCrack');
+  var result = document.getElementById('dieResult');
+  var resultText = document.getElementById('dieResultText');
+  var reset = document.getElementById('dieReset');
+  var flash = document.getElementById('merm-flash');
+
+  if (wrap.classList.contains('broken')) return;
+
+  /* 1 — show die number briefly */
+  var num = dieMessages[msgIdx % dieMessages.length].msg;
+  var rolledNum = dieMessages[msgIdx % dieMessages.length].rolled;
+  msgIdx++;
+
+  face.textContent = rolledNum;
+
+  /* 2 — shake */
+  setTimeout(function() {
+    wrap.style.animation = 'die-shake .35s ease';
+
+    /* 3 — draw crack lines */
+    setTimeout(function() {
+      crack.style.opacity = '1';
+      var lines = crack.querySelectorAll('polyline');
+      lines.forEach(function(l) { l.style.strokeDashoffset = '0'; });
+
+      /* 4 — flash screen */
+      setTimeout(function() {
+        flash.style.animation = 'screen-flash .5s ease forwards';
+
+        /* 5 — spawn shards & vanish die */
+        setTimeout(function() {
+          /* Glitch face text */
+          var glitchWrap = document.createElement('span');
+          glitchWrap.className = 'glitch-wrap active';
+          glitchWrap.setAttribute('data-text', rolledNum);
+          glitchWrap.textContent = rolledNum;
+          face.textContent = '';
+          face.appendChild(glitchWrap);
+
+          spawnShards(wrap);
+
+          setTimeout(function() {
+            face.style.animation = 'die-vanish .4s ease forwards';
+
+            setTimeout(function() {
+              /* Show result */
+              resultText.innerHTML = num;
+              result.classList.add('visible');
+              reset.classList.add('visible');
+              wrap.classList.add('broken');
+              wrap.style.cursor = 'default';
+
+              /* Clean up flash */
+              flash.style.animation = '';
+            }, 420);
+          }, 200);
+        }, 260);
+      }, 200);
+    }, 180);
+  }, 60);
+}
+
+function spawnShards(container) {
+  var colors = ['#1a0505','#0d0208','#200808','#120304'];
+  for (var i = 0; i < 12; i++) {
+    (function(idx) {
+      var s = document.createElement('div');
+      s.className = 'shard';
+      var size = 6 + Math.random() * 14;
+      s.style.cssText = [
+        'width:' + size + 'px',
+        'height:' + (size * (.5 + Math.random())) + 'px',
+        'top:' + (20 + Math.random() * 50) + 'px',
+        'left:' + (10 + Math.random() * 70) + 'px',
+        'background:' + colors[idx % colors.length],
+        'transform:rotate(' + (Math.random()*360) + 'deg)',
+        'border:1px solid rgba(180,30,30,.4)',
+        'opacity:0',
+      ].join(';');
+      container.appendChild(s);
+
+      var dx = (Math.random() - .5) * 120;
+      var dy = (Math.random() - .5) * 120;
+      var delay = idx * 18;
+
+      setTimeout(function() {
+        s.style.opacity = '1';
+        s.style.transition = 'transform .55s ease, opacity .55s ease';
+        s.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(' + (Math.random()*720) + 'deg)';
+        setTimeout(function() { s.style.opacity = '0'; }, 300);
+        setTimeout(function() { if (s.parentNode) s.parentNode.removeChild(s); }, 600);
+      }, delay);
+    })(i);
+  }
+}
+
+function resetDado() {
+  var wrap = document.getElementById('dieWrap');
+  var face = document.getElementById('dieFace');
+  var crack = document.getElementById('dieCrack');
+  var result = document.getElementById('dieResult');
+  var reset = document.getElementById('dieReset');
+
+  /* Reset face */
+  face.innerHTML = 'd20';
+  face.style.animation = '';
+  face.style.opacity = '1';
+
+  /* Reset crack */
+  crack.style.opacity = '0';
+  var lines = crack.querySelectorAll('polyline');
+  lines.forEach(function(l) {
+    l.style.transition = 'none';
+    l.style.strokeDashoffset = l.getAttribute('stroke-dasharray');
+    setTimeout(function() { l.style.transition = ''; }, 50);
+  });
+
+  wrap.style.animation = '';
+  wrap.style.cursor = 'pointer';
+  wrap.classList.remove('broken', 'breaking');
+
+  result.classList.remove('visible');
+  reset.classList.remove('visible');
+}
+</script>
+
+</body>
+</html>
