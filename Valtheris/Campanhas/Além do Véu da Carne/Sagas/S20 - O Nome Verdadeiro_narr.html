@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O Nome Verdadeiro — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .sword-name {
+    display: block; text-align: center;
+    font-family: 'Cinzel Decorative', serif; font-size: 1.7rem; font-weight: 700;
+    color: var(--gold-bright); letter-spacing: .12em;
+    text-shadow: 0 0 18px rgba(232,184,75,.4);
+    margin: 1.8rem 0;
+  }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">XX</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">O Nome<br>Verdadeiro</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet, Mara Vell, Elise e Kaira</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Nem toda espada carrega apenas aço. Algumas guardam o orgulho de quem as forjou, esperando a mão certa para acordar. Esta é a lenda de uma casa que respirou de novo depois de cem anos — e da voz, do outro lado do cristal, que sabia exatamente onde encontrá-los.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Convite</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn suspira — som que carrega o peso de uma noite inteira de decisões, transformações e revelações.</p>
+
+    <p>"Vocês estão certas," disse. "Por mais que eu queira resolver as coisas o mais rápido possível, ainda tenho que descansar. Vamos deixar o núcleo para depois do descanso."</p>
+
+    <p>Aldric assente com aprovação silenciosa e guarda o núcleo de volta. Leyn se vira para Mara. Há algo na sua voz — não ordem, não pedido casual. Convite. Íntimo.</p>
+
+    <p>"Mara. Pode vir comigo?"</p>
+
+    <p>Ela pisca, claramente surpresa.</p>
+
+    <p>"Eu...? Claro. Para onde?"</p>
+
+    <p>Ele estende a mão. Ela olha para a mão estendida por meio segundo — depois a segura. Dedos entrelaçando com os seus, palma quente contra palma.</p>
+
+    <p>"Tio... vocês vão...?" perguntou Kaira, curiosidade de quem ainda aprende.</p>
+
+    <p>"Deixa..." Elise pôs a mão no ombro de Kaira, suave. "Eles precisam... de tempo... a sós..."</p>
+
+    <p>Aldric não diz nada — mas há nos olhos vermelhos dele reconhecimento. Talvez memória de trezentos e quarenta e dois anos atrás, quando ele teve momentos assim com alguém. A Sentinela, através do vínculo, sussurra apenas para Leyn: <em>"Que a família cresça através de vínculos escolhidos."</em></p>
+
+    <p>Sobem das Catacumbas em silêncio. Mara não pergunta para onde estão indo. Apenas caminha ao lado dele, mão ainda na sua, escudo no outro braço — nunca completamente desarmada, mesmo em momento íntimo. As tochas douradas da Vila iluminam o caminho. Mais suaves agora, como se a própria Vila percebesse que este é momento de quietude, não de alerta.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Casa dos Sepet</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Passam pelo Salão Comunal, pela Rua dos Artesãos — onde ainda se ouve, distante, Tobias trabalhando na forja, ritmo constante, quase meditativo. Continuam para o norte. A parte mais antiga. Onde as casas originais foram construídas pelos Fundadores.</p>
+
+    <p>E então param em frente a uma casa específica.</p>
+
+    <p>Menor do que Mara esperava. Não é mansão. Não é fortaleza. É simplesmente lar. Dois andares. Pedra escura na base, madeira nas paredes superiores. Telhado inclinado com telhas que milagrosamente ainda estão intactas após cem anos. Sinais do massacre — marcas de queimadura na porta, manchas escuras nas pedras da entrada, uma janela quebrada no segundo andar. Mas a estrutura permanece. A Vila a preservou, mesmo sem ninguém morando.</p>
+
+    <p>Leyn solta a mão de Mara por um instante. Caminha até a porta — madeira escura, entalhada com símbolos Sepet antigos: lua crescente, estrelas, uma árvore com raízes profundas. Sua mão toca a maçaneta.</p>
+
+    <p>E a porta reconhece. Abre sem resistência. Sem ranger. Como se tivesse sido aberta ontem.</p>
+
+    <p>"Vem," disse. "Quero te mostrar algo."</p>
+
+    <p>A primeira coisa que Mara sente é cheiro. Não de decomposição ou mofo — a magia da Vila preservou demais para isso. Mas cheiro de vida pausada. Madeira antiga. Tecido não tocado em décadas. Poeira em camadas precisas. E por baixo de tudo — muito fraco, mas presente: sangue vampírico. Velho. De muitas pessoas diferentes.</p>
+
+    <p>Sua família.</p>
+
+    <p>Uma lareira na parede esquerda — cinzas frias há cem anos, mas ainda organizadas como se alguém fosse acendê-la amanhã. Uma mesa de jantar no centro — madeira sólida, seis cadeiras ao redor. Pratos ainda na mesa, cobertos por poeira. Quem quer que tenha posto a mesa para o jantar naquela noite nunca teve chance de comer.</p>
+
+    <p>Estantes nas paredes — livros em vampírico antigo, objetos pessoais: uma flauta de madeira, um conjunto de dados entalhados, um colar simples de contas negras. E no canto, perto da janela: um tear. Meio terminado. Fio negro e vermelho entrelaçados em padrão complexo que Leyn reconhece imediatamente.</p>
+
+    <p>Sua mãe estava tecendo quando o massacre começou.</p>
+
+    <p>Mara fica completamente quieta. Ela entende — sem que ele precise dizer — que está pisando em terreno sagrado. Não por magia. Por memória.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Manto Inacabado</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn caminha até o tear. Toca o fio com cuidado — ainda forte, não apodreceu.</p>
+
+    <p>"Minha mãe fazia estes," disse, voz baixa. "Mantos de viagem. Dizia que cada fio era uma proteção. Uma bênção."</p>
+
+    <p>"Era... para quem?" perguntou Mara.</p>
+
+    <p>"Para mim. Eu ia viajar. Primeira missão solo como guerreiro. Patrulhar a fronteira sul. Ela estava fazendo para eu levar."</p>
+
+    <p>Uma pausa pesada.</p>
+
+    <p>"Nunca fui. O massacre aconteceu na noite anterior."</p>
+
+    <p>Ele se vira, olha ao redor da sala. Memórias sobem sem pedir licença.</p>
+
+    <p>"Cresci aqui. Nesta casa. Nesta sala. Meu pai me ensinou a primeira técnica de espada ali — disse que guerreiro precisa de equilíbrio, então me fez treinar em pé na borda da lareira sem cair."</p>
+
+    <p>Pequeno sorriso. "Caí dezessete vezes antes de conseguir."</p>
+
+    <p>"Jantávamos todos juntos. Sempre. Minha mãe insistia. Meus irmãos sempre brigavam por quem sentava mais perto da janela. Eu sempre cedia porque... bem, porque eu achava que tinha que ser exemplo."</p>
+
+    <p>Pausa mais longa. "Nunca pensei que ser exemplo significava... sobreviver sozinho por cem anos."</p>
+
+    <p>Mara pousa a mão no ombro dele, tom que não aceita argumentação.</p>
+
+    <p>"Você não está mais sozinho. Tem a mim. Tem Elise. Tem Kaira. Tem até um vampiro de trezentos anos e um ferreiro humano que adora sua vila. E agora tem dois desertores do Culto que você transformou sem pedir permissão."</p>
+
+    <p>"Sua família ficou... complicada."</p>
+
+    <p>Ele ri — som genuíno. "Complicada é uma palavra gentil."</p>
+
+    <p>"Vem," disse. "Tem mais uma coisa que quero te mostrar."</p>
+
+    <p>Mara segue sem hesitar.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Quarto — Quem Você Era</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>O segundo andar tem três portas. Leyn vai direto para a do meio. O quarto é pequeno — cama coberta por lençol cinza de poeira, a janela quebrada, uma mesa com cadeira. E na parede: armas.</p>
+
+    <p>Uma espada de treino de madeira — a primeira que seu pai lhe dera. Um arco curto — presente de Selene quando ele fez quinze anos. E pendurada sozinha, em suporte especial: uma espada longa. Não tão ornamentada quanto a que carrega agora, mas bem cuidada. A lâmina tem inscrição na base em vampírico antigo: <em>"Para Leyn. Que sua lâmina proteja os que não podem se proteger. — Pai"</em></p>
+
+    <p>Fica parado olhando para a espada por longos segundos. Então se vira para Mara.</p>
+
+    <p>"Eu te trouxe aqui porque... você foi a primeira. A primeira que eu transformei. A primeira que chorou por mim quando eu estava morto. A primeira cujo sangue eu bebi."</p>
+
+    <p>"E você merece saber quem eu era. Antes de tudo. Antes da prisão, antes da solidão, antes de virar... isto."</p>
+
+    <p>Pequeno sorriso triste. "Merece saber que eu não era sempre o vampiro que toma decisões sozinhas e transforma cultistas sem avisar. Eu era só... um garoto que queria proteger a família. Que treinava demais porque tinha medo de não ser forte o suficiente. Que nunca imaginou que 'proteger' significaria sobreviver quando todos os outros morreram."</p>
+
+    <p>Mara o olha com aqueles olhos vermelhos que já viram ele em seus piores momentos — morrendo, ressuscitando, quebrando, se reconstruindo. Ela caminha até ele. Para bem perto. E então faz algo inesperado: abraça.</p>
+
+    <p>Não abraço rápido de conforto. Abraço completo — braços, todos os quatro, os normais e os de aberração, envolvendo, cabeça descansando no ombro dele, corpo pressionado contra o seu.</p>
+
+    <p>"Leyn," disse, voz abafada contra o ombro dele. "Você não precisa me mostrar quem você era para eu saber quem você é."</p>
+
+    <p>"Você é o idiota teimoso que voltou da morte duas vezes porque é incapaz de desistir de quem ama. Você é o guerreiro que salvou duas aberrações e as transformou em família. Você é o protetor que dá escolhas reais mesmo quando isso complica tudo."</p>
+
+    <p>Afasta-se só o suficiente para olhá-lo nos olhos. "E você é meu criador. Meu irmão. Meu... meu algo. Não sei o nome certo ainda. Mas é importante. Mais importante que qualquer título."</p>
+
+    <p>Pequeno sorriso. "E da próxima vez que for transformar um cultista, me avisa ANTES. Tá?"</p>
+
+    <p>O momento fica suspenso no ar. A casa ao redor deles — testemunha silenciosa de cem anos de vazio — parece respirar pela primeira vez desde o massacre. As tochas lá fora brilham mais suaves. A Vila aprova.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Armadura, a Queda, o Beijo</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Mara ainda está segurando Leyn quando ele sente — contra o peito — o metal frio da armadura dela. Cada placa. Cada rebite. Ela percebe o mesmo segundo que ele. Se afasta levemente. Olha para baixo, para si mesma. Depois para ele.</p>
+
+    <p>"Espera."</p>
+
+    <p>Com a mesma precisão de sempre — quatro braços tornando o processo metódico, quase meditativo — ela começa a remover as peças. Uma por uma. Sem pressa, mas sem cerimônia. Como se fosse coisa normal tirar armadura no quarto de alguém. A última peça pousa no chão com som suave. Ela fica de pé — apenas com a roupa de baixo, cicatrizes visíveis nos braços extras, postura ainda de guerreira mesmo sem armadura. Então olha para ele.</p>
+
+    <p>"Pronto."</p>
+
+    <p>Ele finge perder o equilíbrio — movimento sutil, natural o suficiente para parecer acidente. Mara tenta segurá-lo quando caem.</p>
+
+    <p>O local mais macio no quarto: a cama antiga. A poeira se levanta em nuvem leve quando aterrissam. O colchão — preservado pela magia da Vila — cede sob o peso. Mara cai com ele, os quatro braços ainda segurando, corpo contra o seu. Ela se afasta apenas o suficiente para olhá-lo nos olhos — surpresa no rosto dela, mas também reconhecimento. Como se soubesse exatamente o que ele acabou de fazer. E não se importasse.</p>
+
+    <p>Ele leva a mão até o pescoço dela — gentil, explorando. A pele dela é fria como toda vampira, mas tem textura específica que ele memorizara sem perceber: cicatrizes finas de quando ela era aberração, agora quase invisíveis mas ainda presentes ao toque. Os dedos deslizam pelo cabelo curto dela — negro, cortado prático, mas macio de um jeito inesperado.</p>
+
+    <p>Mara fecha os olhos por meio segundo. Respiração desnecessária fica mais lenta.</p>
+
+    <p>Ele se inclina. E a beija.</p>
+
+    <p>É diferente do que ele imaginava. Não é como nos contos — explosão de paixão, música de fundo, mundo parando. É mais... real.</p>
+
+    <p>Os lábios de Mara são frios, mas se movem contra os seus com hesitação inicial que rapidamente se transforma em certeza. Ela não sabe exatamente o que está fazendo — ele sente isso. Aberrações não beijam. E ela foi aberração até três meses atrás.</p>
+
+    <p>Mas ela aprende. Rápido. Do jeito que ela aprende tudo — observando, adaptando, aperfeiçoando.</p>
+
+    <p>Um dos braços dela sobe até o rosto dele, palma contra a bochecha. Os outros três ainda seguram — dois nas costas, um na cintura — não possessivos, mas presentes. Lembrando que ela é única, que tem quatro braços e isso não é defeito, é ela.</p>
+
+    <p>E algo no fundo da mente dele — o vínculo de sangue — pulsa mais forte. Não é intrusivo. Não é mágica forçando emoção. É apenas reconhecimento. De que isto importa.</p>
+
+    <p>Quando se separam, pequenas lágrimas nos olhos dela.</p>
+
+    <p>"Idiota. Você não precisa fingir cair pra fazer isso. Eu teria deixado de qualquer jeito."</p>
+
+    <p>"Você sabe que eu não sei fazer isso direito, né? Nunca... nunca tive isso. Nunca pensei que ia ter. Mas quero aprender. Com você."</p>
+
+    <p>Mara ainda está por cima dele, quatro braços segurando, olhos vermelhos fixos nos seus.</p>
+
+    <p>"Quanto tempo a gente tem até precisar voltar?" perguntou, prática, não urgente. "Você prometeu três horas pra mim. Já passou quanto?"</p>
+
+    <p>"Porque se ainda temos tempo... eu quero ficar aqui. Só nós. Só isso."</p>
+
+    <p>Testa encostando na dele. "Sem Cultos. Sem Construtos. Sem fim do mundo. Só... isto. Tá bom?"</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Uma Hora — O que Fica</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele leva as mãos devagar até o rosto dela. Não com hesitação. Com intenção. A mesma precisão que usa para a Estocada — nenhum movimento desperdiçado, nenhum gesto falso. A palma direita encontra a bochecha esquerda de Mara. A esquerda, a direita. Dedos levemente curvados, como se estivesse segurando algo frágil — não porque ela seja frágil, mas porque o momento é.</p>
+
+    <p>Inclina-a levemente para trás. E beija a testa dela. Lento. Firme. O tipo de gesto que não pede nada em troca.</p>
+
+    <p>"Podemos descansar aqui por uma hora," disse, voz rouca, com aquele meio sorriso. "Assim nos recuperamos. Me desculpe por te beijar sem aviso... duas vezes."</p>
+
+    <p>Ela congela por um segundo, depois ri. "Duas vezes. Você está contando."</p>
+
+    <p>Ela ri. Não gargalhada. Um som pequeno, quente, que ele nunca ouvira dela antes — diferente do humor seco que ela usa como armadura. É riso de alguém que está feliz e não sabe bem o que fazer com isso. Ela se acomoda ao lado dele — não por cima, mas junto, ombro contra ombro, cabeça descansando na sua — com a naturalidade de quem finalmente encontrou lugar onde cabe. Os quatro braços se reorganizam: dois dobrados contra o próprio corpo, um sobre o peito dele, um entrelaçado com o seu.</p>
+
+    <p>"Não precisa se desculpar," disse. "Mas se for fazer de novo... não precisa de queda dramática desta vez. Só me diz. Sou guerreira. Consigo lidar com beijo direto."</p>
+
+    <p>Olhos fechando. "Uma hora. Mas quero que saiba..."</p>
+
+    <p>"...quando a hora acabar, eu levanto. Eu coloco a armadura. Eu pego o escudo. Mas isto aqui... eu guardo. Aqui dentro."</p>
+
+    <p>Trinta segundos depois, através do vínculo, chega um sussurro que não era para eles ouvirem:</p>
+
+    <p><em>"Elise... eles estão bem né? Não foi nada errado?"</em> — Kaira.</p>
+
+    <p><em>"Estão bem... muito bem... deixa eles..."</em> — Elise.</p>
+
+    <p><em>"Mas—"</em></p>
+
+    <p><em>"Kaira."</em></p>
+
+    <p><em>"...tá bom."</em></p>
+
+    <p>Mara sentiu o sorriso dele contra o próprio ombro antes de ver.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Ela Cumpre a Promessa</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele não dormiu — vampiros não dormem assim. Mas ficou quieto. Presente. Dentro do único cômodo do mundo que guarda memórias suas que ninguém pode tirar.</p>
+
+    <p>Mara levanta primeiro. Como prometeu.</p>
+
+    <p>Ele a observa recolocar a armadura com movimentos precisos — quatro braços tornando o processo mais rápido que qualquer humano conseguiria. Cada peça no lugar certo sem que ela precise pensar. Guerreira até no quarto. Ela pega o escudo. Se vira. O olha.</p>
+
+    <p>"Pronto."</p>
+
+    <p>Mas antes de sair, ela para na porta. Não se vira. Apenas fala — para a parede, para o quarto, para cem anos de vazio que agora têm peso diferente:</p>
+
+    <p>"Obrigada por me trazer aqui. Vou guardar isto."</p>
+
+    <p>E desce. Ele fica mais trinta segundos sozinho no quarto. Olha para a espada do pai na parede. Para o arco de Selene. Para a espada de treino de madeira.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Vínculo — Sentindo a Espada</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Seus olhos pousam na espada na parede. Ele estende a mão. E para antes de tocar. Fecha os olhos. Respira — desnecessário, mas o corpo ainda guarda o hábito de quando precisava de ar para se concentrar.</p>
+
+    <p>Ele procura. Não com magia. Com algo mais antigo — o mesmo instinto que reconheceu a espada vinculada quando a encontrou no Arsenal.</p>
+
+    <p>Sua mão paira a dois centímetros da lâmina. E ele sente. Não precisa tocar. A proximidade é suficiente. É como ouvir alguém respirar num quarto escuro — não se vê, mas se sabe com certeza absoluta que não está sozinho.</p>
+
+    <p>O vínculo está lá. Não morto. Não perdido. Esperando.</p>
+
+    <p>Três camadas se revelam, cada uma mais funda que a anterior. A primeira — o estado da lâmina: ela foi forjada <em>para</em> ele. Não apenas presenteada. Seu pai trabalhou com um ferreiro que conhecia magia de vínculo. A intenção estava no metal desde o início. "Que sua lâmina proteja os que não podem se proteger" — não era inscrição decorativa. Era o molde do vínculo.</p>
+
+    <p>A segunda — o que cem anos fizeram: o vínculo enfraqueceu sem ele. Naturalmente. Como músculo sem uso, como chama sem ar. Mas não apagou. A Vila o sustentou sem saber — apenas preservando tudo que pertencia à família. O vínculo está latente. Intacto na estrutura. Faminto.</p>
+
+    <p>E a terceira — esta ele não esperava: há uma segunda presença gravada na lâmina. Fraca. Antiga. Mas inconfundível para sangue primordial. Seu pai tocou aquela espada todos os dias enquanto a forjava. Vampiros primordiais deixam impressão em objetos que carregam com intenção por tempo suficiente.</p>
+
+    <p>Não é fantasma. Não é espírito preso. É eco. Uma única emoção cristalizada no metal — tão simples que quase dói.</p>
+
+    <p><strong>Orgulho.</strong></p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Valaquia</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ele finalmente toca a lâmina. Com a palma inteira. Dedos fechando sobre o fio — cuidadoso para não cortar, mas firme. E o vínculo pulsa. Uma vez. Forte. Como coração que lembra que existe.</p>
+
+    <p>A lâmina não brilha. Não faz som. Não faz nada que alguém observando de fora perceberia. Mas ele sente: ela o reconhece. Ainda.</p>
+
+    <p>Tira-a da parede com as duas mãos. Devagar. Com a reverência que se dá a ossos de família. Vira-a na horizontal. Segura contra o peito.</p>
+
+    <p>E abraça. Não como guerreiro segurando arma. Como filho segurando o único objeto no mundo que ainda carrega as mãos do pai.</p>
+
+    <p>O eco pulsa de novo. Orgulho. Mais forte agora — como se o contato completo tivesse amplificado o que estava cristalizado no metal. Como se algo no fundo da lâmina tivesse esperado exatamente por aquele gesto — não o de guerreiro empunhando, mas o de filho reconhecendo.</p>
+
+    <p>Ele fecha os olhos. A Vila ao redor fica absolutamente quieta. Nem o martelo de Tobias. Nem o vento. Nem as tochas. Apenas silêncio que respeita o que está acontecendo.</p>
+
+    <p>Quando fala, sua voz sai baixa. Não sussurro — mais firme que isso. Declaração. Do tipo que não precisa de plateia para ser real.</p>
+
+    <span class="sword-name">VALAQUIA</span>
+
+    <p>"Aquela que mesmo em uma terra destruída permaneceu esperando seu mestre."</p>
+
+    <p>A lâmina responde. Não com luz. Não com magia visível. Com calor. Imperceptível para qualquer outro. Mas ele sente — contra o peito, através da armadura — a temperatura do metal subindo frações de grau. Como corpo que respira pela primeira vez depois de muito tempo parado.</p>
+
+    <p>O vínculo latente se move. Não ativa completamente — isso ainda requer trabalho, intenção formal, talvez custo. Mas sai do estado de espera profunda e vai para algo que ele reconhece como pronto. Ela está pronta quando ele estiver.</p>
+
+    <p>O suporte vazio na parede guarda cem anos de poeira em formato de espada. Negativo perfeito do que estava ali. Ele decide que não vai preencher o espaço com outra coisa. Que vai ficar vazio. Como lembrete de que algo que deveria estar perdido foi encontrado.</p>
+
+    <p>Então seus olhos pousam no tear da mãe — visível pela porta aberta, lá embaixo na sala. O manto inacabado. Fio negro e vermelho esperando há cem anos. Desce. Para na frente do tear. Sua mão toca o fio — ainda forte, ainda intacto.</p>
+
+    <p>E pensa: talvez alguém possa terminar. Não hoje. Mas um dia.</p>
+
+    <p>Sai da casa dos Sepet com Valaquia na mão e o eco do orgulho do pai aquecendo o peito.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Todos Reunidos — O Grimório e Teren</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>A Vila recebe Leyn de volta com tochas douradas pulsando suaves. Nas catacumbas: Aldric de pé, grimório fechado, expressão de quem esperou pacientemente com informação importante. Kaira sentada no chão com as costas numa coluna, lança no colo, fingindo que não estava esperando. Finge mal. Elise ao lado dela, arco nos joelhos, pequeno sorriso que esconde quando Leyn olha. Teren encostado na parede, olhos vermelhos ainda se acostumando ao mundo, olhando para as próprias mãos com expressão de quem ainda não decidiu como se sente sobre o que é agora. Rory sentado no chão, dormindo, com a espada nos braços — humano exausto dormindo em catacumba vampírica como se fosse coisa normal. E a Sentinela, imóvel, observando Teren com atenção absoluta.</p>
+
+    <p>"Bem-vindos de volta," disse Kaira, solenidade artificial de dois segundos. "Vocês estão bem? Não precisaram de nada? Podíamos ter—"</p>
+
+    <p>"Kaira," disse Mara.</p>
+
+    <p>"...estou quieta."</p>
+
+    <p>Aldric se adianta. Os olhos vermelhos dele dizem que o que tem a dizer não é pequeno. Leyn caminha até ele e estende a mão — a Pedra de Detecção pousa na palma dele, azul claro, inerte.</p>
+
+    <p>"Obrigado por isso," disse Leyn. "Funcionou."</p>
+
+    <p>Aldric a examina, guarda no bolso interno da capa. Seus olhos descem para Valaquia na mão de Leyn — ele não pergunta. Vampiro de trezentos e quarenta e dois anos reconhece quando um momento não precisa de explicação. Apenas inclina levemente a cabeça — respeito silencioso.</p>
+
+    <p>"O que mais você descobriu?" perguntou Leyn. "Mais algum progresso com o grimório?"</p>
+
+    <p>"Terminei de decifrar," disse Aldric. "Cem por cento."</p>
+
+    <p>Abre o grimório numa página marcada com tira de couro — mapa esquemático, três pontos conectados por linhas, anotações em escrita profana já traduzida nas margens pela mão dele.</p>
+
+    <p>"O Ponto Beta — segundo ponto de ancoragem — fica a sudeste como o mapa de Marcus indicava. Sessenta quilômetros. Numa ruína que o grimório chama de 'Câmara do Primeiro Grito'. Antiga estrutura pré-Igreja, anterior ao colapso da civilização há duzentos anos."</p>
+
+    <p>"O Ponto Gama — o terceiro — é o mais problemático."</p>
+
+    <p>Pausa significativa. "Fica na aldeia. Mais especificamente, sob o poço central da praça principal. Que é onde os aldeões buscam água todos os dias."</p>
+
+    <p>Silêncio absoluto. Kaira para de respirar. Elise aperta o arco. Mara fecha a mão no escudo.</p>
+
+    <p>"A estaca já está lá," continuou Aldric, voz controlada. "Instalada antes do massacre de cem anos atrás. Esperando ativação. Isso significa que enquanto procurávamos proteção para os aldeões... o terceiro ponto de ancoragem estava debaixo dos pés deles o tempo todo."</p>
+
+    <p>Marcus e os oito soldados aliados protegiam a aldeia sem saber que dormiam, comiam e patrulhavam literalmente sobre um dos três pilares do Ritual de Convergência. E o Culto não precisava enviar ninguém para ativá-lo — a estaca já estava instalada, aguardando apenas o ritual remoto. A presença de aliados humanos na aldeia não neutralizava ameaça nenhuma.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O que Teren Viu — A Pele que Ondula</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn se vira. Teren se endireita quando é olhado.</p>
+
+    <p>"Teren. Você disse que forneceria informações. Pontos Beta e Gama. E quem é a Mestra."</p>
+
+    <p>"Ponto Beta — Câmara do Primeiro Grito, sudeste," confirmou Teren. "O vampiro de trezentos anos já está certo nisso."</p>
+
+    <p>Olha para Aldric com expressão que mistura desconforto e algo próximo de respeito involuntário.</p>
+
+    <p>"Ponto Gama — sob o poço da aldeia. Também confirmado."</p>
+
+    <p>Respiração funda. Desnecessária. Ele ainda não se livrou do hábito.</p>
+
+    <p>"A Mestra. Eu nunca vi o rosto dela. Ninguém do meu nível viu. Ela sempre aparece com máscara cerimonial — prata, com ranhuras no lugar dos olhos. E a voz... a voz muda. Às vezes é mulher velha. Às vezes é criança. Às vezes são múltiplas ao mesmo tempo. Os outros cultistas diziam que era magia de distorção para proteger identidade."</p>
+
+    <p>"Eu sempre achei que era outra coisa."</p>
+
+    <p>"Diz o que você me contou naquela noite," disse Rory, meio dormindo, acordando com a conversa. "Depois do ritual que matou o Maven."</p>
+
+    <p>"Depois que Maven morreu... eu estava limpando a câmara ritual. Tarde da noite, achei que estava sozinho."</p>
+
+    <p>"A Mestra entrou sem fazer barulho. Estava sem máscara."</p>
+
+    <p>"Eu só vi de costas. Mas o suficiente."</p>
+
+    <p>"Ela não tinha pescoço. Não do jeito normal — era como se a cabeça simplesmente... continuasse nos ombros sem transição. E a pele..."</p>
+
+    <p>Ele olha para as próprias mãos pálidas de vampiro novo.</p>
+
+    <p>"...minha pele agora parece bronzeada comparada com a dela. Era branca como osso limpo. E se movia. Ondulava. Como se houvesse algo por baixo tentando sair."</p>
+
+    <p>"Eu saí antes que ela me visse. Nunca contei para ninguém porque... quem eu contaria? Os superiores que servem ela?"</p>
+
+    <p>"Acho que é pior do que 'algo antigo vestindo pele'. Acho que a pele não é dela."</p>
+
+    <p>Pausa pesada.</p>
+
+    <p>"E acho que não é a primeira que usa."</p>
+
+    <p>Rory está completamente acordado agora. Com expressão de quem gostaria de ter continuado dormindo.</p>
+
+    <p>"Há um registro no grimório de entidade chamada nos textos mais antigos de 'Devorador de Faces'," disse Aldric, reconhecimento sombrio nos olhos. "Catalogada como filha direta dos Mestres Antigos. Não invocada — nascida. Uma das primeiras."</p>
+
+    <p>Fechando o grimório: "Se for ela... o Arauto da Fome Eterna que o ritual quer trazer pode não ser o maior problema. A Mestra pode ser o problema."</p>
+
+    <p>"Classificação atualizada," disse a Sentinela. "Ameaça principal reclassificada de 'agente humano com poder cósmico' para 'entidade não-humana com capacidade de imitação e substituição de forma orgânica'. Esta unidade recomenda cautela extrema em qualquer encontro direto."</p>
+
+    <p>"Ela usa peles de pessoas," disse Kaira, voz baixa. "Pessoas reais. Que existiam antes."</p>
+
+    <p>Não é pergunta. Teren confirma com um aceno.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Voz do Cristal — Ela Sabe Onde Estão</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>O peso daquelas palavras fica suspenso nas catacumbas. E então, do cristal que Rory ainda carrega no cinto — esqueceram de destruir aquele — uma voz.</p>
+
+    <p>Não o Capitão Vor. Voz única. Firme. Feminina, desta vez.</p>
+
+    <p>"Equipe Três não responde há duas horas."</p>
+
+    <p>"Ponto Alfa destruído."</p>
+
+    <p>"<strong>Teren. Kael.</strong>"</p>
+
+    <p>Ela sabe os nomes.</p>
+
+    <p>"Eu sei onde vocês estão."</p>
+
+    <p>Pausa de três segundos.</p>
+
+    <p>"Tragam a menina de olhos dourados até mim e eu perdoo tudo. O pacto quebrado. A estaca destruída. A traição."</p>
+
+    <p>"Ou fiquem onde estão."</p>
+
+    <p>"E eu vou buscá-la de qualquer jeito."</p>
+
+    <p>O cristal apaga. Rory está olhando para o objeto no próprio cinto como se fosse serpente venenosa.</p>
+
+    <p>A família inteira olha para Leyn. Kaira, lança apertada nas duas mãos, olhos dourados fixos nele. Mara, escudo levantado, postura de combate imediata. Elise, arco pronto, dedos nas flechas. Aldric, imóvel, olhos vermelhos calculando. Teren, tenso, mas firme — não fugindo. Rory, acordado, espada empunhada, expressão de quem acabou de entender que o mundo é ainda mais complicado do que imaginava. A Sentinela, espada fantasmagórica completamente materializada. Pronta.</p>
+
+    <p>No bolso de dentro da armadura de Leyn: Valaquia, ainda aquecida pelo eco do pai. No peito: a memória de um quarto com poeira de cem anos e um beijo que ainda não tem nome certo. Na parede de uma casa ao norte: um suporte vazio onde sempre deveria ter estado uma espada. E no fio do tear inacabado de uma mãe: padrão negro e vermelho esperando mãos que um dia saberão como terminar o que foi interrompido.</p>
+
+    <p>A família inteira olha para ele.</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    Numa cama de cem anos de poeira, algo que não tinha nome<br>
+    encontrou forma suficiente para ser guardado.<br>
+    Numa parede vazia, a ausência de uma espada<br>
+    diz mais que qualquer presença poderia.<br>
+    No tear inacabado de uma mãe, fio negro e vermelho espera<br>
+    mãos que saibam terminar o que foi interrompido.<br><br>
+    E numa catacumba antiga, uma voz de cristal acabou de dizer:<br>
+    <em>eu sei onde vocês estão.</em>
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Além do Véu da Carne &nbsp;·&nbsp; Vila Sepet</div>
+</div>
+
+</body>
+</html>

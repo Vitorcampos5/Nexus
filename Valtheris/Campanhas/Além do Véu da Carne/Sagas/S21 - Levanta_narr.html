@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Levanta — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+    --amber:        #e8b84b;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .amber-voice {
+    font-style: italic; color: var(--amber);
+    text-shadow: 0 0 10px rgba(232,184,75,.35);
+  }
+
+  .blade-word {
+    display: block; text-align: center;
+    font-family: 'Cinzel Decorative', serif; font-size: 1.9rem; font-weight: 700;
+    color: var(--amber); letter-spacing: .14em;
+    text-shadow: 0 0 20px rgba(232,184,75,.45);
+    margin: 2rem 0;
+  }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">XXI</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Levanta</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet, Mara Vell, Elise e Kaira</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Existem prisões que só se abrem quando alguém, finalmente, para de tentar consertá-las e simplesmente senta ao lado da dor para ouvir. Esta é a lenda de uma criança presa num cristal, de um vampiro que escolheu escutar em vez de substituir, e da palavra que ela deixou gravada como despedida.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Segunda Respiração — "Todos se Preparem"</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn respira fundo. Não de medo. De decisão. A mão vai instintivamente ao peito — o calor familiar se espalhando pelo corpo como brasa reacesa, fechando o cansaço acumulado da noite em camadas que se dissolvem.</p>
+
+    <p>"Todos se preparem," disse.</p>
+
+    <p>Olha para cada rosto — Mara, Kaira, Elise, Aldric, Teren, Rory, a Sentinela.</p>
+
+    <p>"Além da Mestra, temo que enfrentaremos o Devorador Menor e outros cultistas," disse. "Não sei quando. Mas ela não fez ameaça vazia."</p>
+
+    <p>Uma pausa. "Quero todos descansados, armados e sem dívidas pendentes quando isso acontecer."</p>
+
+    <p>A família responde sem precisar de ordem. Mara já está verificando as tiras da armadura — movimento automático. Kaira ajusta o escudo no braço com aquela determinação nova que ainda está aprendendo a carregar. Elise conta as flechas de prata em silêncio, lábios se movendo. Rory arranca o cristal do cinto e o joga no chão. Não o pisa — olha para Leyn esperando permissão. Ele acena. Rory esmaga com o calcanhar.</p>
+
+    <p>Leyn se vira para Teren. Ele o olha — olhos vermelhos ainda desacostumados com o próprio brilho, mas presentes. Atentos.</p>
+
+    <p>"Teren. Preciso que me auxilie com o núcleo do construto," disse. "Você, eu e Aldric faremos o ritual de purificação."</p>
+
+    <p>"Eu... acabei de me transformar há menos de duas horas," hesitou Teren. "Não sei se tenho controle suficiente para—"</p>
+
+    <p>"Não precisa de controle perfeito," interrompeu Leyn, calmo. "Precisa de intenção honesta. Você tem?"</p>
+
+    <p>Ele olha para as próprias mãos por um segundo. Depois assente.</p>
+
+    <p>"Tenho."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Ritual — Aldric Prepara o Terreno</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn saca a espada longa vinculada. A lâmina canta levemente ao sair da bainha — som fino, quase imperceptível, mas presente. Reconhecimento mútuo entre vampiro e aço vinculado.</p>
+
+    <p>Coloca-a no chão da catacumba com cuidado. Horizontal. Lâmina apontando para o norte.</p>
+
+    <p>Aldric já tirou o núcleo do construto da bolsa. A esfera de cristal negro pousa ao lado da espada — pulsando, rachada, a vontade corrompida girando lentamente no interior como fumaça aprisionada.</p>
+
+    <p>As duas juntas. Lâmina e núcleo.</p>
+
+    <p>"Me guie," disse Leyn. "O que devo fazer?"</p>
+
+    <p>Aldric fica em silêncio por três segundos — olhos vermelhos avaliando a cena. A espada. O núcleo. Leyn. Teren. Depois abaixa lentamente, sentando com as pernas cruzadas do outro lado dos dois objetos. Gesticula para Leyn fazer o mesmo. Para Teren se posicionar à esquerda.</p>
+
+    <p>"Purificação não é exorcismo," explicou. "Não estamos expulsando o que está dentro. Estamos substituindo."</p>
+
+    <p>"O que existe ali é vontade roubada. Alguém — ou algo — teve sua essência arrancada e comprimida nessa esfera para servir de combustível para os Construtos. É raiva. É dor. É recusa em aceitar o que aconteceu."</p>
+
+    <p>"Para purificar, precisamos oferecer algo que possa ocupar o espaço dessa dor. Algo genuíno. Algo seu."</p>
+
+    <p><em>"Uma memória forte. Uma emoção que você carregou por tempo suficiente para ter peso real."</em></p>
+
+    <p>"Não precisa ser boa memória. Precisa ser verdadeira."</p>
+
+    <p>Olhou para Teren. "E você — vampiro novo — vai servir de âncora. Sua transformação ainda é fresca. Você ainda está entre o que era e o que é. Essa fronteira tem valor ritual que vampiros estabelecidos não têm mais."</p>
+
+    <p>"Coloque as mãos no chão. Palmas abertas. Não toque no núcleo. Apenas... esteja presente."</p>
+
+    <p>Teren obedece — palmas no chão frio da catacumba, expressão concentrada.</p>
+
+    <p>"Quando estiver pronto," continuou Aldric, para Leyn, "coloque a mão direita na espada. Mão esquerda no núcleo. E me diga a memória que vai oferecer. Em voz alta. O ritual precisa ouvir."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Leyn Questiona — Conversar em Vez de Substituir</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Ao redor deles — Mara, Kaira e Elise recuaram alguns passos, dando espaço mas permanecendo presentes. A Sentinela flutuou para a periferia, espada guardada. A catacumba fica quieta. Tochas azuis pulsam mais suaves. A Vila está prestando atenção.</p>
+
+    <p>"Então isso seria o ato de purificar..." disse Leyn. "Não sei se você realmente está certo, Aldric. Existem coisas que até o conhecimento presente em livros não explica... oferecer algo — eu apenas estaria substituindo o que o núcleo carrega. De fato dá pra chamar de 'Purificação', mas quero tentar outra coisa. Não forçar um entendimento sobre a energia do núcleo. Quero tentar entender os sentimentos, o 'ser' que foi aprisionado. Quero conversar com ele."</p>
+
+    <p>Aldric para. Completamente. É a primeira vez que alguém vê trezentos e quarenta e dois anos de conhecimento simplesmente... parar. Ele olha para Leyn por um longo segundo. Depois olha para o núcleo. Depois para Leyn de novo.</p>
+
+    <p>E então faz algo inesperado. Ri. Baixo. Genuíno. O tipo de riso de quem acaba de ser ensinado por alguém que supõe ter menos experiência.</p>
+
+    <p>"Eu aprendi purificação com um sábio em Kethara há duzentos anos," disse, a voz com textura diferente. "Ele me ensinou exatamente o que você descreveu. Substituição. Eu nunca questionei porque funcionava."</p>
+
+    <p>"Você acabou de questionar em dez segundos o que eu pratiquei por dois séculos."</p>
+
+    <p>Recua. Literalmente se afasta do núcleo — abrindo espaço.</p>
+
+    <p>"Então tente do seu jeito."</p>
+
+    <p>Teren está olhando entre os dois com expressão de alguém que não tem contexto suficiente para avaliar o que está acontecendo, mas sente que é importante. Rory, encostado na parede, fala baixinho:</p>
+
+    <p>"Isso é magia?"</p>
+
+    <p>"Cala a boca, Rory," disse Teren.</p>
+
+    <p>Mara dá um passo à frente — não para interferir. Apenas para estar mais perto. Kaira está com os olhos dourados fixos no núcleo, lança baixa, expressão de quem está processando algo que ressoa. Porque ela sabe o que é ser aprisionada. Ela sabe o que é ter sua vontade tratada como ferramenta. Ela não diz nada. Mas os olhos dourados dizem tudo.</p>
+
+    <p>"Observação relevante," disse a Sentinela, flutuando para frente.</p>
+
+    <p>Todos olham para ela.</p>
+
+    <p>"Esta unidade foi criada do sangue dos Fundadores. Sangue com intenção, memória e escolha. Quando esta unidade foi criada, não foi purificada. Não foi substituída. Foi... reconhecida."</p>
+
+    <p>"O que Leyn Sepet descreve pode ser mais antigo que qualquer técnica registrada."</p>
+
+    <p>O núcleo pulsa. Leyn não fez nada ainda. Apenas falou sua intenção em voz alta. E o núcleo respondeu. Não forte — uma única pulsação irregular. Como alguém que estava fingindo dormir e por um segundo esqueceu de fingir.</p>
+
+    <p>"Interessante," disse Aldric, olhos no núcleo. "Já reagiu mais a suas palavras do que reagiu ao meu ritual completo."</p>
+
+    <p>"A abordagem é sua," continuou, sério. "Mas precisarei te guiar no mecanismo — como abrir o canal sem ser consumido pelo que está dentro. Isso ainda é necessário independente do que você planeja fazer depois de entrar."</p>
+
+    <p>"O que está lá dentro está com raiva há muito tempo. Pode não querer conversa. Pode atacar instintivamente. Se o ser lá dentro não quiser conversa — se vier com tudo que tem — você consegue segurar sem destruí-lo? Sem fechar o canal na força?"</p>
+
+    <p>A pergunta não é retórica. É avaliação real. Ao redor deles, as tochas azuis pulsam aguardando. O núcleo pulsa de volta — irregular, curioso, ainda com raiva mas com algo novo misturado.</p>
+
+    <p>"Eu não sei se consigo, mas vou tentar," disse Leyn. "Quero entender mais sobre o Culto da Verdade Profunda. Se eu conseguir entender, pode ser que eu consiga impedi-los por completo, e acabar com essa dor que eles causam."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Como o Culto Captura — Teren e Rory</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn direciona sua voz para Teren e para Rory.</p>
+
+    <p>"Vou precisar que me expliquem mais a respeito de como o Culto recruta pessoas e 'ensinam' esse tipo de magia."</p>
+
+    <p>Teren e Rory trocam olhar — o tipo que carrega história inteira sem precisar de palavras. Teren fala primeiro. Voz baixa, mas firme.</p>
+
+    <p>"O Culto não recruta com ameaças. Não no início."</p>
+
+    <p>"Eles procuram pessoas específicas. Jovens com poder latente — magia, força, intuição aguçada. Pessoas que já se sentem fora de lugar. Que já sentem que o mundo não foi feito para elas."</p>
+
+    <p>"Me encontraram depois que meu pai morreu," disse Rory, a voz mais áspera. "Eu tinha dezesseis anos. Estava sozinho, com raiva, sem dinheiro e sem direção. Um homem simpático me comprou comida e ficou três horas me ouvindo."</p>
+
+    <p>Riu, sem humor. "Três horas. Ninguém tinha me ouvido por tanto tempo na vida."</p>
+
+    <p>"Na semana seguinte ele me apresentou ao grupo. Disseram que eu tinha 'potencial de guerreiro real'. Que podia fazer parte de algo maior."</p>
+
+    <p>"Para os que têm magia, é diferente," continuou Teren. "Eles ensinam de verdade — técnicas reais, poder real. Mas cada lição tem custo. Uma promessa aqui. Um favor ali. Um pacto pequeno que parece inofensivo."</p>
+
+    <p>"Quando você percebe o tamanho do que assinou... já está fundo demais para sair."</p>
+
+    <p>"E aí começa o medo. Porque eles ensinam que os de fora — humanos comuns, Igreja, vampiros — são inimigos. Que só existe segurança dentro do Culto."</p>
+
+    <p>"Isolamento," disse Aldric, mais para si mesmo. "Técnica antiga. Anterior ao próprio Culto."</p>
+
+    <p>"Sim," confirmou Teren. "E funciona. Porque quando você não tem mais ninguém fora... os Mestres Antigos passam a ser sua única família."</p>
+
+    <p>Silêncio pesado. Kaira está ouvindo com atenção absoluta — expressão fechada, olhos dourados sérios. Leyn sabe o que ela está pensando. Ela passou cem anos sem família. Ela entende o que isolamento faz com uma pessoa.</p>
+
+    <p>Leyn olha para o núcleo no chão. Pulsando. Irregular. Esperando.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Contato — Mãos no Cristal Negro</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Estou pronto," disse Leyn.</p>
+
+    <p>"Quando tocar, não force," disse Aldric, a voz mudando de tom. "Não empurre sua presença para dentro. Apenas... abra. Como porta, não como muralha."</p>
+
+    <p>"Se sentir raiva vindo de dentro — e vai sentir — não recue imediatamente. Raiva é comunicação. É a única linguagem que esse ser aprendeu a usar."</p>
+
+    <p>"E Leyn." Olhou diretamente para ele. "Se em algum momento sentir que está perdendo a si mesmo... diga meu nome. Em voz alta. Eu te trago de volta."</p>
+
+    <p>Leyn estende a mão. Dedos se fechando sobre o cristal negro rachado.</p>
+
+    <p>O contato é imediato. Não gradual. Não suave.</p>
+
+    <p><strong>IMPACTO.</strong></p>
+
+    <p>Não físico — mais profundo. Como mergulhar em água gelada que não é água. Como cair sem direção de queda.</p>
+
+    <p>O mundo ao redor não desaparece completamente — ele ainda sente o chão frio das catacumbas sob os joelhos, ainda ouve vagamente a respiração de Teren, ainda percebe a mão de Aldric próxima mas sem tocar.</p>
+
+    <p>Mas há camada nova sobre tudo.</p>
+
+    <p>Camada de outra presença.</p>
+
+    <p>Ela não é refinada. Não é articulada. É antiga e comprimida e com raiva de um jeito que não tem palavras — apenas sensação. <em>Como tentar segurar fogo com as mãos nuas e descobrir que o fogo também tem mãos.</em></p>
+
+    <p>E ela sente ele.</p>
+
+    <p>Três segundos de silêncio absoluto nesse espaço entre espaços.</p>
+
+    <p>Então vem.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Campo de Flores Amarelas — O que o Núcleo Carregava</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Não com palavras. Com imagem.</p>
+
+    <p>Leyn vê — não com os olhos, mas com algo mais fundo:</p>
+
+    <p>Uma criança. Seis, sete anos. Cabelo negro. Olhos cor de âmbar que ele nunca viu antes mas reconhece como reais, como pertencentes a alguém específico.</p>
+
+    <p>Ela está num campo. Dia ensolarado. Flores amarelas até a cintura.</p>
+
+    <p><em>Está rindo.</em></p>
+
+    <p>E então — homens com mantos roxos aparecem na borda do campo.</p>
+
+    <p>A criança para de rir.</p>
+
+    <p>A imagem acelera — fragmentada, violenta como memória traumática que não quer ser revisitada mas não consegue parar.</p>
+
+    <p>Mãos segurando. Símbolos sendo gravados. Dor que não tem nome porque a criança nunca teve palavras para o que estava acontecendo.</p>
+
+    <p>E então — escuridão.</p>
+
+    <p><strong>Compressão.</strong></p>
+
+    <p>O mundo inteiro se tornando menor e menor e menor até ser apenas esta esfera. Esta prisão de cristal negro.</p>
+
+    <p>A presença bate em Leyn. Não ataque coordenado — desespero que virou agressão porque foi a única coisa que sobrou.</p>
+
+    <p>O impacto bate nele como onda.</p>
+
+    <p>Raiva antiga, comprimida, sem direção — apenas dor que aprendeu a ser violência porque violência era a única resposta que ninguém conseguia ignorar.</p>
+
+    <p>Ele a sente.</p>
+
+    <p>E por um momento — apenas um — ele a <strong>compartilha</strong>.</p>
+
+    <p>Não a raiva dela. A sua.</p>
+
+    <p><em>A mesma raiva que ele carrega desde que acordou num mundo onde sua família virou cinza e osso. Raiva dos nobres que assinaram a ordem. Da Igreja que fechou os olhos. Do Culto que usa crianças como combustível para abrir portas que nunca deveriam ser abertas. De seres antigos que olham para vidas inteiras e enxergam apenas peças em tabuleiro.</em></p>
+
+    <p>A presença para.</p>
+
+    <p>Confusa. Esperava resistência. Esperava medo. Esperava o que todo mundo antes fez — empurrar de volta, tentar controlar, tentar usar.</p>
+
+    <p><strong>Não esperava que alguém sentisse junto.</strong></p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">No Canto da Escuridão — Onde Ela Estava</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn procura. Não com força — com atenção. Com o mesmo instinto que confiou em Kaira nas catacumbas. Que encontrou Valaquia na parede de um quarto que cheirava a cem anos de ausência.</p>
+
+    <p>O espaço interior do núcleo é escuridão densa. Mas escuridão tem textura. Tem temperatura. Tem direção.</p>
+
+    <p>Ele a encontra.</p>
+
+    <p>Não no centro — <strong>no canto</strong>.</p>
+
+    <p><em>Exatamente como Kaira estava quando sentiu a presença de Aldric pela primeira vez nas catacumbas. Encolhida. Não por fraqueza — por hábito. Porque cantos eram os únicos lugares que tinham pelo menos dois lados protegidos.</em></p>
+
+    <p>A presença da criança está lá. Menor do que a raiva que ela projeta. Muito menor. Como se a raiva fosse armadura que cresceu maior que o corpo que protegia.</p>
+
+    <p>Ele se aproxima devagar. Sem intenção agressiva. Sem ritual. Sem técnica de Aldric ou sabedoria de grimório. Apenas ele. Andando devagar em direção a alguém que foi ensinada que aproximação significa dor.</p>
+
+    <p>Ela recua meio passo. Ele para. Espera.</p>
+
+    <p>Depois dá mais um passo. Ela recua de novo — mas menos. Testando. Medindo.</p>
+
+    <p><em>Quantas vezes você vai parar antes de agarrar?</em></p>
+
+    <p>É o que o movimento dela pergunta. Sem palavras. Com a linguagem de corpo de criança que aprendeu que adultos sempre agarram no final.</p>
+
+    <p>Ele para de novo.</p>
+
+    <p><strong>E senta.</strong></p>
+
+    <p>No chão da escuridão que não é chão mas se comporta como tal porque sua mente precisa de algo para ancorar. Senta. Sem pressa. Sem agenda.</p>
+
+    <p>E espera.</p>
+
+    <p>Nas catacumbas, trinta segundos se passam. Aldric observa o rosto de Leyn com atenção cirúrgica. Teren está com as palmas no chão, imóvel, fazendo exatamente o que foi pedido — apenas presente. Rory está segurando a respiração sem perceber. Mara está de joelhos ao lado de Leyn. Não tocando. Mas perto. Kaira tem a mão sobre a boca.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Toque — Obrigada por Me Ver</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>A presença da criança dá um passo em direção a Leyn. Para. Outro passo. Para de novo.</p>
+
+    <p>E então — muito baixo, como som que esqueceu como ser som depois de muito tempo comprimido — uma coisa que não é bem palavra, mas carrega peso de palavra:</p>
+
+    <p><span class="amber-voice">Por quê?</span></p>
+
+    <p>Não por que ele está ali. Não por que não vai machucá-la. Apenas <em>por quê</em> — a pergunta mais antiga e mais sem resposta que existe. A pergunta de criança em campo de flores amarelas que de repente viu homens de manto roxo na borda do mundo.</p>
+
+    <p><strong>Por quê isso aconteceu comigo?</strong></p>
+
+    <p>A escuridão ao redor deles pulsa. A mão dele sobe devagar. Cada centímetro deliberado. Cada movimento telegrafado com antecedência — veja, estou fazendo isso, você pode ver tudo, não tem surpresa, não tem armadilha. A presença recua meio passo. Para. Observa.</p>
+
+    <p>A mão continua subindo.</p>
+
+    <p>E então — no momento exato em que os dedos dele deveriam tocar — a presença fecha os olhos. Não de medo. <strong>De escolha.</strong></p>
+
+    <p>Ele toca a cabeça dela.</p>
+
+    <p>Gentil. Palma aberta, dedos levemente curvados. O mesmo toque que deu em Mara horas atrás. O mesmo peso que colocou em Valaquia quando a tirou da parede. Toque que não pede nada. Que apenas diz <em>estou aqui.</em></p>
+
+    <p>Nas catacumbas, Aldric ouve Leyn murmurar, voz rouca e baixa mas completamente presente. Mara fecha os olhos por um segundo. E dentro — a presença ouve cada palavra com a clareza de quem passou anos em silêncio absoluto e esqueceu como era ser diretamente endereçada.</p>
+
+    <p>"Existe sempre algum ser achando que pode controlar o mundo como quiser," disse Leyn, a voz existindo nos dois lugares ao mesmo tempo.</p>
+
+    <p>"Forçando as pessoas a fazerem o que eles não podem fazer por si mesmos."</p>
+
+    <p>"Egoísmo. Sensação de poder."</p>
+
+    <p>"Eles tiram a nossa liberdade só pra se sentirem melhores com isso."</p>
+
+    <p>"Mas isso é algo que eu não vou perdoar," disse, a voz mais baixa, mais funda.</p>
+
+    <p>"Não vou deixar isso impune."</p>
+
+    <p>A presença da criança abre os olhos.</p>
+
+    <p>Âmbar. Cor de mel antigo. Os mesmos olhos do campo de flores amarelas antes dos mantos roxos aparecerem na borda do mundo.</p>
+
+    <p>Ela o olha por um longo momento.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Libertação — Âmbar</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>E então faz algo que a escuridão comprimida do núcleo claramente não estava preparada para conter.</p>
+
+    <p><strong>Ela chora.</strong></p>
+
+    <p>Não com som — com luz.</p>
+
+    <p>Fissuras finas de âmbar dourado começando nos olhos, descendo pelas bochechas, se espalhando pelo corpo inteiro como rachaduras em pedra que finalmente cede depois de peso de muito tempo.</p>
+
+    <p><em>Não desintegração. Libertação.</em></p>
+
+    <p>Fora do núcleo — sem aviso: o cristal negro para de pulsar.</p>
+
+    <p>Aldric recua um centímetro involuntariamente. Teren abre os olhos — as palmas no chão estão aquecidas, ele sente mesmo sendo vampiro novo. E então as rachaduras no núcleo começam a brilhar. Não roxo doentio de magia profana. <strong>Âmbar.</strong></p>
+
+    <p>Dourado quente. Como tochas da Vila multiplicadas e comprimidas num cristal do tamanho de punho. Kaira faz um som involuntário — pequeno, surpreso. Porque a cor é exatamente a mesma dos próprios olhos dela.</p>
+
+    <p>Dentro, a presença da criança está se dissolvendo.</p>
+
+    <p>Não morrendo. <em>Partindo.</em></p>
+
+    <p>Como diferença entre chama apagada e chama que terminou o que tinha para queimar e simplesmente... completou.</p>
+
+    <p>Ela olha para Leyn uma última vez.</p>
+
+    <p>E ele sente — não em palavras, não em imagem, mas em certeza absoluta da forma mais direta que consciência pode comunicar para outra consciência:</p>
+
+    <p><span class="amber-voice">Obrigada por me ver. Não como ferramenta. Como eu era.</span></p>
+
+    <p>O impacto de volta é suave.</p>
+
+    <p>Leyn está nas catacumbas. Joelhos no chão frio. Mão ainda estendida — agora segurando o núcleo que está <strong>quente, âmbar, silencioso</strong>.</p>
+
+    <p>A raiva dentro dele sumiu. Não substituída. Não purificada pela técnica de Aldric.</p>
+
+    <p><strong>Escutada até o fim.</strong></p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">De Volta às Catacumbas — O que Todos Sentiram</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Aldric está olhando para o núcleo âmbar na mão de Leyn com expressão que ninguém nunca vira nele antes. Duzentos anos de conhecimento encontrando algo que não estava nos livros.</p>
+
+    <p>"Leyn..." começou, parou, recomeçou. "O que você fez... não tem nome em nenhum texto que já li."</p>
+
+    <p>"Eu senti," disse Teren, palmas ainda no chão, olhos arregalados. "Mesmo sendo vampiro novo. Eu senti quando ela foi embora."</p>
+
+    <p>"Eu não entendo nada do que aconteceu," disse Rory, mão no peito, encostado na parede. "Mas eu também senti."</p>
+
+    <p>Mara coloca a mão no ombro de Leyn. Não diz nada. Não precisa.</p>
+
+    <p>Kaira está agachada na frente dele — olhos dourados fixos no núcleo âmbar, expressão que mistura reconhecimento e algo que vai levar tempo para nomear.</p>
+
+    <p>"A cor," disse, voz pequena. "É igual aos meus olhos."</p>
+
+    <p>"Acha que ela... acha que ela era como eu? Antes?"</p>
+
+    <p>"Análise do núcleo — concluída," disse a Sentinela, a voz mais baixa que o usual. "Presença profana: zero. Presença hostil: zero."</p>
+
+    <p>Uma pausa que ninguém nunca ouvira dela antes. "O que resta é... potencial. Puro. Sem intenção gravada. Sem vontade forçada. Aguardando nova intenção."</p>
+
+    <p>"O núcleo pode ser integrado agora. Não como era — não como combustível ou âncora. Como escolha."</p>
+
+    <p>O núcleo âmbar pulsa uma vez na mão de Leyn. Suave. Perguntando.</p>
+
+    <p>"O que devo fazer para integrar o núcleo à espada?" perguntou.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Vitória — O Ritual de Integração</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Aldric olha para o núcleo âmbar na mão de Leyn. Depois para a espada longa vinculada no chão. Depois para ele. E pela segunda vez naquela noite, trezentos e quarenta e dois anos de conhecimento ficam completamente quietos antes de falar.</p>
+
+    <p>"Normalmente integração de núcleo em lâmina requer ritual de três dias. Runas de contenção. Sangue do portador derramado em fases."</p>
+
+    <p>Olha para o núcleo âmbar pulsando suave.</p>
+
+    <p>"Mas esse núcleo não tem mais vontade forçada. Tem potencial puro esperando intenção. O que significa que o ritual pode ser substituído por algo mais simples. E mais verdadeiro."</p>
+
+    <p>"Coloque o núcleo na lâmina. Não na bainha — na lâmina. Na parte plana, perto da base onde a inscrição do Arsenal está gravada."</p>
+
+    <p>"E declare a intenção em voz alta. O nome. O propósito. O que você quer que ela carregue."</p>
+
+    <p><em>"O núcleo vai fazer o resto. Porque agora ele escolhe."</em></p>
+
+    <p>Leyn olha para Kaira.</p>
+
+    <p>"De certa forma, Kaira — ela era como você."</p>
+
+    <p>Kaira não responde imediatamente. Fica olhando para o núcleo âmbar com aqueles olhos dourados que têm a mesma cor. Cem anos sozinha numa floresta. Uma criança que nunca escolheu o que foi feito com ela.</p>
+
+    <p>"Eu sei," disse, a voz pequena mas sem tremor. "Por isso eu quero que ela descanse."</p>
+
+    <p>Olhando para ele: "Você fez isso, tio. Você a deixou descansar."</p>
+
+    <p>Leyn segura o núcleo âmbar sobre a lâmina da espada vinculada. O contato é imediato — o cristal reconhece o metal assim como o metal reconhece o cristal. Dois objetos que carregavam intenção de pessoas que não existem mais, encontrando nova intenção de alguém que existe agora.</p>
+
+    <p>"Seu nome será Victória," disse.</p>
+
+    <p>"A espada com vontade inquebrável."</p>
+
+    <p>"Carregue a determinação de quem cai e se levanta. De quem vê o mal e não fecha os olhos. De quem foi aprisionada e mesmo assim não esqueceu o que é ser livre."</p>
+
+    <p>O núcleo âmbar pulsa — uma vez, forte — e então se move. Não derrete. Não explode. Simplesmente... entra. Como água encontrando fissura em pedra. Seguindo o caminho que sempre existiu mas nunca tinha sido aberto.</p>
+
+    <p>O cristal se integra à base da lâmina — e onde antes havia aço cinza comum, agora há veios de âmbar dourado correndo pelo metal como raízes. Subindo pela lâmina em espiral fina, terminando dois terços do caminho até a ponta.</p>
+
+    <p>A inscrição do Arsenal some. Substituída por algo novo — gravado não por ferramenta, mas pela própria integração.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Levanta — A Palavra que Ela Escolheu</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Aldric lê a nova inscrição em voz alta, surpreso.</p>
+
+    <p>Gravada na lâmina, em vampírico antigo — não gravada por ferramenta, escolhida por ela:</p>
+
+    <span class="blade-word">LEVANTA</span>
+
+    <p>Silêncio absoluto.</p>
+
+    <p>"Ela escolheu isso?" perguntou Teren, a voz rouca, olhos vermelhos fixos na lâmina âmbar. "O que está gravado?"</p>
+
+    <p>"Sim," disse Aldric, a voz com textura de admiração genuína. "A intenção de Leyn deu direção. Mas as palavras... foram dela."</p>
+
+    <p>"Victória registrada," disse a Sentinela, flutuando para frente. "Lâmina com vontade integrada — classificação: única. Sem precedente nos registros da Vila Sepet."</p>
+
+    <p>"Os Fundadores ficariam honrados."</p>
+
+    <p>"Victória," disse Mara, o sorriso de lado que ela nunca admite ser sorriso. "Combina."</p>
+
+    <p>"Eu só quero dizer que não entendo metade do que aconteceu aqui hoje," disse Rory, a voz pequena, mão no peito. "Mas estou muito feliz de não estar mais do outro lado."</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    Uma criança em um campo de flores amarelas<br>
+    nunca escolheu o que os homens de manto roxo fizeram com ela.<br>
+    Mas escolheu, no fim, a única coisa que ainda era sua:<br>
+    a palavra que deixaria gravada em nome de despedida.<br><br>
+    Não vingança. Não os nomes de quem a machucou.<br><br>
+    <em>Levanta.</em><br><br>
+    Porque foi isso que alguém finalmente fez por ela —<br>
+    sentou ao lado da dor até que ela pudesse, enfim,<br>
+    se levantar e ir embora em paz.
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Além do Véu da Carne &nbsp;·&nbsp; Vila Sepet</div>
+</div>
+
+</body>
+</html>

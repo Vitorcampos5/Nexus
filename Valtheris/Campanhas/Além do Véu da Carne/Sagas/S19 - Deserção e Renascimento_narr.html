@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deserção e Renascimento — Modo Narrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void:         #060408;
+    --ink:          #e2c9a8;
+    --ink-dim:      #9e8a72;
+    --ink-faint:    #5a4e42;
+    --gold:         #c9963c;
+    --gold-bright:  #e8b84b;
+    --violet:       #8c66d9;
+    --violet-bright:#a888e8;
+    --violet-dim:   #5e4590;
+    --border-subtle: rgba(255,255,255,.05);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+
+  body {
+    background: var(--void);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: .6;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(120,80,200,.08) 0%, transparent 60%);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 2rem;
+  }
+  .cover-eyebrow {
+    font-family: 'Cinzel', serif; font-size: .58rem;
+    letter-spacing: .4em; text-transform: uppercase;
+    color: var(--ink-faint); margin-bottom: 1.5rem;
+  }
+  .cover-numeral {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.2rem; font-weight: 900;
+    color: var(--violet); line-height: 1;
+    text-shadow: 0 0 30px rgba(140,100,220,.5);
+    margin-bottom: 1.1rem;
+  }
+  .cover-divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+    margin-bottom: 1.7rem;
+  }
+  .cover-title {
+    font-family: 'Cinzel Decorative', serif; font-weight: 700;
+    font-size: clamp(2rem, 6vw, 3.1rem); color: var(--ink);
+    text-shadow: 0 0 50px rgba(140,100,220,.25);
+    line-height: 1.15; margin-bottom: 1.1rem;
+  }
+  .cover-subtitle {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1rem; color: var(--ink-dim);
+  }
+  .cover-badge {
+    margin-top: 1.6rem;
+    font-family: 'Cinzel', serif; font-size: .48rem;
+    letter-spacing: .25em; text-transform: uppercase;
+    color: var(--violet-bright);
+    border: 1px solid rgba(140,100,220,.3);
+    padding: .35rem .9rem;
+    border-radius: 1px;
+  }
+
+  /* ── Epigraph ── */
+  .epigraph {
+    position: relative; z-index: 1;
+    max-width: 460px; margin: 0 auto 5.5rem; padding: 0 2rem;
+    text-align: center;
+  }
+  .epigraph-rule {
+    width: 40px; height: 1px; background: var(--violet-dim);
+    margin: 0 auto 1.7rem;
+  }
+  .epigraph p {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--ink-dim); line-height: 1.9;
+  }
+
+  /* ── Page / chapters ── */
+  .page-wrapper {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 7rem;
+  }
+
+  .chapter { margin-bottom: 4.5rem; }
+
+  .chapter-header {
+    display: flex; align-items: baseline; gap: 1.1rem;
+    margin-bottom: 2.1rem;
+  }
+  .chapter-number {
+    font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 900;
+    color: var(--violet); line-height: 1; min-width: 1.6ch;
+    text-shadow: 0 0 20px rgba(140,100,220,.35);
+    flex-shrink: 0;
+  }
+  .chapter-title-block { flex: 1; }
+  .chapter-title {
+    font-family: 'Cinzel', serif; font-size: clamp(.82rem, 2.2vw, 1.02rem);
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--gold); line-height: 1.3;
+  }
+  .chapter-rule {
+    width: 100%; height: 1px; margin-top: .65rem;
+    background: linear-gradient(90deg, var(--border-subtle), transparent);
+  }
+
+  .chapter p { margin-bottom: 1.3em; }
+  .chapter p:first-of-type::first-letter {
+    font-family: 'Cinzel Decorative', serif; font-size: 3.5em; font-weight: 900;
+    float: left; line-height: .78; margin: .06em .12em -.05em 0;
+    color: var(--violet);
+    text-shadow: 0 0 20px rgba(140,100,220,.4);
+  }
+  .chapter em { font-style: italic; }
+  .chapter strong { color: var(--gold-bright); font-weight: 600; }
+
+  .echo {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: .92rem; letter-spacing: .03em;
+    color: var(--violet-bright); text-align: center;
+    max-width: 440px; margin: 2.2rem auto; line-height: 1.9;
+    opacity: .85;
+  }
+  .echo.hostile { color: #c25858; }
+
+  /* ── Divider between chapters ── */
+  .veil-divider {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 1.1rem;
+    max-width: 700px; margin: 0 auto; padding: 0 2rem 4.5rem;
+  }
+  .veil-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  }
+  .veil-divider-glyph { color: var(--violet-dim); font-size: .85rem; flex-shrink: 0; }
+
+  /* ── Finale ── */
+  .finale-block {
+    position: relative; z-index: 1;
+    max-width: 700px; margin: 2rem auto 0; padding: 3rem 2rem 4rem;
+    text-align: center;
+  }
+  .finale-quote {
+    font-family: 'EB Garamond', serif; font-style: italic;
+    font-size: 1.12rem; color: var(--ink-dim); line-height: 1.85;
+    max-width: 520px; margin: 0 auto 2.1rem;
+  }
+  .finale-divider {
+    width: 60px; height: 1px; margin: 0 auto 1.4rem;
+    background: linear-gradient(90deg, transparent, var(--violet-dim), transparent);
+  }
+  .finale-coda {
+    font-family: 'Cinzel', serif; font-size: .55rem;
+    letter-spacing: .3em; text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 600px) {
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .veil-divider { padding: 0 1.2rem 3.2rem; }
+    .cover { padding: 4rem 1.2rem; min-height: 85vh; }
+    .chapter p:first-of-type::first-letter { font-size: 2.9em; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition-duration: .001ms !important;
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-eyebrow">Além do Véu da Carne &nbsp;·&nbsp; Continente de Valtheris</div>
+  <div class="cover-numeral">XIX</div>
+  <div class="cover-divider"></div>
+  <h1 class="cover-title">Deserção<br>e Renascimento</h1>
+  <p class="cover-subtitle">Uma lenda de Leyn Sepet, Mara Vell, Elise e Kaira</p>
+  <div class="cover-badge">📖 Modo Narrativo</div>
+</div>
+
+<div class="epigraph">
+  <div class="epigraph-rule"></div>
+  <p>Existe um tipo de poder que a maioria dos vampiros nunca aprende a usar: o poder de simplesmente perguntar a alguém o que ele quer. Esta é a lenda da noite em que dois desertores encontraram, na escuridão de uma vila vampírica, a primeira escolha real de suas vidas.</p>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── I ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">I</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Voz que Corta o Silêncio</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn se move. Sai de trás da árvore, ainda dentro da Noite Eterna, e caminha até onde o cristal de detecção caiu. Pega-o sem pressa, sem esconder o movimento. O conjurador e o guerreiro veem — ou melhor, veem o contorno do movimento, a sombra ligeiramente mais escura que a escuridão, a forma humanoide que se move com propósito. Guarda o cristal no bolso.</p>
+
+    <p>E então fala. Sua voz corta o silêncio como lâmina.</p>
+
+    <p>"Guerreiro. Seu irmão provavelmente atacou minha família. E por isso morreu. Todos que tentarem ferir quem é importante para mim terão o mesmo destino."</p>
+
+    <p>O guerreiro recua meio passo, mas não corre. Algo no jeito que ele fala — a absoluta certeza, a ausência de ameaça vazia — o mantém no lugar.</p>
+
+    <p>"Humanos. São podres. Eu vejo através de suas máscaras."</p>
+
+    <p>Ele vê o padrão neles com clareza incomum. Viveram a vida inteira seguindo ordens — do Culto, dos nobres, da "Mestra", de quem quer que oferecesse estrutura e propósito. E agora, pela primeira vez, estão sem ordem clara. Sem líder dizendo o que fazer. Sem caminho marcado. E isso os aterroriza mais do que ele — porque escolher é mais assustador que obedecer.</p>
+
+    <p>"Vocês dizem que vão desistir e abandonar os postos," continuou. "Porque estão sendo usados. Dizem não querer morrer. Dizem que estão cansados de seguir ordens. Mas passaram a vida toda fazendo exatamente isso."</p>
+
+    <p>O conjurador fecha os olhos — como se cada palavra fosse tapa.</p>
+
+    <p>"E agora buscam uma resposta através de mim," disse Leyn. "Porque sentem o desespero de estarem do lado errado. Vocês buscam uma saída."</p>
+
+    <p>Dá um passo para frente — ainda dentro da escuridão, mas mais perto da borda. Eles podem vê-lo melhor agora. Contorno. Olhos vermelhos brilhando. Silêncio absoluto. Cruza os braços.</p>
+
+    <p>"Então vou deixar que decidam. Vocês têm cinco minutos. Caso contrário, não só os Construtos cairão. Vocês também."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── II ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">II</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Pacto de Sangue — Sem Escapatória</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>O conjurador abre os olhos. Olha para Leyn com expressão que mistura terror, raiva e algo próximo de... gratidão. Porque ele fez o que nenhum dos superiores dele jamais fez. Deu-lhe escolha real.</p>
+
+    <p>"Kael. Você ouviu," disse o conjurador, levantando-se, pernas trêmulas.</p>
+
+    <p>"Cinco minutos pra decidir se deserto ou morro," disse o guerreiro, olhos no chão. "Sempre quis saber se eu era corajoso. Acho que vou descobrir."</p>
+
+    <p>O conjurador olha para a estaca ritual — ainda ali, runas brilhando fracamente. Toca o próprio peito, sobre o coração.</p>
+
+    <p>"Eu assinei pacto. Com meu sangue. Se eu trair o Culto... a mágica me mata de dentro pra fora."</p>
+
+    <p>Kael olha para ele, horrorizado. "Você NUNCA me contou isso!"</p>
+
+    <p>"PORQUE EU NÃO QUERIA QUE VOCÊ SOUBESSE! Porque se você soubesse, teria tentado me salvar! E teria morrido também!"</p>
+
+    <p>"Eu estou PRESO, Kael!" O conjurador caiu de joelhos. "Não importa o que eu escolha! Se fico, morro quando os vampiros atacarem! Se vou, o pacto me mata! Então por que esse vampiro está me dando ESCOLHA?! Que tipo de monstro dá esperança pra quem não tem saída?!"</p>
+
+    <p>Pelo cristal de comunicação, distante: "Todas as equipes. Atualização. Reforços chegam em OITO minutos. Preparem-se para relatório completo."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── III ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">III</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Oferta de Traição — Informação pela Morte Pacífica</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Vampiro," disse o conjurador, levantando-se, trêmulo. "Você disse que todos que ferirem sua família morrem. E se eu te dissesse ONDE está o terceiro ponto? Onde fica o Ponto Gama? E quem é a Mestra de verdade?"</p>
+
+    <p>"Teren, isso é—" Kael, chocado.</p>
+
+    <p>"Traição completa? EU SEI!" disse Teren. "Mas se vou morrer de qualquer jeito — por pacto de sangue ou por vampiro ou por Construto — pelo menos que seja fazendo ALGO que importa! Vou te dar tudo que sei. Localizações. Números. Planos. O ritual completo."</p>
+
+    <p>A voz dele quebra.</p>
+
+    <p>"...quando o pacto começar a me matar... você termina rápido. Não me deixa agonizar por horas enquanto meu sangue ferve de dentro pra fora. Por favor."</p>
+
+    <p>"Teren... você não precisa—" disse Kael, horrorizado.</p>
+
+    <p>"EU PRECISO!" explodiu Teren. "Porque Maven morreu gritando e eu não fiz NADA! Porque meu irmão mais novo está na Fortaleza sendo preparado pro próximo ritual e eu não consigo salvá-lo sozinho! Porque eu estou FARTO de ser ferramenta!"</p>
+
+    <p>Pelo cristal: "Sete minutos."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Riso de Respeito — e o Peso do Nome</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Leyn ri. Não é zombaria. Não é crueldade. É o riso de quem reconhece ironia tão profunda que só pode ser apreciada. É riso de respeito. Teren e Kael congelam, claramente não esperando essa reação.</p>
+
+    <p>"Você, Teren," disse, o riso morrendo, tom absolutamente direto. "Depois de seguir ordens hediondas, quer uma morte pacífica e sem dor?"</p>
+
+    <p>Teren abre a boca. Fecha. Não tem resposta para isso. Fica olhando entre os dois, processando. Leyn se vira para o guerreiro.</p>
+
+    <p>"E outra coisa," disse, voz mais baixa, mais fria. "Como você ousa pronunciar o nome de Kael?"</p>
+
+    <p>"Eu... é meu nome... eu não—" disse o guerreiro, confuso.</p>
+
+    <p>"Como um mero guerreiro cultista ousa ter esse nome? Você não tem IDEIA do peso que esse nome carrega."</p>
+
+    <p>Kael Sepet. Passou três anos enterrando cento e quarenta e sete corpos sozinho. Gravou cada nome com as próprias mãos. E quando terminou, entrou em uma câmara e nunca mais saiu.</p>
+
+    <p>"Esse é o peso do nome Kael."</p>
+
+    <p>Silêncio absoluto. O guerreiro — Kael — está pálido, tremendo.</p>
+
+    <p>"Eu... eu não sabia... meus pais... eles só disseram que era nome de família..."</p>
+
+    <p>Teren está olhando para o amigo com expressão que mistura horror e algo próximo de... pena. Leyn deixa o silêncio existir por três segundos. Então continua, voz voltando ao tom controlado — mas ainda carregada de autoridade absoluta.</p>
+
+    <p>"Conjurador. Posso te dar uma chance de ajudar seu irmão mais novo. Mas você não vai gostar NADA do que terá que fazer."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── V ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">V</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Oferta Impossível — Tornar-se Vampiro</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Primeiro, você deve entrar aqui," disse Leyn. "Dentro da Escuridão Eterna."</p>
+
+    <p>Aponta para dentro da Noite Eterna. Teren olha para a escuridão como se fosse portão do inferno.</p>
+
+    <p>"Segundo..." Uma pausa pesada. "Você deverá se tornar um vampiro."</p>
+
+    <p>O mundo para. Teren fica completamente imóvel. Boca aberta. Olhos arregalados. Kael dá dois passos para trás, instintivamente alcançando a espada — depois para quando percebe o absurdo de tentar sacar arma contra Leyn.</p>
+
+    <p>"Um... vampiro..." disse Teren, rouco, quebrado. "Você quer que eu... que eu vire... Eu passei seis anos matando mortos-vivos. Queimando vampiros menores. Seguindo ordens do Culto para eliminar 'abominações'. E agora você oferece me transformar em exatamente isso?"</p>
+
+    <p>"Não existem outras saídas para você," disse Leyn. "O pacto de sangue te mata se você desertar. Os Construtos te matam se você ficar. E eu te mato se você tentar me enganar. Mas morte e renascimento como vampiro quebra pactos mortais. Você deixa de ser o humano que assinou. Vira outra coisa."</p>
+
+    <p>"E... e como vampiro... eu poderia... salvar meu irmão?"</p>
+
+    <p>"Poderia. Não garanto que vai conseguir. Mas teria poder para tentar. Mais do que tem agora." Virou-se para Kael. "E você, guerreiro. Você deve destruir a estaca. Agora. Na frente de mim e do seu amigo. Prove que sua escolha é real. Aí sim teremos um acordo."</p>
+
+    <p>Pelo cristal: "QUATRO MINUTOS ATÉ REFORÇOS. Equipe Três, confirme posição."</p>
+
+    <p>Ninguém responde.</p>
+
+    <p>"Kael. Irmão," disse Teren. "Você não precisa fazer isso. Você pode correr. Ainda tem tempo. Eu não assinei pacto. Pode desertar. Viver."</p>
+
+    <p>"E te deixar virar vampiro sozinho? Virar monstro sozinho?" disse Kael. "Não. Se você vai... eu vou junto."</p>
+
+    <p>"Você é idiota," disse Teren, olhos cheios de lágrimas.</p>
+
+    <p>"Aprendi com você."</p>
+
+    <p>Teren se vira para a escuridão.</p>
+
+    <p>"Vampiro. Eu aceito. Vou entrar na sua Noite Eterna. Vou deixar você me transformar. E vou usar esse poder maldito para salvar meu irmão ou morrer tentando."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Kael Destrói o Ponto Alfa</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Teren caminha até a borda da escuridão. Para. Mão estendida, tremendo, tocando a linha onde a luz das tochas simplesmente... termina.</p>
+
+    <p>"Destrói a estaca," disse, virando-se para Kael. "Mostra pra ele que a gente é sério."</p>
+
+    <p>Kael olha para a estaca ritual. Depois para Teren. Depois para Leyn — olhos vermelhos brilhando na escuridão. Caminha até o arbusto espinhoso. Afasta os galhos. A espada ainda está em uma das mãos. Olha para a estaca — pedra negra, runas profanas brilhando roxo doentio.</p>
+
+    <p>"Seis anos no Culto," murmura. "Seis anos seguindo ordens. E termina assim. Que os deuses me perdoem. Ou não. Tanto faz."</p>
+
+    <p>Levanta a espada. E desce a lâmina com força total.</p>
+
+    <p><strong>CRACK.</strong></p>
+
+    <p>As runas explodem em luz roxa violenta. Energia profana jorra para cima como gêiser, depois se dissipa rapidamente — como fumaça em vento forte. A estaca racha ao meio. Depois se despedaça completamente, fragmentos de pedra negra caindo no musgo.</p>
+
+    <p>"ALERTA MÁXIMO! PONTO ALFA DESTRUÍDO! REPITO: PONTO ALFA COMPROMETIDO!"</p>
+
+    <p>A voz não é a do Capitão Vor. É a da "Mestra" — múltiplas vozes sobrepostas, falando em uníssono:</p>
+
+    <p class="echo hostile">IMPOSSÍVEL. BARREIRA ESTAVA ATIVA. QUEM— EQUIPE TRÊS. REPORTEM. AGORA.</p>
+
+    <p>Teren olha para o cristal. Para Leyn. Para Kael. Depois pisa no cristal, esmagando-o sob a bota. Silêncio absoluto.</p>
+
+    <p>"Pronto," disse. "Estaca destruída. Cristal destruído. Traição completa. Agora cumpra sua parte. Me transforme antes que o pacto perceba o que eu fiz."</p>
+
+    <p>"E eu... eu vou junto," disse Kael. "Como vampiro também. Ou como testemunha. Ou como o que você quiser. Só não me faça voltar pra Fortaleza."</p>
+
+    <p>De longe — muito longe, mas se aproximando rápido — passos pesados. Múltiplos. Os Construtos. E gritos de cultistas organizando resposta de emergência. Talvez quatro a cinco minutos.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Dentro da Noite Eterna — A Transformação</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Vocês provaram que não estavam mentindo," disse Leyn. "Então cumprirei com minha palavra."</p>
+
+    <p>Estende a mão para fora da Noite Eterna — não completamente, apenas o suficiente para que Teren possa vê-la. Palma aberta. Convite e comando ao mesmo tempo.</p>
+
+    <p>"Venha."</p>
+
+    <p>"Se eu não sair do outro lado..." disse Teren, para Kael, uma última vez, "diga ao meu irmão que tentei."</p>
+
+    <p>"Você vai sair," disse Kael. "E vamos buscá-lo juntos."</p>
+
+    <p>Teren respira fundo — último suspiro como humano que escolhe respirar. E entra na escuridão.</p>
+
+    <p>A mudança é imediata para ele — a visão humana simplesmente apaga. Cegueira total. Ele tropeça, mãos estendidas procurando algo sólido. Leyn o segura pelo pulso. Firme, mas não brutal.</p>
+
+    <p>"Eu... eu não vejo nada..."</p>
+
+    <p>"Não precisa ver," disse Leyn. "Apenas sinta."</p>
+
+    <p>Puxa-o mais para dentro — quinze metros. Longe o suficiente da borda para que Kael não veja detalhes, mas perto o suficiente para que ainda ouça. Teren está tremendo. Não apenas de medo — o corpo dele está começando a reagir.</p>
+
+    <p>O pacto de sangue percebeu a traição. Veias negras começam a aparecer sob a pele pálida dele. Começando no peito, onde o pacto foi selado, espalhando-se como raízes venenosas.</p>
+
+    <p>"Está... começando..." Teren geme, dobrando-se de dor. "O pacto... está me matando..."</p>
+
+    <p>"Eu sei."</p>
+
+    <p>Leyn segura a mão direita dele — a mesma que destruíra o cristal de comunicação, a mesma que escolhera trair tudo. E morde. Não o pescoço — intimidade que Teren não merece ainda. Não o pulso — romantismo que não cabe ali. A mão. Local de ação. Local de escolha.</p>
+
+    <p>As presas perfuram a palma dele com precisão cirúrgica. Sangue jorra — quente, vivo, mas já começando a ferver por dentro com a mágica do pacto. Teren grita. Não de dor da mordida — de dor do pacto acelerando, tentando matá-lo antes que a transformação comece.</p>
+
+    <p>Leyn bebe. O sangue dele é complexo — seis anos de magia profana correndo pelas veias. O gosto de pactos quebrados. O sabor de arrependimento e desespero e uma fagulha minúscula de esperança. Drena o suficiente para que o coração comece a falhar.</p>
+
+    <p>Teren cai de joelhos. Som ficando mais fraco.</p>
+
+    <p><em>"Está... funcionando...? Eu vou... virar...?"</em></p>
+
+    <p>"Sim. Mas primeiro você precisa morrer completamente."</p>
+
+    <p>Leyn se ajoelha ao lado dele.</p>
+
+    <p><em>"Quando seu coração parar... aí eu te trago de volta."</em></p>
+
+    <p><em>"Meu... irmão... Luca... está... na Fortaleza... nível três... câmara leste... por favor..."</em></p>
+
+    <p>"Vou lembrar."</p>
+
+    <p>E Teren desmorona. O pacto explode dentro dele. Veias negras cobrem todo o corpo. Sangue pelos olhos, nariz, boca. Três batidas irregulares. Duas. Uma. Para.</p>
+
+    <p>Silêncio. Teren está morto no chão da Noite Eterna. Corpo ainda quente, mas vazio.</p>
+
+    <p>Leyn corta o próprio pulso com as presas. Sangue primordial — vermelho escuro, quase negro — brota. E o coloca na boca de Teren.</p>
+
+    <p><em>"Beba. Mesmo morto. Beba."</em></p>
+
+    <p>Três segundos de nada. Depois — o corpo convulsiona. Não com vida. Com algo entre vida e morte. A garganta de Teren se move, engolindo reflexivamente. O sangue primordial desce, queimando o caminho de volta para o coração parado.</p>
+
+    <p>E o coração bate. Uma vez. Duas. Três. Os olhos de Teren se abrem — não mais marrons humanos. Vermelhos. Ele arqueia as costas, boca aberta em grito silencioso, presas crescendo, pele ficando mais pálida, veias negras do pacto se dissolvendo e sendo substituídas por algo novo.</p>
+
+    <p>Dois minutos completos. Quando termina, Teren cai de volta, respirando pesadamente — desnecessário, mas hábito —, olhos vermelhos arregalados olhando para o nada.</p>
+
+    <p><em>"Eu... estou... morto...?"</em></p>
+
+    <p>"Não mais. Agora você é outra coisa."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── VIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">VIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Emergindo — Rory, Nome Provisório</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"TEREN?! VOCÊ ESTÁ VIVO?! RESPONDE!" gritou Kael, do lado de fora.</p>
+
+    <p>Leyn o ajuda a ficar de pé. Caminham de volta para a borda da escuridão. Kael vê dois contornos emergindo — um que reconhece como Leyn, outro que acha que reconhece.</p>
+
+    <p>O homem que sai da escuridão tem o rosto de Teren, a voz de Teren, mas não é mais Teren. Olhos vermelhos. Presas visíveis. Pele cadavérica. Presença que faz todo instinto de sobrevivência de Kael gritar PREDADOR.</p>
+
+    <p>"Você... você virou..." Kael tremia, espada meio levantada.</p>
+
+    <p>"Sou... eu..." disse Teren, agora vampiro, voz rouca. "Ainda sou eu... acho... E o pacto... não dói mais. Não sinto mais nada. Estou livre."</p>
+
+    <p>Leyn se vira para Kael.</p>
+
+    <p>"Se vem com ele por lealdade... talvez algum dia seja digno de seu nome. Até lá, te chamarei de Rory."</p>
+
+    <p>"Rory...?" Kael testa o som.</p>
+
+    <p>"Nome provisório," explica Leyn. "Até você provar que merece carregar o nome Kael." Uma pausa. "Pense se quer se tornar um vampiro ou não depois de nos observar. Não decida agora. Decida quando tiver certeza."</p>
+
+    <p>Do norte — muito mais perto agora: <strong>BOOM. BOOM. BOOM.</strong> Os Construtos. E vozes gritando em formação de combate: <em>"EQUIPE TRÊS NÃO RESPONDE! PONTO ALFA DESTRUÍDO! VARRAM A ÁREA!"</em></p>
+
+    <p>"Não temos tempo para lutar agora," disse Leyn. "Venham. Vamos recuar, Rory."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── IX ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">IX</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Protocolo Duplo — Por Que o Mensageiro?</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Teren. Você tinha um cristal de comunicação e o usou para falar com o Capitão Vor," disse Leyn, enquanto caminhavam. "Por que mandou o outro guerreiro solicitar reforços pessoalmente também?"</p>
+
+    <p>"Protocolo duplo," disse Teren. "O Culto não confia só em magia — cristais podem falhar, ser interceptados, ou a mensagem pode ser... mal interpretada. Para qualquer evento de 'Código Vermelho' a gente tinha que reportar de DUAS formas: cristal E mensageiro pessoal. O mensageiro também serve como prova viva. É mais difícil duvidar de alguém que viu com os próprios olhos do que de uma voz num cristal."</p>
+
+    <p>Ele ri amargamente.</p>
+
+    <p>"E o Culto é paranóico. Sempre foi."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── X ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">X</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Vila Sepet — Visão no Escuro</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Eu... eu não vejo NADA!" disse Teren, entrando na Vila.</p>
+
+    <p>"Sua visão no escuro vai ativar em alguns segundos," disse Leyn. "Respire. Espere."</p>
+
+    <p>"Vampiros não precisam respirar..." murmurou Teren.</p>
+
+    <p>Dez segundos depois — os olhos vermelhos dele se arregalam.</p>
+
+    <p>"Eu... eu vejo! Tudo! Como se fosse dia!" — fascínio e horror misturados.</p>
+
+    <p>"Eu odeio isso aqui!" disse Rory, grudado na parede. "Não vejo nem minha mão na frente do rosto!"</p>
+
+    <p>"Então fique perto," disse Leyn.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Vínculo de Sangue — A Família Recebe a Notícia</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Enquanto caminhavam, Leyn abriu o vínculo de sangue.</p>
+
+    <p><em>Temos um novo membro na família,</em> transmitiu. <em>E talvez um novo aliado. Eram cultistas. Por mais estranho que isso pareça.</em></p>
+
+    <p>"Você transformou um CULTISTA?!" — Mara, imediata.</p>
+
+    <p><em>Ele destruiu o Ponto Alfa. Traiu o Culto completamente. Tem informações valiosas. E um irmão para salvar.</em></p>
+
+    <p>"E o 'talvez aliado'?" — Kaira.</p>
+
+    <p><em>Humano. Ainda decidindo se quer se transformar ou não. Nome temporário: Rory.</em></p>
+
+    <p>"Leyn... você está... bem? Ferido?" — Elise.</p>
+
+    <p><em>Estou bem. Voltando para as Catacumbas com eles agora.</em></p>
+
+    <p>"Leyn. Grimório do Culto está noventa por cento aberto," disse Aldric. "Mais dez minutos e tenho a chave de decifração. E você trouxe cultistas para a Vila. Isso vai ser... interessante."</p>
+
+    <p>Descem. As tochas azuis pulsam — e quando Teren entra, elas brilham intensamente por um segundo antes de voltar ao normal. A Vila reconhecendo novo vampiro. Novo sangue Sepet, mesmo que de segunda geração.</p>
+
+    <p>"Isso... isso é real?" Teren olhava ao redor. "Catacumbas vampíricas? Eu pensei que eram lendas..."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Família em Guarda — Standoff nas Catacumbas</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>Viram a esquina e encontram a família inteira em formação defensiva. Mara de pé, escudo levantado, olhos vermelhos fixos em Teren com intensidade absoluta. Kaira com a lança em guarda, olhos dourados brilhando — postura de quem está pronta para atacar ou defender dependendo do que Leyn disser. Elise com o arco e flecha encaixada, mirada em Teren, dedo no gatilho mas não puxando ainda. Aldric de pé atrás delas, o Grimório do Culto aberto em uma das mãos, a outra pronta para sacar a espada em meio segundo. E a Sentinela, flutuando no centro, espada fantasmagórica materializada e brilhando intensamente, posicionada entre a família e os recém-chegados.</p>
+
+    <p>"ALTO. IDENTIFIQUEM-SE. PRESENÇA PROFANA DETECTADA," declarou a Sentinela.</p>
+
+    <p>"Eu... eu não... por favor, eu acabei de—" Teren, mãos levantadas, recuando.</p>
+
+    <p>"Vocês são livres para terem suas suspeitas," disse Leyn, calmo mas firme. "Esses dois estão indefesos aqui dentro. Então tirem suas dúvidas com diálogo. Não os ataquem sem que eles deem um bom motivo para isso."</p>
+
+    <p>"Tudo bem," disse Mara, baixando o escudo parcialmente. "Mas se o cultista tentar alguma magia profana, eu não vou esperar explicação. Então, ex-conjurador. Por que você traiu o Culto?"</p>
+
+    <p>"Porque eu estava cansado de ser ferramenta," disse Teren. "Porque meu melhor amigo morreu num ritual que 'não deu certo'. Porque meu irmão mais novo está preso na Fortaleza esperando o mesmo destino. E porque esse vampiro me deu escolha real pela primeira vez em seis anos."</p>
+
+    <p>"Seu irmão... quantos anos ele tem?" perguntou Kaira, baixando a lança levemente.</p>
+
+    <p>"Quinze. Luca. Ele tem quinze anos. E está na câmara leste do nível três sendo preparado para ser sacrificado na próxima lua nova."</p>
+
+    <p>Rory está congelado de terror absoluto.</p>
+
+    <p>Kaira olha para Leyn — e ele vê reconhecimento nos olhos dourados dela. Ela sabe o que é ter família em perigo. Baixa a lança completamente.</p>
+
+    <p>"Tudo bem. Eu acredito nele."</p>
+
+    <p>"E... você... humano..." disse Elise, para Rory. "Por que... está aqui?"</p>
+
+    <p>"Porque Teren é meu irmão," disse Rory. "Não de sangue, mas de escolha. E se ele vira vampiro e vem pra cá, eu venho junto. Mesmo que eu morra por isso."</p>
+
+    <p>"Lealdade..." Elise baixou o arco. "Entendo isso..."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XIII ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIII</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Leyn Pede Desculpas a Mara</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"O Tobias está sozinho na forja?" perguntou Leyn a Elise.</p>
+
+    <p>"Não... eu estava... com ele... até você... nos chamar... pelo vínculo..." disse Elise. "Ele deve... estar ainda lá... testando... a bigorna... estava muito... empolgado... Disse que... as ferramentas aqui... são melhores... que qualquer coisa... que já viu..."</p>
+
+    <p>Leyn caminha até Mara. Ela já sabe o que ele vai dizer antes de abrir a boca. Três meses de vínculo de sangue deixam algumas coisas óbvias.</p>
+
+    <p>"Mara. Desculpa. Por novamente ter agido sozinho. E transformado eles sem antes perguntar como você se sentiria com isso."</p>
+
+    <p>Mara fica quieta por longos cinco segundos. Então suspira — não de raiva, de algo mais próximo de... cansaço afetuoso.</p>
+
+    <p>"Leyn. Você acabou de sair de uma Provação que te ensinou sobre isso. E a primeira coisa que você faz é tomar decisão massiva sozinho de novo."</p>
+
+    <p>Ela bate de leve no ombro dele com o punho — não forte, apenas... tocando.</p>
+
+    <p>"Mas... dessa vez você pelo menos RECONHECE que deveria ter perguntado. Isso já é progresso. E honestamente? Se você tivesse voltado e PEDIDO permissão antes de transformá-lo, eu teria dito não. Porque é arriscado, porque ele era inimigo há dez minutos, porque pode ser armadilha. Mas você não pediu. Você agiu. E trouxe ele aqui. E agora ele é responsabilidade nossa."</p>
+
+    <p>Tom mais suave: "Então vamos lidar com isso juntos. Como família. Tá bom?"</p>
+
+    <p>Não é perdão completo. É aceitação realista. E talvez a resposta mais honesta que um líder pode receber de quem o conhece de verdade.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XIV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XIV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">Ordens à Sentinela — Análise de Caráter</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Sentinela. Fique observando eles," disse Leyn. "Tire suas próprias conclusões se são dignos de estarem aqui."</p>
+
+    <p>"Ordem compreendida," disse ela. "Teren, ex-conjurador do Culto da Verdade Profunda, agora vampiro de segunda geração. Rory, nome provisório, guerreiro desertor. Esta unidade observará comportamento, intenções e compatibilidade com valores da Vila Sepet. Resultado será reportado quando conclusão for alcançada."</p>
+
+    <p>Teren e Rory trocam olhares nervosos, mas assentem. Teren examina as próprias presas com fascinação horrorizada.</p>
+
+    <p>Leyn se vira para Aldric. Ele já fechou o Grimório do Culto e está esperando com aquela paciência de trezentos e quarenta e dois anos.</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XV ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XV</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">O Grimório — Ritual de Convergência</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"O que você descobriu?" perguntou Leyn.</p>
+
+    <p>"Consegui abrir," disse Aldric. "E decifrar aproximadamente sessenta por cento do conteúdo."</p>
+
+    <p>Abre o grimório numa página específica — diagramas, mapas, símbolos em espiral.</p>
+
+    <p>Três Pontos de Ancoragem formando triângulo ritual. Quando ativados simultaneamente durante a Lua Nova, abrem um portal temporário entre este plano e o Vazio Profundo. Dura aproximadamente doze minutos. O suficiente para algo grande atravessar.</p>
+
+    <p>Não o Devorador Menor — ele era apenas batedor. Teste. O que pretendem trazer é chamado no grimório de "Arauto da Fome Eterna". A ilustração no pergaminho faz os olhos doerem ao olhar — mesmo sendo apenas tinta. Algo nela não deveria existir representado em qualquer forma.</p>
+
+    <p>O ritual precisa de âncora viva. Alguém com sangue primordial puro para servir de canal.</p>
+
+    <p>"Kaira," disse Aldric.</p>
+
+    <p>Uma raiva fria sobe em Leyn.</p>
+
+    <p>"Eles querem usar minha sobrinha como porta."</p>
+
+    <p>"Sim," disse Aldric. "Mas há mais."</p>
+
+    <p>Texto original: <em>"...Sangue de servo disposto, derramado voluntariamente sobre a estaca enquanto pronuncia o Nome Verdadeiro do Mestre."</em> Alguém que QUER que o ritual aconteça. Não funciona com prisioneiro ou escravo. Tem que ser escolha.</p>
+
+    <p>Aldric fecha o grimório.</p>
+
+    <p>"A boa notícia: você destruiu um dos pontos. O ritual não pode ser completado sem três."</p>
+
+    <p>"A má notícia: eles podem criar novo ponto. Leva tempo — aproximadamente uma semana de trabalho ritual — mas é possível."</p>
+
+    <p>Olhando direto nos olhos de Leyn:</p>
+
+    <p>"E tem mais uma coisa. O grimório menciona a 'Mestra'. Não pelo nome real, mas pela função. E segundo o texto... ela não é humana. Nunca foi. É algo antigo vestindo pele humana como roupa."</p>
+  </section>
+
+  <div class="veil-divider">
+    <span class="veil-divider-line"></span>
+    <span class="veil-divider-glyph">✦</span>
+    <span class="veil-divider-line"></span>
+  </div>
+
+  <!-- ── XVI ── -->
+  <section class="chapter">
+    <div class="chapter-header">
+      <div class="chapter-number">XVI</div>
+      <div class="chapter-title-block">
+        <div class="chapter-title">A Próxima Decisão — Purificar o Núcleo</div>
+        <div class="chapter-rule"></div>
+      </div>
+    </div>
+
+    <p>"Estou pronto para tentar purificar o núcleo do construto," disse Leyn.</p>
+
+    <p>"Tem certeza? Agora?" disse Aldric. "O processo é... intenso. Vai exigir que você ofereça memória ou emoção forte em troca do que está corrompido dentro do núcleo. E vai doer. Não fisicamente. Mas vai doer. Ainda quer fazer isso?"</p>
+
+    <p>"Leyn... você acabou de voltar de patrulha, transformou um cultista, recuou de Construtos, e agora quer fazer ritual de purificação?" disse Mara, preocupada. "Você não quer... descansar primeiro?"</p>
+
+    <p>"Tio... você prometeu três horas," disse Kaira. "Ainda tem tempo. Pode respirar um pouco."</p>
+
+    <p>"Concordo..." disse Elise. "Você parece... cansado..."</p>
+
+    <p>Elas têm razão — ele está cansado. Não fisicamente, mas emocionalmente. Foi uma noite longa. Mas o núcleo está rachando. E através de instinto primordial, ele sente — quanto antes purificar, melhor.</p>
+  </section>
+
+</div><!-- /page-wrapper -->
+
+<div class="finale-block">
+  <p class="finale-quote">
+    Uma escolha real dada a quem nunca teve nenhuma<br>
+    pode ser o ato mais radical de poder<br>
+    que um vampiro primordial pode executar.<br>
+    Não matar. Não poupar.<br>
+    Mas dizer: <em>você decide</em>.<br>
+    E depois arcar com as consequências<br>
+    junto com sua família.
+  </p>
+  <div class="finale-divider"></div>
+  <div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Além do Véu da Carne</div>
+</div>
+
+</body>
+</html>
