@@ -141,6 +141,15 @@
     font-size:.72rem; padding:.3rem .65rem; border-radius:20px; cursor:pointer; font-family:inherit;}
   .guts-chip:hover{border-color:rgba(210,105,30,.5); color:var(--burlywood);}
 
+  /* Peça 21 — a Marca, uma cena 3D pequena e independente da prateleira principal */
+  .marca-3d-wrap{display:flex; justify-content:center; margin:.4rem 0 1.6rem;}
+  .marca-3d{position:relative; width:180px; height:220px;}
+  .marca-3d::before{content:''; position:absolute; inset:-20%; border-radius:50%;
+    background:radial-gradient(circle, rgba(184,20,10,.22), transparent 70%); filter:blur(6px); z-index:0;}
+  .marca-3d canvas{position:relative; z-index:1; width:100%; height:100%; display:block;}
+  .marca-3d-legenda{text-align:center; font-size:.68rem; font-style:italic; color:var(--dim);
+    opacity:.65; margin:-1.1rem 0 1.6rem;}
+
   .elenco{list-style:none; margin:.4rem 0 1.6rem; padding:0;}
   .planilha-wrap{overflow-x:auto; margin:.6rem 0 1rem; border-left:2px solid rgba(210,105,30,.4); -webkit-overflow-scrolling:touch;}
   .planilha{border-collapse:collapse; font-size:.76rem; white-space:nowrap; font-family:ui-monospace,Menlo,Consolas,monospace;}
@@ -205,6 +214,22 @@
     color:var(--dim); background:none; border:1px solid rgba(222,184,135,.3); border-radius:20px;
     padding:.35rem .9rem; cursor:pointer; transition:color .2s,border-color .2s;}
   .app-reiniciar:hover{color:var(--wheat); border-color:var(--chocolate);}
+
+  /* Peça 10 — o login de verdade, dentro do app-widget, no lugar do primeiro hotspot mudo */
+  .app-login-form{background:#fff; padding:1.7rem 1.4rem 1.4rem; border-radius:4px; line-height:1.4;
+    color:#212529; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; font-size:.85rem;}
+  .app-login-form h4{font-size:1.05rem; font-weight:600; margin:0 0 1.1rem;}
+  .app-login-form label{display:block; font-size:.83rem; margin-bottom:.3rem;}
+  .app-login-form input{width:100%; padding:.45rem .6rem; border:1px solid #ced4da; border-radius:4px;
+    font-size:16px; margin-bottom:.3rem; box-sizing:border-box; font-family:inherit;}
+  .app-login-form input:focus{outline:none; border-color:#86b7fe; box-shadow:0 0 0 .2rem rgba(13,110,253,.15);}
+  .app-login-form small{display:block; color:#6c757d; font-size:.72rem; margin-bottom:1rem;}
+  .app-login-erro{background:#f8d7da; color:#842029; border:1px solid #f5c2c7; border-radius:4px;
+    padding:.55rem .8rem; font-size:.78rem; margin-bottom:1rem;}
+  .app-login-form button{background:#0d6efd; color:#fff; border:none; border-radius:4px; padding:.5rem 1.2rem;
+    font-size:.85rem; cursor:pointer; font-family:inherit;}
+  .app-login-form button:hover{background:#0b5ed7;}
+  .app-login-dica{font-size:.66rem; color:#adb5bd; margin-top:1.1rem; padding-top:.8rem; border-top:1px dashed #dee2e6;}
 
   .pptx-widget{display:flex; flex-direction:column; align-items:center; gap:.6rem; margin:1.1rem 0;}
   .pptx-frame{width:100%; max-width:560px; background:#0f0906; border:1px solid rgba(222,184,135,.25);
@@ -1617,18 +1642,32 @@ INSERT INTO `produto` (`id_produto`, `nome_produto`, `preco_produto`) VALUES
         <tr><td>Gerar Contrato</td><td>—</td><td>—</td></tr>
         <tr><td>Emitir Relatórios</td><td>—</td><td>—</td></tr>
       </table>
-      <p class="sub-nota">As seis telas abaixo vieram de um Laravel de verdade, rodando: subi com SQLite, rodei as dezenove migrations sem um erro sequer, e corrigi uma única linha de compatibilidade — o Carbon esperava um retorno que o PHP 8.3 já não dá. O que ficou aqui são essas capturas, navegáveis pelos mesmos botões que existem na tela: clique em Imóvel, Cliente, Funcionário ou Locação na inicial, ou na seta pra voltar.</p>
+      <p class="sub-nota">As seis telas abaixo vieram de um Laravel de verdade, rodando: subi com SQLite, rodei as dezenove migrations sem um erro sequer, e corrigi uma única linha de compatibilidade — o Carbon esperava um retorno que o PHP 8.3 já não dá. O que ficou aqui são essas capturas, navegáveis pelos mesmos botões que existem na tela: clique em Imóvel, Cliente, Funcionário ou Locação na inicial, ou na seta pra voltar. O login não é mais um hotspot mudo em cima do print — o <code>DatabaseSeeder</code> só cria uma conta de verdade, e é dela: <code>leticia@gmail.com</code>, senha <code>123456</code>. Confirma de novo o que o cronograma já dizia: a única conta que existe no banco é a da Letícia. Errar a senha devolve exatamente a mensagem que o <code>routes/web.php</code> lança de verdade — <code>Auth::attempt</code> falhando sem dizer se foi o email ou a senha.</p>
       <div class="app-widget">
         <p class="app-tela-nome" id="appNome">login</p>
         <div class="app-frame">
           <div class="app-frame-bar"><span></span><span></span><span></span></div>
           <div class="app-tela" id="appTela">
-            <img id="appImg" src="images/guts-app-login.png" alt="Tela do app Guts rodando de verdade">
+            <img id="appImg" src="images/guts-app-login.png" alt="Tela do app Guts rodando de verdade" hidden>
+            <div class="app-login-form" id="appLoginForm">
+              <h4>Login</h4>
+              <div id="appLoginErro"></div>
+              <form id="appLoginFormEl">
+                <label for="appEmail">Endereço de email</label>
+                <input type="email" id="appEmail" placeholder="Seu email" autocomplete="off">
+                <small>Nunca vamos compartilhe seu email, com ninguém.</small>
+                <label for="appSenha">Senha</label>
+                <input type="password" id="appSenha" placeholder="Senha" autocomplete="off">
+                <small>Nunca vamos compartilhe sua senha, com ninguém.</small>
+                <button type="submit">Entrar</button>
+              </form>
+              <p class="app-login-dica">a conta de verdade, criada pelo <code>DatabaseSeeder</code> — a mesma que rodou no servidor local</p>
+            </div>
           </div>
         </div>
         <button class="app-reiniciar" id="appReiniciar" type="button">&#8634; voltar ao login</button>
       </div>
-      <p class="evidencia-cap">seis telas capturadas do app rodando — clique nos próprios botões da tela pra navegar</p>
+      <p class="evidencia-cap">login de verdade (leticia@gmail.com / 123456) — depois, as cinco telas capturadas do app rodando, clicáveis nos próprios botões</p>
     </div>
   </article>
 
@@ -2595,6 +2634,8 @@ public class Amigo {
     <button class="foco-fechar" data-fechar>✕ fechar</button>
     <p class="peca-eyebrow">Peça 21 · 31 março – 15 de abril de 2023 · NLTK</p>
     <h2>Guts bot de Q&amp;A</h2>
+    <div class="marca-3d-wrap"><div class="marca-3d" id="marca3d"></div></div>
+    <p class="marca-3d-legenda">a Marca — não da Peça 10, essa é emprestada do personagem</p>
     <p class="peca-nota">A Peça 05 já tinha visto esse título — na barra lateral do ChatGPT, entre conversas sem peça nenhuma ainda. Aqui está ela. Copiado de um arquivo-modelo em 31 de março de 2023, reaberto em 2 de abril, e só de fato rodado em 15 de abril — sábado, das 15h17 às 16h56 —, um chatbot de regras com <code>nltk.chat.util.Chat</code>: um dicionário de <em>reflections</em> pra inverter pronomes, e sete pares de padrão e resposta, tudo traduzido pro português. O nome não tem relação nenhuma com a Peça 10 — Airbnb virando imobiliária — além do empréstimo: as duas peças pescam no mesmo personagem, cada uma à sua maneira.</p>
 
     <div class="sub">
@@ -3439,17 +3480,42 @@ var img = document.getElementById('appImg');
 var nomeEl = document.getElementById('appNome');
 var telaWrap = document.getElementById('appTela');
 var reiniciarBtn2 = document.getElementById('appReiniciar');
+var loginForm = document.getElementById('appLoginForm');
+var loginFormEl = document.getElementById('appLoginFormEl');
+var loginErro = document.getElementById('appLoginErro');
+var campoEmail = document.getElementById('appEmail');
+var campoSenha = document.getElementById('appSenha');
 if (!img || !telaWrap) return;
+
+// a única conta que o DatabaseSeeder cria de verdade — routes/web.php usa Auth::attempt
+// e devolve a mesma mensagem genérica não importa qual dos dois campos estiver errado
+var CREDENCIAL_REAL = { email:'leticia@gmail.com', senha:'123456' };
+
+function limparHotspots(){
+  var antigos = telaWrap.querySelectorAll('.app-hotspot');
+  for (var i = 0; i < antigos.length; i++){ antigos[i].parentNode.removeChild(antigos[i]); }
+}
 
 function mostrarApp(id){
   var t = APP_TELAS[id];
   if (!t) return;
+  if (nomeEl) nomeEl.textContent = t.nome;
+  limparHotspots();
+
+  if (id === 'login'){
+    img.hidden = true;
+    if (loginForm) loginForm.hidden = false;
+    if (loginErro) loginErro.innerHTML = '';
+    if (campoEmail) campoEmail.value = '';
+    if (campoSenha) campoSenha.value = '';
+    if (campoEmail) campoEmail.focus();
+    return;
+  }
+
+  if (loginForm) loginForm.hidden = true;
+  img.hidden = false;
   img.src = t.img;
   img.alt = 'Tela ' + t.nome + ' do app Guts, capturada do servidor real';
-  if (nomeEl) nomeEl.textContent = t.nome;
-
-  var antigos = telaWrap.querySelectorAll('.app-hotspot');
-  for (var i = 0; i < antigos.length; i++){ antigos[i].parentNode.removeChild(antigos[i]); }
 
   t.hotspots.forEach(function(h){
     var hs = document.createElement('div');
@@ -3461,6 +3527,20 @@ function mostrarApp(id){
     hs.title = APP_TELAS[h.to] ? APP_TELAS[h.to].nome : '';
     hs.addEventListener('click', function(){ mostrarApp(h.to); });
     telaWrap.appendChild(hs);
+  });
+}
+
+if (loginFormEl){
+  loginFormEl.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var email = (campoEmail.value || '').trim();
+    var senha = campoSenha.value || '';
+    if (email === CREDENCIAL_REAL.email && senha === CREDENCIAL_REAL.senha){
+      mostrarApp('home');
+    } else if (loginErro) {
+      // texto idêntico ao ValidationException::withMessages(['login'=>...]) do routes/web.php
+      loginErro.innerHTML = '<div class="app-login-erro">Usuário/senha não encontrados</div>';
+    }
   });
 }
 
@@ -4274,6 +4354,100 @@ for (var i=0;i<18;i++){
   emberBox.appendChild(e);
 }
 
+})();
+</script>
+<script>
+(function(){
+'use strict';
+// Peça 21 — a Marca do Sacrifício, numa cena 3D própria e pequena, independente da
+// prateleira principal (que é uma grade fixa de 20 posições e não vale a pena reabrir
+// só por causa de uma peça). Falha calada se o Three.js ou o container não estiverem
+// disponíveis — o resto da página não depende disso pra funcionar.
+try {
+  var container = document.getElementById('marca3d');
+  if (!container || typeof THREE === 'undefined') return;
+
+  var LARGURA = 180, ALTURA = 220;
+  var reduzMovimentoMarca = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(38, LARGURA/ALTURA, 0.1, 10);
+  camera.position.set(0, 0.05, 2.3);
+
+  var renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(LARGURA, ALTURA);
+  container.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0x442018, 1.1));
+  var key = new THREE.DirectionalLight(0xffaa77, 1.0);
+  key.position.set(1.2, 1.5, 1.8);
+  scene.add(key);
+  var rim = new THREE.PointLight(0xB8140A, 1.4, 6);
+  rim.position.set(-0.8, -0.3, 1.2);
+  scene.add(rim);
+
+  function criarMarca(){
+    var g = new THREE.Group();
+    var matBase = new THREE.MeshStandardMaterial({ color:0x4a0808, roughness:0.5, metalness:0.25, emissive:0xB8140A, emissiveIntensity:0.6 });
+    var matFenda = new THREE.MeshStandardMaterial({ color:0x140202, roughness:0.7, metalness:0.1, emissive:0x5a0a05, emissiveIntensity:0.35 });
+
+    // núcleo — um "olho" vertical alongado
+    var nucleo = new THREE.Mesh(new THREE.SphereGeometry(0.34, 24, 24), matBase);
+    nucleo.scale.set(0.62, 1, 0.3);
+    g.add(nucleo);
+
+    // segunda forma, menor e deslocada — quebra a simetria de propósito
+    var desvio = new THREE.Mesh(new THREE.SphereGeometry(0.17, 18, 18), matBase);
+    desvio.scale.set(0.52, 0.82, 0.26);
+    desvio.position.set(0.08, -0.34, 0.03);
+    g.add(desvio);
+
+    // fenda central, funda, levemente torta
+    var fenda = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.05, 0.85, 10), matFenda);
+    fenda.position.set(0, -0.03, 0.13);
+    fenda.rotation.z = 0.09;
+    g.add(fenda);
+
+    // rachaduras finas, em ângulos que não se repetem — orgânico, não um sigilo limpo
+    var rachaduras = [
+      {ang: 0.35, len:0.42, dist:0.30, alt: 0.38},
+      {ang:-0.55, len:0.30, dist:0.24, alt: 0.16},
+      {ang: 1.15, len:0.34, dist:0.26, alt:-0.14},
+      {ang:-1.30, len:0.26, dist:0.20, alt:-0.36},
+      {ang: 2.05, len:0.30, dist:0.23, alt: 0.02},
+      {ang:-2.35, len:0.22, dist:0.18, alt:-0.55}
+    ];
+    rachaduras.forEach(function(r){
+      var m = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.017, r.len, 5), matFenda);
+      m.position.set(Math.cos(r.ang)*r.dist, r.alt, Math.sin(r.ang)*r.dist*0.5 + 0.1);
+      m.rotation.z = r.ang + Math.PI/2;
+      m.rotation.x = 0.35;
+      g.add(m);
+    });
+
+    return g;
+  }
+
+  var marca = criarMarca();
+  scene.add(marca);
+
+  var t = 0;
+  function animar(){
+    requestAnimationFrame(animar);
+    if (!reduzMovimentoMarca){
+      t += 0.006;
+      marca.rotation.y = Math.sin(t) * 0.55;
+      marca.rotation.x = Math.sin(t*0.6) * 0.08;
+      rim.intensity = 1.2 + Math.sin(t*2.3) * 0.25;
+    }
+    renderer.render(scene, camera);
+  }
+  animar();
+
+} catch(e){
+  console.warn('[Ícarus] Marca 3D (Peça 21) falhou, sem prejuízo pro resto da página:', e);
+}
 })();
 </script>
 <script src="../Lib/dragonball.js"></script>
