@@ -89,6 +89,7 @@
     font-family:'Cinzel',serif; font-size:.62rem; letter-spacing:.1em; text-transform:uppercase;
     color:var(--dim); background:transparent; border:1px solid var(--panel-line); border-radius:20px;
     padding:.45rem .9rem; cursor:pointer; transition:color .2s ease, border-color .2s ease, background .2s ease;
+    position:relative;
   }
   .filter-pill:hover{ color:var(--text); border-color:var(--accent-dim); }
   .filter-pill.active{ color:var(--bg); background:var(--accent); border-color:var(--accent); }
@@ -170,6 +171,14 @@
 
   @media (max-width: 560px){
     .wrap{ padding-top:4.2rem; }
+    /* pill de filtro ganha uma área de toque maior (invisível), sem
+       crescer visualmente — mais fácil de acertar com o dedo */
+    .filter-pill::after{ content:''; position:absolute; inset:-6px; }
+  }
+
+  @media (max-width: 400px){
+    .wrap{ padding:3.8rem 1.1rem 0; }
+    .grid{ gap:.9rem; }
   }
 </style>
 </head>
@@ -292,9 +301,11 @@
     resultCount.textContent = filtered.length + ' de ' + DATA.length;
   }
 
+  let searchDebounce = null;
   searchInput.addEventListener('input', (e) => {
     currentSearch = e.target.value;
-    render();
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(render, 120);
   });
 
   filterPills.forEach((pill) => {

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Filmes e Séries — registro de tudo que assisti, estou assistindo ou ainda pretendo começar.">
+<title>Filmes e Séries — Nexus</title>
+<link rel="icon" type="image/svg+xml" href="filmes-series-favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400&family=Cinzel+Decorative:wght@700&family=EB+Garamond:ital,wght@0,400;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0E0D;
+    --bg2:#0F1613;
+    --panel:#121A16;
+    --panel-line: rgba(95,168,138,0.16);
+    --accent:#5FA88A;
+    --accent-soft: rgba(95,168,138,0.14);
+    --accent-dim: rgba(95,168,138,0.42);
+    --text:#E7E7DE;
+    --dim: rgba(231,231,222,0.52);
+    --dimmer: rgba(231,231,222,0.28);
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html,body{
+    background:
+      radial-gradient(ellipse 70% 40% at 50% -10%, rgba(95,168,138,0.08), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    font-family:'EB Garamond', Georgia, serif;
+  }
+
+  body{ padding-bottom:6rem; }
+
+  .nexus-return{
+    display:inline-block; position:absolute; top:0; left:0; z-index:10;
+    font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.28em; text-transform:uppercase;
+    text-decoration:none; color:var(--dim); padding:1rem 1.2rem; background:transparent; backdrop-filter:blur(6px);
+  }
+  .nexus-return:hover{ color:var(--accent); }
+
+  .mal-return{
+    display:inline-block; position:absolute; top:0; right:0; z-index:10;
+    font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.28em; text-transform:uppercase;
+    text-decoration:none; color:var(--dim); padding:1rem 1.2rem; background:transparent; backdrop-filter:blur(6px);
+  }
+  .mal-return:hover{ color:var(--accent); }
+
+  .wrap{ max-width:1180px; margin:0 auto; padding:5rem 1.5rem 0; }
+
+  .hero{ text-align:center; margin-bottom:2.4rem; }
+  .hero-eyebrow{
+    font-family:'Cinzel',serif; font-size:.66rem; letter-spacing:.32em; text-transform:uppercase;
+    color:var(--accent-dim); margin-bottom:.9rem;
+  }
+  .hero h1{
+    font-family:'Cinzel Decorative', serif; font-weight:700;
+    font-size:clamp(2.1rem, 6vw, 3.1rem); letter-spacing:.05em; color:var(--text);
+    text-shadow:0 0 40px rgba(95,168,138,.18);
+  }
+  .hero-tagline{ font-style:italic; color:var(--dim); font-size:1.02rem; margin-top:.7rem; }
+
+  .ledger-mini{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:1.6rem;
+    margin:1.8rem auto 0; max-width:760px; font-family:'Share Tech Mono', monospace;
+    font-size:.8rem; color:var(--dim);
+    border-top:1px solid var(--panel-line); border-bottom:1px solid var(--panel-line);
+    padding:1rem 0;
+  }
+  .ledger-mini span b{ color:var(--accent); font-weight:400; }
+
+  .controls{
+    display:flex; flex-wrap:wrap; align-items:center; gap:.9rem;
+    margin:2.8rem 0 .6rem;
+  }
+  .search-input{
+    flex:1 1 220px; background:var(--panel); border:1px solid var(--panel-line); border-radius:3px;
+    padding:.65rem .9rem; color:var(--text); font-family:'EB Garamond', serif; font-size:1rem;
+  }
+  .search-input::placeholder{ color:var(--dimmer); }
+  .search-input:focus{ outline:none; border-color:var(--accent-dim); }
+
+  .filters{ display:flex; flex-wrap:wrap; gap:.5rem; }
+  .filter-pill{
+    font-family:'Cinzel',serif; font-size:.62rem; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--dim); background:transparent; border:1px solid var(--panel-line); border-radius:20px;
+    padding:.45rem .9rem; cursor:pointer; transition:color .2s ease, border-color .2s ease, background .2s ease;
+    position:relative;
+  }
+  .filter-pill:hover{ color:var(--text); border-color:var(--accent-dim); }
+  .filter-pill.active{ color:var(--bg); background:var(--accent); border-color:var(--accent); }
+  .filter-pill:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  .filter-divider{ width:1px; align-self:stretch; background:var(--panel-line); margin:0 .2rem; }
+
+  .result-count{
+    font-family:'Share Tech Mono', monospace; font-size:.72rem; color:var(--dimmer);
+    width:100%; margin-top:.2rem;
+  }
+
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));
+    gap:1.2rem; margin-top:1.6rem;
+  }
+
+  .card{
+    position:relative; background:linear-gradient(180deg, var(--panel), var(--bg2));
+    border:1px solid var(--panel-line); border-left:3px solid var(--accent-dim);
+    border-radius:3px; overflow:hidden; display:flex; flex-direction:column;
+    transition:border-color .3s ease, transform .2s ease;
+  }
+  .card:hover{ transform:translateY(-2px); border-color:var(--accent-dim); }
+  .card.st-completed{ border-left-color:var(--accent); }
+  .card.st-plan{ border-left:3px solid var(--panel-line); }
+
+  .card-cover{
+    width:100%; aspect-ratio:192/272; background:var(--bg2); overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .card-cover img{ width:100%; height:100%; object-fit:contain; display:block; }
+  .card-cover.placeholder{
+    font-family:'Cinzel Decorative', serif; font-size:2.6rem; color:var(--panel-line);
+  }
+
+  .card-type{
+    position:absolute; top:.6rem; left:.6rem;
+    font-family:'Cinzel',serif; font-size:.5rem; letter-spacing:.08em; text-transform:uppercase;
+    padding:.26rem .5rem; border-radius:12px; background:rgba(10,14,13,.78); backdrop-filter:blur(3px);
+    color:var(--accent-dim);
+  }
+  .card-status{
+    position:absolute; top:.6rem; right:.6rem;
+    font-family:'Cinzel',serif; font-size:.52rem; letter-spacing:.08em; text-transform:uppercase;
+    padding:.28rem .55rem; border-radius:12px; background:rgba(10,14,13,.78); backdrop-filter:blur(3px);
+    color:var(--dim);
+  }
+  .card.st-watching .card-status, .card.st-completed .card-status{ color:var(--accent); }
+
+  .card-body{ padding:.8rem .9rem 1rem; display:flex; flex-direction:column; flex:1; }
+  .card-title{
+    font-family:'Cinzel Decorative', serif; font-weight:700; font-size:.9rem;
+    line-height:1.35; color:var(--text);
+  }
+  .card-progress{
+    font-family:'Share Tech Mono', monospace; font-size:.7rem; color:var(--accent);
+    margin-top:.5rem;
+  }
+  .card-progress.none{ color:var(--dimmer); }
+
+  .empty-state{
+    text-align:center; padding:3.5rem 1rem; color:var(--dimmer); font-style:italic; grid-column:1/-1;
+  }
+
+  footer{
+    margin-top:5rem; text-align:center; font-family:'Cinzel',serif; font-size:.68rem;
+    letter-spacing:.14em; color:var(--dimmer); text-transform:uppercase;
+  }
+
+  @media (max-width: 560px){
+    .wrap{ padding-top:4.2rem; }
+    /* pill de filtro ganha uma área de toque maior (invisível), sem
+       crescer visualmente — mais fácil de acertar com o dedo */
+    .filter-pill::after{ content:''; position:absolute; inset:-6px; }
+  }
+
+  @media (max-width: 400px){
+    .wrap{ padding:3.8rem 1.1rem 0; }
+    .grid{ gap:.9rem; }
+  }
+</style>
+</head>
+<body>
+<!-- avisa o mapa do Nexus (se estiver por perto) que esta página foi visitada -->
+<script>try{ if (window.top !== window) window.top.postMessage({ tipo:'nexus-visita', id:'mal_filmes' }, '*'); }catch(e){}</script>
+
+<a class="nexus-return" href="../nexus.html">◆ Nexus</a>
+<a class="mal-return" href="mal.html">◆ M.A.L</a>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero-eyebrow">Registro pessoal</div>
+    <h1>Filmes e Séries</h1>
+    <p class="hero-tagline">o que já vi, o que estou vendo e o que ainda pretendo assistir</p>
+
+    <div class="ledger-mini" id="ledgerMini"></div>
+  </header>
+
+  <div class="controls">
+    <input type="text" class="search-input" id="searchInput" placeholder="Buscar por título…" autocomplete="off">
+    <div class="filters" id="filtersType">
+      <button class="filter-pill active" data-type="all">Todos</button>
+      <button class="filter-pill" data-type="filme">Filmes</button>
+      <button class="filter-pill" data-type="serie">Séries</button>
+    </div>
+    <div class="filters" id="filtersStatus">
+      <button class="filter-pill active" data-status="all">Qualquer Status</button>
+      <button class="filter-pill" data-status="watching">Assistindo</button>
+      <button class="filter-pill" data-status="completed">Completo</button>
+      <button class="filter-pill" data-status="onhold">Em Pausa</button>
+      <button class="filter-pill" data-status="dropped">Abandonado</button>
+      <button class="filter-pill" data-status="plan">Pretendo Assistir</button>
+    </div>
+    <div class="result-count" id="resultCount"></div>
+  </div>
+
+  <main class="grid" id="grid"></main>
+
+</div>
+
+<footer>◆ &nbsp; Filmes e Séries — Registro Audiovisual &nbsp; ◆</footer>
+
+<script type="application/json" id="watchData">[{"t":"Sherlock Holmes","ty":"serie","s":"completed","seasons":4,"ep":13},{"t":"O Gambito da Rainha","ty":"serie","s":"completed","seasons":1,"ep":7},{"t":"Power Rangers: Força Mística","ty":"serie","s":"completed","seasons":1,"ep":32},{"t":"Todo Mundo Odeia o Chris","ty":"serie","s":"completed","seasons":4,"ep":88},{"t":"Death's Game","ty":"serie","s":"completed","seasons":1,"ep":8},{"t":"Reset","ty":"serie","s":"completed","seasons":1,"ep":15},{"t":"Boku dake ga Inai Machi (Live Action)","ty":"serie","s":"completed","seasons":1,"ep":12},{"t":"Game of Thrones","ty":"serie","s":"completed","seasons":8,"ep":73},{"t":"O Mentalista","ty":"serie","s":"completed","seasons":7,"ep":151},{"t":"Sobrenatural","ty":"serie","s":"completed","seasons":15,"ep":327},{"t":"Dexter","ty":"serie","s":"watching","seasonAtual":3,"seasons":8,"ep":96},{"t":"Grimm","ty":"serie","s":"plan","seasons":6,"ep":123},{"t":"Teen Wolf","ty":"serie","s":"plan","seasons":6,"ep":100},{"t":"The Walking Dead","ty":"serie","s":"dropped","seasonAtual":5,"seasons":11,"ep":177},{"t":"Casa do Dragão","ty":"serie","s":"watching","seasonAtual":1},{"t":"O Destemido","ty":"filme","s":"plan"},{"t":"Cão de Briga","ty":"filme","s":"plan"},{"t":"O Mestre das Armas","ty":"filme","s":"plan"},{"t":"O Protetor","ty":"filme","s":"plan"},{"t":"Chocolate","ty":"filme","s":"plan"},{"t":"Ong Bak 3","ty":"filme","s":"plan"},{"t":"Ong Bak 2: O Guerreiro Sagrado Voltou","ty":"filme","s":"plan"},{"t":"O Protetor 2","ty":"filme","s":"plan"},{"t":"O Grande Mestre 2","ty":"filme","s":"plan"},{"t":"O Grande Mestre","ty":"filme","s":"plan"},{"t":"Ong Bak - Guerreiro Sagrado","ty":"filme","s":"plan"},{"t":"Ip Man: Nasce uma Lenda","ty":"filme","s":"plan"},{"t":"O Grande Mestre 3","ty":"filme","s":"plan"},{"t":"Mestre Z: O Legado de Ip Man","ty":"filme","s":"plan"},{"t":"Alita: Anjo de Combate","ty":"filme","s":"plan"},{"t":"O Lutador","ty":"filme","s":"plan"},{"t":"Boyka: O Imbatível","ty":"filme","s":"plan"},{"t":"Lutador de Rua","ty":"filme","s":"plan"},{"t":"O Imbatível 3: Redenção","ty":"filme","s":"plan"},{"t":"Quebrando Regras","ty":"filme","s":"plan"},{"t":"O Reino Proibido","ty":"filme","s":"plan"},{"t":"Três Ladrões e um Bebê","ty":"filme","s":"plan"},{"t":"Mr. Nice Guy: Bom de Briga","ty":"filme","s":"plan"},{"t":"O Medalhão","ty":"filme","s":"plan"},{"t":"O Terno de Dois Bilhões de Dólares","ty":"filme","s":"plan"},{"t":"Kung-Fusão","ty":"filme","s":"plan"},{"t":"Kung-Fu Futebol Clube","ty":"filme","s":"plan"},{"t":"CJ7: O Brinquedo Mágico","ty":"filme","s":"plan"},{"t":"Karate Kid","ty":"filme","s":"plan"},{"t":"Gigantes de Aço","ty":"filme","s":"plan"},{"t":"Vingadores: Ultimato","ty":"filme","s":"plan"},{"t":"Aladdin","ty":"filme","s":"plan"},{"t":"It: A Coisa","ty":"filme","s":"plan"},{"t":"Brightburn: Filho das Trevas","ty":"filme","s":"plan"},{"t":"Shazam!","ty":"filme","s":"plan"},{"t":"Hellboy","ty":"filme","s":"plan"},{"t":"Vingadores: Guerra Infinita","ty":"filme","s":"plan"},{"t":"Batman: O Cavaleiro das Trevas","ty":"filme","s":"plan"},{"t":"O Rei Leão","ty":"filme","s":"plan"},{"t":"De Volta para o Futuro","ty":"filme","s":"plan"},{"t":"O Exterminador do Futuro 2: O Julgamento Final","ty":"filme","s":"plan"},{"t":"Gladiador","ty":"filme","s":"plan"},{"t":"Batman: O Cavaleiro das Trevas Ressurge","ty":"filme","s":"plan"},{"t":"Your Name","ty":"filme","s":"plan"},{"t":"Esquadrão Suicida","ty":"filme","s":"plan"},{"t":"Pokémon: Detetive Pikachu","ty":"filme","s":"plan"},{"t":"Sr. Ninguém","ty":"filme","s":"plan"},{"t":"Doutor Estranho","ty":"filme","s":"plan"},{"t":"Vingadores: Era de Ultron","ty":"filme","s":"plan"},{"t":"O Predestinado","ty":"filme","s":"plan"},{"t":"Creed: Nascido para Lutar","ty":"filme","s":"plan"},{"t":"Creed II","ty":"filme","s":"plan"},{"t":"Sherlock Holmes","ty":"filme","s":"plan"},{"t":"Piratas do Caribe: No Fim do Mundo","ty":"filme","s":"plan"},{"t":"Piratas do Caribe: Navegando em Águas Misteriosas","ty":"filme","s":"plan"},{"t":"Piratas do Caribe: A Maldição do Pérola Negra","ty":"filme","s":"plan"},{"t":"Homem-Formiga","ty":"filme","s":"plan"},{"t":"Guardiões da Galáxia Vol. 2","ty":"filme","s":"plan"},{"t":"Batman Begins","ty":"filme","s":"plan"},{"t":"O Exterminador do Futuro","ty":"filme","s":"plan"},{"t":"A Voz do Silêncio","ty":"filme","s":"plan"},{"t":"John Wick: De Volta ao Jogo","ty":"filme","s":"plan"},{"t":"Matrix","ty":"filme","s":"plan"},{"t":"John Wick 3: Parabellum","ty":"filme","s":"plan"},{"t":"Deadpool 2","ty":"filme","s":"plan"},{"t":"Venom","ty":"filme","s":"plan"},{"t":"John Wick: Um Novo Dia para Matar","ty":"filme","s":"plan"},{"t":"300","ty":"filme","s":"plan"},{"t":"Guardiões da Galáxia","ty":"filme","s":"plan"},{"t":"Jogador Nº 1","ty":"filme","s":"plan"},{"t":"Deadpool","ty":"filme","s":"plan"},{"t":"Capitão América: O Primeiro Vingador","ty":"filme","s":"plan"},{"t":"Como Treinar o Seu Dragão 3","ty":"filme","s":"plan"},{"t":"Os Vingadores","ty":"filme","s":"plan"},{"t":"Homem de Ferro","ty":"filme","s":"plan"},{"t":"Fúria de Titãs","ty":"filme","s":"plan"},{"t":"Watchmen: O Filme","ty":"filme","s":"plan"},{"t":"X-Men: Apocalipse","ty":"filme","s":"plan"},{"t":"Homem-Aranha","ty":"filme","s":"plan"},{"t":"Matrix Reloaded","ty":"filme","s":"plan"},{"t":"Logan","ty":"filme","s":"plan"},{"t":"O Predador","ty":"filme","s":"plan"},{"t":"O Exterminador do Futuro: Gênesis","ty":"filme","s":"plan"},{"t":"X-Men: O Filme","ty":"filme","s":"plan"},{"t":"Velozes & Furiosos","ty":"filme","s":"plan"},{"t":"Rambo: Programado Para Matar","ty":"filme","s":"plan"},{"t":"Homem de Ferro 3","ty":"filme","s":"plan"},{"t":"Homem-Aranha 3","ty":"filme","s":"plan"},{"t":"Homem de Ferro 2","ty":"filme","s":"plan"},{"t":"Velozes & Furiosos: Desafio em Tóquio","ty":"filme","s":"plan"},{"t":"O Incrível Hulk","ty":"filme","s":"plan"},{"t":"Transformers","ty":"filme","s":"plan"},{"t":"Malévola","ty":"filme","s":"plan"},{"t":"Batman & Robin","ty":"filme","s":"plan"},{"t":"Kick-Ass: Quebrando Tudo","ty":"filme","s":"plan"},{"t":"X-Men: O Confronto Final","ty":"filme","s":"plan"},{"t":"O Exterminador do Futuro 3: A Rebelião das Máquinas","ty":"filme","s":"plan"},{"t":"Rambo II: A Missão","ty":"filme","s":"plan"},{"t":"Invasão Zumbi","ty":"filme","s":"plan"},{"t":"Sr. & Sra. Smith","ty":"filme","s":"plan"},{"t":"O Justiceiro","ty":"filme","s":"plan"},{"t":"X-Men 2","ty":"filme","s":"plan"},{"t":"O Exterminador do Futuro: A Salvação","ty":"filme","s":"plan"},{"t":"+ Velozes + Furiosos","ty":"filme","s":"plan"},{"t":"Homem-Aranha 2","ty":"filme","s":"plan"},{"t":"Van Helsing: O Caçador de Monstros","ty":"filme","s":"plan"},{"t":"Motoqueiro Fantasma","ty":"filme","s":"plan"},{"t":"Fúria de Titãs 2","ty":"filme","s":"plan"},{"t":"King Kong","ty":"filme","s":"plan"},{"t":"Tron: O Legado","ty":"filme","s":"plan"},{"t":"Hulk","ty":"filme","s":"plan"},{"t":"Cruzada","ty":"filme","s":"plan"},{"t":"300: A Ascensão do Império","ty":"filme","s":"plan"},{"t":"Constantine","ty":"filme","s":"plan"},{"t":"Príncipe da Pérsia: As Areias do Tempo","ty":"filme","s":"plan"},{"t":"Como Treinar o Seu Dragão","ty":"filme","s":"plan"},{"t":"Blade: O Caçador de Vampiros","ty":"filme","s":"plan"},{"t":"Kick-Ass 2","ty":"filme","s":"plan"},{"t":"Wolverine: Imortal","ty":"filme","s":"plan"},{"t":"Drácula: A História Nunca Contada","ty":"filme","s":"plan"},{"t":"Quarteto Fantástico","ty":"filme","s":"plan"},{"t":"Quarteto Fantástico e o Surfista Prateado","ty":"filme","s":"plan"},{"t":"Demolidor: O Homem sem Medo","ty":"filme","s":"plan"},{"t":"Elektra","ty":"filme","s":"plan"},{"t":"Motoqueiro Fantasma: Espírito de Vingança","ty":"filme","s":"plan"},{"t":"Batman Eternamente","ty":"filme","s":"plan"},{"t":"Sherlock Holmes: O Jogo de Sombras","ty":"filme","s":"plan"},{"t":"O Menino que Queria Ser Rei","ty":"filme","s":"plan"},{"t":"Pequenos Espiões","ty":"filme","s":"plan"},{"t":"Eu, Robô","ty":"filme","s":"plan"},{"t":"Blade: Trinity","ty":"filme","s":"plan"},{"t":"A Hora do Rush","ty":"filme","s":"plan"},{"t":"O Sétimo Filho","ty":"filme","s":"plan"},{"t":"Deuses do Egito","ty":"filme","s":"plan"},{"t":"Kung Fu Panda","ty":"filme","s":"plan"},{"t":"Déjà Vu","ty":"filme","s":"plan"},{"t":"Blade II: O Caçador de Vampiros","ty":"filme","s":"plan"},{"t":"Como Treinar o Seu Dragão 2","ty":"filme","s":"plan"},{"t":"Predadores","ty":"filme","s":"plan"},{"t":"A Máquina do Tempo","ty":"filme","s":"plan"},{"t":"O Vidente","ty":"filme","s":"plan"},{"t":"Segurança de Shopping","ty":"filme","s":"plan"},{"t":"Freddy vs. Jason","ty":"filme","s":"plan"},{"t":"A Lenda de Beowulf","ty":"filme","s":"plan"},{"t":"O Aprendiz de Feiticeiro","ty":"filme","s":"plan"},{"t":"Anaconda","ty":"filme","s":"plan"},{"t":"Jumper","ty":"filme","s":"plan"},{"t":"Super-Herói: O Filme","ty":"filme","s":"plan"},{"t":"À Espera de um Milagre","ty":"filme","s":"plan"},{"t":"Procurando Nemo","ty":"filme","s":"plan"},{"t":"Kung Fu Panda 2","ty":"filme","s":"plan"},{"t":"Troia","ty":"filme","s":"plan"},{"t":"O Exterminador do Futuro: Destino Sombrio","ty":"filme","s":"plan"},{"t":"Rambo: Até o Fim","ty":"filme","s":"plan"},{"t":"Coringa","ty":"filme","s":"plan"},{"t":"Jumanji: Bem-Vindo à Selva","ty":"filme","s":"plan"},{"t":"It: Capítulo Dois","ty":"filme","s":"plan"},{"t":"O Segredo da Cabana","ty":"filme","s":"plan"},{"t":"Caixa de Pássaros","ty":"filme","s":"plan"},{"t":"Vidro","ty":"filme","s":"plan"},{"t":"Corpo Fechado","ty":"filme","s":"plan"},{"t":"Homem-Aranha: Longe de Casa","ty":"filme","s":"plan"},{"t":"Homem-Formiga e a Vespa","ty":"filme","s":"plan"},{"t":"Capitã Marvel","ty":"filme","s":"plan"},{"t":"Pantera Negra","ty":"filme","s":"plan"},{"t":"Thor: Ragnarok","ty":"filme","s":"plan"},{"t":"Homem-Aranha: De Volta ao Lar","ty":"filme","s":"plan"},{"t":"Brinquedo Assassino","ty":"filme","s":"plan"},{"t":"Brinquedo Assassino 2","ty":"filme","s":"plan"},{"t":"Brinquedo Assassino 3","ty":"filme","s":"plan"},{"t":"O Filho de Chucky","ty":"filme","s":"plan"},{"t":"O Culto de Chucky","ty":"filme","s":"plan"},{"t":"A Noiva de Chucky","ty":"filme","s":"plan"},{"t":"A Maldição de Chucky","ty":"filme","s":"plan"},{"t":"Godzilla II: Rei dos Monstros","ty":"filme","s":"plan"},{"t":"Godzilla","ty":"filme","s":"plan"},{"t":"Pokémon: O Filme - Mewtwo contra-ataca","ty":"filme","s":"plan"},{"t":"Mama","ty":"filme","s":"plan"},{"t":"A Entidade","ty":"filme","s":"plan"},{"t":"De Repente Uma Família","ty":"filme","s":"plan"},{"t":"Troco em Dobro","ty":"filme","s":"plan"},{"t":"A Hora do Pesadelo","ty":"filme","s":"plan"},{"t":"A Hora do Pesadelo 3: Os Guerreiros dos Sonhos","ty":"filme","s":"plan"},{"t":"A Hora do Pesadelo 2: A Vingança de Freddy","ty":"filme","s":"plan"},{"t":"A Hora do Pesadelo 4: O Mestre dos Sonhos","ty":"filme","s":"plan"},{"t":"A Hora do Pesadelo 6: Pesadelo Final - A Morte de Freddy","ty":"filme","s":"plan"},{"t":"A Hora do Pesadelo 5: O Maior Horror de Freddy","ty":"filme","s":"plan"},{"t":"Sexta-Feira 13 - Parte 8: Jason Ataca em Nova York","ty":"filme","s":"plan"},{"t":"Jason Vai para o Inferno: A Última Sexta-Feira","ty":"filme","s":"plan"},{"t":"O Novo Pesadelo: O Retorno de Freddy Krueger","ty":"filme","s":"plan"},{"t":"Jason X","ty":"filme","s":"plan"},{"t":"Sexta-Feira 13","ty":"filme","s":"plan"},{"t":"Um Lugar Silencioso","ty":"filme","s":"plan"},{"t":"Artista do Desastre","ty":"filme","s":"plan"},{"t":"Até o Último Homem","ty":"filme","s":"plan"},{"t":"Em Busca da Vitória","ty":"filme","s":"plan"},{"t":"Ninja Assassino","ty":"filme","s":"plan"},{"t":"Comando Final 2: Hora das Consequências","ty":"filme","s":"plan"},{"t":"Lutando Pela Família","ty":"filme","s":"plan"},{"t":"O Grande Mestre 4","ty":"filme","s":"plan"},{"t":"A Lenda do Rei Macaco: Tumulto no Reino Celestial","ty":"filme","s":"plan"},{"t":"Drácula: Uma História de Amor Eterno","ty":"filme","s":"plan"},{"t":"Anjos da Noite","ty":"filme","s":"plan"},{"t":"Anjos da Noite: A Evolução","ty":"filme","s":"plan"},{"t":"Anjos da Noite: O Despertar","ty":"filme","s":"plan"},{"t":"Anjos da Noite: A Rebelião","ty":"filme","s":"plan"}]</script>
+<script>
+(function(){
+  const DATA = JSON.parse(document.getElementById('watchData').textContent);
+  const STATUS_LABELS = { watching:'Assistindo', completed:'Completo', onhold:'Em Pausa', dropped:'Abandonado', plan:'Pretendo Assistir' };
+  const TYPE_LABELS = { filme:'Filme', serie:'Série' };
+
+  let currentType = 'all';
+  let currentStatus = 'all';
+  let currentSearch = '';
+
+  const grid = document.getElementById('grid');
+  const searchInput = document.getElementById('searchInput');
+  const resultCount = document.getElementById('resultCount');
+
+  function escapeHtml(s){
+    const d = document.createElement('div');
+    d.textContent = s == null ? '' : String(s);
+    return d.innerHTML;
+  }
+
+  function initial(title){
+    return title.trim().charAt(0).toUpperCase();
+  }
+
+  function slug(title){
+    return title.toLowerCase()
+      .replace(/['’]/g, '')
+      .replace(/[^\p{L}\p{N}_\s-]/gu, '')
+      .trim()
+      .replace(/\s+/g, '-');
+  }
+
+  window.handleImgError = function(img){
+    const cover = img.parentElement;
+    cover.classList.add('placeholder');
+    cover.textContent = cover.dataset.initial || '';
+  };
+
+  function matchesFilters(item){
+    if(currentType !== 'all' && item.ty !== currentType) return false;
+    if(currentStatus !== 'all' && item.s !== currentStatus) return false;
+    if(currentSearch && !item.t.toLowerCase().includes(currentSearch.toLowerCase())) return false;
+    return true;
+  }
+
+  function progressHtml(item){
+    if(item.ty === 'serie'){
+      if(item.seasonAtual){
+        const total = item.seasons ? (' de ' + item.seasons) : '';
+        return '<div class="card-progress">temporada ' + escapeHtml(item.seasonAtual) + escapeHtml(total) + '</div>';
+      }
+      if(item.seasons || item.ep){
+        const parts = [];
+        if(item.seasons) parts.push(item.seasons + (item.seasons > 1 ? ' temporadas' : ' temporada'));
+        if(item.ep) parts.push(item.ep + ' ep.');
+        return '<div class="card-progress">' + escapeHtml(parts.join(' · ')) + '</div>';
+      }
+      return '<div class="card-progress none">sem progresso</div>';
+    }
+    return '<div class="card-progress none">' + (item.s === 'completed' ? 'assistido' : '&nbsp;') + '</div>';
+  }
+
+  function cardHtml(item){
+    const initialLetter = escapeHtml(initial(item.t));
+    const coverHtml = '<div class="card-cover" data-initial="' + initialLetter + '">' +
+      '<img src="capas-filmes-series/' + slug(item.t) + '.jpg" alt="" loading="lazy" onerror="handleImgError(this)">' +
+    '</div>';
+
+    return (
+      '<article class="card st-' + item.s + '">' +
+        coverHtml +
+        '<div class="card-type">' + TYPE_LABELS[item.ty] + '</div>' +
+        '<div class="card-status">' + STATUS_LABELS[item.s] + '</div>' +
+        '<div class="card-body">' +
+          '<div class="card-title">' + escapeHtml(item.t) + '</div>' +
+          progressHtml(item) +
+        '</div>' +
+      '</article>'
+    );
+  }
+
+  function render(){
+    const filtered = DATA.filter(matchesFilters);
+    filtered.sort((a, b) => a.t.localeCompare(b.t));
+
+    if(filtered.length === 0){
+      grid.innerHTML = '<p class="empty-state">Nada encontrado por aqui.</p>';
+    } else {
+      grid.innerHTML = filtered.map(cardHtml).join('');
+    }
+    resultCount.textContent = filtered.length + ' de ' + DATA.length;
+  }
+
+  let searchDebounce = null;
+  searchInput.addEventListener('input', (e) => {
+    currentSearch = e.target.value;
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(render, 120);
+  });
+
+  document.querySelectorAll('#filtersType .filter-pill').forEach((pill) => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('#filtersType .filter-pill').forEach((p) => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentType = pill.dataset.type;
+      render();
+    });
+  });
+
+  document.querySelectorAll('#filtersStatus .filter-pill').forEach((pill) => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('#filtersStatus .filter-pill').forEach((p) => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentStatus = pill.dataset.status;
+      render();
+    });
+  });
+
+  const filmes = DATA.filter(d => d.ty === 'filme').length;
+  const series = DATA.filter(d => d.ty === 'serie').length;
+  document.getElementById('ledgerMini').innerHTML =
+    '<span>Total <b>' + DATA.length + '</b></span>' +
+    '<span>Filmes <b>' + filmes + '</b></span>' +
+    '<span>Séries <b>' + series + '</b></span>';
+
+  render();
+})();
+</script>
+
+</body>
+</html>
