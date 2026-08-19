@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus</title>
+  <link rel="icon" type="image/svg+xml" href="Assets/favicon-drill.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@400&family=Cormorant+Garamond:ital,wght@0,300;1,300&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a0a;
+    }
+
+    #nexusFrame {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Camada 3: aviso exibido enquanto o DevTools é detectado aberto */
+    #aviso-protecao-nexus {
+      position: fixed;
+      inset: 0;
+      background: #0a0a0a;
+      color: #c9a24a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 1.3rem;
+      letter-spacing: 0.03em;
+      z-index: 999999;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+
+    /* =======================================================
+       Mapa do Nexus — cérebro/catálogo, embutido neste index.
+       Some/aparece com Ctrl+Shift+M. Isolado por #nexus-mapa-overlay;
+       nada aqui toca nas regras acima.
+    ======================================================= */
+    #nexus-mapa-overlay {
+      --gold:#C4A35A; --text:#E8E0D0; --dim:rgba(232,224,208,.4); --bgmapa:#07080D;
+      --spiral-green:#39FF7A; --linha:rgba(232,224,208,.22);
+      position: fixed; inset: 0; z-index: 500000;
+      background: rgba(0,0,0,.62);
+      padding: 1.2rem; box-sizing: border-box;
+      font-family: 'EB Garamond', Georgia, serif;
+    }
+    #nexus-mapa-overlay[hidden] { display: none; }
+    #nexus-mapa-overlay:not([hidden]) { display: flex; align-items: center; justify-content: center; }
+    #nexus-mapa-overlay *, #nexus-mapa-overlay *::before, #nexus-mapa-overlay *::after { box-sizing: border-box; }
+    #nexus-mapa-overlay button { font: inherit; color: inherit; }
+
+    #nm-abrir-mapa {
+      position: fixed; right: 1.1rem; top: 4.6rem; z-index: 400000;
+      width: 3.2rem; height: 3.2rem; border-radius: 50%;
+      background: rgba(7,8,13,.85); border: 1px solid rgba(196,163,90,.35);
+      color: #C4A35A; font-size: 1.3rem; line-height: 1; padding: 0;
+      cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,.45);
+      transition: border-color .2s ease, transform .2s ease;
+    }
+    #nm-abrir-mapa[hidden] { display: none; }
+    #nm-abrir-mapa:not([hidden]) { display: flex; align-items: center; justify-content: center; }
+    #nm-abrir-mapa:hover, #nm-abrir-mapa:focus-visible { border-color: rgba(196,163,90,.75); transform: scale(1.06); }
+    @media (max-width:640px) { #nm-abrir-mapa { right: .8rem; top: 4rem; width: 2.9rem; height: 2.9rem; font-size: 1.15rem; } }
+
+    .nm-toolkit {
+      position: relative;
+      width: min(96vw,1180px); height: min(94vh,760px);
+      background: linear-gradient(180deg, rgba(16,17,24,.97), rgba(7,8,13,.99));
+      border: 1px solid rgba(232,224,208,.12); border-radius: 14px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(196,163,90,.06);
+      display: flex; flex-direction: column; overflow: hidden;
+      animation: nm-surgir .45s ease both; color: var(--text);
+    }
+    @keyframes nm-surgir { from{ opacity:0; transform:scale(.97) translateY(6px); } to{ opacity:1; transform:scale(1) translateY(0); } }
+
+    .nm-topo { padding: .95rem 1.3rem .8rem; border-bottom: 1px solid rgba(232,224,208,.1); position: relative; }
+    .nm-topo__titulo { display: flex; align-items: baseline; gap: .6rem; }
+    .nm-topo__titulo .td { color: var(--gold); font-size: .85rem; }
+    .nm-topo__titulo h1 { font-family: 'Cinzel Decorative', serif; font-weight: 400; font-size: clamp(1rem,2.2vw,1.3rem); color: var(--gold); letter-spacing: .26em; margin: 0; }
+    .nm-tagline { font-style: italic; font-size: .72rem; color: var(--dim); letter-spacing: .05em; margin: .2rem 0 .3rem 1.4rem; }
+    .nm-progresso { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .16em; text-transform: uppercase; color: rgba(196,163,90,.55); margin: 0 0 .75rem 1.4rem; }
+    .nm-fechar { position: absolute; top: .8rem; right: 1rem; z-index: 30; background: none; border: none; color: var(--dim); font-size: 1.1rem; cursor: pointer; }
+    .nm-fechar:hover { color: var(--text); }
+
+    .nm-controles { display: flex; flex-wrap: wrap; gap: .55rem; align-items: center; padding-right: 2rem; }
+    .nm-busca { display: flex; align-items: center; gap: .4rem; background: rgba(0,0,0,.3); border: 1px solid rgba(232,224,208,.14); border-radius: 8px; padding: .4rem .6rem; flex: 1; min-width: 11rem; }
+    .nm-busca input { background: none; border: none; color: var(--text); font-family: 'EB Garamond', serif; font-style: italic; font-size: .8rem; width: 100%; outline: none; }
+    .nm-busca input::placeholder { color: rgba(232,224,208,.32); }
+    #nm-busca-voz { background: none; border: none; cursor: pointer; font-size: .85rem; opacity: .6; transition: opacity .2s ease, filter .2s ease; }
+    #nm-busca-voz:hover { opacity: 1; }
+    #nm-busca-voz.ouvindo { opacity: 1; filter: drop-shadow(0 0 5px var(--spiral-green)); }
+
+    .nm-ctrl-btn { font-family:'Cinzel',serif; font-size:.64rem; letter-spacing:.09em; text-transform:uppercase; color:var(--dim); background:rgba(232,224,208,.05); border:1px solid rgba(232,224,208,.14); border-radius:8px; padding:.5rem .75rem; cursor:pointer; white-space:nowrap; transition:color .2s ease, border-color .2s ease, background .2s ease; }
+    .nm-ctrl-btn:hover, .nm-ctrl-btn:focus-visible { color: var(--gold); border-color: rgba(196,163,90,.4); }
+    .nm-ctrl-btn.ativo { color: var(--spiral-green); border-color: rgba(57,255,122,.5); background: rgba(57,255,122,.08); }
+    .nm-ctrl-btn--fraco { opacity: .55; font-size: .58rem; }
+
+    .nm-board { position: relative; flex: 1; margin: .5rem 1.3rem 0; border-radius: 10px; border: 1px solid rgba(232,224,208,.08); background-color: rgba(255,255,255,.012); background-image: radial-gradient(rgba(232,224,208,.15) 1px, transparent 1px); background-size: 22px 22px; overflow: hidden; cursor: default; touch-action: none; }
+    .nm-board.modo-ligar { cursor: crosshair; }
+    .nm-board-inner { position: absolute; inset: 0; width: 100%; height: 100%; transform-origin: 0 0; will-change: transform; }
+    .nm-linhas { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .nm-linha-visivel { fill: none; stroke: var(--linha); stroke-width: .2; stroke-linecap: round; opacity: .22; transition: stroke .2s ease, stroke-width .2s ease, opacity .2s ease; pointer-events: none; }
+    .nm-linha-visivel.ativa { stroke: var(--gold); stroke-width: .5; opacity: .85; }
+    .nm-linha-visivel.selecionada { stroke: var(--spiral-green); stroke-width: .55; opacity: .95; }
+    .nm-linha-alvo { fill: none; stroke: transparent; stroke-width: 3; cursor: pointer; pointer-events: stroke; }
+
+    .nm-zoom { position: absolute; right: .6rem; bottom: .6rem; z-index: 15; display: flex; flex-direction: column; gap: .3rem; }
+    .nm-zoom button {
+      width: 1.9rem; height: 1.9rem; border-radius: 6px;
+      background: rgba(7,8,13,.82); border: 1px solid rgba(232,224,208,.14); color: var(--dim);
+      font-family: 'Cinzel', serif; font-size: .68rem; cursor: pointer;
+      transition: color .2s ease, border-color .2s ease;
+    }
+    #nm-zoom-reset { font-size: .48rem; letter-spacing: .02em; }
+    .nm-zoom button:hover, .nm-zoom button:focus-visible { color: var(--gold); border-color: rgba(196,163,90,.4); }
+
+    .nm-no { position: absolute; transform: translate(-50%,-50%); display: flex; align-items: center; gap: .4rem; background: rgba(7,8,13,.85); border: 1px solid rgba(232,224,208,.16); border-radius: 20px; padding: .32rem .7rem .32rem .5rem; cursor: grab; user-select: none; touch-action: none; transition: border-color .2s ease, opacity .25s ease, transform .2s ease, box-shadow .2s ease, padding .2s ease, gap .2s ease, background .2s ease; max-width: 11.5rem; z-index: 2; }
+    .nm-no:active { cursor: grabbing; }
+    .nm-no__ponto { width: .5rem; height: .5rem; border-radius: 50%; background: var(--c); box-shadow: 0 0 6px var(--c); flex: none; }
+    .nm-no__titulo { font-family: 'Cinzel', serif; font-weight: 600; font-size: .68rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 9rem; opacity: 1; transition: color .2s ease, text-shadow .2s ease, max-width .22s ease, opacity .16s ease; }
+    .nm-no:hover { border-color: var(--c); }
+    .nm-no.armado { border-color: var(--spiral-green); box-shadow: 0 0 12px rgba(57,255,122,.5); }
+    .nm-no.destacado { transform: translate(-50%,-50%) scale(1.16); border-color: var(--gold); box-shadow: 0 0 16px rgba(196,163,90,.55); z-index: 8; }
+    .nm-no.apagado { opacity: .2; }
+    .nm-no.arrastando { opacity: .88; z-index: 9; }
+    .nm-no:focus-visible { outline: 1px solid var(--gold); outline-offset: 3px; }
+
+    /* ---- trancado: ainda não visitado ---- */
+    .nm-no--trancado { padding: .4rem; gap: 0; background: rgba(7,8,13,.6); border-color: rgba(232,224,208,.1); }
+    .nm-no__cadeado { font-size: .8rem; opacity: .5; filter: grayscale(1); transition: opacity .2s ease; }
+    .nm-no--trancado:hover, .nm-no--trancado:focus-visible { border-color: rgba(232,224,208,.3); }
+    @keyframes nm-sacudir {
+      10%, 90% { transform: translate(-50%,-50%) translateX(-1px); }
+      20%, 80% { transform: translate(-50%,-50%) translateX(2px); }
+      30%, 50%, 70% { transform: translate(-50%,-50%) translateX(-3px); }
+      40%, 60% { transform: translate(-50%,-50%) translateX(3px); }
+    }
+    .nm-no.sacudir { animation: nm-sacudir .4s ease; }
+    .nm-no--trancado:hover .nm-no__cadeado, .nm-no--trancado:focus-visible .nm-no__cadeado { opacity: .85; }
+
+    /* ---- trancado, mas com lembrança vaga (só a Vila do Vau usa isso) ----
+       Ela não é "ainda não visitada" igual às outras — foi visitada e
+       voltou a se trancar sozinha. O cadeado continua mudo (o texto vem
+       só no title/aria-label, ao passar o mouse — o resto do tempo ela
+       não entrega nada, igual os números da própria descrição dela). */
+    .nm-no--esquecido { border-color: rgba(204,64,96,.22); }
+    .nm-no--esquecido .nm-no__cadeado { opacity: .6; }
+    .nm-no--esquecido:hover, .nm-no--esquecido:focus-visible { border-color: rgba(204,64,96,.55); }
+
+    /* ---- LOD: detalhe cresce perto do ponteiro, encolhe longe dele ----
+       (a ideia que você citou do Ocarina of Time — só que aqui não tem
+       "fora da tela" de verdade, então a distância é do ponteiro, não
+       da câmera. Some o título, mantém só o ponto colorido.) */
+    .nm-no.simplificado { padding: .32rem; gap: 0; background: transparent; border-color: transparent; box-shadow: none; }
+    .nm-no.simplificado .nm-no__titulo { max-width: 0; opacity: 0; }
+    .nm-no.simplificado:hover, .nm-no.simplificado:focus-visible {
+      padding: .32rem .7rem .32rem .5rem; gap: .4rem;
+      background: rgba(7,8,13,.85); border-color: rgba(232,224,208,.16);
+    }
+    .nm-no.simplificado:hover .nm-no__titulo, .nm-no.simplificado:focus-visible .nm-no__titulo { max-width: 9rem; opacity: 1; }
+
+    .nm-remover-link { position: absolute; transform: translate(-50%,-50%); width: 1.3rem; height: 1.3rem; border-radius: 50%; background: var(--bgmapa); border: 1px solid var(--spiral-green); color: var(--spiral-green); font-size: .75rem; line-height: 1; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; }
+
+    .nm-editor { position: absolute; right: 1.3rem; bottom: 4.5rem; z-index: 20; width: min(88vw,19.5rem); max-height: 70%; overflow-y: auto; background: rgba(10,11,17,.98); border: 1px solid rgba(196,163,90,.3); border-radius: 12px; padding: 1rem 1.1rem 1.1rem; box-shadow: 0 18px 50px rgba(0,0,0,.5); flex-direction: column; gap: .55rem; animation: nm-editorIn .18s ease both; }
+    .nm-editor[hidden] { display: none; }
+    .nm-editor:not([hidden]) { display: flex; }
+    @keyframes nm-editorIn { from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:translateY(0); } }
+    .nm-editor label { font-family: 'Cinzel', serif; font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); display: flex; flex-direction: column; gap: .3rem; }
+    .nm-editor input, .nm-editor textarea { font-family: 'EB Garamond', serif; font-size: .85rem; color: var(--text); background: rgba(0,0,0,.3); border: 1px solid rgba(232,224,208,.14); border-radius: 6px; padding: .4rem .5rem; resize: vertical; }
+    .nm-editor__cores { display: flex; flex-wrap: wrap; gap: .35rem; }
+    .nm-cor-op { width: 1.1rem; height: 1.1rem; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+    .nm-cor-op.selecionada { border-color: var(--text); }
+    .nm-editor__fechar { position: absolute; top: .6rem; right: .7rem; z-index: 5; background: none; border: none; color: var(--dim); font-size: .9rem; cursor: pointer; }
+    .nm-editor__fechar:hover { color: var(--text); }
+    .nm-editor__excluir { margin-top: .3rem; font-family: 'Cinzel', serif; font-size: .6rem; letter-spacing: .06em; color: rgba(204,64,96,.8); background: none; border: 1px solid rgba(204,64,96,.3); border-radius: 6px; padding: .4rem; cursor: pointer; }
+    .nm-editor__excluir:hover { background: rgba(204,64,96,.12); }
+
+    .nm-rodape { text-align: center; font-size: .58rem; color: rgba(232,224,208,.22); letter-spacing: .04em; padding: .5rem 0; }
+
+    @media (max-width:640px) {
+      .nm-toolkit { width: 100vw; height: 100vh; border-radius: 0; }
+      .nm-tagline { display: none; }
+      .nm-editor { right: .6rem; left: .6rem; width: auto; bottom: 3.4rem; }
+    }
+    @media (prefers-reduced-motion:reduce) { #nexus-mapa-overlay * { transition: none !important; animation: none !important; } }
+  </style>
+</head>
+<body>
+
+  <!--
+    Este arquivo é o único que precisa existir com nome fixo.
+    Ele sempre aponta para "nexus.html" por nome de arquivo, então
+    novos uploads podem continuar sobrescrevendo nexus.html sem
+    nunca precisar tocar neste index.html novamente.
+  -->
+  <iframe id="nexusFrame" data-src="nexus.html" title="Nexus"></iframe>
+  <!-- Sem defer, de propósito: decide ANTES do iframe acima carregar
+       se o Nexus já foi apagado de vez num Cenário A anterior. -->
+  <script src="malik-apagado.js"></script>
+
+  <!--
+    Mapa do Nexus — catálogo/cérebro dos caminhos, embutido aqui pra
+    herdar as proteções abaixo de graça (mesmo documento). Some por
+    padrão; abre com Ctrl+Shift+M (ver script no fim do arquivo).
+    Não tem link de verdade pra nenhuma página — só catalogação.
+  -->
+  <div id="nexus-mapa-overlay" hidden>
+    <div class="nm-toolkit">
+      <button class="nm-fechar" id="nm-fechar" type="button" aria-label="Fechar mapa">✕</button>
+      <header class="nm-topo">
+        <div class="nm-topo__titulo"><span class="td">◆</span><h1>Mapa do Nexus</h1></div>
+        <p class="nm-tagline">cérebro dos caminhos — arraste, ligue, edite</p>
+        <p class="nm-progresso" id="nm-progresso"></p>
+        <div class="nm-controles">
+          <div class="nm-busca">
+            <input type="text" id="nm-busca-input" placeholder="mostrar Valtheris…" autocomplete="off">
+            <button id="nm-busca-voz" type="button" title="Buscar por voz" hidden>🎙</button>
+          </div>
+          <button id="nm-btn-novo" type="button" class="nm-ctrl-btn">+ caminho</button>
+          <button id="nm-btn-ligar" type="button" class="nm-ctrl-btn">🔗 ligar</button>
+          <button id="nm-btn-reset" type="button" class="nm-ctrl-btn nm-ctrl-btn--fraco">↺ restaurar</button>
+        </div>
+      </header>
+
+      <div class="nm-board" id="nm-board">
+        <div class="nm-board-inner" id="nm-board-inner">
+          <svg class="nm-linhas" id="nm-linhas" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+        </div>
+        <div class="nm-zoom">
+          <button id="nm-zoom-mais" type="button" aria-label="Aumentar zoom">+</button>
+          <button id="nm-zoom-reset" type="button" aria-label="Redefinir zoom">100%</button>
+          <button id="nm-zoom-menos" type="button" aria-label="Diminuir zoom">−</button>
+        </div>
+      </div>
+
+      <div class="nm-editor" id="nm-editor" hidden>
+        <button class="nm-editor__fechar" id="nm-editor-fechar" type="button" aria-label="Fechar edição">✕</button>
+        <label>Tag<input id="nm-ed-tag" type="text"></label>
+        <label>Título<input id="nm-ed-titulo" type="text"></label>
+        <label>Cor<div class="nm-editor__cores" id="nm-ed-cores"></div></label>
+        <label>Descrição<textarea id="nm-ed-desc" rows="3"></textarea></label>
+        <button id="nm-ed-excluir" type="button" class="nm-editor__excluir">excluir este caminho</button>
+      </div>
+
+      <p class="nm-rodape">◆ &nbsp; arraste os nós · clique pra editar · "ligar" pra conectar · clique numa linha pra remover &nbsp; ◆</p>
+    </div>
+  </div>
+
+  <!-- Botão sempre visível pra abrir o mapa — funciona em qualquer
+       dispositivo (mouse ou toque), sem depender de atalho de teclado.
+       Ctrl+Shift+M continua funcionando também, como atalho extra. -->
+  <button id="nm-abrir-mapa" type="button" title="Abrir o mapa do Nexus" aria-label="Abrir o mapa do Nexus">🗺️</button>
+
+  <script>
+    // =========================================================
+    // Redirecionamento + máscara de endereço: a URL e o título
+    // exibidos são sempre os desta página (index), mesmo que o
+    // conteúdo real venha de nexus.html ou de qualquer página
+    // para a qual a navegação interna do Nexus leve depois.
+    // =========================================================
+
+    var frame = document.getElementById('nexusFrame');
+
+    // ---- Camada 1: clique direito do mouse desabilitado ----
+    // ---- Camada 2: atalhos de teclado que abrem informações da página ----
+    function bloquearTeclasDeInspecao(e) {
+      var tecla = e.key;
+      var ctrlOuCmd = e.ctrlKey || e.metaKey;
+
+      if (tecla === 'F12') { e.preventDefault(); return false; } // DevTools
+
+      if (ctrlOuCmd && e.shiftKey && ['I', 'J', 'C', 'i', 'j', 'c'].indexOf(tecla) !== -1) {
+        e.preventDefault(); return false; // Inspecionar / Console / Selecionar elemento
+      }
+
+      if (ctrlOuCmd && (tecla === 'u' || tecla === 'U')) {
+        e.preventDefault(); return false; // Ver código-fonte
+      }
+
+      if (ctrlOuCmd && (tecla === 's' || tecla === 'S')) {
+        e.preventDefault(); return false; // Salvar página
+      }
+    }
+
+    function aplicarProtecaoBasica(doc) {
+      if (!doc) return;
+      doc.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+      doc.addEventListener('keydown', bloquearTeclasDeInspecao);
+    }
+
+    // Aplica no documento externo (este index.html)
+    aplicarProtecaoBasica(document);
+
+    // Reaplica no documento interno sempre que o iframe carregar.
+    // Isso cobre tanto o nexus.html inicial quanto qualquer navegação
+    // feita a partir dele (Valtheris, TLOZ, Covers, etc.), já que cada
+    // navegação troca o "document" do iframe por um novo, descartando
+    // os listeners anteriores.
+    frame.addEventListener('load', function () {
+      try {
+        var docInterno = frame.contentDocument || frame.contentWindow.document;
+        aplicarProtecaoBasica(docInterno);
+      } catch (erro) {
+        // Só ocorreria se o conteúdo deixasse de ser mesma-origem.
+      }
+    });
+
+    // ---- Camada 3: script de segurança caso o bloqueio acima falhe ----
+    // Clique direito e atalhos de teclado podem ser contornados pelo
+    // menu do próprio navegador em alguns casos. Esta camada detecta
+    // o DevTools pela diferença entre as dimensões externas e internas
+    // da janela e cobre a tela enquanto ele estiver aberto.
+    (function () {
+      var LIMITE = 160; // largura aproximada do painel do DevTools
+      var avisoVisivel = false;
+
+      // Em mobile, o teclado virtual e a barra de endereço que soma/some ao
+      // rolar mudam innerHeight na hora, sem nenhum DevTools aberto — o
+      // mesmo teste que funciona bem no desktop dispararia um falso
+      // positivo ali (bloqueando a tela) assim que o viajante tocasse,
+      // por exemplo, na busca do Mapa do Nexus. Por isso esta camada
+      // específica só roda em telas com ponteiro fino (mouse/trackpad) —
+      // as outras duas camadas (clique direito e atalhos) continuam
+      // valendo em qualquer dispositivo.
+      var ehProvavelmenteMobile = (window.matchMedia && window.matchMedia('(pointer:coarse)').matches) || window.innerWidth < 768;
+      if (ehProvavelmenteMobile) return;
+
+      function criarAviso() {
+        var aviso = document.createElement('div');
+        aviso.id = 'aviso-protecao-nexus';
+        aviso.textContent = 'Conteúdo protegido.';
+        return aviso;
+      }
+
+      function verificar() {
+        var difLargura = window.outerWidth - window.innerWidth;
+        var difAltura = window.outerHeight - window.innerHeight;
+        var provavelmenteAberto = difLargura > LIMITE || difAltura > LIMITE;
+
+        if (provavelmenteAberto && !avisoVisivel) {
+          avisoVisivel = true;
+          document.body.appendChild(criarAviso());
+        } else if (!provavelmenteAberto && avisoVisivel) {
+          avisoVisivel = false;
+          var el = document.getElementById('aviso-protecao-nexus');
+          if (el) el.remove();
+        }
+      }
+
+      setInterval(verificar, 1000);
+    })();
+
+    // ---- Camada extra: página-isca ao perder o foco ----
+    // "Salvar como" pelo menu do navegador não dispara evento
+    // nenhum, mas pra abrir esse menu o usuário precisa antes
+    // tirar o foco da página de verdade — e isso é detectável
+    // (ver checagem via document.hasFocus() mais abaixo, com uma
+    // pequena confirmação por atraso). Ao perder o foco, guarda
+    // onde o usuário estava e troca o iframe por uma página
+    // vazia; só volta com um clique explícito nela, nunca
+    // sozinho ao reganhar o foco.
+    (function () {
+      var urlGuardada = null;
+      var scrollGuardado = { x: 0, y: 0 };
+      var mostrandoIsca = false;
+      var cargaInicialPronta = false;
+
+      var HTML_ISCA = '<!DOCTYPE html><html lang="pt-br"><head><meta charset="UTF-8">' +
+        '<style>html,body{margin:0;height:100%;background:#0a0a0a;color:#c9a24a;' +
+        'font-family:\'EB Garamond\',Georgia,serif;display:flex;align-items:center;justify-content:center;' +
+        'text-align:center;cursor:pointer;}' +
+        '.msg p:first-child{font-size:1.3rem;margin-bottom:.6rem;}' +
+        '.msg p:last-child{font-size:.95rem;opacity:.6;}</style></head><body>' +
+        '<div class="msg"><p>Não há nada para salvar aqui.</p>' +
+        '<p>Clique em qualquer lugar da página para voltar onde parou.</p></div>' +
+        '</body></html>';
+
+      function mostrarIsca() {
+        // Não ativa antes do nexus.html terminar de carregar pela
+        // primeira vez — senão guardaria "about:blank" como local
+        // do usuário, e o clique de restaurar levaria pra uma
+        // página em branco em vez do Nexus de verdade.
+        if (mostrandoIsca || !cargaInicialPronta || !frame.contentWindow) return;
+        try {
+          var urlAtual = frame.contentWindow.location.href;
+          urlGuardada = (urlAtual && urlAtual !== 'about:blank') ? urlAtual : 'nexus.html';
+          scrollGuardado.x = frame.contentWindow.scrollX;
+          scrollGuardado.y = frame.contentWindow.scrollY;
+        } catch (erro) {
+          urlGuardada = 'nexus.html';
+        }
+        mostrandoIsca = true;
+        frame.removeAttribute('src');
+        frame.srcdoc = HTML_ISCA;
+      }
+
+      function restaurar() {
+        if (!mostrandoIsca) return;
+        mostrandoIsca = false;
+        frame.removeAttribute('srcdoc');
+        frame.src = urlGuardada || 'nexus.html';
+      }
+
+      var focoAnterior = true;
+      var confirmandoPerda = false;
+
+      function verificarFoco() {
+        var focoAtual = document.hasFocus();
+        // Ao detectar a perda, confirma de novo 200ms depois antes
+        // de agir — filtra um blip passageiro que pode acontecer
+        // bem no instante em que o foco entra pela primeira vez no
+        // iframe (uma vez só, no primeiro clique), sem atrasar
+        // perceptivelmente a reação a uma perda de foco de verdade.
+        if (focoAnterior && !focoAtual && !confirmandoPerda) {
+          confirmandoPerda = true;
+          setTimeout(function () {
+            confirmandoPerda = false;
+            if (!document.hasFocus()) {
+              mostrarIsca();
+            }
+          }, 200);
+        }
+        focoAnterior = focoAtual;
+      }
+
+      // 'blur' sozinho não é confiável aqui: como o iframe ocupa
+      // a tela toda, o primeiro clique dentro do Nexus move o foco
+      // do documento de fora pro iframe, e isso já dispara 'blur'
+      // nele mesmo sem o usuário ter saído da página — e depois
+      // ele trava sem disparar de novo. document.hasFocus() é a
+      // fonte de verdade real: reflete o foco do documento de fora
+      // mesmo quando o foco interno está dentro do próprio iframe
+      // (mesma origem), então só ele decide se mostra a isca.
+      // 'blur'/'focus' dão resposta rápida quando disparam certo;
+      // o intervalo é a rede de segurança pros casos em que não
+      // disparam (como o menu do navegador).
+      window.addEventListener('blur', verificarFoco);
+      window.addEventListener('focus', verificarFoco);
+      setInterval(verificarFoco, 400);
+
+      // Reaproveita o 'load' do iframe: se quem carregou foi a
+      // isca, escuta o clique nela; se foi a página real voltando,
+      // restaura a posição de rolagem salva.
+      frame.addEventListener('load', function () {
+        if (mostrandoIsca) {
+          try {
+            var docIsca = frame.contentDocument || frame.contentWindow.document;
+            docIsca.addEventListener('click', restaurar);
+          } catch (erro) {
+            // mesma-origem sempre esperada aqui
+          }
+          return;
+        }
+        cargaInicialPronta = true;
+        if (urlGuardada && frame.contentWindow.location.href === urlGuardada) {
+          try {
+            frame.contentWindow.scrollTo(scrollGuardado.x, scrollGuardado.y);
+          } catch (erro) {}
+          urlGuardada = null;
+        }
+        // Se o foco já tiver sido perdido enquanto essa página
+        // ainda carregava, mostra a isca agora que há um estado
+        // válido pra guardar (em vez de esperar uma nova perda de
+        // foco que talvez nunca aconteça).
+        if (!document.hasFocus()) {
+          mostrarIsca();
+        }
+      });
+    })();
+  </script>
+
+  <script>
+  // =========================================================
+  // Mapa do Nexus — catálogo embutido. Bloco isolado, não mexe
+  // em nada do script de proteção acima. Abre/fecha com
+  // Ctrl+Shift+M (funciona com o foco tanto fora quanto dentro
+  // do iframe, igual às camadas de proteção já existentes).
+  // Sem link de verdade pra nenhuma página: só título, tag,
+  // cor e descrição — catalogação, não navegação.
+  // =========================================================
+  (function () {
+    var CHAVE = 'nexusMapaEstado_v2';
+    var PALETA = ['#C4A35A','#CC4060','#E8B86D','#8EB5D8','#9B7FD4','#D9B776','#D2691E','#5EC4BB','#5FA88A','#39FF7A','#E8E0D0'];
+
+    // Nexus + os 9 caminhos que ele conecta — a mesma estrutura real
+    // que o nexus.html tem, sem nenhum caminho de arquivo embutido.
+    // ── converte uma posição (x,y) fixa em parâmetros de órbita relativos
+    // ao pai — usado tanto pros universos (em torno do Nexus) quanto pros
+    // planetas/luas (em torno do seu pai imediato). ──
+    function paraOrbital(x, y, xPai, yPai, velBase) {
+      var dx = x - xPai, dy = y - yPai;
+      return {
+        raio: Math.sqrt(dx * dx + dy * dy) || 1,
+        angulo: Math.atan2(dy, dx),
+        velOrbital: velBase * (0.85 + Math.random() * 0.3) // ±15%, pra não girarem tudo em sincronia perfeita
+      };
+    }
+    var VEL_UNIVERSO = 2 * Math.PI / 340; // uma volta a cada ~340s — lento, quase imperceptível de um frame pro outro
+    var VEL_PLANETA  = 2 * Math.PI / 85;  // uma volta a cada ~85s
+    var VEL_LUA      = 2 * Math.PI / 24;  // uma volta a cada ~24s
+
+    var BASE_NODES = [
+      { id:'nexus',       tag:'Hub',         titulo:'Nexus',                desc:'o ponto de onde tudo parte.',                                                                                                                                                          cor:'#C4A35A', x:50, y:50, visitado:true },
+      { id:'zelda',       tag:'Jogo',        titulo:'The Legend of Zelda',  desc:'diário do herói percorrendo a cronologia jogo a jogo — Skyward Sword, Minish Cap, Ocarina of Time, Majora\u2019s Mask, Twilight Princess, Breath of the Wild. Não a história dos jogos: a dele — o que sentiu, onde travou, o que não esquece.', cor:'#D4AA40', x:50, y:12, visitado:false },
+      { id:'valtheris',   tag:'RPG de Mesa', titulo:'Valtheris',            desc:'RPG de mesa homebrew — Além do Véu da Carne, 21 sagas e uma Saga 0 (Sob o Luar). Nasceu sem grupo, sem regra pronta, só a narrativa exigindo — daí vieram o Codex, o mapa, o calendário, o grimório de NPCs, o bestiário. Sagas I–XI já em modo narrativo.', cor:'#CC4060', x:76, y:23, visitado:false },
+      { id:'diary',       tag:'Memórias',    titulo:'Diário de Memórias',   desc:'memórias de vida contadas em ordem, da creche até o presente — Cerqueira César, Arandu, Avaré, Ourinhos, Bauru, Foz do Iguaçu, Marília. As cidades continuam lá, esperando; aqui elas foram escritas.',                                     cor:'#E8B86D', x:88, y:47, visitado:false },
+      { id:'book',        tag:'Escrita',     titulo:'Incessans Aestimandi', desc:'30 capítulos — Autor-Livro, Reflexo, Único... até Questão — sob o subtítulo Humonstro. \u201cNão é um conto; é um convite à introspecção.\u201d Escrito aos poucos, em fases distintas da vida, tom mudando entre capítulos; a entrega mais sincera. Inclui o capítulo à parte Deus X Homem.',                          cor:'#8EB5D8', x:79, y:71, visitado:false },
+      { id:'covers',      tag:'Música',      titulo:'Covers',               desc:'quando não sei dizer, eu canto — 20 covers vocais de músicas/raps temáticos de anime (Enygma, Haikaiss, 7 Minutoz e outros), passando por Bleach, Chainsaw Man, Jujutsu Kaisen, Cowboy Bebop, Naruto; 2 faixas com vídeo.',                                                                cor:'#9B7FD4', x:58, y:86, visitado:false },
+      { id:'origem',      tag:'Retrato',     titulo:'Antes do Autor-Livro', desc:'identificação, habilidades, defeitos, hábitos de lazer, futuro, animes favoritos e até uma música autoral (Vmz — Memórias) — nove versões do mesmo trabalho de faculdade (2021–2022), de uma home page em HTML puro até sistemas com PHP e MySQL, reunidas aqui como um retrato só. O ponto de partida, mesmo sem palco.',                                        cor:'#D9B776', x:35, y:86, visitado:false },
+      { id:'icaro',       tag:'Museu',       titulo:'Ícarus Reborn',        desc:'não é mais catálogo — virou museu. 11 peças de projetos sem lugar em outra página: O Acervo Anterior (o catálogo de animes/jogos que este museu substituiu), Fibonacci, DNA/Rosalind, RescueTechSolutions, Fragmentos, Tesla, URI, Clarice, PDAES, Guts, Slides. \u201cO que caiu, insiste em arder de novo.\u201d',                                cor:'#D2691E', x:14, y:71, visitado:false },
+      { id:'recordacoes', tag:'Jogos',       titulo:'Recordações',          desc:'51 álbuns · 461 fotos · 9 vídeos, desde 2013 — um por jogo, cada um guardando um pedaço de tempo. Sem precisar de palco pra aparecer.',                                     cor:'#5EC4BB', x:5,  y:47, visitado:false },
+      { id:'mal',         tag:'Perfil',      titulo:'M.A.L',                desc:'perfil de anime, mangá e personagens — \u201co que assisti, o que abandonei e o que insisto em achar que ainda vou começar\u201d. Com listas próprias: animes, filmes & séries, mangás & manhwas.',                                              cor:'#5FA88A', x:16, y:23, visitado:false },
+      { id:'segredo',     tag:'Segredo',     titulo:'O Desejo',             desc:'o Shen Long desperta quando as sete esferas se reúnem pelo Nexus. Três desejos possíveis — saber de outros segredos, ouvir o que o autor acha do seu nome, ou seguir pra outro universo. Concedido o desejo, as esferas se dispersam de novo.', cor:'#FFD98A', x:50, y:68, visitado:false }
+    ].map(function (n) {
+      if (n.id === 'nexus') return n;
+      var orb = paraOrbital(n.x, n.y, 50, 50, VEL_UNIVERSO);
+      return Object.assign(n, { de:'nexus', raio:orb.raio, angulo:orb.angulo, velOrbital:orb.velOrbital });
+    });
+
+    // ── planetas: gera as subpáginas de um universo, espalhadas num arco
+    // pra fora do centro do board a partir da posição do pai; já nascem
+    // com órbita própria em torno dele. ──
+    function planetas(idPai, xPai, yPai, corPai, itens, velBase) {
+      var dx = xPai - 50, dy = yPai - 50;
+      var dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      var anguloBase = Math.atan2(dy / dist, dx / dist);
+      var n = itens.length;
+      var espalhar = Math.min(1.25, 0.26 * n);
+      return itens.map(function (item, i) {
+        var t = n === 1 ? 0 : (i / (n - 1) - 0.5);
+        var ang = anguloBase + t * espalhar;
+        var r = 9 + (i % 3) * 2.4;
+        var x = Math.max(3, Math.min(97, xPai + r * Math.cos(ang)));
+        var y = Math.max(3, Math.min(97, yPai + r * Math.sin(ang)));
+        var orb = paraOrbital(x, y, xPai, yPai, velBase);
+        return { id:item.id, tag:item.tag, titulo:item.titulo, desc:item.desc, cor:corPai, x:x, y:y, visitado:false, de:idPai, raio:orb.raio, angulo:orb.angulo, velOrbital:orb.velOrbital };
+      });
+    }
+
+    var PLANETAS_VALTHERIS = planetas('valtheris', 76, 23, '#CC4060', [
+      { id:'valtheris_mecanicas', tag:'Grimório de Regras',      titulo:'Mecânicas de Valtheris',   desc:'⚖️ o grimório de regras completo — sistema híbrido D&D 5e + Call of Cthulhu. Guia do GM, guia pra iniciantes, criação de personagem, combate, sanidade e pavor (de CoC), durabilidade de equipamento. Cada seção marcada 🔧 Homebrew (nova) ou ⚡ Adaptada (D&D alterado).' },
+      { id:'valtheris_codex',     tag:'Lore & Mundo',            titulo:'Codex de Valtheris',        desc:'📖 enciclopédia do mundo em 12 seções — Cosmos (Seres Antigos, Deuses Regentes), Pilares do Real, Guardiões do Limiar, Calamidades, o Continente, Eras & Eventos, Fenômenos, Anomalias, Raças & Povos, Clãs Vampíricos, Organizações, Locais. Trancado até ler todas as Sagas de Além do Véu (I–XXI) e a Saga 0 de Sob o Luar.' },
+      { id:'valtheris_mapa',      tag:'Territórios',             titulo:'Mapa de Valtheris',         desc:'🗺️ mapa interativo do continente (zoom e arraste), com 5 mapas internos dos locais visitados — Fortaleza de Contenção, Aldeia Sem Nome, Clareira Derretida & Rio Corvinal, Caverna de Abrigo, Vila Sepet — e a Rota de Leyn marcada por saga.' },
+      { id:'valtheris_calendario',tag:'Ciclo Cinza & Eventos',   titulo:'Calendário de Valtheris',   desc:'🕰️ o Ciclo Cinza — calendário oficial da Igreja do Sol Agonizante: 12 Luas, 336 dias, semanas de 7 dias. Ano atual: 712 CC. Cronologia histórica completa, mais um capítulo por saga, das 21 registradas.' },
+      { id:'valtheris_npcs',      tag:'Personagens & Registros', titulo:'Grimório de NPCs',          desc:'🎭 50 registros — 13 aliados, 6 mortos, 5 família, 5 entidades, 5 inimigos, 16 outros — cada um com biografia, linha de eventos, personalidade e equipamento. Trancado até ler todas as Sagas (I–XXI) e a Saga 0 de Sob o Luar.' },
+      { id:'valtheris_equip',     tag:'Espólios & Raridades',    titulo:'Catálogo de Equipamentos',  desc:'⚔️ 69 itens catalogados, filtráveis por status, raridade e possuidor. Trancado até ler todas as Sagas (I–XXI) e a Saga 0 de Sob o Luar.' },
+      { id:'valtheris_seres',     tag:'Bestiário',               titulo:'Outros Seres',              desc:'🦅 catálogo de seres do Livro do Jogador de D&D 5e, organizado por origem — familiares & companheiros (coruja, corvo, falcão, pseudodragão...), infernais & extraplanares, montarias e mais.' },
+      { id:'valtheris_campanhas', tag:'Além do Véu da Carne',    titulo:'Campanhas',                 desc:'🩸 \u201ccada campanha, um mundo; cada saga, uma cicatriz.\u201d Onde as campanhas de Valtheris são lidas — duas ativas, uma terceira reservada.' },
+      { id:'valtheris_arcana',    tag:'Minigames & Oráculo',     titulo:'Arcana de Valtheris',        desc:'🎲 três minijogos — Simulador de Emboscada, Oráculo de Valtheris, Os Cristalizados — pra consultar o que o continente guarda.' },
+      { id:'valtheris_mesa',      tag:'Ferramentas de Sessão',   titulo:'Mesa do Mestre',            desc:'⚙️ painel de sessão ao vivo — iniciativa, ambiente sonoro (camadas de música/efeitos), tensão, condições, gerador de encontros por bioma/perigo, espólios, notas.' },
+      { id:'valtheris_dados',     tag:'RPG Dice Roller',         titulo:'Grimório dos Dados',        desc:'🎲 rolador de dados pra D&D 5e, Pathfinder, Call of Cthulhu 7ª Ed e qualquer sistema D20 — vantagem/desvantagem, teste de habilidade por porcentagem (CoC), histórico de rolagens.' },
+      { id:'valtheris_conversor', tag:'Ferramenta do Mestre',    titulo:'Conversor CoC → Valtheris', desc:'🌑 converte estatísticas entre Call of Cthulhu 7e e o D&D 5e adaptado de Valtheris em tempo real — atributos, combate, sanidade, dano e armadura, nos dois sentidos.' },
+      { id:'valtheris_vila',      tag:'Horror Atmosférico',      titulo:'A Vila do Vau',              desc:'🕯️ um registro de moradores que não fecha as contas, um pároco que desconfia dos próprios vizinhos, um viajante que ouviu passos demais. Os números somem bem na hora em que você presta atenção neles.' }
+    ], VEL_PLANETA);
+
+    var posCampanhas = PLANETAS_VALTHERIS.filter(function (n) { return n.id === 'valtheris_campanhas'; })[0];
+    var LUAS_VALTHERIS_CAMPANHAS = posCampanhas ? planetas('valtheris_campanhas', posCampanhas.x, posCampanhas.y, '#CC4060', [
+      { id:'valtheris_campanha_veu',  tag:'Campanha Ativa', titulo:'Além do Véu da Carne',              desc:'🩸 a Família Sepet e os segredos do Continente Caído. D&D 5e · CoC. Leyn Sepet, primordial que morreu duas vezes e voltou — Mara, Elise, Kaira, os Guardiões do Limiar, a Mestra Devoradora de Faces.' },
+      { id:'valtheris_campanha_luar', tag:'Campanha',       titulo:'Sob o Luar dos Que Não Descansam',  desc:'🌙 Soren, Arin e o Colecionador — residuais espectrais e o Limiar. Saga 0 como documento de campanha (personagens, entidades, bússola temática).' }
+    ], VEL_LUA) : [];
+
+    var PLANETAS_ZELDA = planetas('zelda', 50, 12, '#D4AA40', [
+      { id:'zelda_ss',         tag:'1º da Cronologia', titulo:'Skyward Sword',      desc:'jogando, mas o hardware não aguenta — vi o detonado completo do Hiro. Conheço pelo que ele conta, ainda não pelo que ele exige.' },
+      { id:'zelda_mc',         tag:'2º da Cronologia', titulo:'The Minish Cap',     desc:'zerado 100% — o único até agora. O coração são as Kinstones: fragmentos que você encaixa com o NPC certo pra abrir baús e segredos escondidos pelo mapa inteiro.' },
+      { id:'zelda_oot',        tag:'3º da Cronologia', titulo:'Ocarina of Time',    desc:'zerado — e ainda jogo. \u201ca minha primeira memória é de algo que não deveria existir dentro dele... ainda estou dentro dele.\u201d' },
+      { id:'zelda_mm',         tag:'4º da Cronologia', titulo:'Majora\u2019s Mask',      desc:'ainda não iniciei. \u201ctenho medo de um jogo que ainda não joguei — isso já diz tudo sobre o que ele é.\u201d' },
+      { id:'zelda_tp',         tag:'5º da Cronologia', titulo:'Twilight Princess',  desc:'conhecido de detonado, quase não jogado — o hardware trava de novo. Sobre o Hero\u2019s Shade, a Midna e a teoria de ser o mesmo Link de Ocarina/Majora: \u201cjá fui ele — agora sou o fantasma que guia.\u201d' },
+      { id:'zelda_botw',       tag:'6º da Cronologia', titulo:'Breath of the Wild', desc:'ainda não iniciei — sexto e último da cronologia, esperando a vez.' },
+      { id:'zelda_cronologia', tag:'Referência',       titulo:'Cronologia',         desc:'as três linhas do tempo oficiais de Hyrule e a ordem dos eventos — referência separada do diário pessoal.' }
+    ], VEL_PLANETA);
+
+    var PLANETAS_MAL = planetas('mal', 16, 23, '#5FA88A', [
+      { id:'mal_animes', tag:'372 títulos', titulo:'Lista de Animes',    desc:'tudo que assisti, larguei e ainda pretendo começar — 372 títulos (230 completos, 77 na fila, 30 em pausa, 29 assistindo, 6 abandonados).' },
+      { id:'mal_filmes', tag:'221 títulos', titulo:'Filmes & Séries',    desc:'o que já vi, o que estou vendo e o que ainda pretendo assistir — 221 títulos, a maioria (208) ainda na fila.' },
+      { id:'mal_mangas', tag:'245 títulos', titulo:'Mangás & Manhwas',   desc:'o que estou lendo, o que já terminei e o que ainda pretendo começar — 245 títulos (155 na fila, 83 lendo, 7 completos).' }
+    ], VEL_PLANETA);
+
+    var PLANETAS_BOOK = planetas('book', 79, 71, '#8EB5D8', [
+      { id:'book_deusxhomem', tag:'Documento-Gênese', titulo:'Deus X Homem', desc:'a apresentação de maio de 2023 que virou o documento-gênese do Incessans Aestimandi — onde o livro realmente começou.' }
+    ], VEL_PLANETA);
+
+    var PLANETAS_SEGREDO = planetas('segredo', 50, 68, '#FFD98A', [
+      { id:'segredo_coletanea', tag:'Visual Novel', titulo:'Coletânea — Owarana, Distopia, Consciência & Protótipo Rosebud', desc:'quatro histórias originais reunidas — o destino de quem pede o terceiro desejo ao Shen Long. Ainda a caminho de virar site de visual novel de verdade.' }
+    ], VEL_PLANETA);
+
+    // ── luas: subpáginas de um planeta (mais um nível de profundidade,
+    // orbitam o planeta — que por sua vez orbita o universo). ──
+    var posAnimes = PLANETAS_MAL.filter(function (n) { return n.id === 'mal_animes'; })[0];
+    var LUAS_MAL_ANIMES = posAnimes ? planetas('mal_animes', posAnimes.x, posAnimes.y, '#5FA88A', [
+      { id:'mal_animes_rezero', tag:'Anime', titulo:'Re:Zero', desc:'kara Hajimeru Isekai Seikatsu — Starting Life in Another World. Página dedicada, com vídeo.' }
+    ], VEL_LUA) : [];
+
+    var TODOS_PLANETAS_E_LUAS = PLANETAS_VALTHERIS.concat(PLANETAS_ZELDA, PLANETAS_MAL, PLANETAS_BOOK, PLANETAS_SEGREDO, LUAS_MAL_ANIMES, LUAS_VALTHERIS_CAMPANHAS);
+    var SEED_NODES = BASE_NODES.concat(TODOS_PLANETAS_E_LUAS);
+
+    var SEED_LINKS = [['nexus','zelda'], ['nexus','valtheris'], ['nexus','diary'], ['nexus','book'], ['nexus','covers'], ['nexus','origem'], ['nexus','icaro'], ['nexus','recordacoes'], ['nexus','mal'], ['nexus','segredo']]
+      .map(function (par) { return { id:'seed_' + par[0] + '_' + par[1], de:par[0], para:par[1] }; })
+      .concat(TODOS_PLANETAS_E_LUAS.map(function (n) { return { id:'seed_' + n.de + '_' + n.id, de:n.de, para:n.id }; }));
+
+    function estadoPadrao(){
+      return {
+        nodes: SEED_NODES.map(function (n) { return { id:n.id, tag:n.tag, titulo:n.titulo, desc:n.desc, cor:n.cor, x:n.x, y:n.y, visitado:n.visitado, de:n.de || null, raio:n.raio || null, angulo:n.angulo || 0, velOrbital:n.velOrbital || 0 }; }),
+        links: SEED_LINKS.map(function (l) { return Object.assign({}, l); }),
+        vilaLembrancaVaga: false
+      };
+    }
+    function carregar(){
+      try {
+        var raw = localStorage.getItem(CHAVE);
+        if (raw) {
+          var dado = JSON.parse(raw);
+          if (dado && Array.isArray(dado.nodes) && Array.isArray(dado.links)) {
+            // migração: mapas salvos antes do sistema de trancado não têm
+            // "visitado" — trata como já visto, pra não trancar de surpresa
+            // algo que você já vinha customizando.
+            dado.nodes.forEach(function (n) { if (typeof n.visitado !== 'boolean') n.visitado = true; });
+            // migração: quem já tinha desvendado a Vila do Vau antes desse
+            // sistema de lembrança vaga existir não perde essa memória —
+            // só passa a retrancar sozinha a partir de agora, com a frase,
+            // em vez do 🔒 mudo de "nunca visitei".
+            if (typeof dado.vilaLembrancaVaga !== 'boolean') {
+              var vila = dado.nodes.filter(function (n) { return n.id === 'valtheris_vila'; })[0];
+              dado.vilaLembrancaVaga = !!(vila && vila.visitado);
+            }
+            // migração: mapas salvos antes do sistema orbital não têm
+            // raio/ângulo — deriva a órbita a partir da posição fixa que
+            // já tinham, com o pai que já estava salvo em "de" (quando
+            // existir) ou o Nexus como pai padrão, pra continuar de onde
+            // o layout salvo já estava em vez de saltar pra outro lugar.
+            dado.nodes.forEach(function (n) {
+              if (typeof n.raio === 'number' && n.raio > 0) return;
+              if (!n.de) { n.raio = null; n.angulo = 0; n.velOrbital = 0; return; }
+              var pai = dado.nodes.filter(function (p) { return p.id === n.de; })[0];
+              var xPai = pai ? pai.x : 50, yPai = pai ? pai.y : 50;
+              var vel = n.de === 'nexus' ? VEL_UNIVERSO : (VEL_PLANETA);
+              var orb = paraOrbital(n.x, n.y, xPai, yPai, vel);
+              n.raio = orb.raio; n.angulo = orb.angulo; n.velOrbital = orb.velOrbital;
+            });
+            return dado;
+          }
+        }
+      } catch (e) {}
+      return estadoPadrao();
+    }
+    function salvar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch (e) {} }
+    function normalizar(s){ return (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+    var PREFIXOS = ['mostrar ','mostra ','buscar ','busca ','procurar ','procura ','ver ','achar '];
+    function termoBusca(q){
+      var n = normalizar(q).trim();
+      for (var i = 0; i < PREFIXOS.length; i++) { if (n.indexOf(PREFIXOS[i]) === 0) return n.slice(PREFIXOS[i].length).trim(); }
+      return n;
+    }
+    function idNovo(prefixo){ return prefixo + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+    function acharNode(id){ for (var i = 0; i < estado.nodes.length; i++) if (estado.nodes[i].id === id) return estado.nodes[i]; return null; }
+
+    var estado = carregar();
+    var linhaRefs = {};
+    var nodeEls = {};      // id do nó -> elemento DOM (evita querySelector repetido)
+    var adjacencia = {};   // id do nó -> lista de ids de ligação que o tocam (evita escanear todas as ligações a cada arraste)
+
+    function reconstruirAdjacencia(){
+      adjacencia = {};
+      estado.links.forEach(function (l) {
+        (adjacencia[l.de] = adjacencia[l.de] || []).push(l.id);
+        (adjacencia[l.para] = adjacencia[l.para] || []).push(l.id);
+      });
+    }
+
+    var overlay = document.getElementById('nexus-mapa-overlay');
+    var board   = document.getElementById('nm-board');
+    var boardInner = document.getElementById('nm-board-inner');
+    var svg     = document.getElementById('nm-linhas');
+    var btnZoomMais  = document.getElementById('nm-zoom-mais');
+    var btnZoomMenos = document.getElementById('nm-zoom-menos');
+    var btnZoomReset = document.getElementById('nm-zoom-reset');
+    var busca   = document.getElementById('nm-busca-input');
+    var btnVoz  = document.getElementById('nm-busca-voz');
+    var btnNovo = document.getElementById('nm-btn-novo');
+    var btnLigar= document.getElementById('nm-btn-ligar');
+    var btnReset= document.getElementById('nm-btn-reset');
+    var btnFechar = document.getElementById('nm-fechar');
+    var btnAbrirMapa = document.getElementById('nm-abrir-mapa');
+    var editor  = document.getElementById('nm-editor');
+    var edTag   = document.getElementById('nm-ed-tag');
+    var edTitulo= document.getElementById('nm-ed-titulo');
+    var edCores = document.getElementById('nm-ed-cores');
+    var edDesc  = document.getElementById('nm-ed-desc');
+    var edExcluir = document.getElementById('nm-ed-excluir');
+    var edFechar  = document.getElementById('nm-editor-fechar');
+
+    var modoLigar = false, noArmado = null, idEditando = null, linkSelecionadoId = null, arrasto = null;
+
+    function criarLinhaSVG(link){
+      var de = acharNode(link.de), para = acharNode(link.para);
+      if (!de || !para) return null;
+      var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      var vis = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      vis.setAttribute('class', 'nm-linha-visivel');
+      var alvo = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      alvo.setAttribute('class', 'nm-linha-alvo');
+      var meio = { x:0, y:0 };
+      function reposicionar(){
+        var x1 = de.x, y1 = de.y, x2 = para.x, y2 = para.y;
+        var mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+        var dx = x2 - x1, dy = y2 - y1;
+        var dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        var offset = dist * 0.15;
+        var px = -dy / dist, py = dx / dist;
+        var cx = mx + px * offset, cy = my + py * offset;
+        var d = 'M ' + x1 + ',' + y1 + ' Q ' + cx + ',' + cy + ' ' + x2 + ',' + y2;
+        vis.setAttribute('d', d);
+        alvo.setAttribute('d', d);
+        meio.x = 0.25 * x1 + 0.5 * cx + 0.25 * x2;
+        meio.y = 0.25 * y1 + 0.5 * cy + 0.25 * y2;
+      }
+      reposicionar();
+      g.appendChild(vis); g.appendChild(alvo);
+      alvo.addEventListener('click', function (ev) { ev.stopPropagation(); selecionarLink(link.id); });
+      linhaRefs[link.id] = { vis:vis, reposicionar:reposicionar, meio:meio };
+      return g;
+    }
+
+    function limparSelecaoLink(){
+      if (linkSelecionadoId && linhaRefs[linkSelecionadoId]) linhaRefs[linkSelecionadoId].vis.classList.remove('selecionada');
+      linkSelecionadoId = null;
+      var btnRem = document.getElementById('nm-remover-link-btn');
+      if (btnRem) btnRem.remove();
+    }
+
+    function selecionarLink(id){
+      limparSelecaoLink();
+      var l = estado.links.filter(function (x) { return x.id === id; })[0];
+      if (!l || !linhaRefs[id]) return;
+      linkSelecionadoId = id;
+      linhaRefs[id].vis.classList.add('selecionada');
+      var meio = linhaRefs[id].meio;
+      var btnRem = document.createElement('button');
+      btnRem.id = 'nm-remover-link-btn'; btnRem.className = 'nm-remover-link'; btnRem.type = 'button';
+      btnRem.textContent = '×'; btnRem.title = 'Remover esta ligação';
+      btnRem.style.left = meio.x + '%'; btnRem.style.top = meio.y + '%';
+      btnRem.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        estado.links = estado.links.filter(function (x) { return x.id !== id; });
+        renderizar(); salvar();
+      });
+      boardInner.appendChild(btnRem);
+    }
+
+    var rafArrastoPendente = false;
+    var ultimoEventoArrasto = null;
+
+    function processarArrasto(){
+      rafArrastoPendente = false;
+      if (!arrasto || !ultimoEventoArrasto) return;
+      var ev = ultimoEventoArrasto;
+      var dxPx = ev.clientX - arrasto.startX, dyPx = ev.clientY - arrasto.startY;
+      if (Math.abs(dxPx) > 3 || Math.abs(dyPx) > 3) arrasto.moveu = true;
+      if (!arrasto.moveu) return;
+      var n = arrasto.n;
+      var novoX = Math.max(-1000, Math.min(1000, arrasto.origX + (dxPx / (arrasto.rect.width * zoomNivel)) * 100));
+      var novoY = Math.max(-1000, Math.min(1000, arrasto.origY + (dyPx / (arrasto.rect.height * zoomNivel)) * 100));
+      n.x = novoX; n.y = novoY;
+      arrasto.el.style.left = novoX + '%'; arrasto.el.style.top = novoY + '%';
+      var ligs = adjacencia[n.id];
+      if (ligs) ligs.forEach(function (linkId) { if (linhaRefs[linkId]) linhaRefs[linkId].reposicionar(); });
+    }
+
+    function renderizarConteudoNo(n, el){
+      el.classList.toggle('nm-no--trancado', !n.visitado);
+      if (!n.visitado) {
+        el.style.removeProperty('--c');
+        if (n.id === 'valtheris_vila' && estado.vilaLembrancaVaga) {
+          el.classList.add('nm-no--esquecido');
+          el.innerHTML = '<span class="nm-no__cadeado" aria-hidden="true">🔒</span>';
+          el.title = 'Você sente que já visitou, mas não lembra';
+          el.setAttribute('aria-label', 'Você sente que já visitou, mas não lembra');
+        } else {
+          el.classList.remove('nm-no--esquecido');
+          el.removeAttribute('title');
+          el.innerHTML = '<span class="nm-no__cadeado" aria-hidden="true">🔒</span>';
+          el.setAttribute('aria-label', 'Caminho ainda não visitado');
+        }
+      } else {
+        el.classList.remove('nm-no--esquecido');
+        el.removeAttribute('title');
+        el.style.setProperty('--c', n.cor);
+        el.innerHTML = '<span class="nm-no__ponto"></span><span class="nm-no__titulo"></span>';
+        el.querySelector('.nm-no__titulo').textContent = n.titulo;
+        el.setAttribute('aria-label', n.titulo);
+      }
+    }
+
+    function criarNoDOM(n){
+      var el = document.createElement('div');
+      el.className = 'nm-no'; el.dataset.id = n.id;
+      el.style.left = n.x + '%'; el.style.top = n.y + '%';
+      el.tabIndex = 0; el.setAttribute('role', 'button');
+      renderizarConteudoNo(n, el);
+
+      el.addEventListener('pointerdown', function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        el.setPointerCapture(ev.pointerId);
+        arrasto = { id:n.id, n:n, el:el, startX:ev.clientX, startY:ev.clientY, origX:n.x, origY:n.y, moveu:false, rect:board.getBoundingClientRect() };
+        el.classList.add('arrastando');
+      });
+      el.addEventListener('pointermove', function (ev) {
+        if (!arrasto || arrasto.id !== n.id) return;
+        ultimoEventoArrasto = ev;
+        if (!rafArrastoPendente) { rafArrastoPendente = true; requestAnimationFrame(processarArrasto); }
+      });
+      el.addEventListener('pointerup', function () {
+        if (!arrasto || arrasto.id !== n.id) return;
+        el.classList.remove('arrastando');
+        var foiClique = !arrasto.moveu;
+        arrasto = null;
+        if (foiClique) { aoClicarNo(n, el); return; }
+        // continua orbitando a partir de onde foi solto, em vez de ficar
+        // preso num x/y fixo que a próxima volta da animação ia ignorar.
+        if (n.de) {
+          var pai = acharNode(n.de);
+          var orb = paraOrbital(n.x, n.y, pai ? pai.x : 50, pai ? pai.y : 50, n.velOrbital || VEL_PLANETA);
+          n.raio = orb.raio; n.angulo = orb.angulo;
+        }
+        salvar();
+      });
+      el.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); aoClicarNo(n, el); } });
+      nodeEls[n.id] = el;
+      return el;
+    }
+
+    function atualizarProgresso(){
+      var el = document.getElementById('nm-progresso');
+      if (!el) return;
+      var alvo = estado.nodes.filter(function (n) { return n.id !== 'nexus'; });
+      var vistos = alvo.filter(function (n) { return n.visitado; }).length;
+      el.textContent = vistos + ' de ' + alvo.length + ' desvendados';
+    }
+
+    function desbloquearNo(n, el){
+      if (n.visitado) return;
+      n.visitado = true;
+      if (n.id === 'valtheris_vila') estado.vilaLembrancaVaga = true;
+      renderizarConteudoNo(n, el);
+      salvar();
+      atualizarProgresso();
+    }
+
+    function aoClicarNo(n, el){
+      if (!n.visitado) {
+        el.classList.remove('sacudir');
+        void el.offsetWidth; // força reflow, permite repetir a animação em cliques seguidos
+        el.classList.add('sacudir');
+        return;
+      }
+      limparSelecaoLink();
+      if (modoLigar) {
+        if (!noArmado) { noArmado = n; el.classList.add('armado'); }
+        else if (noArmado.id === n.id) { el.classList.remove('armado'); noArmado = null; }
+        else {
+          var existe = estado.links.some(function (l) { return (l.de === noArmado.id && l.para === n.id) || (l.de === n.id && l.para === noArmado.id); });
+          if (!existe) {
+            var novoLink = { id:idNovo('link'), de:noArmado.id, para:n.id };
+            estado.links.push(novoLink);
+            reconstruirAdjacencia();
+            var g = criarLinhaSVG(novoLink);
+            if (g) svg.appendChild(g);
+            salvar();
+          }
+          document.querySelectorAll('.nm-no.armado').forEach(function (x) { x.classList.remove('armado'); });
+          noArmado = null;
+        }
+      } else { abrirEditor(n); }
+    }
+
+    function abrirEditor(n){
+      idEditando = n.id;
+      edTag.value = n.tag || ''; edTitulo.value = n.titulo || ''; edDesc.value = n.desc || '';
+      edCores.innerHTML = '';
+      PALETA.forEach(function (c) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'nm-cor-op' + (String(c).toLowerCase() === String(n.cor).toLowerCase() ? ' selecionada' : '');
+        b.style.background = c;
+        b.addEventListener('click', function () {
+          n.cor = c;
+          edCores.querySelectorAll('.nm-cor-op').forEach(function (x) { x.classList.remove('selecionada'); });
+          b.classList.add('selecionada');
+          atualizarNoDOM(n); salvar();
+        });
+        edCores.appendChild(b);
+      });
+      editor.hidden = false;
+    }
+
+    function atualizarNoDOM(n){
+      var el = nodeEls[n.id];
+      if (!el) return;
+      renderizarConteudoNo(n, el);
+    }
+
+    [[edTag,'tag'], [edTitulo,'titulo'], [edDesc,'desc']].forEach(function (par) {
+      par[0].addEventListener('input', function () {
+        var n = acharNode(idEditando);
+        if (!n) return;
+        n[par[1]] = par[0].value;
+        atualizarNoDOM(n);
+        salvar();
+      });
+    });
+
+    edFechar.addEventListener('click', function () { editor.hidden = true; idEditando = null; });
+    edExcluir.addEventListener('click', function () {
+      if (!idEditando) return;
+      if (!confirm('Excluir este caminho e as ligações dele?')) return;
+      var alvo = idEditando;
+      estado.nodes = estado.nodes.filter(function (x) { return x.id !== alvo; });
+      estado.links = estado.links.filter(function (l) { return l.de !== alvo && l.para !== alvo; });
+      editor.hidden = true; idEditando = null;
+      renderizar(); salvar();
+    });
+
+    function renderizar(){
+      limparSelecaoLink();
+      linhaRefs = {};
+      nodeEls = {};
+      reconstruirAdjacencia();
+      boardInner.querySelectorAll('.nm-no').forEach(function (x) { x.remove(); });
+      svg.innerHTML = '';
+      estado.links.forEach(function (l) { var g = criarLinhaSVG(l); if (g) svg.appendChild(g); });
+      estado.nodes.forEach(function (n) { boardInner.appendChild(criarNoDOM(n)); });
+      atualizarProgresso();
+    }
+
+    btnNovo.addEventListener('click', function () {
+      limparSelecaoLink();
+      var n = { id:idNovo('no'), tag:'Novo', titulo:'Novo caminho', desc:'', cor:'#C4A35A', x:45 + Math.random() * 10, y:45 + Math.random() * 10, visitado:true, de:null, raio:null, angulo:0, velOrbital:0 };
+      estado.nodes.push(n);
+      boardInner.appendChild(criarNoDOM(n));
+      salvar();
+      atualizarProgresso();
+      abrirEditor(n);
+      edTitulo.focus(); edTitulo.select();
+    });
+
+    btnLigar.addEventListener('click', function () {
+      limparSelecaoLink();
+      modoLigar = !modoLigar;
+      btnLigar.classList.toggle('ativo', modoLigar);
+      board.classList.toggle('modo-ligar', modoLigar);
+      if (!modoLigar && noArmado) {
+        document.querySelectorAll('.nm-no.armado').forEach(function (x) { x.classList.remove('armado'); });
+        noArmado = null;
+      }
+    });
+
+    btnReset.addEventListener('click', function () {
+      if (!confirm('Restaurar o mapa pro estado inicial (Nexus desbloqueado + todos os outros caminhos trancados, com as ligações originais)? Isso apaga edições, novos caminhos, ligações e retranca tudo que você já tinha desvendado.')) return;
+      estado = estadoPadrao();
+      editor.hidden = true; idEditando = null;
+      renderizar(); salvar();
+    });
+
+    function aplicarBusca(){
+      var termo = termoBusca(busca.value);
+      if (!termo) {
+        estado.nodes.forEach(function (n) { var el = nodeEls[n.id]; if (el) el.classList.remove('destacado', 'apagado'); });
+        estado.links.forEach(function (l) { if (linhaRefs[l.id]) linhaRefs[l.id].vis.classList.remove('ativa'); });
+        return;
+      }
+      estado.nodes.forEach(function (n) {
+        var alvo = normalizar(n.titulo + ' ' + n.tag + ' ' + n.desc);
+        var bate = alvo.indexOf(termo) !== -1;
+        var el = nodeEls[n.id];
+        if (!el) return;
+        el.classList.toggle('destacado', bate);
+        el.classList.toggle('apagado', !bate);
+      });
+      estado.links.forEach(function (l) {
+        var deEl = nodeEls[l.de];
+        var paraEl = nodeEls[l.para];
+        var ativa = (deEl && deEl.classList.contains('destacado')) || (paraEl && paraEl.classList.contains('destacado'));
+        if (linhaRefs[l.id]) linhaRefs[l.id].vis.classList.toggle('ativa', ativa);
+      });
+    }
+    busca.addEventListener('input', aplicarBusca);
+
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SR) {
+      btnVoz.hidden = false;
+      var rec = new SR();
+      rec.lang = 'pt-BR'; rec.interimResults = false; rec.maxAlternatives = 1;
+      rec.addEventListener('result', function (ev) { busca.value = ev.results[0][0].transcript; aplicarBusca(); });
+      rec.addEventListener('start', function () { btnVoz.classList.add('ouvindo'); });
+      rec.addEventListener('end', function () { btnVoz.classList.remove('ouvindo'); });
+      rec.addEventListener('error', function () { btnVoz.classList.remove('ouvindo'); });
+      btnVoz.addEventListener('click', function () { try { rec.start(); } catch (e) {} });
+    }
+
+    board.addEventListener('click', function (ev) { if (ev.target === board || ev.target === boardInner) limparSelecaoLink(); });
+
+    // ---- LOD por proximidade do ponteiro ----
+    // Ideia próxima da que você citou (mais detalhe perto, menos longe):
+    // aqui não existe "fora da tela" de verdade (o board é uma área fixa,
+    // não uma câmera com mundo maior por trás), então o critério vira
+    // "perto do ponteiro" em vez de "perto da câmera". Nó que não tá
+    // perto do mouse encolhe pro ponto colorido só, sem o título — menos
+    // texto renderizado ao mesmo tempo conforme o mapa cresce. Sempre com
+    // exceção pro nó em arrasto, o armado (modo ligar) e durante busca
+    // (a busca já tem o próprio destaque, não compete com o LOD).
+    var rectBoardLOD = null;
+    function atualizarRectBoardLOD(){ rectBoardLOD = board.getBoundingClientRect(); }
+    atualizarRectBoardLOD();
+    window.addEventListener('resize', atualizarRectBoardLOD);
+
+    // ---- desbloqueio automático ao visitar a página de verdade ----
+    // Cada universo real (quando enviado) vai ganhar um avisozinho que
+    // manda { tipo:'nexus-visita', id:'valtheris' } pra esta janela ao
+    // carregar — sempre por id abstrato, nunca pelo caminho do arquivo,
+    // então o mapa continua sem saber (e sem guardar) nenhum caminho real.
+    window.addEventListener('message', function (ev) {
+      var d = ev.data;
+      if (!d || d.tipo !== 'nexus-visita' || typeof d.id !== 'string') return;
+      var n = acharNode(d.id);
+      var el = n && nodeEls[d.id];
+      if (n && el) desbloquearNo(n, el);
+    });
+
+    // ---- Vila do Vau: nunca fica desvendada de vez ----
+    // Diferente de todo resto do mapa (que destrava pra sempre), este é
+    // o único nó que retranca sozinho toda vez que o iframe navega pra
+    // qualquer outro lugar — o registro que "não fecha as contas" também
+    // não fecha aqui. Reaproveita o 'load' do iframe (mesmo gatilho das
+    // camadas de proteção lá em cima), que dispara em toda navegação
+    // interna, então cobre tanto sair pra outra página quanto voltar pro
+    // Nexus. Se o destino for a própria Vila do Vau de novo, o
+    // nexus-visita dela desbloqueia de volta segundos depois — o
+    // "retranca" aqui é só o padrão de repouso, não um bloqueio de fato.
+    // vilaLembrancaVaga fica marcado pra sempre assim que ela é vista uma
+    // vez — é o que troca o 🔒 mudo comum pela frase.
+    function retrancarVilaDoVau(){
+      var n = acharNode('valtheris_vila');
+      var el = n && nodeEls['valtheris_vila'];
+      if (!n || !el || !n.visitado) return;
+      n.visitado = false;
+      renderizarConteudoNo(n, el);
+      salvar();
+      atualizarProgresso();
+    }
+    var frameVau = document.getElementById('nexusFrame');
+    if (frameVau) frameVau.addEventListener('load', retrancarVilaDoVau);
+
+    var ultimoPonteiroLOD = null;
+
+    function processarLOD(){
+      if (!ultimoPonteiroLOD || !rectBoardLOD || termoBusca(busca.value)) return;
+      var mx = (ultimoPonteiroLOD.clientX - rectBoardLOD.left - panX) / zoomNivel;
+      var my = (ultimoPonteiroLOD.clientY - rectBoardLOD.top - panY) / zoomNivel;
+      var raio = Math.min(210, rectBoardLOD.width * 0.22, rectBoardLOD.height * 0.4);
+      var raio2 = raio * raio;
+      estado.nodes.forEach(function (n) {
+        var el = nodeEls[n.id];
+        if (!el) return;
+        if (!n.visitado) { el.classList.remove('simplificado'); return; }
+        if ((arrasto && arrasto.id === n.id) || el.classList.contains('armado')) { el.classList.remove('simplificado'); return; }
+        var px = (n.x / 100) * rectBoardLOD.width, py = (n.y / 100) * rectBoardLOD.height;
+        var dx = px - mx, dy = py - my;
+        el.classList.toggle('simplificado', (dx * dx + dy * dy) > raio2);
+      });
+    }
+
+    board.addEventListener('pointermove', function (ev) {
+      if (arrasto) return;
+      ultimoPonteiroLOD = ev;
+    });
+    board.addEventListener('pointerleave', function () {
+      ultimoPonteiroLOD = null;
+      estado.nodes.forEach(function (n) { var el = nodeEls[n.id]; if (el) el.classList.remove('simplificado'); });
+    });
+
+    // ---- zoom (roda do mouse, pinça de dois dedos, botões) ----
+    var zoomNivel = 1, panX = 0, panY = 0;
+
+    function aplicarTransformBoard(){
+      boardInner.style.transform = 'translate(' + panX + 'px,' + panY + 'px) scale(' + zoomNivel + ')';
+      if (btnZoomReset) btnZoomReset.textContent = Math.round(zoomNivel * 100) + '%';
+    }
+    function definirZoom(novoZoom, mxTela, myTela){
+      novoZoom = Math.max(.2, Math.min(3, novoZoom));
+      var rect = board.getBoundingClientRect();
+      var mx = mxTela - rect.left, my = myTela - rect.top;
+      var pontoX = (mx - panX) / zoomNivel, pontoY = (my - panY) / zoomNivel;
+      panX = mx - pontoX * novoZoom; panY = my - pontoY * novoZoom;
+      zoomNivel = novoZoom;
+      aplicarTransformBoard();
+    }
+    function zoomBotao(fator){
+      var rect = board.getBoundingClientRect();
+      definirZoom(zoomNivel * fator, rect.left + rect.width / 2, rect.top + rect.height / 2);
+    }
+    if (btnZoomMais) btnZoomMais.addEventListener('click', function () { zoomBotao(1.25); });
+    if (btnZoomMenos) btnZoomMenos.addEventListener('click', function () { zoomBotao(1 / 1.25); });
+    if (btnZoomReset) btnZoomReset.addEventListener('click', function () { zoomNivel = 1; panX = 0; panY = 0; aplicarTransformBoard(); });
+
+    board.addEventListener('wheel', function (ev) {
+      ev.preventDefault();
+      definirZoom(zoomNivel * (ev.deltaY < 0 ? 1.12 : 1 / 1.12), ev.clientX, ev.clientY);
+    }, { passive:false });
+
+    // pinça: rastreia até 2 ponteiros ativos sobre o board (fora dos nós,
+    // que já capturam o próprio ponteiro pro arraste e não chegam aqui).
+    var pinchPonteiros = {};
+    var pinchDistInicial = null, pinchZoomInicial = null;
+    board.addEventListener('pointerdown', function (ev) {
+      pinchPonteiros[ev.pointerId] = { x:ev.clientX, y:ev.clientY };
+      var ids = Object.keys(pinchPonteiros);
+      if (ids.length === 2) {
+        var a = pinchPonteiros[ids[0]], b = pinchPonteiros[ids[1]];
+        pinchDistInicial = Math.hypot(a.x - b.x, a.y - b.y) || 1;
+        pinchZoomInicial = zoomNivel;
+      }
+    });
+    board.addEventListener('pointermove', function (ev) {
+      if (!(ev.pointerId in pinchPonteiros)) return;
+      pinchPonteiros[ev.pointerId] = { x:ev.clientX, y:ev.clientY };
+      var ids = Object.keys(pinchPonteiros);
+      if (ids.length === 2 && pinchDistInicial) {
+        var a = pinchPonteiros[ids[0]], b = pinchPonteiros[ids[1]];
+        var distAtual = Math.hypot(a.x - b.x, a.y - b.y) || 1;
+        definirZoom(pinchZoomInicial * (distAtual / pinchDistInicial), (a.x + b.x) / 2, (a.y + b.y) / 2);
+      }
+    });
+    function soltarPinch(ev){
+      delete pinchPonteiros[ev.pointerId];
+      if (Object.keys(pinchPonteiros).length < 2) pinchDistInicial = null;
+    }
+    board.addEventListener('pointerup', soltarPinch);
+    board.addEventListener('pointercancel', soltarPinch);
+
+    // ---- órbitas: universos giram em torno do Nexus, planetas em torno
+    // do seu universo, luas em torno do seu planeta — devagar, contínuo,
+    // só enquanto o mapa está aberto (pausa ao fechar, por economia). ----
+    function atualizarOrbitas(dt){
+      estado.nodes.forEach(function (n) {
+        if (n.id === 'nexus') return;
+        if (arrasto && arrasto.id === n.id) return; // sendo arrastado agora, não sobrescreve
+        if (!n.de || !n.raio) return; // nó solto (criado manualmente), sem órbita
+        n.angulo = (n.angulo || 0) + (n.velOrbital || 0) * dt;
+        var pai = acharNode(n.de);
+        var px = pai ? pai.x : 50, py = pai ? pai.y : 50;
+        n.x = Math.max(-1000, Math.min(1000, px + n.raio * Math.cos(n.angulo)));
+        n.y = Math.max(-1000, Math.min(1000, py + n.raio * Math.sin(n.angulo)));
+      });
+    }
+    function aplicarPosicoesNoDOM(){
+      estado.nodes.forEach(function (n) {
+        if (arrasto && arrasto.id === n.id) return;
+        var el = nodeEls[n.id];
+        if (el) { el.style.left = n.x + '%'; el.style.top = n.y + '%'; }
+      });
+      estado.links.forEach(function (l) { if (linhaRefs[l.id]) linhaRefs[l.id].reposicionar(); });
+      if (linkSelecionadoId && linhaRefs[linkSelecionadoId]) {
+        var meio = linhaRefs[linkSelecionadoId].meio;
+        var btnRem = document.getElementById('nm-remover-link-btn');
+        if (btnRem) { btnRem.style.left = meio.x + '%'; btnRem.style.top = meio.y + '%'; }
+      }
+    }
+    var animacaoAtiva = false, ultimoTempoAnim = null, rafAnimId = null;
+    function cicloAnimacao(tempoAgora){
+      if (!animacaoAtiva) return;
+      var dt = ultimoTempoAnim ? Math.min((tempoAgora - ultimoTempoAnim) / 1000, .1) : 0;
+      ultimoTempoAnim = tempoAgora;
+      atualizarOrbitas(dt);
+      aplicarPosicoesNoDOM();
+      processarLOD();
+      rafAnimId = requestAnimationFrame(cicloAnimacao);
+    }
+    function iniciarAnimacao(){
+      if (animacaoAtiva) return;
+      animacaoAtiva = true; ultimoTempoAnim = null;
+      rafAnimId = requestAnimationFrame(cicloAnimacao);
+    }
+    function pararAnimacao(){
+      animacaoAtiva = false;
+      if (rafAnimId) cancelAnimationFrame(rafAnimId);
+    }
+
+    renderizar();
+
+    // ---- abrir / fechar o mapa ----
+    function alternarMapa(mostrar){
+      var deveMostrar = typeof mostrar === 'boolean' ? mostrar : overlay.hidden;
+      overlay.hidden = !deveMostrar;
+      if (btnAbrirMapa) btnAbrirMapa.hidden = deveMostrar;
+      if (deveMostrar) {
+        atualizarRectBoardLOD();
+        zoomNivel = 1; panX = 0; panY = 0; aplicarTransformBoard();
+        iniciarAnimacao();
+        setTimeout(function () { busca.focus(); }, 60);
+      } else {
+        pararAnimacao();
+      }
+    }
+    btnFechar.addEventListener('click', function () { alternarMapa(false); });
+    if (btnAbrirMapa) btnAbrirMapa.addEventListener('click', function () { alternarMapa(true); });
+
+    // Atalho: Ctrl+Shift+M abre/fecha; Esc fecha se estiver aberto.
+    // Precisa ser reaplicado no documento interno do iframe a cada
+    // carregamento (mesmo motivo do bloqueio de teclas lá em cima:
+    // o iframe troca de "document" a cada navegação e descarta os
+    // listeners anteriores).
+    function aoTeclaMapa(e){
+      var ctrlOuCmd = e.ctrlKey || e.metaKey;
+      if (ctrlOuCmd && e.shiftKey && (e.key === 'M' || e.key === 'm')) {
+        e.preventDefault();
+        alternarMapa();
+      } else if (e.key === 'Escape' && !overlay.hidden) {
+        alternarMapa(false);
+      }
+    }
+    document.addEventListener('keydown', aoTeclaMapa);
+    var frameEl = document.getElementById('nexusFrame');
+    if (frameEl) {
+      frameEl.addEventListener('load', function () {
+        try {
+          var docInterno = frameEl.contentDocument || frameEl.contentWindow.document;
+          docInterno.addEventListener('keydown', aoTeclaMapa);
+        } catch (erro) {
+          // só ocorreria se deixasse de ser mesma-origem
+        }
+      });
+    }
+  })();
+  </script>
+
+  <!-- M.A.L.I.K. — carregado sempre, inerte 364 dias por ano.
+       Fica na raiz, ao lado deste index.html e do nexus.html. -->
+  <script src="malik-batalha.js" defer></script>
+  <script src="malik.js" defer></script>
+
+</body>
+</html>
