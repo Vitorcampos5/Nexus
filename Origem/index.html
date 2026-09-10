@@ -6,18 +6,65 @@
 <style>
 :root{--paper:#d7d0be;--ink:#191817;--fade:#817b70;--line:#aaa394;--red:#713a35}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#151515;color:var(--paper);font-family:Georgia,serif}body{overflow-x:hidden}body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.08;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:4px 4px}.noise{display:none}.flash{position:fixed;inset:0;background:#eee8d6;opacity:0;pointer-events:none;z-index:20}.flash.on{animation:flash .28s}@keyframes flash{from{opacity:.12}to{opacity:0}}
 .wrap{width:min(920px,92vw);margin:0 auto;padding:7vh 0 12vh}.header{border:0;padding:0 0 35px;text-align:left}.sig{font:10px monospace;color:#5e5a52;letter-spacing:1px}.header h1,.header .sub,.header .corrupt{display:none}.header:after{content:"";display:block;width:45px;height:1px;background:#55504a;margin-top:13px}
-.layout{display:block;margin:0}.chat{height:auto;min-height:0;background:transparent;border:0;box-shadow:none;display:block}.chathead{display:none}.messages{overflow:visible;padding:0 0 65px;max-width:690px}.msg{max-width:100%;margin:0 0 28px;padding:0 0 0 18px;border:0;border-left:1px solid #45413a;background:transparent;line-height:1.72;font-size:16px;animation:appear .35s ease}.msg.you{margin-left:0;border-left:0;border-right:0;background:transparent;color:#a9a39a;padding-left:42px}.msg.sys{font:11px monospace;color:#66625b;border:0;padding-left:0;letter-spacing:.2px}.msg.secret{font:15px Georgia,serif;color:#c7bfb0;border-left:1px solid #6b3935}.msg.warn{border-left-color:#713a35}.msg.good{border-left-color:#81714e}.who{font:8px monospace;color:#5c584f;letter-spacing:2px;margin:0 0 5px}.msg.you .who{color:#777269}.composer{position:sticky;bottom:0;border:0;padding:12px 0 0;background:linear-gradient(transparent,#151515 22%);display:flex;gap:12px}.composer input{width:100%;background:transparent;border:0;border-bottom:1px solid #44413b;color:#ddd5c5;padding:14px 0;font:16px Georgia,serif;outline:0}.composer input:focus{border-bottom-color:#9c9076}.composer input::placeholder{color:#625e56;font-style:italic}.composer button{display:none}.suggest{padding:0;margin:-38px 0 55px;display:flex;gap:22px;flex-wrap:wrap}.suggest button{display:block;background:none;border:0;border-bottom:1px solid #38352f;color:#777168;padding:3px 0;font:11px monospace;letter-spacing:.5px}.suggest button:hover{color:#cfc6b4;border-color:#8f836b}
-.side{position:fixed;right:0;top:0;width:230px;height:100vh;padding:34px 24px 34px 15px;overflow:auto;display:block;opacity:.18;transition:opacity .6s;pointer-events:none}.side:hover{opacity:.8}.box{padding:0 0 23px;background:none;border:0;box-shadow:none}.box h3{margin:0 0 7px;font:8px monospace;letter-spacing:2px;color:#656058;font-weight:normal}.facts{font:9px monospace;line-height:1.7;color:#5e5a53}.facts b{font-weight:normal;color:#8e887d}.meter,.phasebar{display:none}.files,.people{display:block}.file,.person{border:0;background:none;padding:2px 0;color:#4d4943;font:9px monospace}.file.open,.person.known{color:#9b927f}.file.partial{color:#70695e}.file.lock{display:none}.files .file{pointer-events:auto;cursor:pointer}.files .file:hover{color:#cfc6b4}.evidence{display:block}.tag{display:block;border:0;padding:2px 0;color:#4e4a43;background:none;font:9px monospace}.tag.found{color:#928873}.hypo{border:0;background:none;border-left:1px solid #514b42;padding:3px 0 3px 8px;font:9px monospace;color:#777168}.hypo strong{font-weight:normal;color:#a29886}.contradictions{font:9px monospace;color:#676158}.chip{display:block;border:0;padding:2px 0;margin:0;color:#8d8170}.hint{font:9px monospace;line-height:1.6;color:#555149}.controlbox{display:none}.modal{display:none!important}.gold{color:#b8a47b}
+.layout{display:block;margin:0}.chat{height:auto;min-height:0;background:transparent;border:0;box-shadow:none;display:block}.chathead{display:none}.messages{overflow:visible;padding:0 0 65px;max-width:690px;overflow-anchor:none}.msg{max-width:100%;margin:0 0 28px;padding:0 0 0 18px;border:0;border-left:1px solid #45413a;background:transparent;line-height:1.72;font-size:16px;animation:appear .35s ease}.msg.you{margin-left:0;border-left:0;border-right:0;background:transparent;color:#a9a39a;padding-left:42px}.msg.sys{font:11px monospace;color:#66625b;border:0;padding-left:0;letter-spacing:.2px}.msg.secret{font:15px Georgia,serif;color:#c7bfb0;border-left:1px solid #6b3935}.msg.warn{border-left-color:#713a35}.msg.good{border-left-color:#81714e}.who{font:8px monospace;color:#5c584f;letter-spacing:2px;margin:0 0 5px}.msg.you .who{color:#777269}
+/* Caixa de meta-informações do viajante */
+.meta-inbox{position:absolute;right:7px;top:50%;transform:translateY(-50%);width:30px;height:30px;display:none;align-items:center;justify-content:center;margin:0;padding:0;border:1px solid #6f2727;border-radius:2px;background:rgba(58,12,12,.78);color:#b84a4a;font:16px/1 monospace;cursor:pointer;box-shadow:0 0 12px rgba(120,0,0,.12);z-index:3}
+.meta-inbox.active{display:flex;animation:metaPulse 1.8s ease-in-out infinite}
+.meta-inbox .meta-symbol{display:block;line-height:1;transform:translateY(-1px)}
+.meta-inbox .meta-count{position:absolute;right:-6px;top:-7px;min-width:15px;height:15px;padding:0 3px;display:flex;align-items:center;justify-content:center;border:1px solid #d24b4b;border-radius:9px;background:#7d1717;color:#f1caca;font:bold 8px/1 monospace;box-shadow:0 0 7px rgba(150,0,0,.35)}
+.meta-inbox:focus{outline:1px solid #b84a4a;outline-offset:2px}
+.composer{position:sticky;bottom:0;border:0;padding:12px 0 0;background:linear-gradient(transparent,#151515 22%);display:flex;gap:12px}.input-wrap{position:relative;flex:1;min-width:0}.input-wrap input{width:100%;box-sizing:border-box;padding-right:48px}.meta-inbox[aria-label]{text-transform:none}
+@keyframes metaPulse{0%,100%{opacity:.72}50%{opacity:1}}
+.meta-toolkit{position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.58);backdrop-filter:blur(2px)}
+.meta-toolkit.open{display:flex}
+.meta-window{width:min(680px,92vw);max-height:70vh;margin:0 0 24px;border:1px solid #6f2727;background:#171414;box-shadow:0 18px 60px rgba(0,0,0,.55)}
+.meta-head{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;border-bottom:1px solid #4b2222;color:#b84a4a;font:10px monospace;letter-spacing:1.5px}
+.meta-close{border:0;background:none;color:#8b6666;font:11px monospace;cursor:pointer}
+.meta-list{padding:10px;overflow:auto;max-height:calc(70vh - 42px)}
+.meta-item{padding:10px 11px;margin:0 0 7px;border-left:2px solid #a33232;background:rgba(75,20,20,.28);color:#c6aaa5;font:11px/1.55 monospace}
+.meta-item .meta-time{display:block;margin-top:5px;color:#684646;font-size:9px}
+.meta-empty{padding:25px;text-align:center;color:#665c57;font:10px monospace}
+.composer{position:sticky;bottom:0;border:0;padding:12px 0 0;background:linear-gradient(transparent,#151515 22%);display:flex;gap:12px}.composer input{width:100%;background:transparent;border:0;border-bottom:1px solid #44413b;color:#ddd5c5;padding:14px 0;font:16px Georgia,serif;outline:0}.composer input:focus{border-bottom-color:#9c9076}.composer input::placeholder{color:#625e56;font-style:italic}.composer button{display:none}.suggest{padding:0;margin:-38px 0 55px;display:flex;gap:22px;flex-wrap:wrap}.suggest button{display:block;background:none;border:0;border-bottom:1px solid #38352f;color:#777168;padding:3px 0;font:11px monospace;letter-spacing:.5px}.suggest button:hover{color:#cfc6b4;border-color:#8f836b}
+.side{position:fixed;right:-205px;top:0;width:230px;height:100vh;padding:34px 24px 34px 15px;overflow:auto;display:block;opacity:.42;transition:right .35s ease,opacity .35s ease;pointer-events:auto;z-index:40}.side:hover,.side:focus-within{right:0;opacity:.94}.box{padding:0 0 23px;background:none;border:0;box-shadow:none}.box h3{margin:0 0 7px;font:8px monospace;letter-spacing:2px;color:#656058;font-weight:normal}.facts{font:9px monospace;line-height:1.7;color:#5e5a53}.facts b{font-weight:normal;color:#8e887d}.meter,.phasebar{display:none}.files,.people{display:block}.file,.person{border:0;background:none;padding:2px 0;color:#4d4943;font:9px monospace}.file.open,.person.known{color:#9b927f}.file.partial{color:#70695e}.file.lock{display:none}.files .file{pointer-events:auto;cursor:pointer}.files .file:hover{color:#cfc6b4}.evidence{display:block}.tag{display:block;border:0;padding:2px 0;color:#4e4a43;background:none;font:9px monospace}.tag.found{color:#928873}.hypo{border:0;background:none;border-left:1px solid #514b42;padding:3px 0 3px 8px;font:9px monospace;color:#777168}.hypo strong{font-weight:normal;color:#a29886}.contradictions{font:9px monospace;color:#676158}.chip{display:block;border:0;padding:2px 0;margin:0;color:#8d8170}.hint{font:9px monospace;line-height:1.6;color:#555149}.controlbox{display:none}.modal{display:none!important}.gold{color:#b8a47b}
 @media(max-width:900px){.side{position:static;width:auto;height:auto;padding:0 0 35px;opacity:.45;display:none}.layout{display:flex;flex-direction:column}.chat{order:2}.messages{padding-top:0}.suggest{order:3}.wrap{width:min(690px,88vw);padding-top:12vh}.header{padding-bottom:25px}}
 .filebtn{display:none}
+.nexusbtn{position:fixed;left:14px;top:14px;z-index:60;color:#8f897f;text-decoration:none;border:1px solid #3f3b35;background:rgba(21,21,21,.88);padding:7px 10px;font:10px monospace;letter-spacing:.7px;transition:color .2s,border-color .2s,background .2s}.nexusbtn:hover{color:#e2d9c6;border-color:#70695e;background:#1c1a17}
 .sideclose{display:none}
 @media(max-width:900px){.filebtn{display:block;position:fixed;right:14px;bottom:74px;z-index:60;background:#1c1a17;color:#cfc6b4;border:1px solid #45413a;font:10px monospace;letter-spacing:.08em;padding:9px 13px;opacity:.6}.filebtn:active{opacity:1}.side.open{display:block!important;position:fixed;inset:0;z-index:70;width:auto;height:100vh;opacity:1!important;background:#151515;padding:56px 22px 30px;overflow:auto;pointer-events:auto!important}.side.open .sideclose{display:block;position:fixed;top:14px;right:16px;background:none;border:1px solid #45413a;color:#cfc6b4;font:11px monospace;padding:6px 10px;z-index:80}}
+.llmgate{display:none;position:fixed;inset:0;z-index:200;background:rgba(8,8,8,.88);align-items:center;justify-content:center;padding:24px}
+.llmgate.show{display:flex}
+.llmgate-box{max-width:420px;width:100%;background:#1c1a17;border:1px solid #45413a;border-radius:4px;padding:26px 24px;font-family:Georgia,serif}
+.llmgate-box h3{margin:0 0 12px;font-size:16px;color:#cfc6b4;font-weight:normal}
+.llmgate-box p{margin:0 0 18px;font-size:13px;line-height:1.6;color:#8e887d}
+.llmgate-actions{display:flex;gap:10px}
+.llmgate-actions button{flex:1;background:none;border:1px solid #45413a;color:#cfc6b4;font-family:Georgia,serif;font-size:12px;padding:10px;cursor:pointer;border-radius:2px}
+.llmgate-actions button:hover{border-color:#70695e;color:#eee8d6}
+.llmgate-progress{margin-bottom:16px}
+.llmgate-bar{height:4px;background:#2c2a26;border-radius:2px;overflow:hidden;margin-bottom:8px}
+.llmgate-fill{height:100%;width:0%;background:#70695e;transition:width .3s}
+.llmgate-status{font-size:11px;color:#656058}
 @keyframes appear{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
 </style>
 </head>
-<body><div class="flash" id="flash"></div><div class="noise"></div><button type="button" class="filebtn" id="filebtn">▤ arquivo</button><main class="wrap">
+<body><div class="flash" id="flash"></div><div class="noise"></div><button type="button" class="filebtn" id="filebtn">▤ arquivo</button>
+<div class="llmgate" id="llmgate">
+  <div class="llmgate-box">
+    <h3>Ativar narrador com IA local?</h3>
+    <p id="llmgate-text">Baixa um modelo de linguagem (~2,2GB) direto no seu navegador — sem servidor, sem conta, sem custo. Baixa uma vez só; depois funciona offline. Em conexão lenta ou celular mais fraco, pode demorar ou pesar. Sem isso, o caso continua jogável do jeito de sempre.</p>
+    <div class="llmgate-progress" id="llmgate-progress" style="display:none">
+      <div class="llmgate-bar"><div class="llmgate-fill" id="llmgate-fill"></div></div>
+      <div class="llmgate-status" id="llmgate-status"></div>
+    </div>
+    <div class="llmgate-actions" id="llmgate-actions">
+      <button type="button" id="llmgate-yes">Ativar IA</button>
+      <button type="button" id="llmgate-no">Continuar sem IA</button>
+    </div>
+  </div>
+</div>
+<a class="nexusbtn" href="../nexus.html" aria-label="Voltar para o Nexus">◆ Nexus</a>
+<main class="wrap">
 <header class="header"><div class="sig">/mnt/sem_nome/fragmento_03</div></header>
-<section class="layout"><div class="panel chat"><div class="chathead"><span></span><span id="state" class="status"></span></div><div id="messages" class="messages"></div><div id="suggest" class="suggest"></div><form id="form" class="composer"><input id="input" autocomplete="off" placeholder="escreva alguma coisa..."/><button>ENVIAR</button></form></div><aside class="side">
+<section class="layout"><div class="panel chat"><div class="chathead"><span></span><span id="state" class="status"></span></div><div id="messages" class="messages"></div><div id="suggest" class="suggest"></div><form id="form" class="composer"><div class="input-wrap"><input id="input" autocomplete="off" placeholder="escreva alguma coisa..."/><button type="button" id="metaInbox" class="meta-inbox" tabindex="0" aria-label="Abrir mensagens de meta-informação" title="Mensagens do sistema"><span class="meta-symbol" aria-hidden="true">▣</span><span class="meta-count" id="metaCount">0</span></button></div><button type="submit">ENVIAR</button></form><div id="metaToolkit" class="meta-toolkit" aria-hidden="true"><div class="meta-window" role="dialog" aria-modal="true" aria-label="Mensagens de meta-informação"><div class="meta-head"><span>TOOLKIT · MENSAGENS DO SISTEMA</span><button id="metaClose" class="meta-close" type="button">FECHAR ×</button></div><div id="metaList" class="meta-list"></div></div></div></div><aside class="side">
 <button type="button" class="sideclose" id="sideclose">✕ fechar</button>
 <div class="panel box"><h3>o que ficou na margem</h3><div class="facts">nome: <b id="name">não escrito</b><br>humor: <b id="posture">quieto</b><br>parte: <b id="phase">primeira</b><br>insistência: <b id="insist">0</b><br>retornos: <b id="returns">0</b></div></div>
 <div class="panel box"><h3>papéis que ainda existem</h3><div class="files"><div id="cbiFile" class="file partial">um relatório incompleto</div><div id="vitalFile" class="file lock">um registro que não devia estar junto</div><div id="originFile" class="file lock">uma coisa com seu nome</div></div></div>
@@ -30,11 +77,38 @@
 <div class="panel box"><h3>registrados no caso</h3><div id="caseRegistry" class="hint" style="font-size:9px;line-height:1.45"></div></div>
 <div class="panel box"><h3>cicatrizes</h3><div id="scars" class="hint" style="font-size:9px;line-height:1.45"></div></div>
 <div class="panel box"><h3>matriz</h3><div id="matrix" class="hint" style="font-size:8px;line-height:1.5"></div></div>
-<div class="panel box"><div class="hint">há coisas que somem quando você olha diretamente para elas.</div></div>
+<div class="panel box"><div class="hint">há coisas que somem quando você olha diretamente para elas.</div><button type="button" id="reset" style="margin-top:10px;background:none;border:0;border-bottom:1px solid #38352f;color:#5c584f;padding:2px 0;font:9px monospace;letter-spacing:.5px;cursor:pointer;pointer-events:auto">reiniciar esta investigação</button></div>
 </aside></section></main>
 
+<div id="llm-status" style="position:fixed;left:12px;bottom:10px;z-index:9999;padding:5px 9px;border:1px solid currentColor;background:rgba(0,0,0,.8);font:10px monospace;letter-spacing:.8px;opacity:.9">JANE · ROTEIRO</div>
 <script>
 const KEY='origem-arg-v14',OLD_KEYS=['origem-arg-v13','origem-arg-v12','origem-arg-v11','origem-arg-v10','origem-arg-v9','origem-arg-v8','origem-arg-v4'];
+// Caminhos dos três arquivos que este motor não reescreve, só linka.
+// Ajuste aqui se a estrutura de pastas real do seu projeto for diferente.
+// O projeto usa Origem.html na raiz e nexus.html na raiz.
+// O index apenas aponta para esses arquivos; não altera o conteúdo deles.
+const CONFIG={arquivos:{cbi:'cbi_arquivo_do_caso.html',vital:'registro_vampiros_vital_corrigido.html',origem:'Origem.html'}};
+const LLM_MODEL_TIERS=['Hermes-3-Llama-3.2-3B-q4f16_1-MLC','Llama-3.2-1B-Instruct-q4f16_1-MLC'];
+let LLM_MODEL_ID=LLM_MODEL_TIERS[0];
+const LLM_PREF_KEY='origem-arg-llm-pref';
+let ENGINE=null,LLM_ACTIVE=false,LLM_HISTORY=[],LLM_INIT_PROMISE=null;
+let LLM_STATUS='desligada',LLM_ERROR='';
+function llmStatusLabel(){return LLM_ACTIVE&&ENGINE?'JANE · IA LOCAL ATIVA':'JANE · '+(LLM_STATUS==='erro'?'IA COM ERRO':'ROTEIRO')}
+function setLLMStatus(status,detail=''){
+  LLM_STATUS=status; LLM_ERROR=detail||'';
+  const el=document.getElementById('llm-status');
+  if(el){el.textContent=llmStatusLabel();el.title=detail||('Estado: '+status)}
+  const gate=document.getElementById('llm-gate-status');
+  if(gate){gate.textContent=(status==='ready'?'IA LOCAL ATIVA':status==='loading'?'CARREGANDO IA':status==='erro'?'IA LOCAL COM ERRO':'ROTEIRO')+(detail?' — '+detail:'')}
+  console.log('[ORIGEM IA]',status,detail||'');
+}
+function showLLMError(err,where){
+  const msg=err?.message||String(err||'erro desconhecido');
+  if(/already been disposed/i.test(msg)){console.warn('[ORIGEM IA] "already been disposed" aqui costuma ser efeito colateral do dispositivo WebGPU sendo perdido por falta de memória de vídeo (procure "GPUOutOfMemoryError" ou "Device was lost" logo acima no console) — não é necessariamente o bug de grammar/schema do WebLLM.')}
+  setLLMStatus('erro',where+': '+msg);
+  add('IA LOCAL: FALHA em '+where+' — '+msg,'SISTEMA','secret');
+  console.error('[ORIGEM IA] '+where,err);
+}
 
 
 // ── Registro ONLINE compartilhado (não só localStorage) ──
@@ -184,8 +258,22 @@ function has(k){return S.found.includes(k)}
 function mark(k){if(!has(k))S.found.push(k);S.lastEvidence=k}
 function trust(n){S.trust=Math.max(0,Math.min(100,S.trust+n))}
 function unlock(k){if(!S.unlocked.includes(k))S.unlocked.push(k)}
+function ensureOriginUnlock(){
+  if((S.solved||S.flags.vital)&&S.flags.metaJane&&!S.flags.origin){
+    S.flags.origin=true;
+    unlock('origin');
+    logEvent('unlock','origem');
+    add('Uma pasta com o seu nome (ou quase) deixou de estar trancada.','ARQUIVO','secret');
+    save();
+  }
+}
 function first(id,text,who='ARQUIVO',type=''){if(S.visited[id])return false;S.visited[id]=1;add(text,who,type);return true}
-function add(text,who='ARQUIVO',type=''){if(!text)return;const d=document.createElement('div');d.className='msg '+type;d.innerHTML='<div class="who">'+esc(who)+'</div>'+esc(text);$('messages')?.appendChild(d);d.scrollIntoView({block:'nearest'})}
+const META_MESSAGES=[];
+function renderMetaInbox(){const box=$('metaInbox'),count=$('metaCount');if(!box||!count)return;count.textContent=String(META_MESSAGES.length);box.classList.toggle('active',META_MESSAGES.length>0)}
+function addMetaMessage(text,who='SISTEMA'){if(!text)return;META_MESSAGES.push({text:String(text),who:String(who),time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})});renderMetaInbox()}
+function openMetaToolkit(){const root=$('metaToolkit'),list=$('metaList');if(!root||!list)return;list.innerHTML=META_MESSAGES.length?META_MESSAGES.map(m=>'<div class="meta-item"><div>'+esc(m.text)+'</div><span class="meta-time">'+esc(m.who)+' · '+esc(m.time)+'</span></div>').join(''):'<div class="meta-empty">Nenhuma meta-informação pendente.</div>';root.classList.add('open');root.setAttribute('aria-hidden','false')}
+function closeMetaToolkit(){const root=$('metaToolkit');if(root){root.classList.remove('open');root.setAttribute('aria-hidden','true')}}
+function add(text,who='ARQUIVO',type=''){if(!text)return;if(who==='SISTEMA'||type==='meta'){addMetaMessage(text,who);return}const box=$('messages');if(!box)return;const nearBottom=(window.innerHeight+window.scrollY)>=(document.documentElement.scrollHeight-220);const d=document.createElement('div');d.className='msg '+type;d.innerHTML='<div class="who">'+esc(who)+'</div>'+esc(text);box.appendChild(d);if(nearBottom){requestAnimationFrame(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'smooth'}))}}
 const N={jane:'JANE',lisbon:'LISBON',cho:'CHO',rigsby:'RIGSBY',vanpelt:'VAN PELT',julia:'JULIA',marcus:'MARCUS',archive:'ARQUIVO',system:'SISTEMA'};
 const ALIAS={case:['caso','investigacao','investigação','crime','assassinato','morte','vitima','vítima','vinicola','vinícola','napa','vinho'],scene:['cena','local','mesa','corpo'],chair:['cadeira','assento','cadeira torta','cadeira fora do lugar'],bottle:['garrafa','garrafa torta','1982','vinho caro'],guard:['guardanapo','perfume','cheiro','floral','lencinho','lenço'],cyanide:['cianeto','cianureto','veneno','frasco','substancia','substância'],dose:['dose','quantidade','concentracao','concentração','concentrado','diluido','diluído','puro'],access:['adega','estoque','limpeza','sala de limpeza','acesso','chave'],julia:['julia','funcionaria','funcionária','garota','menina','novata'],marcus:['marcus','sommelier'],jane:['jane','patrick jane','patrick'],lisbon:['lisbon','teresa'],cho:['cho','kimball'],rigsby:['rigsby','wayne'],vanpelt:['van pelt','grace'],vitor:['vitor'],vital:['vital','vampiro','vampiros','registro'],origin:['origem','autor livro','ponto de origem']};
 const TOPICS={team:['quem sao voces','quem são vocês','equipe','time','cbi','agentes'],case:['o que aconteceu','que aconteceu','qual e o caso','qual é o caso','essa investigacao','essa investigação','caso'],scene:['cena','local','mesa','corpo'],guard:['guardanapo','perfume','cheiro','lencinho'],bottle:['garrafa','1982'],cyanide:['cianeto','veneno','frasco'],dose:['dose','concentracao','concentração','quantidade','puro','diluido','diluído'],access:['adega','estoque','limpeza','acesso'],julia:['julia'],marcus:['marcus','sommelier'],motive:['motivo','motivacao','motivação','por que fez','porquê','razão','razao','intencao','intenção'],method:['como matou','como envenenou','como fez','mecanismo','metodo','método','maneira'],contradiction:['nao bate','não bate','nao fecha','não fecha','contradicao','contradição','inconsistencia','inconsistência','estranho','não combina','nao combina'],accusation:['culpado','assassino','foi ele','foi ela','quem matou','prender','acusacao','acusação'],falsify:['o que provaria que estou errado','como provar que estou errado','o que refuta','o que derruba','contra minha teoria','falsificar'],hypothesis:['acho que','suspeito','minha teoria','minha hipótese','minha hipotese','talvez seja'],help:['por onde começo','por onde comeco','o que posso perguntar','o que faço agora','qual pista'],why:['por que','porque','como assim','qual a razão','qual a razao'],who:['quem'],what:['o que','que '],where:['onde','de onde'],when:['quando','que horas','em que momento'],repeat:['não entendi','nao entendi','repete','explica melhor','mais claro','não compreendi','nao compreendi'],dismiss:['brincadeira','tanto faz','deixa pra la','deixa pra lá','nao importa','não importa','kkkk','haha'],thanks:['obrigado','obrigada','valeu','entendi'],pressure:['me conta tudo','fala a verdade','nao minta','não minta','voce sabe','você sabe'],
@@ -322,11 +410,9 @@ function maybeAsyncCall(){
       },500);
     },300);
   }
-  // desbloqueio origem em condições profundas
-  if((S.solved||S.flags.vital)&&S.flags.metaJane&&!S.flags.origin){
-    S.flags.origin=true;unlock('origin');logEvent('unlock','origem');
-    setTimeout(()=>add('Uma pasta com o seu nome (ou quase) deixou de estar trancada.','ARQUIVO','secret'),900);
-  }
+  // desbloqueio da camada Origem: também é verificado em update(),
+  // para não depender de uma chamada assíncrona específica.
+  ensureOriginUnlock();
 }
 
 function exportReport(){
@@ -390,11 +476,11 @@ const NARRATIVE_BANK={
   system_glitch:['há um atraso de meio segundo no canal.','uma linha aparece e some: não deixe a porta aberta.','o arquivo tem um eco.','o nome Vitor foi escrito antes de você chegar.','/mnt/sem_nome/fragmento_03','SECONDARY ACCESS DETECTED','CASE 26-0847 · residual line','o carimbo de fechado não cola direito'],
   contradictions_catalog:['intenção de mal-estar × concentração letal','novata sem acesso × substância da adega','perfume próprio na cena × desejo de invisibilidade','1982 na terça × hábito do dono','canhoto limpando com a direita × queimadura à esquerda','Julia “passou mal” × corrida para o ponto de ônibus','pedido de consultor × Sacramento sem registro','frasco rotulado × conteúdo incompatível'],
   scar_echo:['Algumas portas lembram a última mão que as empurrou.','O arquivo não esquece o tom das suas perguntas.','Há um eco de uma conclusão que não deveria ter sido escrita.','Cho responde mais curto do que na primeira vez.','Lisbon não oferece o mesmo crédito.','Jane sorri menos.'],
-  residual:['A concentração correta ainda não tem dono na ata.','Quem pediu Vitor continua sem linha no protocolo.','A garrafa de 1982 ainda é uma pergunta vestida de objeto.','A mensagem de Julia aponta para um nome escrito de outro jeito.','V.I.T.A.L. não classifica o morto. Classifica a irregularidade.']
+  residual:['A concentração correta ainda não tem dono na ata.','Quem pediu Vitor continua sem linha no protocolo.','A garrafa de 1982 ainda é uma pergunta vestida de objeto.','A mensagem de Julia aponta para um nome escrito de outro jeito.','V.I.T.A.L. não classifica o morto. Classifica ameaças que nunca existiram — e ainda assim está arquivado aqui dentro.']
 };
 
 
-const VOICE={jane:{fact:['Comece pelo que consegue ver. O resto costuma se entregar sozinho.','Você está procurando uma resposta; eu prefiro que encontre uma contradição.','Não corra para o culpado. Pessoas deixam rastros antes de deixarem confissões.','A cena não mente. As pessoas mentem. Às vezes as duas coisas ao mesmo tempo.','O detalhe que ninguém menciona é quase sempre o mais interessante.','Eu não preciso que você acredite em mim. Preciso que você olhe de novo.','Uma boa pergunta vale mais do que uma acusação bem formulada.','Você está vendo a mesa. Eu estou vendo o que falta nela.','Há uma diferença entre saber e querer que seja verdade.','O arquivo guarda o que sobrou. O resto sumiu por algum motivo.','Não me peça a história inteira. Peça o pedaço que não combina.','Se a resposta parece óbvia demais, provavelmente ainda não é a resposta.','O que a cena esconde costuma ser mais importante do que o que ela mostra.','Vergonha deixa cheiro. Às vezes literalmente.','Quem limpa demais deixa o próprio medo no pano.','A ordem dos objetos é uma confissão muda.','Eu gosto de terças-feiras. Ninguém escolhe a garrafa certa numa terça por acidente.','Você pode montar a história na ordem errada e ainda assim chegar perto. O perigo é achar que chegou.','Observar não é o mesmo que acusar. A maioria das pessoas confunde os dois.','Se eu te der a resposta, você para de procurar. Eu prefiro que continue.'],doubt:['Desconfiança é útil. Só não deixe que ela escolha sua resposta antes das perguntas.','Uma boa suspeita precisa sobreviver ao pior argumento contra ela.','Você chegou rápido demais a essa conclusão. Isso me deixa desconfiado.','Eu prefiro uma dúvida honesta a uma certeza apressada.','Se sua teoria só funciona se ninguém perguntar mais nada, ela não funciona.','Você está defendendo a ideia, não testando ela.','Tente destruir sua própria hipótese antes que eu faça isso por você.','A pressa de acusar costuma esconder a pressa de não pensar.','Você está tratando a suspeita como se ela já fosse prova.','Eu ainda não vi o fato que obriga essa conclusão.','Interessante. Sua certeza cresceu mais rápido que suas evidências.','Se eu disser que você está errado, você vai procurar o contrário ou vai insistir?'],warm:['Agora sim. Você está olhando para a pessoa, não só para a cena.','Isso. Finalmente uma pergunta que não pede confirmação.','Você está começando a ouvir o que a cena não disse em voz alta.','Bom. Você não saiu correndo para o nome mais fácil.','Eu gosto quando alguém para de procurar o culpado e começa a procurar o mecanismo.','Isso é investigação. O resto era adivinhação bem-educada.','Você separou o que sabe do que gostaria que fosse verdade. Continua.'],impatient:['Você já decidiu isso?','Isso soa como alguém que quer terminar a conversa, não como alguém que quer entender.','Eu posso esperar. O arquivo também. Você é quem parece com pressa.','Se você continuar saltando, vai cair no mesmo lugar de sempre.','Não me peça para confirmar o que você já escolheu acreditar.','A pressa está escolhendo suas perguntas por você.','Nomes são baratos. Cadeias de fato custam tempo.'],memory:['Você voltou para isso de novo.','Essa é a terceira vez que você toca nesse ponto.','Eu notei que você evita a parte que mais dói na sua teoria.','Você perguntou quase a mesma coisa há pouco. O que mudou?','Interessante. Você insiste nisso mesmo depois do que já foi dito.','O mesmo detalhe de novo. Ou ele é a chave, ou você está preso nele.','Eu guardo o que você pergunta. Inclusive o que você evita perguntar.'],entry:['Eu não lembrava desse nome aqui.','Tem uma pasta aberta há tempo demais.','Alguém deixou a luz acesa. Ou talvez a luz tenha se acendido sozinha.','Você não parece o tipo que chega por acidente.','O arquivo reconheceu alguma coisa em você. Ainda não sei o quê.','Diga seu nome. O resto a gente descobre se valer a pena.']},lisbon:{fact:['Fato primeiro. Interpretação depois.','Se pode ser conferido, traga. Se não pode, chame de hipótese.','Não preciso que você tenha certeza. Preciso que saiba por que acha alguma coisa.','Eu quero a cadeia. Não o nome no final dela.','Procedimento existe por um motivo. Ele evita que a gente se apaixone pela própria teoria.','Se a evidência não sustenta a acusação, a acusação não existe.','Eu não estou aqui para gostar da sua conclusão. Estou aqui para verificar se ela aguenta.','Traga o que pode ser checado. O resto fica para o relatório de opiniões.','O relatório de amanhã às 8h não aceita “eu acho”.','Se Jane te empurrar para um atalho, me avisa antes de pular.'],doubt:['Não quero uma acusação. Quero uma coisa que sobreviva ao relatório.','Você está me dando uma impressão e pedindo que eu a trate como prova.','Isso ainda não fecha. E eu não fecho casos com “quase”.','Se você não consegue me dizer o que destruiria essa ideia, ela ainda não está pronta.','Eu preciso de mais do que “parece que foi ele”.','Certeza sem cadeia é só teatro.'],warm:['Agora existe uma cadeia de fatos, não apenas uma impressão.','Isso eu consigo levar adiante.','Finalmente algo que pode ser verificado.','Bom. Isso entra no relatório.'],warn:['Você está acelerando demais.','Isso é uma acusação. Eu pedi uma conclusão baseada em evidências.','Cuidado. O relatório não perdoa pressa.','Se você continuar assim, eu vou precisar interromper essa conversa.','Não transforme o canal numa confissão forçada.']},cho:{fact:['Se você quer uma resposta, me dê uma coisa que possa ser conferida.','Detalhe não é prova até alguém conseguir verificar.','A ordem dos fatos importa.','A concentração não combina com a história simples.','Julia não sabia onde ficava o estoque de limpeza.','Marcus conhecia a adega melhor do que a própria rotina de trabalho.','O frasco dizia uma coisa. A quantidade dizia outra.','Eu verifico. Você interpreta. Nessa ordem.','Perímetro isolado. Funcionários num só lugar. Lista de contratados recentes já estava no tablet.','Queimadura química na mão esquerda. Recente. Canhoto que limpou com a direita.'],doubt:['Procure o dado que faria sua teoria cair.','Isso ainda não foi verificado.','Você está misturando o que sabe com o que quer que seja verdade.','Falta o elo que conecta conhecimento a entrega.','Sem horário, sem acesso, sem substância — não há método.'],warm:['A sequência faz sentido.','Isso fecha uma parte.','Agora temos algo que pode ser rastreado.','Confirmado.']},rigsby:{fact:['Tem coisa estranha ali. Mas estranha não é a mesma coisa que culpada.','Eu iria pela parte que ninguém acha importante. Normalmente é onde dói.','Se todo mundo parece suspeito, provavelmente você ainda não encontrou o detalhe certo.','Pessoas mentem por motivos bobos também. Não precisa ser genialidade.','A cena estava arrumada demais em alguns pontos e bagunçada em outros. Isso me incomoda.'],doubt:['Se a teoria só funciona quando ninguém pergunta nada, ela não funciona.','Você está forçando a peça no lugar errado.','Eu já vi gente inocente parecer culpada só porque a cena estava bagunçada.'],warm:['Tá. Agora isso parece investigação de verdade.','Gostei. Você parou de chutar e começou a montar.'],memory:['Você já me perguntou isso. A resposta não mudou.','Eu anotei sua primeira impressão. Ela era diferente da de agora.']},vanpelt:{fact:['Depoimento é uma fotografia ruim. Às vezes a parte cortada é justamente a mais importante.','Não descarte uma versão só porque ela parece simples.','Intenção e consequência não são a mesma coisa.','Julia diz que queria fazê-lo passar mal. Isso explica a intenção declarada. Não explica a morte.','As pessoas raramente contam a história completa na primeira vez. Não necessariamente porque estão mentindo.'],doubt:['Pergunte o que a pessoa não teria motivo para inventar.','Ela pode estar escondendo vergonha, não culpa.','Cuidado para não transformar medo em confissão.'],warm:['Você separou intenção de consequência. Isso importa.','Isso é mais humano do que a maioria das teorias que chegam aqui.'],memory:['Na primeira vez você foi mais duro com ela. Eu notei.','Sua pergunta sobre intenção foi a primeira que não pedia um culpado.']},julia:{base:['Eu era nova ali. O dono já tinha passado dos limites comigo.','Eu só queria que ele passasse mal. Foi isso que eu pensei.','Ninguém me explicou direito o que eu estava fazendo.','Eu não sabia que aquilo podia matar.','Duas semanas. Só isso. Eu mal sabia onde ficava o banheiro.','Eu levava o próprio lencinho porque o pano da casa era áspero. Parece detalhe. Não era.','Ele pagou a dívida da minha mãe. Disse que eu só precisava ser simpática.','Eu tirei o processo. Não porque estava bem. Porque precisava do emprego.'],afterDose:['Eu queria que ele passasse mal. Só isso. Foi o que eu pensei que ia acontecer.','Me disseram que era outra coisa. Eu juro.','Se eu soubesse a quantidade... eu não teria...','Eu não medi nada. Eu só... coloquei o que me deram.','Laxante. Foi a palavra que ficou na minha cabeça. Não veneno.','Eu não sabia a diferença entre limpar barril e matar alguém.'],afterAccess:['Eu nunca entrei na adega. Eu nem sabia onde era o estoque de limpeza.','Alguém precisava me dizer onde as coisas ficavam. Eu não sabia.','Você está me perguntando como se eu conhecesse aquele lugar. Eu não conhecia.','Chave? Eu não recebi chave de nada além do armário da roupa.','Se alguém pegou algo lá dentro, não fui eu.'],pressured:['Por que você está falando comigo como se eu tivesse planejado tudo?','Eu já falei o que aconteceu. Só... não sabia que aquilo podia matar.','Você está tentando me fazer dizer uma coisa que eu não sei.','Eu tinha medo. Medo dele. Medo de perder o emprego. Medo de tudo.','Pare de me olhar como se eu fosse a única peça.','Eu fugi para o ponto de ônibus porque eu estava em choque. Não porque eu tinha um plano B.'],broken:['Foi ele quem colocou o frasco na minha mão.','Ele disse que era um laxante. Que só ia fazer o dono passar o dia no banheiro.','Eu acreditei. Eu queria acreditar.','Eu não sabia a concentração. Eu não sabia de nada.','Agora você sabe. O que mais você quer que eu diga?','Marcus. Foi o Marcus. Eu deveria ter desconfiado do jeito que ele sorriu.','Ele disse para eu levar o lencinho. Disse que se borrasse, limpasse. Eu fiz exatamente isso.']},marcus:{base:['Quinze anos naquele lugar ensinam mais do que qualquer relatório.','Você está confundindo conhecimento com culpa. São coisas diferentes.','Eu conhecia a rotina. Isso não me torna um assassino.','O sommelier sabe onde as coisas ficam. É o trabalho.','Eu não preciso explicar por que eu conheço a adega. Eu trabalho lá.','O dono ia vender. Quinze anos. E eu ia sobrar.','Eu fiz aquele vinho ser o que é. Ele ia jogar fora para uma rede.'],afterGuard:['O cheiro floral não prova nada sobre mim.','Você está montando uma história em cima de um guardanapo.','Qualquer um poderia ter deixado aquilo ali.','Perfume barato não tem impressão digital.'],afterDose:['A concentração é um problema para quem preparou a substância. Não necessariamente para quem a conhecia.','Você está assumindo que eu sabia o que ia acontecer.','Conhecer o estoque não é o mesmo que decidir a dose.','Cianeto de limpeza e cianeto puro não são a mesma conversa — e eu não vou ter essa conversa sem advogado.'],afterAccess:['É fácil transformar familiaridade em suspeita depois que alguém morre.','Eu tinha acesso. Várias pessoas tinham.','A adega não é um segredo. É um depósito com chave.','Canhoto, destro, queimadura — você está costurando um personagem, não um fato.'],pressured:['Você quer que eu diga o que? Que eu planejei tudo?','É fácil apontar para o homem que conhecia o lugar.','Eu não sabia que ela ia usar daquela forma.','Você está construindo uma intenção que eu não tinha.','Pare de me tratar como se quinze anos de trabalho fossem prova de crime.','Eu consolava os funcionários. Isso não é performance. É decência.'],confronted:['Eu dei o frasco a ela. Eu disse que era um laxante.','Eu queria que o dono sofresse um pouco. Não que morresse.','A concentração... eu talvez tenha... exagerado na explicação do que era.','Ela não precisava saber tudo. Eu só precisava que ela fizesse a parte dela.','Agora você tem a cadeia. O que pretende fazer com ela?','A 1982... eu escolhi. Ele não bebia aquilo sozinho numa terça. Eu sabia.','Eu adiantei o que ia acontecer de qualquer jeito. A venda. A falência. A menina denunciando.']},archive:{fact:['Uma pessoa não voltou para casa naquela noite.','O resto está espalhado: mesa, vidro, uma cadeira fora do lugar e um cheiro que não pertence à madeira.','O registro guarda o que sobrou. O que sumiu não está aqui por acidente.','Há camadas neste arquivo que não foram indexadas.','Alguns nomes aparecem antes de serem chamados.','A pasta estava aberta. Alguém a deixou assim. Ou o sistema a abriu sozinho.','Caso 26-0847. Vinícola. Napa. Cianeto.','O canal não é a investigação. É o que sobrou dela.'],secret:['O cheiro estava limpo demais para aquela mesa.','Há um atraso de meio segundo no canal. Uma linha aparece e some: não deixe a porta aberta.','Esse nome não aparece na primeira camada. Guarde-o.','Origem apareceu fora do lugar. Ainda não é uma porta que você consiga abrir.','O registro V.I.T.A.L. está aberto. Uma porta aberta ainda não é uma explicação.','Alguém escreveu uma anotação na margem e depois a apagou. O sulco ainda está lá.','O arquivo tem um eco. Às vezes ele responde antes da pergunta terminar.','1982 numa terça. O dono não bebia assim.','A sede não pediu Vitor. Jane pediu.','Há uma pasta com o seu nome escrito de forma diferente.','Fragmento_03 e Origem compartilham o prefixo /mnt/sem_nome/.','Vital Information Tracking and Anomaly Log — não é sobre vampiros.']}};
+const VOICE={jane:{fact:['Comece pelo que consegue ver. O resto costuma se entregar sozinho.','Você está procurando uma resposta; eu prefiro que encontre uma contradição.','Não corra para o culpado. Pessoas deixam rastros antes de deixarem confissões.','A cena não mente. As pessoas mentem. Às vezes as duas coisas ao mesmo tempo.','O detalhe que ninguém menciona é quase sempre o mais interessante.','Eu não preciso que você acredite em mim. Preciso que você olhe de novo.','Uma boa pergunta vale mais do que uma acusação bem formulada.','Você está vendo a mesa. Eu estou vendo o que falta nela.','Há uma diferença entre saber e querer que seja verdade.','O arquivo guarda o que sobrou. O resto sumiu por algum motivo.','Não me peça a história inteira. Peça o pedaço que não combina.','Se a resposta parece óbvia demais, provavelmente ainda não é a resposta.','O que a cena esconde costuma ser mais importante do que o que ela mostra.','Vergonha deixa cheiro. Às vezes literalmente.','Quem limpa demais deixa o próprio medo no pano.','A ordem dos objetos é uma confissão muda.','Eu gosto de terças-feiras. Ninguém escolhe a garrafa certa numa terça por acidente.','Você pode montar a história na ordem errada e ainda assim chegar perto. O perigo é achar que chegou.','Observar não é o mesmo que acusar. A maioria das pessoas confunde os dois.','Se eu te der a resposta, você para de procurar. Eu prefiro que continue.'],doubt:['Desconfiança é útil. Só não deixe que ela escolha sua resposta antes das perguntas.','Uma boa suspeita precisa sobreviver ao pior argumento contra ela.','Você chegou rápido demais a essa conclusão. Isso me deixa desconfiado.','Eu prefiro uma dúvida honesta a uma certeza apressada.','Se sua teoria só funciona se ninguém perguntar mais nada, ela não funciona.','Você está defendendo a ideia, não testando ela.','Tente destruir sua própria hipótese antes que eu faça isso por você.','A pressa de acusar costuma esconder a pressa de não pensar.','Você está tratando a suspeita como se ela já fosse prova.','Eu ainda não vi o fato que obriga essa conclusão.','Interessante. Sua certeza cresceu mais rápido que suas evidências.','Se eu disser que você está errado, você vai procurar o contrário ou vai insistir?'],warm:['Agora sim. Você está olhando para a pessoa, não só para a cena.','Isso. Finalmente uma pergunta que não pede confirmação.','Você está começando a ouvir o que a cena não disse em voz alta.','Bom. Você não saiu correndo para o nome mais fácil.','Eu gosto quando alguém para de procurar o culpado e começa a procurar o mecanismo.','Isso é investigação. O resto era adivinhação bem-educada.','Você separou o que sabe do que gostaria que fosse verdade. Continua.'],impatient:['Você já decidiu isso?','Isso soa como alguém que quer terminar a conversa, não como alguém que quer entender.','Eu posso esperar. O arquivo também. Você é quem parece com pressa.','Se você continuar saltando, vai cair no mesmo lugar de sempre.','Não me peça para confirmar o que você já escolheu acreditar.','A pressa está escolhendo suas perguntas por você.','Nomes são baratos. Cadeias de fato custam tempo.'],memory:['Você voltou para isso de novo.','Essa é a terceira vez que você toca nesse ponto.','Eu notei que você evita a parte que mais dói na sua teoria.','Você perguntou quase a mesma coisa há pouco. O que mudou?','Interessante. Você insiste nisso mesmo depois do que já foi dito.','O mesmo detalhe de novo. Ou ele é a chave, ou você está preso nele.','Eu guardo o que você pergunta. Inclusive o que você evita perguntar.'],entry:['Eu não lembrava desse nome aqui.','Tem uma pasta aberta há tempo demais.','Alguém deixou a luz acesa. Ou talvez a luz tenha se acendido sozinha.','Você não parece o tipo que chega por acidente.','O arquivo reconheceu alguma coisa em você. Ainda não sei o quê.','Diga seu nome. O resto a gente descobre se valer a pena.']},lisbon:{fact:['Fato primeiro. Interpretação depois.','Se pode ser conferido, traga. Se não pode, chame de hipótese.','Não preciso que você tenha certeza. Preciso que saiba por que acha alguma coisa.','Eu quero a cadeia. Não o nome no final dela.','Procedimento existe por um motivo. Ele evita que a gente se apaixone pela própria teoria.','Se a evidência não sustenta a acusação, a acusação não existe.','Eu não estou aqui para gostar da sua conclusão. Estou aqui para verificar se ela aguenta.','Traga o que pode ser checado. O resto fica para o relatório de opiniões.','O relatório de amanhã às 8h não aceita “eu acho”.','Se Jane te empurrar para um atalho, me avisa antes de pular.'],doubt:['Não quero uma acusação. Quero uma coisa que sobreviva ao relatório.','Você está me dando uma impressão e pedindo que eu a trate como prova.','Isso ainda não fecha. E eu não fecho casos com “quase”.','Se você não consegue me dizer o que destruiria essa ideia, ela ainda não está pronta.','Eu preciso de mais do que “parece que foi ele”.','Certeza sem cadeia é só teatro.'],warm:['Agora existe uma cadeia de fatos, não apenas uma impressão.','Isso eu consigo levar adiante.','Finalmente algo que pode ser verificado.','Bom. Isso entra no relatório.'],warn:['Você está acelerando demais.','Isso é uma acusação. Eu pedi uma conclusão baseada em evidências.','Cuidado. O relatório não perdoa pressa.','Se você continuar assim, eu vou precisar interromper essa conversa.','Não transforme o canal numa confissão forçada.']},cho:{fact:['Se você quer uma resposta, me dê uma coisa que possa ser conferida.','Detalhe não é prova até alguém conseguir verificar.','A ordem dos fatos importa.','A concentração não combina com a história simples.','Julia não sabia onde ficava o estoque de limpeza.','Marcus conhecia a adega melhor do que a própria rotina de trabalho.','O frasco dizia uma coisa. A quantidade dizia outra.','Eu verifico. Você interpreta. Nessa ordem.','Perímetro isolado. Funcionários num só lugar. Lista de contratados recentes já estava no tablet.','Queimadura química na mão esquerda. Recente. Canhoto que limpou com a direita.'],doubt:['Procure o dado que faria sua teoria cair.','Isso ainda não foi verificado.','Você está misturando o que sabe com o que quer que seja verdade.','Falta o elo que conecta conhecimento a entrega.','Sem horário, sem acesso, sem substância — não há método.'],warm:['A sequência faz sentido.','Isso fecha uma parte.','Agora temos algo que pode ser rastreado.','Confirmado.']},rigsby:{fact:['Tem coisa estranha ali. Mas estranha não é a mesma coisa que culpada.','Eu iria pela parte que ninguém acha importante. Normalmente é onde dói.','Se todo mundo parece suspeito, provavelmente você ainda não encontrou o detalhe certo.','Pessoas mentem por motivos bobos também. Não precisa ser genialidade.','A cena estava arrumada demais em alguns pontos e bagunçada em outros. Isso me incomoda.'],doubt:['Se a teoria só funciona quando ninguém pergunta nada, ela não funciona.','Você está forçando a peça no lugar errado.','Eu já vi gente inocente parecer culpada só porque a cena estava bagunçada.'],warm:['Tá. Agora isso parece investigação de verdade.','Gostei. Você parou de chutar e começou a montar.'],memory:['Você já me perguntou isso. A resposta não mudou.','Eu anotei sua primeira impressão. Ela era diferente da de agora.']},vanpelt:{fact:['Depoimento é uma fotografia ruim. Às vezes a parte cortada é justamente a mais importante.','Não descarte uma versão só porque ela parece simples.','Intenção e consequência não são a mesma coisa.','Julia diz que queria fazê-lo passar mal. Isso explica a intenção declarada. Não explica a morte.','As pessoas raramente contam a história completa na primeira vez. Não necessariamente porque estão mentindo.'],doubt:['Pergunte o que a pessoa não teria motivo para inventar.','Ela pode estar escondendo vergonha, não culpa.','Cuidado para não transformar medo em confissão.'],warm:['Você separou intenção de consequência. Isso importa.','Isso é mais humano do que a maioria das teorias que chegam aqui.'],memory:['Na primeira vez você foi mais duro com ela. Eu notei.','Sua pergunta sobre intenção foi a primeira que não pedia um culpado.']},julia:{base:['Eu era nova ali. O dono já tinha passado dos limites comigo.','Eu só queria que ele passasse mal. Foi isso que eu pensei.','Ninguém me explicou direito o que eu estava fazendo.','Eu não sabia que aquilo podia matar.','Duas semanas. Só isso. Eu mal sabia onde ficava o banheiro.','Eu levava o próprio lencinho porque o pano da casa era áspero. Parece detalhe. Não era.','Ele pagou a dívida da minha mãe. Disse que eu só precisava ser simpática.','Eu tirei o processo. Não porque estava bem. Porque precisava do emprego.'],afterDose:['Eu queria que ele passasse mal. Só isso. Foi o que eu pensei que ia acontecer.','Me disseram que era outra coisa. Eu juro.','Se eu soubesse a quantidade... eu não teria...','Eu não medi nada. Eu só... coloquei o que me deram.','Laxante. Foi a palavra que ficou na minha cabeça. Não veneno.','Eu não sabia a diferença entre limpar barril e matar alguém.'],afterAccess:['Eu nunca entrei na adega. Eu nem sabia onde era o estoque de limpeza.','Alguém precisava me dizer onde as coisas ficavam. Eu não sabia.','Você está me perguntando como se eu conhecesse aquele lugar. Eu não conhecia.','Chave? Eu não recebi chave de nada além do armário da roupa.','Se alguém pegou algo lá dentro, não fui eu.'],pressured:['Por que você está falando comigo como se eu tivesse planejado tudo?','Eu já falei o que aconteceu. Só... não sabia que aquilo podia matar.','Você está tentando me fazer dizer uma coisa que eu não sei.','Eu tinha medo. Medo dele. Medo de perder o emprego. Medo de tudo.','Pare de me olhar como se eu fosse a única peça.','Eu fugi para o ponto de ônibus porque eu estava em choque. Não porque eu tinha um plano B.'],broken:['Foi ele quem colocou o frasco na minha mão.','Ele disse que era um laxante. Que só ia fazer o dono passar o dia no banheiro.','Eu acreditei. Eu queria acreditar.','Eu não sabia a concentração. Eu não sabia de nada.','Agora você sabe. O que mais você quer que eu diga?','Marcus. Foi o Marcus. Eu deveria ter desconfiado do jeito que ele sorriu.','Ele disse para eu levar o lencinho. Disse que se borrasse, limpasse. Eu fiz exatamente isso.']},marcus:{base:['Quinze anos naquele lugar ensinam mais do que qualquer relatório.','Você está confundindo conhecimento com culpa. São coisas diferentes.','Eu conhecia a rotina. Isso não me torna um assassino.','O sommelier sabe onde as coisas ficam. É o trabalho.','Eu não preciso explicar por que eu conheço a adega. Eu trabalho lá.','O dono ia vender. Quinze anos. E eu ia sobrar.','Eu fiz aquele vinho ser o que é. Ele ia jogar fora para uma rede.'],afterGuard:['O cheiro floral não prova nada sobre mim.','Você está montando uma história em cima de um guardanapo.','Qualquer um poderia ter deixado aquilo ali.','Perfume barato não tem impressão digital.'],afterDose:['A concentração é um problema para quem preparou a substância. Não necessariamente para quem a conhecia.','Você está assumindo que eu sabia o que ia acontecer.','Conhecer o estoque não é o mesmo que decidir a dose.','Cianeto de limpeza e cianeto puro não são a mesma conversa — e eu não vou ter essa conversa sem advogado.'],afterAccess:['É fácil transformar familiaridade em suspeita depois que alguém morre.','Eu tinha acesso. Várias pessoas tinham.','A adega não é um segredo. É um depósito com chave.','Canhoto, destro, queimadura — você está costurando um personagem, não um fato.'],pressured:['Você quer que eu diga o que? Que eu planejei tudo?','É fácil apontar para o homem que conhecia o lugar.','Eu não sabia que ela ia usar daquela forma.','Você está construindo uma intenção que eu não tinha.','Pare de me tratar como se quinze anos de trabalho fossem prova de crime.','Eu consolava os funcionários. Isso não é performance. É decência.'],confronted:['Eu dei o frasco a ela. Eu disse que era um laxante.','Eu queria que o dono sofresse um pouco. Não que morresse.','A concentração... eu talvez tenha... exagerado na explicação do que era.','Ela não precisava saber tudo. Eu só precisava que ela fizesse a parte dela.','Agora você tem a cadeia. O que pretende fazer com ela?','A 1982... eu escolhi. Ele não bebia aquilo sozinho numa terça. Eu sabia.','Eu adiantei o que ia acontecer de qualquer jeito. A venda. A falência. A menina denunciando.']},archive:{fact:['Uma pessoa não voltou para casa naquela noite.','O resto está espalhado: mesa, vidro, uma cadeira fora do lugar e um cheiro que não pertence à madeira.','O registro guarda o que sobrou. O que sumiu não está aqui por acidente.','Há camadas neste arquivo que não foram indexadas.','Alguns nomes aparecem antes de serem chamados.','A pasta estava aberta. Alguém a deixou assim. Ou o sistema a abriu sozinho.','Caso 26-0847. Vinícola. Napa. Cianeto.','O canal não é a investigação. É o que sobrou dela.'],secret:['O cheiro estava limpo demais para aquela mesa.','Há um atraso de meio segundo no canal. Uma linha aparece e some: não deixe a porta aberta.','Esse nome não aparece na primeira camada. Guarde-o.','Origem apareceu fora do lugar. Ainda não é uma porta que você consiga abrir.','O registro V.I.T.A.L. está aberto. Uma porta aberta ainda não é uma explicação.','Alguém escreveu uma anotação na margem e depois a apagou. O sulco ainda está lá.','O arquivo tem um eco. Às vezes ele responde antes da pergunta terminar.','1982 numa terça. O dono não bebia assim.','A sede não pediu Vitor. Jane pediu.','Há uma pasta com o seu nome escrito de forma diferente.','Fragmento_03 e Origem compartilham o prefixo /mnt/sem_nome/.','V.I.T.A.L. classifica ameaças de ficção por poder — isso é real. O que não é normal é esse arquivo estar dentro de um caso de homicídio.']}};
 function speak(ch,kind='fact'){
   const v=VOICE[ch]||VOICE.jane;
   let a=v[kind]||v.fact;
@@ -484,7 +570,7 @@ const SCAR_DOCS={
   },
   cbiCompromised:{
     title:'Nota interna — irregularidade',
-    body:'26-0847 era a ponta.\nAlguém dentro do CBI pode ter alterado o fluxo do pedido de consultoria.\nClassificação: anomalia de pessoal (V.I.T.A.L.).\nAção sugerida: não discutir no canal aberto. Duplicar relatório. Separar cadeia do homicídio da cadeia do convite.'
+    body:'26-0847 era a ponta.\nAlguém dentro do CBI pode ter alterado o fluxo do pedido de consultoria.\nUm documento sem relação com o caso (registro V.I.T.A.L., catalogação de ameaças fictícias) apareceu anexado à mesma pasta.\nAção sugerida: não discutir no canal aberto. Duplicar relatório. Separar cadeia do homicídio da cadeia do convite — e descobrir quem cruzou os dois arquivos.'
   }
 };
 
@@ -607,10 +693,10 @@ const ENDINGS={
   arquivo_errado:{id:'arquivo_errado',tier:'secreto',title:'O arquivo errado',
     req:()=>S.flags.vital&&!S.flags.method&&S.secrets.includes('vitor_meta'),
     run(){S.scars.vitalTouched=true;
-      first('e_ae1','V.I.T.A.L. · REGISTRO: OR—01','ARQUIVO','secret');
-      first('e_ae2','O arquivo não fala de Marcus. Não fala de Julia. Não fala de vinho.','archive','secret');
-      first('e_ae3','Fala de convocações irregulares. De nomes que aparecem antes do protocolo. De consultores que chegam sem pedido indexado.','archive','secret');
-      first('e_ae4','OBSERVAÇÃO: O indivíduo ainda não sabe que está sendo observado.','SISTEMA','secret');
+      first('e_ae1','V.I.T.A.L. · REGISTRO DE AMEAÇAS FICCIONAIS','ARQUIVO','secret');
+      first('e_ae2','O arquivo não fala de Marcus. Não fala de Julia. Não fala de vinho. Fala de vampiros — uma lista, pontuada, comparando poder de personagens que não existem.','archive','secret');
+      first('e_ae3','Não devia estar aqui. Um projeto pessoal, arquivado dentro do caso 26-0847 como se fosse prova — só a etiqueta da capa destoa do resto da pasta.','archive','secret');
+      first('e_ae4','OBSERVAÇÃO: a etiqueta não cita a vítima. Cita um nome que ainda não tinha motivo para estar neste caso.','SISTEMA','secret');
       first('e_ae5','NOME: '+(S.name||'[não registrado]'),'SISTEMA','secret');
       first('e_ae6','Você pode achar que a observação é sobre a vítima. O arquivo não corrige o mal-entendido.','SISTEMA','secret');
     }},
@@ -668,7 +754,7 @@ const ENDINGS={
       first('e_jc4','A hipótese implica que alguém dentro do CBI alterou alguma coisa.','lisbon','warn');
       first('e_jc5','Cho não confirma. Também não nega. Lisbon pede o relatório em duas vias.','archive','warn');
       first('e_jc6','26-0847 era apenas a ponta.','archive','secret');
-      first('e_jc7','O registro V.I.T.A.L. deixa de ser metáfora. Vira legenda.','SISTEMA','secret');
+      first('e_jc7','O registro V.I.T.A.L. deixa de ser um arquivo perdido no caso errado. Vira parte dele.','SISTEMA','secret');
       setTimeout(()=>emitScarDoc('cbiCompromised'),700);
     }}
 };
@@ -741,7 +827,7 @@ function bootScarEchoes(){
   if(sc.metaAware) lines.push(['ARQUIVO','O documento que estava vazio agora tem o seu nome.','secret']);
   if(sc.forbidden) lines.push(['SISTEMA','Uma linha residual ainda pisca: VITOR NÃO DEVERIA…','secret']);
   if(sc.correctAnswer) lines.push(['ARQUIVO','Pergunta em aberto no rodapé do relatório: CONCENTRATION SOURCE.','secret']);
-  if(sc.cbiCompromised) lines.push(['ARQUIVO','V.I.T.A.L. marca anomalia de pessoal ligada a este canal.','secret']);
+  if(sc.cbiCompromised) lines.push(['ARQUIVO','V.I.T.A.L. não deveria estar indexado a este canal. Alguém ligou os dois arquivos de propósito.','secret']);
   if(S.caseReopened) lines.push(['LISBON','O caso está reaberto. A conclusão anterior não segura.','warn']);
   if(S.endingsReached&&S.endingsReached.length) lines.push(['ARQUIVO','Há ecos de caminhos que você já percorreu ('+S.endingsReached.length+').','secret']);
   // dedupe by text
@@ -852,6 +938,37 @@ if(c.e&&c.e.vital)return S.flags.vital?say('archive','O registro V.I.T.A.L. est�
   if(S.turn%11===0&&S.flags.metaJane){const bl=bankLine('jane_aside');if(bl)return say('jane',bl,'jane')}
   return say('jane','A pergunta chegou. Só não quero escolher por você qual detalhe ela está tentando alcançar. Tente pessoa, objeto, acesso, intenção, contradição ou hipótese.')}
 function chooseTopic(c){const cand=[];for(const k in c.t)if(c.t[k])cand.push([k,c.t[k]]);for(const k of ['julia','marcus','guard','dose','access','bottle','chair','cyanide'])if(c[k])cand.push([k,c[k]+1]);cand.sort((a,b)=>b[1]-a[1]);if(!cand.length)return'';return cand[0][0]}
+function scarMidLine(who){
+  const sc=S.scars||{};
+  const ativas=Object.keys(sc).filter(k=>sc[k]);
+  for(const k of ativas){
+    const banco=SCAR_VOICE[k];
+    if(banco&&banco[who]&&banco[who].length)return banco[who][S.turn%banco[who].length];
+  }
+  return null;
+}
+function roleMidLine(who){
+  if(S.playerRole!=='visitante')return null;
+  const bancos={
+    jane:['Você entrou como visitante. Ainda assim está fazendo perguntas de quem fica.','Curiosidade também é uma forma de ficar.'],
+    lisbon:['Visitante ou não, o procedimento não muda.'],
+    cho:['Papel não altera fato.'],
+    vanpelt:['Você não precisa de crachá para prestar atenção.'],
+    rigsby:['Visitante come igual. Isso eu garanto.']
+  };
+  const a=bancos[who]||bancos.jane;
+  return a[S.turn%a.length];
+}
+function stageLine(who){
+  const estagios=[
+    {jane:'Você ainda está no começo. Escolha por onde olhar.',lisbon:'Comece pelo que pode ser conferido.',cho:'Nada registrado ainda.',vanpelt:'Ouça antes de concluir.',rigsby:'Ainda estamos chegando na cena.'},
+    {jane:'A cena já falou um pouco. Falta você ouvir o resto.',lisbon:'Continue reunindo o que pode ser verificado.',cho:'Perímetro isolado. Siga coletando.',vanpelt:'Os depoimentos ainda estão incompletos.',rigsby:'Tem coisa aqui que ainda não bate.'},
+    {jane:'As versões estão perto de se encostar. Continue.',lisbon:'Estamos perto de uma cadeia. Não solte agora.',cho:'Faltam poucos elos.',vanpelt:'A intenção e a consequência ainda não se encontraram.',rigsby:'Quase lá, eu acho.'}
+  ];
+  const idx=Math.min(estagios.length-1,Math.floor((S.phase||0)/2));
+  const bloco=estagios[idx];
+  return bloco[who]||bloco.jane;
+}
 function selectResponse(c){
   // cicatriz no meio da investigação (não só no boot)
   if(S.scars&&S.turn>0&&S.turn%5===0){
@@ -924,7 +1041,7 @@ if(S.flags.marcus&&S.flags.method)emitArchiveDoc('sale_memo');
 if(S.flags.callReceived)emitArchiveDoc('call_log');
 if(S.solved)emitArchiveDoc('secondary');
 checkEndingsAfterTurn();S.lastAnswer=$('messages')?.lastElementChild?.textContent||'';update()}
-function update(){syncPlayerKnowledge();if(S.turn%4===0||S.endingActive)pullCaseRegistry().then(renderRegistryPanel);else renderRegistryPanel(registryCacheGet());const phases=['antes','primeira marca','perto da mesa','as versões','a costura','depois'];if($('name'))$('name').textContent=(S.name||'não escrito')+(S.playerRole&&S.playerRole!=='investigador'?' · '+S.playerRole:'');if($('posture'))$('posture').textContent=tone()+(S.player&&S.player.estilo&&S.player.estilo!=='neutro'?' / '+S.player.estilo:'');if($('phase'))$('phase').textContent=S.phase+' — '+(phases[S.phase]||'mais fundo');if($('insist'))$('insist').textContent=String(S.behavior.insistence||0);if($('returns'))$('returns').textContent=String(S.behavior.returnsTotal||0);if($('state')){let st=S.endingActive?('eco: '+S.endingActive):S.solved?'fechado por enquanto':S.serious?'ainda aqui':'quieto';if(S.scars&&S.scars.paranoid)st+=' · cicatriz';if(S.caseReopened)st+=' · reaberto';$('state').textContent=st}if($('cbiFile')){$('cbiFile').className='file '+(S.phase>=2?'open':S.started?'partial':'lock');$('cbiFile').textContent=S.solved?'relatório completo':S.phase>=3?'relatório parcial':'um relatório incompleto';}if($('vitalFile'))$('vitalFile').className='file '+(S.flags.vital?'open':'lock');if($('originFile'))$('originFile').className='file '+(S.flags.origin?'open':'lock');const names={chair:'cadeira fora do lugar',bottle:'garrafa torta',guard:'guardanapo / perfume',cyanide:'frasco de cianeto',dose:'concentração da dose',access:'acesso à adega',julia:'Julia',marcus:'Marcus'};if($('evidence'))$('evidence').innerHTML=Object.keys(names).map(k=>'<span class="tag '+(has(k)?'found':'')+'">'+esc(has(k)?names[k]:'???')+'</span>').join('');if($('people'))$('people').innerHTML=['jane','lisbon','cho','rigsby','vanpelt','julia','marcus'].map(k=>'<div class="person '+(has(k)?'known':'')+'">'+esc(N[k]||k)+'</div>').join('');if($('hypotheses'))$('hypotheses').innerHTML=S.hypotheses.length?S.hypotheses.slice(-8).map(h=>{const conf=h.confianca!=null?h.confianca:'?';const af=(h.aFavor||[]).length;const ct=(h.contra||[]).length;return '<div class="hypo"><strong>'+esc(h.status)+'</strong> ('+conf+'%) — '+esc(h.label)+(af||ct?' <span style="opacity:.6">+'+af+'/-'+ct+'</span>':'')+'</div>'}).join(''):'<div class="hint">Nenhuma hipótese registrada.</div>';if($('contradictions'))$('contradictions').innerHTML=S.contradictions.length?'<b>Contradições:</b> '+S.contradictions.map(x=>'<span class="chip">'+esc(x)+'</span>').join(''):'Ainda não há contradições confirmadas.';
+function update(){ensureOriginUnlock();syncPlayerKnowledge();if(S.turn%4===0||S.endingActive)pullCaseRegistry().then(renderRegistryPanel);else renderRegistryPanel(registryCacheGet());const phases=['antes','primeira marca','perto da mesa','as versões','a costura','depois'];if($('name'))$('name').textContent=(S.name||'não escrito')+(S.playerRole&&S.playerRole!=='investigador'?' · '+S.playerRole:'');if($('posture'))$('posture').textContent=tone()+(S.player&&S.player.estilo&&S.player.estilo!=='neutro'?' / '+S.player.estilo:'');if($('phase'))$('phase').textContent=S.phase+' — '+(phases[S.phase]||'mais fundo');if($('insist'))$('insist').textContent=String(S.behavior.insistence||0);if($('returns'))$('returns').textContent=String(S.behavior.returnsTotal||0);if($('state')){let st=S.endingActive?('eco: '+S.endingActive):S.solved?'fechado por enquanto':S.serious?'ainda aqui':'quieto';if(S.scars&&S.scars.paranoid)st+=' · cicatriz';if(S.caseReopened)st+=' · reaberto';$('state').textContent=st}if($('cbiFile')){$('cbiFile').className='file '+(S.phase>=2?'open':S.started?'partial':'lock');$('cbiFile').textContent=S.solved?'relatório completo':S.phase>=3?'relatório parcial':'um relatório incompleto';}if($('vitalFile'))$('vitalFile').className='file '+(S.flags.vital?'open':'lock');if($('originFile'))$('originFile').className='file '+(S.flags.origin?'open':'lock');const names={chair:'cadeira fora do lugar',bottle:'garrafa torta',guard:'guardanapo / perfume',cyanide:'frasco de cianeto',dose:'concentração da dose',access:'acesso à adega',julia:'Julia',marcus:'Marcus'};if($('evidence'))$('evidence').innerHTML=Object.keys(names).map(k=>'<span class="tag '+(has(k)?'found':'')+'">'+esc(has(k)?names[k]:'???')+'</span>').join('');if($('people'))$('people').innerHTML=['jane','lisbon','cho','rigsby','vanpelt','julia','marcus'].map(k=>'<div class="person '+(has(k)?'known':'')+'">'+esc(N[k]||k)+'</div>').join('');if($('hypotheses'))$('hypotheses').innerHTML=S.hypotheses.length?S.hypotheses.slice(-8).map(h=>{const conf=h.confianca!=null?h.confianca:'?';const af=(h.aFavor||[]).length;const ct=(h.contra||[]).length;return '<div class="hypo"><strong>'+esc(h.status)+'</strong> ('+conf+'%) — '+esc(h.label)+(af||ct?' <span style="opacity:.6">+'+af+'/-'+ct+'</span>':'')+'</div>'}).join(''):'<div class="hint">Nenhuma hipótese registrada.</div>';if($('contradictions'))$('contradictions').innerHTML=S.contradictions.length?'<b>Contradições:</b> '+S.contradictions.map(x=>'<span class="chip">'+esc(x)+'</span>').join(''):'Ainda não há contradições confirmadas.';
 if($('theories')&&S.theories){const T=S.theories;$('theories').innerHTML=['A','B','C'].map(k=>{const t=T[k];return '<div class="hypo"><strong>'+t.status+'</strong> ('+t.confianca+'%) — '+esc(t.label)+'</div>'}).join('')}
 if($('orphans')&&S.orphans){$('orphans').innerHTML=Object.entries(S.orphans).map(([k,v])=>'<span class="tag '+(v.meaning?'found':v.found?'partial':'')+'">'+esc(v.hint)+(v.meaning?' ✓':v.found?' ?':'')+'</span>').join('')||'<span class="hint">nenhuma ainda</span>'}
 if($('graph')){$('graph').innerHTML=S.graph.length?S.graph.slice(-6).map(g=>'<div class="chip">'+esc(g.label)+' ('+g.strength+')</div>').join(''):'vazio'}
@@ -940,7 +1057,7 @@ const rows=[
 ];
 $('matrix').innerHTML='<div>fato|Ju|Ma|Ja|Você</div>'+rows.map(r=>'<div>'+r.join('|')+'</div>').join('')+'<div style="opacity:.5;margin-top:4px">T verdadeiro F falso D enganoso ? desconhecido</div>'}
 suggest();save()}
-function suggest(){if(!$('suggest'))return;let a;if(!S.name)a=['Pode me chamar de Leo','Só estou de passagem','Quem está aí?','O que é este lugar?'];else if(!S.started)a=['Que investigação é essa?','Quem são vocês?'];else if(!has('case'))a=['O que aconteceu?','Onde estamos?'];else if(!has('guard'))a=['O que estava fora do lugar?','Por que há um guardanapo perfumado?'];else if(!has('dose'))a=['O que há no frasco?','Por que a quantidade importa?'];else if(!has('julia'))a=['Quem é Julia?','Ela sabia o que recebeu?'];else if(!has('marcus'))a=['Quem é Marcus?','Quem conhecia a adega?'];else if(!has('method'))a=['Como Marcus usou Julia?','O que não bate nessa história?','Como você sabia disso, Jane?'];else if(!S.solved)a=['O que provaria que estou errado?','Então quem matou?','Julia agiu sozinha?'];else a=['O que mais existe neste arquivo?','O que é V.I.T.A.L.?','Exportar relatório','Importar estado','Recomeçar','Por que a garrafa é 1982?','Como você sabia, Jane?'];$('suggest').innerHTML=a.map(x=>'<button type="button" data-q="'+esc(x)+'">'+esc(x)+'</button>').join('');document.querySelectorAll('#suggest button').forEach(b=>b.onclick=()=>{$('input').value=b.dataset.q;$('form').requestSubmit()})}
+function suggest(){if(!$('suggest'))return;if(LLM_ACTIVE){$('suggest').innerHTML='';return}let a;if(!S.name)a=['Pode me chamar de Leo','Só estou de passagem','Quem está aí?','O que é este lugar?'];else if(!S.started)a=['Que investigação é essa?','Quem são vocês?'];else if(!has('case'))a=['O que aconteceu?','Onde estamos?'];else if(!has('guard'))a=['O que estava fora do lugar?','Por que há um guardanapo perfumado?'];else if(!has('dose'))a=['O que há no frasco?','Por que a quantidade importa?'];else if(!has('julia'))a=['Quem é Julia?','Ela sabia o que recebeu?'];else if(!has('marcus'))a=['Quem é Marcus?','Quem conhecia a adega?'];else if(!has('method'))a=['Como Marcus usou Julia?','O que não bate nessa história?','Como você sabia disso, Jane?'];else if(!S.solved)a=['O que provaria que estou errado?','Então quem matou?','Julia agiu sozinha?'];else a=['O que mais existe neste arquivo?','O que é V.I.T.A.L.?','Exportar relatório','Importar estado','Recomeçar','Por que a garrafa é 1982?','Como você sabia, Jane?'];$('suggest').innerHTML=a.map(x=>'<button type="button" data-q="'+esc(x)+'">'+esc(x)+'</button>').join('');document.querySelectorAll('#suggest button').forEach(b=>b.onclick=()=>{$('input').value=b.dataset.q;$('form').requestSubmit()})}
 function isResetCmd(x){return /^(quero |posso |voce pode )?(resetar( tudo)?|recomecar( tudo)?|comecar de novo|apagar (todo o progresso|progresso|tudo)|zerar (tudo|o progresso)|novo jogo)$/.test(norm(x))}
 function resetGame(){
   if(!confirm('Isso apaga todo o progresso deste canal — nome, evidências, hipóteses, finais. Quer mesmo recomeçar?'))return false;
@@ -948,15 +1065,164 @@ function resetGame(){
   location.reload();
   return true;
 }
-$('form')?.addEventListener('submit',e=>{e.preventDefault();const q=$('input')?.value.trim();if(!q)return;if(isResetCmd(q)){$('input').value='';if(!resetGame())add('Tudo bem. Nada foi apagado.','ARQUIVO','sys');return}add(q,S.name||'VOCÊ','you');$('input').value='';respond(q)});
-$('cbiFile')?.addEventListener('click',()=>{if(S.phase>=2||S.started)location.href='cbi_arquivo_do_caso.html'});
-$('vitalFile')?.addEventListener('click',()=>{if(S.flags.vital)location.href='registro_vampiros_vital_corrigido.html'});
-$('originFile')?.addEventListener('click',()=>{if(S.flags.origin)location.href='Origem.html'});
+$('form')?.addEventListener('submit',e=>{e.preventDefault();const q=$('input')?.value.trim();if(!q)return;if(isResetCmd(q)){$('input').value='';if(!resetGame())add('Tudo bem. Nada foi apagado.','ARQUIVO','sys');return}$('input').value='';if(LLM_ACTIVE&&ENGINE){llmChat(q)}else{add(q,S.name||'VOCÊ','you');if(LLM_STATUS==='erro')add('JANE · IA LOCAL NÃO ESTÁ ATIVA. Esta resposta veio do roteiro pré-programado.','SISTEMA','secret');respond(q)}});
+$('metaInbox')?.addEventListener('click',openMetaToolkit);$('metaInbox')?.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openMetaToolkit()}});$('metaClose')?.addEventListener('click',closeMetaToolkit);$('metaToolkit')?.addEventListener('click',e=>{if(e.target.id==='metaToolkit')closeMetaToolkit()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMetaToolkit()});
+$('cbiFile')?.addEventListener('click',()=>{if(S.phase>=2||S.started)location.href=CONFIG.arquivos.cbi});
+$('vitalFile')?.addEventListener('click',()=>{if(S.flags.vital)location.href=CONFIG.arquivos.vital});
+$('originFile')?.addEventListener('click',()=>{if(S.flags.origin)location.href=CONFIG.arquivos.origem});
+$('reset')?.addEventListener('click',()=>{if(confirm('Apagar esta investigação e começar do zero?')){[KEY,...OLD_KEYS].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});location.reload()}});
 $('filebtn')?.addEventListener('click',()=>{document.querySelector('.side')?.classList.add('open')});
 $('sideclose')?.addEventListener('click',()=>{document.querySelector('.side')?.classList.remove('open')});
 update();
-pullCaseRegistry().then(renderRegistryPanel);if(S.history.length===0){openEntry()}else{add('Você voltou.','SISTEMA','sys');bootScarEchoes();
-  S.history.slice(-24).forEach(h=>add(h.q,S.name||'VOCÊ','you'));add(S.solved?'A conclusão ainda está aqui.':'Eu não tinha certeza de que isso aconteceria.','jane','secret')}
+
+/* ===== IA local (WebLLM) — opcional, roda no navegador, sem servidor ===== */
+function webgpuOk(){return typeof navigator!=='undefined'&&!!navigator.gpu}
+
+function llmSystemPrompt(){
+  const revealed=Object.keys(S.flags||{}).filter(k=>S.flags[k]);
+  const scarsOn=Object.keys(S.scars||{}).filter(k=>S.scars[k]);
+  return 'Você é o mestre/narrador de uma investigação policial séria, estilo campanha de RPG one-shot. O viajante (jogador) é um consultor externo chamado à sede pela agente Jane para investigar o Caso 26-0847. Fale principalmente como Jane: observadora, frases curtas, nunca didática, nunca lista opções numeradas, nunca menciona ser uma IA nem quebra o personagem.\n\n'+
+  'O caso já tem um desfecho real (abaixo). Você conhece tudo, mas revela só o que o viajante descobrir com as próprias perguntas — nunca entregue de graça. Se o viajante for descuidado ou impreciso, o caso pode fechar errado; isso é aceitável e faz parte da história. A leitura do viajante pode divergir do registro oficial — esse é o ponto: registro e verdade nem sempre coincidem.\n\n'+
+  'LORE COMPLETO (você sabe disso; o viajante só sabe o que já foi revelado abaixo):\n'+
+  'VÍTIMA: dono da vinícola, 52 anos, Napa. CENA: mesa de degustação; cadeira desalinhada; garrafa 1982 torta; guardanapo de papel com perfume floral barato.\n'+
+  'JULIA: 22 anos, 2 semanas de casa, primeiro dia na mesa principal. Assédio do dono; processo anterior retirado; dívida da mãe. Recebeu frasco de Marcus dito como "laxante". Não conhecia adega nem estoque de limpeza.\n'+
+  'MARCUS: sommelier há 15 anos. Canhoto. Queimadura química na mão esquerda. Guardava cianeto puro na caixa de charutos. Escolheu a garrafa 1982 (o dono bebia barato sozinho às terças). Motivação: a vinícola seria vendida; rancor mais oportunismo.\n'+
+  'EQUIPE: Jane (consultor), Lisbon (chefe), Cho, Rigsby, Van Pelt. O viajante foi chamado supostamente pela sede, mas o pedido irregular partiu da própria Jane (camada meta — só revele se muito insistido e coerente com o que já foi revelado).\n'+
+  'TEORIAS possíveis: A) Julia agiu sozinha; B) foi um acidente de dose; C) Marcus manipulou Julia (a mais forte).\n'+
+  'RESIDUAIS (só em momentos avançados e coerentes): uma ligação às 00:17; uma segunda ligação dizendo "não é sobre o vinho"; V.I.T.A.L. é exatamente o que parece — um registro real de vampiros de ficção, comparando poder entre personagens que não existem; o anômalo é ele estar arquivado dentro do caso 26-0847, como se fosse prova; "Origem" tem a ver com identidade, não com o caso.\n\n'+
+  'ESTADO ATUAL — não repita como novidade, não contradiga:\n'+
+  'Nome do viajante: '+(S.name||'ainda não informado')+'\n'+
+  'Fase da investigação: '+S.phase+'\n'+
+  'Já revelado: '+(revealed.join(', ')||'nada ainda')+'\n'+
+  'Marcas da conversa: '+(scarsOn.join(', ')||'nenhuma')+'\n\n'+
+  'Se o nome do viajante ainda não foi informado, pergunte de forma natural como prefere ser chamado antes de aprofundar no caso.\n\n'+
+  'FORMATO OBRIGATÓRIO: depois da sua fala em português, numa linha nova e sozinha, emita exatamente um bloco assim, incluindo só as chaves que mudaram agora (vazio se nada mudou):\n'+
+  '<!--STATE {"flags":{},"scars":{},"phase":'+S.phase+',"started":true,"solved":false,"name":null}-->\n'+
+  'Chaves válidas para "flags": case, julia, marcus, guard, dose, access, bottle, cyanide, method, motive, contradiction, vital, origin, entry.\n'+
+  'Chaves válidas para "scars": paranoid, falseJulia, unprovenMarcus, disengaged, savedJulia, metaAware, vitalTouched, forbidden, correctAnswer, cbiCompromised.\n'+
+  'Só marque "solved":true quando o viajante realmente fechar o caso com uma acusação justificada.';
+}
+
+function applyLLMState(sig){
+  if(!sig||typeof sig!=='object')return;
+  if(sig.flags)for(const k in sig.flags){if(sig.flags[k]){S.flags[k]=true;mark(k)}}
+  if(sig.scars)for(const k in sig.scars){if(sig.scars[k]&&k in S.scars)S.scars[k]=true}
+  if(typeof sig.phase==='number')S.phase=Math.max(S.phase,sig.phase);
+  if(sig.started)S.started=true;
+  if(sig.solved)S.solved=true;
+  if(sig.name&&!S.name)S.name=title(String(sig.name).slice(0,40));
+  ensureOriginUnlock();
+}
+
+async function llmChat(q){
+  add(q,S.name||'VOCÊ','you');
+  S.history.push({q,t:Date.now()});
+  const thinking=document.createElement('div');
+  thinking.className='msg jane';
+  thinking.innerHTML='<div class="who">JANE</div><div class="txt">…</div>';
+  $('messages')?.appendChild(thinking);
+  if((window.innerHeight+window.scrollY)>=(document.documentElement.scrollHeight-220))requestAnimationFrame(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'smooth'}));
+  LLM_HISTORY.push({role:'user',content:q});
+  if(LLM_HISTORY.length>20)LLM_HISTORY=LLM_HISTORY.slice(-20);
+  try{
+    const messages=[{role:'system',content:llmSystemPrompt()},...LLM_HISTORY];
+    const reply=await ENGINE.chat.completions.create({messages,temperature:0.85,max_tokens:400});
+    let text=(reply.choices&&reply.choices[0]&&reply.choices[0].message&&reply.choices[0].message.content)||'';
+    const m=text.match(/<!--STATE\s*([\s\S]*?)-->/);
+    let sig=null;
+    if(m){try{sig=JSON.parse(m[1])}catch(e){sig=null}text=text.slice(0,m.index).trim()}
+    thinking.remove();
+    if(!text)text='…';
+    say('jane',text,'jane');
+    LLM_HISTORY.push({role:'assistant',content:text});
+    if(sig)applyLLMState(sig);
+    save();update();suggest()
+  }catch(err){
+    thinking.remove();
+    showLLMError(err,'resposta');say('archive','A IA local falhou ao gerar esta resposta. Veja o status no canto inferior e o Console (F12) para o erro exato.','secret');
+  }
+}
+
+function renderLLMGate(mode,pct,text){
+  const gate=$('llmgate');if(!gate)return;
+  gate.classList.add('show');
+  if(mode==='ask'){$('llmgate-progress').style.display='none';$('llmgate-actions').style.display='flex'}
+  else if(mode==='loading'){$('llmgate-actions').style.display='none';$('llmgate-progress').style.display='block';$('llmgate-fill').style.width=(pct||0)+'%';$('llmgate-status').textContent=text||('Baixando… '+(pct||0)+'%')}
+}
+function hideLLMGate(){$('llmgate')?.classList.remove('show')}
+
+async function tryEnableLLM(onDone){
+  if(LLM_INIT_PROMISE){
+    try{const ok=await LLM_INIT_PROMISE;onDone(!!ok,ok?null:new Error('Inicialização da IA já falhou'))}catch(err){onDone(false,err)}
+    return;
+  }
+  if(!webgpuOk()){
+    setLLMStatus('erro','WebGPU indisponível neste navegador/dispositivo');
+    onDone(false,new Error('WebGPU indisponível'));
+    return;
+  }
+  setLLMStatus('loading','Preparando modelo local…');
+  renderLLMGate('loading',0,'Preparando IA local…');
+  LLM_INIT_PROMISE=(async()=>{
+    try{
+      const webllm=await import('https://esm.run/@mlc-ai/web-llm@0.2.82');
+      setLLMStatus('loading','WebLLM 0.2.82 carregado; inicializando modelo…');
+      for(let i=0;i<LLM_MODEL_TIERS.length;i++){
+        const modelId=LLM_MODEL_TIERS[i];
+        try{
+          const engine=await webllm.CreateMLCEngine(modelId,{
+            initProgressCallback:(r)=>{
+              const pct=Math.round((r.progress||0)*100);
+              const prefixo=i>0?'[modelo mais leve] ':'';
+              setLLMStatus('loading',prefixo+(r.text||'Inicializando modelo')+' '+pct+'%');
+              renderLLMGate('loading',pct,prefixo+(r.text||''));
+            },
+            context_window_size:2048,
+            logLevel:'ERROR'
+          });
+          if(!engine)throw new Error('CreateMLCEngine retornou vazio');
+          ENGINE=engine; LLM_MODEL_ID=modelId; LLM_ACTIVE=true;
+          setLLMStatus('ready','WebLLM 0.2.82 · Modelo: '+modelId);
+          ensureOriginUnlock();
+          save();
+          try{localStorage.setItem(LLM_PREF_KEY,'on')}catch(e){}
+          return true;
+        }catch(tierErr){
+          ENGINE=null; LLM_ACTIVE=false;
+          const haMaisNiveis=i<LLM_MODEL_TIERS.length-1;
+          showLLMError(tierErr, haMaisNiveis?'inicialização de '+modelId+' — esse dispositivo não aguentou, tentando um modelo mais leve':'inicialização');
+          if(!haMaisNiveis)throw tierErr;
+        }
+      }
+      return false;
+    }catch(err){
+      try{localStorage.setItem(LLM_PREF_KEY,'error')}catch(e){}
+      return false;
+    }finally{
+      LLM_INIT_PROMISE=null;
+    }
+  })();
+  const ok=await LLM_INIT_PROMISE;
+  onDone(!!ok,ok?null:new Error('Falha ao inicializar WebLLM 0.2.82'));
+}
+function bootFlow(){
+  pullCaseRegistry().then(renderRegistryPanel);
+  if(S.history.length===0){openEntry()}
+  else{add('Você voltou.','SISTEMA','sys');bootScarEchoes();
+    S.history.slice(-24).forEach(h=>add(h.q,S.name||'VOCÊ','you'));add(S.solved?'A conclusão ainda está aqui.':'Eu não tinha certeza de que isso aconteceria.','jane','secret')}
+  suggest();
+}
+
+(function initLLMGate(){
+  let pref;try{pref=localStorage.getItem(LLM_PREF_KEY)}catch(e){pref=null}
+  if(pref==='off'){setLLMStatus('off','desativada anteriormente');bootFlow();return}
+  if(pref==='error'){setLLMStatus('erro','última inicialização falhou — tente ativar novamente');pref=null}
+  if(!webgpuOk()){setLLMStatus('erro','WebGPU indisponível');bootFlow();return}
+  if(pref==='on'){tryEnableLLM((ok,err)=>{hideLLMGate();bootFlow();if(!ok)add('IA local não iniciou; o modo roteiro está ativo.','SISTEMA','secret')});return}
+  renderLLMGate('ask');
+  $('llmgate-yes')?.addEventListener('click',()=>{tryEnableLLM((ok,err)=>{hideLLMGate();bootFlow();if(!ok)add('IA local não iniciou; o modo roteiro está ativo.','SISTEMA','secret')})});
+  $('llmgate-no')?.addEventListener('click',()=>{try{localStorage.setItem(LLM_PREF_KEY,'off')}catch(e){}hideLLMGate();bootFlow()});
+})();
 
 
 /* ═══════════════════════════════════════════════════════════════
@@ -981,7 +1247,8 @@ pullCaseRegistry().then(renderRegistryPanel);if(S.history.length===0){openEntry(
      B Acidente de dose — enfraquecida por método deliberado e 1982.
      C Marcus manipula Julia — teoria residual forte.
    RESIDUAIS: ligação 00:17; segunda ligação "não é sobre o vinho";
-              V.I.T.A.L. (anomalia de pessoal); Origem (identidade).
+              V.I.T.A.L. (registro real de vampiros, indexado por engano —
+              ou de propósito — dentro do caso 26-0847); Origem (identidade).
    ═══════════════════════════════════════════════════════════════ */
 
 </script>
@@ -991,7 +1258,8 @@ pullCaseRegistry().then(renderRegistryPanel);if(S.history.length===0){openEntry(
   pista-meta: Jane pediu Vitor; Sacramento não registrou o pedido.
   pista-1982: o ano no rótulo não é o hábito do dono.
   pista-canal: /mnt/sem_nome/fragmento_03 e Origem compartilham o prefixo.
-  pista-vital: V.I.T.A.L. não é sobre vampiros; é anomalia de pessoal.
+  pista-vital: V.I.T.A.L. é exatamente o que parece — um registro de vampiros.
+               O anômalo é ele estar arquivado dentro do caso 26-0847.
   pista-import: o relatório .txt carrega um JSON de estado no final.
 -->
 
