@@ -365,7 +365,7 @@
       <span class="fb-link__msg">quando não sei dizer, eu canto.</span>
     </a>
 
-    <a class="fb-link" href="Origem/Origem.html">
+    <a class="fb-link" href="Origem/index.html">
       <span class="fb-link__tag">Retrato</span>
       <span class="fb-link__title">Antes do Autor-Livro</span>
       <span class="fb-link__msg">o ponto de partida, mesmo sem palco.</span>
@@ -551,12 +551,27 @@ window.NexusPararTudoAudio = function () {
    segundo seguinte, igual ao resto do sistema.
 ═══════════════════════════════════════════ */
 (function () {
-  var DATA_DESPERTAR = { dia: 30, mes: 10, hora: 23, minuto: 59 }; // respaldo, só usado se aberto fora do iframe
-  try {
-    if (window.top && window.top !== window && window.top.NexusMalikDataDespertar) {
-      DATA_DESPERTAR = window.top.NexusMalikDataDespertar;
-    }
-  } catch (e) {}
+  var DATA_DESPERTAR_PADRAO = { dia: '30', mes: '10', hora: '23', minuto: '59' }; // respaldo, só usado se aberto fora do iframe (ou antes do malik.js definir a de verdade)
+
+  // Antes isso era lido uma vez só, aqui em cima, no instante em que este
+  // script rodava. Só que o iframe do nexus.html normalmente termina de
+  // carregar e rodar ANTES do malik.js (script com defer, um dos últimos
+  // do index.html) chegar a definir window.NexusMalikDataDespertar — então
+  // essa leitura única quase sempre pegava undefined e ficava presa no
+  // valor de respaldo pro resto da sessão, mesmo depois do malik.js já
+  // ter definido o valor de verdade. Daí a sensação de "duas datas" pra
+  // manter sincronizadas. Ler de novo a cada chamada (calcularAlvoDesvio
+  // já roda a cada tick, ver comentário logo abaixo) resolve isso sem
+  // precisar acertar a ordem de carregamento: assim que malik.js define o
+  // valor, o próximo tick já reflete.
+  function dataDespertarAtual() {
+    try {
+      if (window.top && window.top !== window && window.top.NexusMalikDataDespertar) {
+        return window.top.NexusMalikDataDespertar;
+      }
+    } catch (e) {}
+    return DATA_DESPERTAR_PADRAO;
+  }
 
   var modoTeste = false;
   try { modoTeste = /[?&]malikTeste=1\b/.test((window.top || window).location.search); } catch (e) {}
@@ -569,9 +584,13 @@ window.NexusPararTudoAudio = function () {
   // de quando a página carregou. Só os campos dia/mês/hora/minuto do
   // alvo são fixos; o ano usa sempre o ano corrente na hora do cálculo,
   // então mudar o relógio do sistema pra outro ano também é respeitado.
+  // parseInt com base 10 explícita: o malik.js agora guarda esses campos
+  // como texto (ex.: "09"), não número, pra poder ter zero à esquerda
+  // sem quebrar a sintaxe lá; isso lê "09" como 9 de verdade aqui.
   function calcularAlvoDesvio() {
+    var alvo = dataDespertarAtual();
     var agora = new Date();
-    return new Date(agora.getFullYear(), DATA_DESPERTAR.mes - 1, DATA_DESPERTAR.dia, DATA_DESPERTAR.hora || 0, DATA_DESPERTAR.minuto || 0, 0);
+    return new Date(agora.getFullYear(), parseInt(alvo.mes, 10) - 1, parseInt(alvo.dia, 10), parseInt(alvo.hora, 10) || 0, parseInt(alvo.minuto, 10) || 0, 0);
   }
 
   // ═══ Dígito com brilho multi-camada (a técnica que dá o "peso" ao
@@ -1361,20 +1380,27 @@ function spawnGalaxy() {
 window.NexusMalikBridge = {
   sequestrarBroca: function () {
     brocaSequestrada = true;
-    if (galaxyGroup && !galaxyGroup.visible) spawnGalaxy();
+    // Não spawnar galáxia durante confronto se estiver pausado —
+    // a luta não precisa disso e custa frame.
+    if (!window.__nexusPausado && galaxyGroup && !galaxyGroup.visible) spawnGalaxy();
   },
   liberarBroca: function () {
     brocaSequestrada = false;
   },
-  // Cenário B: a broca resiste por um instante (pulso de força, acima
-  // até do ritmo do sequestro) antes de se soltar de vez.
   libertarComForca: function (duracaoMs) {
-    if (galaxyGroup && !galaxyGroup.visible) spawnGalaxy();
+    if (!window.__nexusPausado && galaxyGroup && !galaxyGroup.visible) spawnGalaxy();
     brocaLibertando = true;
     setTimeout(function () {
       brocaLibertando = false;
       brocaSequestrada = false;
     }, duracaoMs || 600);
+  },
+  // Pausa o loop 3D durante o confronto (CPU/GPU livres para a luta).
+  pausarParaConfronto: function () {
+    window.__nexusPausado = true;
+  },
+  retomarAposConfronto: function () {
+    window.__nexusPausado = false;
   }
 };
 
@@ -1439,19 +1465,67 @@ function hitDrill(e) {
   return raycaster.intersectObject(drillGroup, true).length > 0;
 }
 
+/* Mesmo motor "ocarina" (dois osciladores destafinados + vibrato) e as
+   mesmas frequências de OOT.html/MM.html (A=D5, Baixo=F5, Cima=D6) — mas
+   aqui, fora do painel dos Irmãos (que só existe depois dos 3 fragmentos
+   encontrados), porque o gatilho secreto abaixo funciona mesmo antes
+   disso — quem descobrir a sequência sozinho também deveria ouvir algo.
+   Envelope idêntico ao de lá também (pico em 0.06s, decai até 1.1s,
+   solta em 1.15s) — a versão de 0.42s que eu tinha usado antes cortava a
+   nota cedo demais e por isso soava diferente da de MM.html. */
+var audioCtxSegredo = null;
+function tocarNotaSegredo(freq) {
+  try {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC || !freq) return;
+    if (!audioCtxSegredo) audioCtxSegredo = new AC();
+    var ac = audioCtxSegredo, now = ac.currentTime;
+    var o1 = ac.createOscillator(), o2 = ac.createOscillator(), g = ac.createGain();
+    var vib = ac.createOscillator(), vibGain = ac.createGain();
+    o1.type = 'sine'; o1.frequency.value = freq;
+    o2.type = 'sine'; o2.frequency.value = freq * 1.003;
+    vib.frequency.value = 5.2;
+    vibGain.gain.value = freq * 0.006;
+    vib.connect(vibGain); vibGain.connect(o1.frequency); vibGain.connect(o2.frequency);
+    o1.connect(g); o2.connect(g); g.connect(ac.destination);
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(0.26, now + 0.06);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 1.1);
+    o1.start(now); o2.start(now); vib.start(now);
+    o1.stop(now + 1.15); o2.stop(now + 1.15); vib.stop(now + 1.15);
+    if (ac.state === 'suspended') ac.resume();
+  } catch (e) {}
+}
+
+// Trava compartilhada entre teclado e toque — vira true no instante em
+// que a tempestade espiral é reconhecida (não espera a broca realmente
+// acordar, que tem ~2.7s de animação antes), então som e recontagem
+// param imediatamente, não só depois que drillPhase sai de 'sleep'.
+var sequenciaEspiralJaInvocada = false;
+
 /* Gatilho secreto — Song of Storms tocada no teclado (A, Baixo, Cima, A, Baixo, Cima).
-   A vira Espaço, já que é o botão de ação/confirmação, igual o A no jogo. */
+   A vira Espaço, já que é o botão de ação/confirmação, igual o A no jogo.
+   Só funciona depois de aprendida (os 3 fragmentos encontrados) — mesma
+   trava que a Canção da Cura já tinha (ativarEscutaDaCura só liga se
+   curaJaAprendida()); antes esta aqui não tinha nenhuma. */
 (function () {
   const seq = ['Space','ArrowDown','ArrowUp','Space','ArrowDown','ArrowUp'];
+  const NOTA_POR_TECLA = { Space: 587.33, ArrowDown: 698.46, ArrowUp: 1174.66 };
   let idx = 0;
   window.addEventListener('keydown', function (e) {
+    if (sequenciaEspiralJaInvocada) return;
+    if (!window.NexusCancao || !window.NexusCancao.completaTudo()) return;
     const tag = (e.target && e.target.tagName) || '';
     if (tag === 'INPUT' || tag === 'TEXTAREA') return;
     if (e.code === 'Space') e.preventDefault();
     const tecla = e.code;
     if (tecla === seq[idx]) {
+      tocarNotaSegredo(NOTA_POR_TECLA[tecla]);
       idx++;
-      if (idx === seq.length) { idx = 0; if (drillPhase === 'sleep') aoSequenciaEspiralCompleta(); }
+      if (idx === seq.length) {
+        idx = 0;
+        if (drillPhase === 'sleep') { sequenciaEspiralJaInvocada = true; aoSequenciaEspiralCompleta(); }
+      }
     } else {
       idx = (tecla === seq[0]) ? 1 : 0;
     }
@@ -1464,16 +1538,21 @@ function hitDrill(e) {
    teclado, sem checar se é mobile — cada aparelho só dispara o que tem. */
 (function () {
   const seq = ['tap','swipe-down','swipe-up','tap','swipe-down','swipe-up'];
+  const NOTA_POR_GESTO = { tap: 587.33, 'swipe-down': 698.46, 'swipe-up': 1174.66 };
   let idx = 0;
   let startX = 0, startY = 0, startTime = 0;
 
   window.addEventListener('touchstart', function (e) {
+    if (sequenciaEspiralJaInvocada) return;
+    if (!window.NexusCancao || !window.NexusCancao.completaTudo()) return;
     if (e.touches.length !== 1) return; // ignora multi-touch (pinch, etc.)
     const t = e.touches[0];
     startX = t.clientX; startY = t.clientY; startTime = performance.now();
   }, { passive: true });
 
   window.addEventListener('touchend', function (e) {
+    if (sequenciaEspiralJaInvocada) return;
+    if (!window.NexusCancao || !window.NexusCancao.completaTudo()) return;
     const t = e.changedTouches[0];
     if (!t) return;
     const dt = performance.now() - startTime;
@@ -1490,8 +1569,12 @@ function hitDrill(e) {
     if (!gesto) return; // gesto ambíguo (diagonal, horizontal...) — ignora, não reseta a sequência
 
     if (gesto === seq[idx]) {
+      tocarNotaSegredo(NOTA_POR_GESTO[gesto]);
       idx++;
-      if (idx === seq.length) { idx = 0; if (drillPhase === 'sleep') aoSequenciaEspiralCompleta(); }
+      if (idx === seq.length) {
+        idx = 0;
+        if (drillPhase === 'sleep') { sequenciaEspiralJaInvocada = true; aoSequenciaEspiralCompleta(); }
+      }
     } else {
       idx = (gesto === seq[0]) ? 1 : 0;
     }
@@ -1827,7 +1910,7 @@ const symbolDefs = [
   { id:'diary',     tag:'Mem\u00f3rias',    title:'Di\u00e1rio de Mem\u00f3rias',   cta:'Entrar \u2192', color:'#E8B86D', sealed:false, href:'Di%C3%A1rio/Di%C3%A1rio.html',             orbit:{ r:2.8, speed:0.45, tx: 42, tz: 15 }, create:createCompassRose  },
   { id:'book',      tag:'Escrita',     title:'Incessans Aestimandi', cta:'Entrar \u2192', color:'#8EB5D8', sealed:false, href:'Livro/Incessans%20Aestimandi.html', orbit:{ r:4.5, speed:0.20, tx: 12, tz: -8 }, create:createBook         },
   { id:'icaro',     tag:'Cat\u00e1logo',    title:'\u00cdcarus Reborn',         cta:'Despertar \u2192',    color:'#D2691E', sealed:false,  href:'Icarus/icarus.html',                              orbit:{ r:3.7, speed:0.30, tx:-18, tz: 22 }, create:createIcaro        },
-  { id:'origem',    tag:'Retrato',     title:'Antes do Autor-Livro', cta:'Entrar \u2192', color:'#D9B776', sealed:false, href:'Origem/Origem.html',                orbit:{ r:3.4, speed:0.28, tx: 33, tz:-18 }, create:createOrigemPoint  },
+  { id:'origem',    tag:'Retrato',     title:'Antes do Autor-Livro', cta:'Entrar \u2192', color:'#D9B776', sealed:false, href:'Origem/index.html',                orbit:{ r:3.4, speed:0.28, tx: 33, tz:-18 }, create:createOrigemPoint  },
   { id:'covers',    tag:'M\u00fasica',      title:'Covers',              cta:'Ouvir \u2192',  color:'#9B7FD4', sealed:false, href:'Covers/covers.html',                orbit:{ r:3.9, speed:0.33, tx:-40, tz:  6 }, create:createCoversMask   },
   { id:'recordacoes', tag:'Jogos',     title:'Recorda\u00e7\u00f5es',    cta:'Abrir \u2192',  color:'#5EC4BB', sealed:false, href:'Recorda%C3%A7%C3%B5es/recorda%C3%A7%C3%B5es.html', orbit:{ r:3.6, speed:0.31, tx:-24, tz: 18 }, create:createRecordacoesStack },
 ];
@@ -1876,9 +1959,53 @@ function salvarPaginasQuebradas(lista) {
   try { localStorage.setItem(CHAVE_QUEBRADAS, JSON.stringify(lista)); } catch (e) {}
 }
 function marcarPaginaQuebrada(id) {
+  try { if (localStorage.getItem('malik_nexus_curado') === '1') return; } catch (e) {}
+  if (lerPaginasCuradas().indexOf(id) !== -1) return; // curado tem prioridade — não quebra de novo quem já foi curado
   var lista = lerPaginasQuebradas();
   if (lista.indexOf(id) === -1) { lista.push(id); salvarPaginasQuebradas(lista); }
   if (typeof renderizarMenuMobile === 'function') renderizarMenuMobile();
+}
+
+// Cicatriz é pra sempre — sem isso, a cura (despoeirificarSimbolo com
+// comCicatriz=true) só existia enquanto a página não recarregasse: nada
+// registrava quais símbolos já tinham sido curados, então um F5 os fazia
+// nascer de novo do zero, sem rachadura nenhuma (o create() original de
+// symbolDefs não sabe nada sobre isso).
+var CHAVE_CURADAS = 'malik_paginas_curadas';
+function lerPaginasCuradas() {
+  try { var a = JSON.parse(localStorage.getItem(CHAVE_CURADAS) || '[]'); return Array.isArray(a) ? a : []; }
+  catch (e) { return []; }
+}
+function marcarPaginaCurada(id) {
+  // Remove de quebradas e adiciona em curadas juntos, pro mesmo id nunca
+  // ficar um instante marcado como as duas coisas ao mesmo tempo — antes
+  // quebradas só era limpa no final de tudo (ou só na versão instantânea
+  // de cura), então recarregar a página no meio do processo fazia um
+  // símbolo já curado voltar a nascer como poeira, porque a checagem de
+  // quebrada vem primeiro e ainda encontrava o id lá.
+  var quebradas = lerPaginasQuebradas();
+  var iq = quebradas.indexOf(id);
+  if (iq !== -1) { quebradas.splice(iq, 1); salvarPaginasQuebradas(quebradas); }
+  var curadas = lerPaginasCuradas();
+  if (curadas.indexOf(id) === -1) {
+    curadas.push(id);
+    try {
+      localStorage.setItem(CHAVE_CURADAS, JSON.stringify(curadas));
+      // Mesma checagem que cancao-tempestade.js já faz: em alguns
+      // navegadores, sob certas condições (aberto direto como
+      // file://, ou modo privado/anônimo), setItem não lança erro
+      // nenhum mas também não grava de verdade — e a leitura logo em
+      // seguida vem vazia ou desatualizada.
+      var releu = lerPaginasCuradas();
+      if (releu.indexOf(id) === -1) {
+        console.warn('[cura debug] localStorage.setItem NÃO lançou erro, mas relendo CHAVE_CURADAS logo em seguida "' + id + '" não está lá — este navegador pode não estar persistindo dados aqui (comum ao abrir o arquivo direto como file://, sem servidor local).');
+      }
+    } catch (e) {
+      console.warn('[cura debug] localStorage.setItem falhou de verdade (lançou erro) ao gravar CHAVE_CURADAS:', e);
+    }
+  }
+  // DIAGNÓSTICO TEMPORÁRIO — mesma remoção de depois.
+  console.log('[malik-cicatriz debug] marcarPaginaCurada(' + id + ') — quebradas agora:', lerPaginasQuebradas(), '| curadas agora:', lerPaginasCuradas());
 }
 
 var poeiraPorMalha = new WeakMap();
@@ -2002,32 +2129,99 @@ function despoeirificarSimbolo(def, comCicatriz) {
 
 (function () {
   var quebradas = lerPaginasQuebradas();
+  var curadas = lerPaginasCuradas();
+  var nexusCurado = false;
+  try { nexusCurado = localStorage.getItem('malik_nexus_curado') === '1'; } catch (e) {}
+  if (nexusCurado) {
+    try { localStorage.removeItem(CHAVE_QUEBRADAS); } catch (e) {}
+    quebradas = [];
+    symbolDefs.forEach(function (def) {
+      if (curadas.indexOf(def.id) === -1) curadas.push(def.id);
+    });
+    try { localStorage.setItem(CHAVE_CURADAS, JSON.stringify(curadas)); } catch (e) {}
+  }
+
   // se essa foi a página pega agora mesmo (?malikQuebrou=), o bloco do
   // passoQuebra logo abaixo cuida da transição animada dela — pra não
   // aplicar a poeira instantânea e a animação ao mesmo tempo no mesmo símbolo
   var idJustQuebrado = new URLSearchParams(location.search).get('malikQuebrou');
 
   symbolDefs.forEach(function (def) {
-    if (quebradas.indexOf(def.id) !== -1 && def.id !== idJustQuebrado) {
+    // curado tem prioridade sobre quebrado, pra sempre — checa isso
+    // primeiro, então mesmo que o id ainda apareça em quebradas por
+    // algum motivo (ex.: restauracaoCompleta rodando de novo num teste),
+    // o símbolo nasce com a cicatriz, não em poeira
+    if (nexusCurado || curadas.indexOf(def.id) !== -1) {
+      def.quebrado = false; // explícito agora — antes só contava com o valor padrão (undefined), nunca reafirmado aqui
+      despoeirificarSimbolo(def, true);
+    } else if (quebradas.indexOf(def.id) !== -1 && def.id !== idJustQuebrado) {
       def.quebrado = true;
       poeirificarSimbolo(def, 0.8);
     }
   });
 
+  // DIAGNÓSTICO TEMPORÁRIO — se o problema de "volta a virar poeira"
+  // acontecer de novo, abra o console (F12) antes de voltar pro nexus e
+  // copie essa linha aqui pra mim. Vou remover isso assim que tivermos
+  // certeza da causa raiz.
+  console.log('[malik-cicatriz debug] quebradas:', quebradas, '| curadas:', curadas, '| def.quebrado por símbolo:', symbolDefs.map(function (d) { return d.id + '=' + !!d.quebrado; }));
+
   // Cura: chamada pelo malik-cicatriz.js depois que o viajante toca a
   // Canção da Cura no nexus. Restaura quase tudo, mas fica a cicatriz.
   window.NexusMalikCurarTudo = function () {
     symbolDefs.forEach(function (def) {
-      if (!def.quebrado) return;
       def.quebrado = false;
       despoeirificarSimbolo(def, true);
+      marcarPaginaCurada(def.id);
     });
-    // a Triforce pode ter só 1 dos 3 triângulos restaurado até aqui (os
-    // outros 2 ficaram poeira desde o clique) — a cura final junta os 3
     var pivotZelda = pivots.filter(function (p) { return p.userData.group.userData.id === 'zelda'; })[0];
     if (pivotZelda) pivotZelda.userData.group.children.forEach(function (malha) { despoeirificarMalha(malha, true); });
-    try { localStorage.removeItem(CHAVE_QUEBRADAS); } catch (e) {}
+    try {
+      localStorage.removeItem(CHAVE_QUEBRADAS);
+      localStorage.setItem('malik_nexus_curado', '1');
+    } catch (e) {}
     if (typeof renderizarMenuMobile === 'function') renderizarMenuMobile();
+  };
+
+  // Mesma cura de NexusMalikCurarTudo, só que um universo de cada vez,
+  // espaçados ao longo de duracaoTotalMs — pensada pra acompanhar a Song
+  // of Healing tocando por inteiro (malik-cicatriz.js), em vez de tudo
+  // restaurado de uma vez só no mesmo instante.
+  window.NexusMalikCurarUmDeCadaVez = function (duracaoTotalMs, aoTerminarTudo) {
+    var alvos = symbolDefs.filter(function (def) { return def.quebrado; });
+    if (!alvos.length) {
+      try {
+        localStorage.removeItem(CHAVE_QUEBRADAS);
+        localStorage.setItem('malik_nexus_curado', '1');
+      } catch (e) {}
+      symbolDefs.forEach(function (def) {
+        def.quebrado = false;
+        despoeirificarSimbolo(def, true);
+        marcarPaginaCurada(def.id);
+      });
+      if (aoTerminarTudo) aoTerminarTudo();
+      return;
+    }
+    var intervalo = duracaoTotalMs / alvos.length;
+    alvos.forEach(function (def, i) {
+      setTimeout(function () {
+        def.quebrado = false;
+        despoeirificarSimbolo(def, true);
+        marcarPaginaCurada(def.id);
+        if (def.id === 'zelda') {
+          var pivotZelda = pivots.filter(function (p) { return p.userData.group.userData.id === 'zelda'; })[0];
+          if (pivotZelda) pivotZelda.userData.group.children.forEach(function (malha) { despoeirificarMalha(malha, true); });
+        }
+        if (i === alvos.length - 1) {
+          try {
+            localStorage.removeItem(CHAVE_QUEBRADAS);
+            localStorage.setItem('malik_nexus_curado', '1');
+          } catch (e) {}
+          if (typeof renderizarMenuMobile === 'function') renderizarMenuMobile();
+          if (aoTerminarTudo) aoTerminarTudo();
+        }
+      }, i * intervalo);
+    });
   };
 
   // Chamado pelo malik-cicatriz.js ao clicar na Triforce quebrada, antes
@@ -2231,6 +2425,11 @@ function spawnStar() {
     id:'mal', tag:'Perfil', title:'M.A.L', cta:'Ver \u2192', color:'#5FA88A', sealed:false,
     href:'Mal/mal.html', orbit:{ r:3.0, speed:0.38, tx:8, tz:-15 }
   };
+  // Sem isso, o M.A.L fica de fora de poeirificarSimbolo/despoeirificarSimbolo,
+  // do defAlvo em passoQuebra e do forEach de NexusMalikCurarTudo — todos eles
+  // leem de symbolDefs (só os 8 originais), não de pivots (que já inclui o
+  // M.A.L depois que ele nasce, como o menu mobile já fazia).
+  symbolDefs.push(def);
 
   const pivot = new THREE.Object3D();
   pivot.rotation.x = def.orbit.tx * Math.PI/180;
@@ -2256,6 +2455,19 @@ function spawnStar() {
     }
   });
 
+  // Se a Estrela já tinha ficado marcada como quebrada numa sessão anterior
+  // a este recarregamento (ela nasce do zero a cada visita, mas a lista de
+  // páginas quebradas persiste no localStorage), nasce direto em poeira —
+  // mesma regra que os outros 8 símbolos já seguem ao carregar a página.
+  if (lerPaginasCuradas().indexOf('mal') !== -1) {
+    // já foi curada numa sessão anterior — nasce direto com a cicatriz,
+    // com prioridade sobre a checagem de quebrada logo abaixo
+    despoeirificarSimbolo(def, true);
+  } else if (lerPaginasQuebradas().indexOf('mal') !== -1) {
+    def.quebrado = true;
+    poeirificarSimbolo(def, 0.8);
+  }
+
   // "Cospe": nasce junto da galáxia (raio 0) e voa pra fora até o raio orbital, crescendo no caminho
   const finalR = def.orbit.r * orbitScale;
   const t0 = clock.elapsedTime;
@@ -2273,6 +2485,7 @@ function spawnStar() {
 const clock = new THREE.Clock();
 (function animate() {
   requestAnimationFrame(animate);
+  if (window.__nexusPausado) return; // confronto ativo — não simula nem renderiza
   const dt = Math.min(clock.getDelta(), 0.05);
   pivots.forEach(function(piv) {
     if (piv.userData.frozen) return; // Ícaro em reconstrução — pausa órbita e giro próprio
@@ -3470,34 +3683,6 @@ window.addEventListener('pageshow', function(e) {
   var DURACAO_LIBERA_ME_FROM_HELL_MS = 289000; // 4min49s — ela mesma não "termina" sozinha (a tempestade fica no centro depois), então uso um timer com a duração real em vez de esperar o 'ended' dela
   var timerBroca = null;
 
-  // Mesmas frequências já usadas em OOT.html/MM.html pra ensinar os
-  // fragmentos (A=D5, Baixo=F5, Cima=D6) — resgatadas aqui pra tocar
-  // como notas de verdade antes da gravação, igual a Canção da Cura.
-  var NOTA_FREQ_TEMPESTADE = { A: 587.33, Baixo: 698.46, Cima: 1174.66 };
-  var SEQUENCIA_TEMPESTADE = ['A', 'Baixo', 'Cima', 'A', 'Baixo', 'Cima'];
-  var audioCtxTempestade = null;
-  function tocarNotaTempestade(freq, duracaoMs) {
-    try {
-      if (!audioCtxTempestade) audioCtxTempestade = new (window.AudioContext || window.webkitAudioContext)();
-      var osc = audioCtxTempestade.createOscillator();
-      var gain = audioCtxTempestade.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      var agora = audioCtxTempestade.currentTime;
-      gain.gain.setValueAtTime(0.0001, agora);
-      gain.gain.exponentialRampToValueAtTime(0.28, agora + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, agora + duracaoMs / 1000);
-      osc.connect(gain); gain.connect(audioCtxTempestade.destination);
-      osc.start(agora); osc.stop(agora + duracaoMs / 1000 + 0.05);
-    } catch (e) {}
-  }
-  function tocarSequenciaTempestade(aoTerminar) {
-    SEQUENCIA_TEMPESTADE.forEach(function (nota, i) {
-      setTimeout(function () { tocarNotaTempestade(NOTA_FREQ_TEMPESTADE[nota], 480); }, i * 560);
-    });
-    setTimeout(aoTerminar, SEQUENCIA_TEMPESTADE.length * 560 + 300);
-  }
-
   function tocarCancao() {
     try {
       if (!audioCancao) {
@@ -3509,12 +3694,6 @@ window.addEventListener('pageshow', function(e) {
       audioCancao.volume = .8;
       audioCancao.play().catch(function () {});
     } catch (e) {}
-  }
-
-  // Toca a sequência de notas primeiro (a "performance" reconhecível),
-  // só então a gravação completa entra — mesmo padrão da Canção da Cura.
-  function tocarSequenciaECancao() {
-    tocarSequenciaTempestade(tocarCancao);
   }
 
   function estaTocandoAgora() {
@@ -3558,7 +3737,7 @@ window.addEventListener('pageshow', function(e) {
     textoDialogo.querySelector('[data-resp="sim"]').addEventListener('click', function (e) {
       e.stopPropagation(); // não deixa esse toque também alternar o painel no mobile
       textoDialogo.innerHTML = '<p>A melodia começa a soar, como há muito tempo não soava.</p>';
-      tocarSequenciaECancao(); // notas primeiro, gravação completa depois — segue tocando independente do painel
+      tocarCancao(); // só a gravação — as notas ao vivo agora moram no gatilho secreto (teclado/toque), não aqui
     });
     textoDialogo.querySelector('[data-resp="nao"]').addEventListener('click', function (e) {
       e.stopPropagation();
@@ -3582,6 +3761,9 @@ window.addEventListener('pageshow', function(e) {
   //    realmente começar (~2.7s de animação de invocação depois) — porque
   //    a partir deste instante o diálogo não pode mais ser a pergunta de
   //    sim/não, então se o painel já estiver aberto, atualiza a hora. ──
+  //    A sequência de verdade (teclado/toque) só toca as notas ao vivo —
+  //    quem chama a gravação completa (CANCAO_SRC) é só o Sim do painel,
+  //    em iniciarDialogo(); os dois ficam independentes de propósito.
   window.aoTempestadeEspiralDisparar = function () {
     NexusCancao.marcarIrmaosImpressionados();
     brocaSequenciaAtiva = true;

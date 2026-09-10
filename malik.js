@@ -103,8 +103,14 @@
               // segue carregado e permanentemente inerte até você escolher
               // um dia de verdade. "hora" é a partir de quando, nesse dia —
               // 0 significa "o dia inteiro, desde a meia-noite".
+              // Escreva os quatro valores como texto, entre aspas (ex.:
+              // '09', não 09) — com zero à esquerda, um número escrito
+              // direto (sem aspas) quebra a sintaxe do JavaScript aqui
+              // dentro (o arquivo roda em modo estrito, 'use strict' lá
+              // em cima), e o script inteiro para de funcionar em
+              // silêncio. Texto não tem essa restrição.
               // ————————————————————————————————————————————————————————————
-             var DATA_DESPERTAR = { dia: 30, mes: 10, hora: 23, minuto: 59 };
+             var DATA_DESPERTAR = { dia: '08', mes: '09', hora: '22', minuto: '00' };
              // Exposta globalmente — o cronômetro em nexus.html lê daqui
              // (mesma origem, via window.top) em vez de manter cópia
              // própria. Antes tinha duas cópias independentes: editar
@@ -113,11 +119,126 @@
              // funcionando certo.
              window.NexusMalikDataDespertar = DATA_DESPERTAR;
 
+             // Movido pra cá (antes ficava lá embaixo, junto do resto da
+             // subida lenta) — os atalhos de teste logo abaixo (direto pra
+             // batalha, pós-B) também precisam trocar o favicon, e
+             // precisavam dessas variáveis já prontas antes deles, não
+             // depois. Sem isso, trocarFavicon() sempre via FAVICON_LINK
+             // ainda undefined nesse ponto e desistia na hora (seu próprio
+             // guard-clause), então o ícone nunca trocava nesses atalhos.
+             var TITULO_ORIGINAL = document.title;
+             var FAVICON_LINK = document.querySelector('link[rel="icon"]');
+             var FAVICON_ORIGINAL = FAVICON_LINK ? FAVICON_LINK.getAttribute('href') : null;
+             var FAVICON_TYPE_ORIGINAL = FAVICON_LINK ? FAVICON_LINK.getAttribute('type') : null;
+
+             // Alguns navegadores não redesenham o ícone da aba só por trocar o
+             // href de um <link rel="icon"> que já existe no DOM — é preciso
+             // recriar o elemento pra forçar uma busca nova. Sem isso, o ícone
+             // ficava preso no do M.A.L.I.K. mesmo depois do confronto acabar
+             // e o href já ter voltado ao original por baixo dos panos.
+             function trocarFavicon(href, tipo) {
+               if (!FAVICON_LINK || !FAVICON_LINK.parentNode) return;
+               var novo = document.createElement('link');
+               novo.rel = FAVICON_LINK.rel || 'icon';
+               novo.type = tipo || FAVICON_LINK.type || 'image/png';
+               novo.href = href;
+               FAVICON_LINK.parentNode.replaceChild(novo, FAVICON_LINK);
+               FAVICON_LINK = novo;
+             }
+
              // Atalho SÓ pra teste: abrindo index.html?malikTeste=1 pula a data
              // e a subida lenta inteira, e cai direto no confronto (fase 1),
              // pra não precisar esperar ~1h a cada vez que for testar a luta.
              // Remova esta linha (ou ignore) quando o site estiver no ar de verdade.
              var modoTeste = /[?&]malikTeste=1\b/.test(location.search);
+
+             // Atalho DX: dentro do modo teste, force um ponto específico da
+             // subida lenta em vez de pular direto pro confronto. Uso:
+             // index.html?malikTeste=1&minuto=25 — a partir daqui o resto
+             // do arquivo roda exatamente como no dia real (mesma
+             // NIVEIS/agendarProgressao, mesmo viajantePreparado(), mesmo
+             // "ausenteDuranteTudo"), só que "quantos minutos já se
+             // passaram desde o despertar" vem daqui em vez do relógio do
+             // sistema comparado com DATA_DESPERTAR — os níveis que já
+             // passariam desse minuto aplicam na hora, e o resto agenda
+             // normalmente pro tempo real que falta (com minuto=25 e o
+             // último nível em 30min, faltam ~5min de verdade até o
+             // confronto). Sem &minuto=, malikTeste=1 continua pulando
+             // direto pro confronto, como sempre foi.
+             var minutoForcado = (function () {
+               var m = /[?&]minuto=(\d+(?:\.\d+)?)\b/.exec(location.search);
+               return m ? parseFloat(m[1]) : null;
+             })();
+
+             // Atalho DX: pré-marcar as 3 coleções (Valtheris, esferas,
+             // Canção da Tempestade) como completas, pra testar o Caminho B
+             // sem juntar as 22 sagas + 7 esferas + 3 partes da canção de
+             // verdade. Uso: ?malikTeste=1&cenario=B&prep=1 (ou junto com
+             // &minuto=, ou com ?malikTestePosB=1&prep=1). Só preenche o
+             // que ainda estiver faltando — nunca sobrescreve progresso
+             // real já salvo.
+             if (/[?&]prep=1\b/.test(location.search)) {
+               try {
+                 if (JSON.parse(localStorage.getItem('valtheris_read') || '[]').length < 22) {
+                   var valtherisTeste = [];
+                   for (var vt = 1; vt <= 22; vt++) valtherisTeste.push('teste-saga-' + vt);
+                   localStorage.setItem('valtheris_read', JSON.stringify(valtherisTeste));
+                 }
+                 // Esferas: formato real do Lib/dragonball.js — sorteio é
+                 // { paginaId: nEstrelas } e encontradas é um array de
+                 // OBJETOS { paginaId, estrelas }, não strings soltas. Sem
+                 // bater esse formato, esferaDestaPagina() nunca reconhecia
+                 // as marcadas aqui como já encontradas, e continuava dando
+                 // pra coletar de novo nas páginas de verdade.
+                 var sorteioEsferas = null;
+                 try { sorteioEsferas = JSON.parse(localStorage.getItem('nexus_esferas_sorteio') || 'null'); } catch (e1) {}
+                 if (!sorteioEsferas || typeof sorteioEsferas !== 'object') {
+                   sorteioEsferas = { mal: 1, zelda: 2, valtheris: 3, diary: 4, book: 5, covers: 6, origem: 7 };
+                   localStorage.setItem('nexus_esferas_sorteio', JSON.stringify(sorteioEsferas));
+                 }
+                 var encontradasAtuais = [];
+                 try { encontradasAtuais = JSON.parse(localStorage.getItem('nexus_esferas_encontradas') || '[]'); } catch (e1) {}
+                 if (!Array.isArray(encontradasAtuais) || encontradasAtuais.length < 7) {
+                   var todasEncontradas = Object.keys(sorteioEsferas).map(function (pid) {
+                     return { paginaId: pid, estrelas: sorteioEsferas[pid] };
+                   });
+                   localStorage.setItem('nexus_esferas_encontradas', JSON.stringify(todasEncontradas));
+                 }
+                 var cancaoAtual = {};
+                 try { cancaoAtual = JSON.parse(localStorage.getItem('nexus_cancao_tempestade_v1') || '{}'); } catch (e0) {}
+                 if (!cancaoAtual.oot || !cancaoAtual.mm || !cancaoAtual.recordacoes) {
+                   localStorage.setItem('nexus_cancao_tempestade_v1', JSON.stringify({ oot: true, mm: true, recordacoes: true }));
+                 }
+               } catch (e) {}
+             }
+
+             // Atalho DX: pós-B com poeira já aplicada, sem refazer a luta.
+             // Uso: index.html?malikTestePosB=1
+             // Grava quebradas (respeitando curadas), marca resolvido, recarrega o iframe.
+             if (/[?&]malikTestePosB=1\b/.test(location.search)) {
+               try {
+                 var jaCurado = localStorage.getItem('malik_nexus_curado') === '1';
+                 if (!jaCurado) {
+                   var todas = ['zelda', 'valtheris', 'diary', 'book', 'covers', 'origem', 'icaro', 'recordacoes', 'mal'];
+                   var curadas = [];
+                   try { curadas = JSON.parse(localStorage.getItem('malik_paginas_curadas') || '[]'); } catch (e2) {}
+                   var paraQuebrar = todas.filter(function (id) { return curadas.indexOf(id) === -1; });
+                   localStorage.setItem('malik_paginas_quebradas', JSON.stringify(paraQuebrar));
+                 }
+                 localStorage.setItem('malik_resolvido_em', new Date().toISOString());
+               } catch (e) {}
+               // Sem trocarFavicon aqui de propósito: pós-B é o estado
+               // DEPOIS da batalha (resolução) — o confronto já acabou,
+               // então o ícone continua o normal do Nexus, não o do Malik.
+               var framePos = document.getElementById('nexusFrame');
+               if (framePos) {
+                 try {
+                   var alvo = framePos.getAttribute('data-src') || 'nexus.html';
+                   framePos.src = alvo.split('?')[0] + '?_posB=' + Date.now();
+                 } catch (e3) {}
+               }
+               return; // não roda despertar nem confronto
+             }
 
              var hoje = new Date();
              // Antes comparava dia+mês+hora separados — o que exigia estar
@@ -126,7 +247,10 @@
              // Um Date de verdade resolve isso: qualquer carregamento a
              // partir desse instante em diante reconhece "já passou",
              // não importa se foi 5 minutos ou 5 dias depois.
-             var alvoDespertar = new Date(hoje.getFullYear(), DATA_DESPERTAR.mes - 1, DATA_DESPERTAR.dia, DATA_DESPERTAR.hora || 0, DATA_DESPERTAR.minuto || 0, 0);
+             // parseInt com base 10 explícita: DATA_DESPERTAR agora guarda
+             // texto (ex.: "09"), não número — isso lê "09" como 9 de
+             // verdade, nunca como octal nem como zero.
+             var alvoDespertar = new Date(hoje.getFullYear(), parseInt(DATA_DESPERTAR.mes, 10) - 1, parseInt(DATA_DESPERTAR.dia, 10), parseInt(DATA_DESPERTAR.hora, 10) || 0, parseInt(DATA_DESPERTAR.minuto, 10) || 0, 0);
              var ehODia = modoTeste || (hoje.getTime() >= alvoDespertar.getTime());
              if (!ehODia) {
                // Uma aba já aberta ANTES das 23:59, parada esperando sem
@@ -188,9 +312,10 @@
                }
              }
 
-             if (modoTeste) {
+             if (modoTeste && minutoForcado === null) {
                var frameTeste = document.getElementById('nexusFrame');
                if (frameTeste) {
+                 trocarFavicon('Assets/malik/favicon-malik.png', 'image/png'); // atalho pula a subida lenta inteira — sem isso o ícone nunca trocava, em nenhum dos dois caminhos
                  // ?malikTeste=1&cenario=B força um lado sem precisar
                  // zerar as três coleções de verdade; sem o parâmetro,
                  // testa a checagem real mesmo. &ausente=1 testa a fala
@@ -229,27 +354,8 @@
             // localStorage pra isso — dá sempre a mesma resposta certa,
             // não importa se são 5 minutos ou 5 dias depois do horário.
             function minutosDesdeODespertar() {
+              if (minutoForcado !== null) return minutoForcado;
               return (Date.now() - alvoDespertar.getTime()) / 60000;
-           }
-
-           var TITULO_ORIGINAL = document.title;
-           var FAVICON_LINK = document.querySelector('link[rel="icon"]');
-           var FAVICON_ORIGINAL = FAVICON_LINK ? FAVICON_LINK.getAttribute('href') : null;
-           var FAVICON_TYPE_ORIGINAL = FAVICON_LINK ? FAVICON_LINK.getAttribute('type') : null;
-
-           // Alguns navegadores não redesenham o ícone da aba só por trocar o
-           // href de um <link rel="icon"> que já existe no DOM — é preciso
-           // recriar o elemento pra forçar uma busca nova. Sem isso, o ícone
-           // ficava preso no do M.A.L.I.K. mesmo depois do confronto acabar
-           // e o href já ter voltado ao original por baixo dos panos.
-           function trocarFavicon(href, tipo) {
-             if (!FAVICON_LINK || !FAVICON_LINK.parentNode) return;
-             var novo = document.createElement('link');
-             novo.rel = FAVICON_LINK.rel || 'icon';
-             novo.type = tipo || FAVICON_LINK.type || 'image/png';
-             novo.href = href;
-             FAVICON_LINK.parentNode.replaceChild(novo, FAVICON_LINK);
-             FAVICON_LINK = novo;
            }
 
            // A progressão narrativa: nada, um ponto, mais um ponto, 404,
@@ -324,7 +430,7 @@
         var PASTA_PARA_SIMBOLO = {
           'tloz': 'zelda', 'valtheris': 'valtheris', 'diário': 'diary', 'diario': 'diary',
           'livro': 'book', 'icarus': 'icaro', 'origem': 'origem', 'covers': 'covers',
-          'recordações': 'recordacoes', 'recordacoes': 'recordacoes'
+          'recordações': 'recordacoes', 'recordacoes': 'recordacoes', 'mal': 'mal'
         };
 
         function identificarSimboloDaPagina(doc) {
@@ -472,8 +578,13 @@
           }
           trocarFavicon('Assets/malik/favicon-malik.png', 'image/png');
           // O nome finalmente foi dito — um instante depois, o confronto começa de verdade.
+          // &cenario=A|B (o mesmo parâmetro que o modo teste já usa) força
+          // o lado aqui também — útil combinado com &minuto= pra testar a
+          // aproximação de qualquer um dos dois caminhos.
+          var cenarioForcadoReveal = /[?&]cenario=([AB])\b/i.exec(location.search);
+          var cenarioFinal = cenarioForcadoReveal ? cenarioForcadoReveal[1].toUpperCase() : (viajantePreparado() ? 'B' : 'A');
           setTimeout(function () {
-            if (window.iniciarConfrontoMalik) window.iniciarConfrontoMalik(viajantePreparado() ? 'B' : 'A', { ausente: ausenteDuranteTudo });
+            if (window.iniciarConfrontoMalik) window.iniciarConfrontoMalik(cenarioFinal, { ausente: ausenteDuranteTudo });
           }, 2600);
         }
       }
@@ -604,7 +715,7 @@
       timers.push(setTimeout(restaurarTudo, faltamRestaurar * 60000));
     }
 
-    function restaurarTudo() {
+    function restaurarTudo(resolvidoDeVerdade) {
       timers.forEach(clearTimeout);
       timers = [];
       if (vigiaProgressoInterval) { clearInterval(vigiaProgressoInterval); vigiaProgressoInterval = null; }
@@ -619,7 +730,15 @@
      frame.style.filter = '';
      frame.style.opacity = '1';
      try { localStorage.removeItem(CHAVE_ESTADO); } catch (e) {}
-     if (!modoTeste) { try { localStorage.setItem(CHAVE_RESOLVIDO, new Date().toISOString()); } catch (e) {} }
+     // resolvidoDeVerdade (vitória real do Caminho B, via
+     // NexusMalikRestaurarAgora) marca sempre, mesmo em modo de teste —
+     // sem isso, testar o Caminho B com ?malikTeste=1 vencia a luta,
+     // marcava as páginas como quebradas, mas malik_resolvido_em nunca
+     // era gravado, e clicar nelas depois não fazia nada (malik-cicatriz.js
+     // exige essa chave antes de reagir a qualquer clique). O timer de 3h
+     // (walked-away, ninguém tocou em nada) continua respeitando
+     // modoTeste normalmente.
+     if (!modoTeste || resolvidoDeVerdade) { try { localStorage.setItem(CHAVE_RESOLVIDO, new Date().toISOString()); } catch (e) {} }
      // Impede que o próprio reload logo abaixo (que dispara o 'load' do
      // iframe de novo) reaplique o nível revelar sozinho — foi isso que
      // fazia o favicon voltar pro do M.A.L.I.K. um instante depois de já
@@ -635,7 +754,7 @@
    // Exposta pro Cenário B (malik-batalha.js) chamar quando "O Nexus
    // Resiste" terminar — esse caminho tem direito a cura de verdade,
    // ao contrário do A. Mesma função, mesmo resultado de sempre.
-   window.NexusMalikRestaurarAgora = restaurarTudo;
+   window.NexusMalikRestaurarAgora = function () { restaurarTudo(true); };
 
    // Reaplica a corrupção sempre que o viajante navegar pra outra
    // página dentro do mesmo iframe — cada navegação troca o

@@ -17,8 +17,29 @@
 
   var CHAVE = 'malik_nexus_apagado';
 
+  // Extraído numa função à parte pra poder rodar em dois momentos: no
+  // carregamento (se já tinha sido apagado antes) e agora mesmo, na hora
+  // em que NexusMalikApagarDeVez é chamado pela primeira vez — antes,
+  // esse segundo caso só gravava a chave no localStorage e não mudava
+  // nada na tela atual, então o mapa (o iframe do nexus.html) continuava
+  // visível até o viajante recarregar a página manualmente.
+  function mostrarTelaApagada() {
+    var frame = document.getElementById('nexusFrame');
+    if (frame) frame.remove(); // o mapa não pode continuar visível atrás da tela
+    document.title = 'M.A.L.I.K.';
+    var tela = document.createElement('div');
+    tela.style.cssText = 'position:fixed;inset:0;z-index:900000;background:#000;color:#c8c8c8;font-family:Consolas,monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:15px;letter-spacing:.04em;text-align:center;line-height:2;';
+    tela.innerHTML = 'ERR_CONNECTION_TIMED_OUT<br>este link não respondeu.<br><br><span style="color:#ff2b3a">NEXUS REMOVIDO.</span>';
+    if (document.body) {
+      document.body.appendChild(tela);
+    } else {
+      document.addEventListener('DOMContentLoaded', function () { document.body.appendChild(tela); });
+    }
+  }
+
   window.NexusMalikApagarDeVez = function () {
     try { localStorage.setItem(CHAVE, new Date().toISOString()); } catch (e) {}
+    mostrarTelaApagada(); // mostra na hora — não espera mais um recarregamento futuro
   };
 
   var apagadoDesde = null;
@@ -37,13 +58,5 @@
 
   // Já foi apagado antes: o iframe NUNCA recebe seu src — fica vazio,
   // pra sempre, até alguém decidir religar manualmente.
-  document.title = 'M.A.L.I.K.';
-  var tela = document.createElement('div');
-  tela.style.cssText = 'position:fixed;inset:0;z-index:900000;background:#000;color:#c8c8c8;font-family:Consolas,monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:15px;letter-spacing:.04em;text-align:center;line-height:2;';
-  tela.innerHTML = 'ERR_CONNECTION_TIMED_OUT<br>este link não respondeu.<br><br><span style="color:#ff2b3a">NEXUS REMOVIDO.</span>';
-  if (document.body) {
-    document.body.appendChild(tela);
-  } else {
-    document.addEventListener('DOMContentLoaded', function () { document.body.appendChild(tela); });
-  }
+  mostrarTelaApagada();
 })();

@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexus</title>
+  <script>
+    // Roda cedo, antes do CSS abaixo ser aplicado: marca o modo teste na
+    // tag <html> pra também liberar a seleção de texto nesse modo — o
+    // mesmo interruptor (?malikTeste=1) que já desliga as camadas de
+    // proteção em JS mais abaixo.
+    if (/[?&]malikTeste=1\b/.test(location.search)) {
+      document.documentElement.className += ' nexus-modo-teste';
+    }
+  </script>
   <link rel="icon" type="image/svg+xml" href="Assets/favicon-drill.svg">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@400&family=Cormorant+Garamond:ital,wght@0,300;1,300&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
   <style>
@@ -24,6 +33,13 @@
       height: 100%;
       border: none;
     }
+
+    /* Seleção de texto desligada nesta página, exceto nos campos de
+       formulário do Mapa do Nexus (busca e editor) — sem isso, digitar
+       e revisar texto ali quebra. */
+    html, body { user-select: none; -webkit-user-select: none; }
+    html.nexus-modo-teste, html.nexus-modo-teste body { user-select: auto; -webkit-user-select: auto; }
+    input, textarea { user-select: text; -webkit-user-select: text; }
 
     /* Camada 3: aviso exibido enquanto o DevTools é detectado aberto */
     #aviso-protecao-nexus {
@@ -195,6 +211,21 @@
       .nm-editor { right: .6rem; left: .6rem; width: auto; bottom: 3.4rem; }
     }
     @media (prefers-reduced-motion:reduce) { #nexus-mapa-overlay * { transition: none !important; animation: none !important; } }
+
+    /* Ctrl+P já é bloqueado no teclado, mas o menu do navegador (ou um
+       atalho do sistema operacional) ainda consegue abrir a impressão
+       de outro jeito — isso aqui garante que, se acontecer, não sai
+       nada além de uma tela em branco com aviso. */
+    @media print {
+      html:not(.nexus-modo-teste) body * { visibility: hidden !important; }
+      html:not(.nexus-modo-teste) body::before {
+        content: 'Conteúdo protegido — impressão desativada.';
+        visibility: visible !important;
+        position: fixed; inset: 0; display: flex; align-items: center;
+        justify-content: center; font-family: 'EB Garamond', Georgia, serif;
+        font-size: 1.1rem; color: #000;
+      }
+    }
   </style>
 </head>
 <body>
@@ -263,7 +294,7 @@
        Ctrl+Shift+M continua funcionando também, como atalho extra. -->
   <button id="nm-abrir-mapa" type="button" title="Abrir o mapa do Nexus" aria-label="Abrir o mapa do Nexus">🗺️</button>
 
-  <script>
+  <script id="nexus-protecao">
     // =========================================================
     // Redirecionamento + máscara de endereço: a URL e o título
     // exibidos são sempre os desta página (index), mesmo que o
@@ -273,6 +304,66 @@
 
     var frame = document.getElementById('nexusFrame');
 
+    // Mesmo parâmetro de teste que malik.js já usa (?malikTeste=1) — só
+    // que checado aqui, de forma independente, porque este script roda
+    // sem defer, antes do malik.js sequer carregar. Com ele, as camadas
+    // de proteção abaixo (clique direito, atalhos de teclado, detecção
+    // de DevTools, isca ao perder o foco) ficam desligadas, pra dar pra
+    // depurar o site normalmente. Sem o parâmetro, nada muda — a
+    // proteção continua inteira pro site publicado.
+    //
+    // &semProtecao=1 faz a mesma coisa, mas sozinho — sem acionar o
+    // atalho do malik.js que pula direto pro confronto. Existe porque
+    // "estado normal" (cronômetro real) também precisa poder testar sem
+    // a proteção no meio do caminho, e malikTeste=1 sempre pulava a
+    // luta.
+    var modoTeste = /[?&]malikTeste=1\b/.test(location.search) || /[?&]semProtecao=1\b/.test(location.search);
+
+    // ---- Camada 0: integridade básica do próprio script de proteção ----
+    // Limite honesto: se o DevTools já está aberto, o navegador já tem o
+    // arquivo inteiro carregado — nada em JS client-side desfaz isso, e
+    // quem sabe reatribuir uma função direto no console nem passa pela
+    // tag <script> pra fazer isso. O que isto pega é a alteração direta
+    // do conteúdo da tag pelo painel Elements ("editar como HTML"): tira
+    // uma assinatura do texto original assim que ele roda, e se o texto
+    // da tag mudar depois (via MutationObserver, mais um polling de
+    // segurança), o conteúdo desaparece em vez de continuar exposto.
+    (function () {
+      if (modoTeste) return;
+      var scriptEl = document.currentScript || document.getElementById('nexus-protecao');
+      if (!scriptEl) return;
+
+      function checksum(str) {
+        var h = 0;
+        for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+        return h;
+      }
+      var assinaturaOriginal = checksum(scriptEl.textContent);
+      var jaReagiu = false;
+
+      function esconderTudo() {
+        if (jaReagiu) return;
+        jaReagiu = true;
+        try {
+          if (frame && frame.parentNode) frame.parentNode.removeChild(frame);
+          document.body.innerHTML = '<div style="position:fixed;inset:0;background:#0a0a0a;' +
+            'color:#c9a24a;display:flex;align-items:center;justify-content:center;' +
+            'font-family:\'EB Garamond\',Georgia,serif;font-size:1.05rem;text-align:center;">' +
+            'Conteúdo indisponível.</div>';
+        } catch (erro) {}
+      }
+
+      function verificarIntegridade() {
+        if (checksum(scriptEl.textContent) !== assinaturaOriginal) esconderTudo();
+      }
+
+      setInterval(verificarIntegridade, 2000);
+      try {
+        new MutationObserver(verificarIntegridade)
+          .observe(scriptEl, { characterData: true, childList: true, subtree: true });
+      } catch (erro) {}
+    })();
+
     // ---- Camada 1: clique direito do mouse desabilitado ----
     // ---- Camada 2: atalhos de teclado que abrem informações da página ----
     function bloquearTeclasDeInspecao(e) {
@@ -281,8 +372,8 @@
 
       if (tecla === 'F12') { e.preventDefault(); return false; } // DevTools
 
-      if (ctrlOuCmd && e.shiftKey && ['I', 'J', 'C', 'i', 'j', 'c'].indexOf(tecla) !== -1) {
-        e.preventDefault(); return false; // Inspecionar / Console / Selecionar elemento
+      if (ctrlOuCmd && e.shiftKey && ['I', 'J', 'C', 'K', 'E', 'i', 'j', 'c', 'k', 'e'].indexOf(tecla) !== -1) {
+        e.preventDefault(); return false; // Inspecionar / Console / Selecionar elemento / Console e Rede (Firefox)
       }
 
       if (ctrlOuCmd && (tecla === 'u' || tecla === 'U')) {
@@ -292,12 +383,31 @@
       if (ctrlOuCmd && (tecla === 's' || tecla === 'S')) {
         e.preventDefault(); return false; // Salvar página
       }
+
+      if (ctrlOuCmd && (tecla === 'p' || tecla === 'P')) {
+        e.preventDefault(); return false; // Imprimir
+      }
+    }
+
+    // Seleção e arrastar ficam bloqueados fora de campos de formulário —
+    // o Mapa do Nexus tem input/textarea (busca, editor) que precisam
+    // continuar selecionáveis normalmente, senão digitar e revisar texto
+    // ali quebra.
+    function ehCampoDeFormulario(alvo) {
+      var tag = alvo && alvo.tagName;
+      return tag === 'INPUT' || tag === 'TEXTAREA';
     }
 
     function aplicarProtecaoBasica(doc) {
-      if (!doc) return;
+      if (!doc || modoTeste) return;
       doc.addEventListener('contextmenu', function (e) { e.preventDefault(); });
       doc.addEventListener('keydown', bloquearTeclasDeInspecao);
+      doc.addEventListener('selectstart', function (e) { if (!ehCampoDeFormulario(e.target)) e.preventDefault(); });
+      doc.addEventListener('dragstart', function (e) { if (!ehCampoDeFormulario(e.target)) e.preventDefault(); });
+      if (doc.documentElement) {
+        doc.documentElement.style.userSelect = 'none';
+        doc.documentElement.style.webkitUserSelect = 'none';
+      }
     }
 
     // Aplica no documento externo (este index.html)
@@ -317,25 +427,33 @@
       }
     });
 
-    // ---- Camada 3: script de segurança caso o bloqueio acima falhe ----
+    // ---- Camada 3: detecção multi-sinal de DevTools ----
     // Clique direito e atalhos de teclado podem ser contornados pelo
-    // menu do próprio navegador em alguns casos. Esta camada detecta
-    // o DevTools pela diferença entre as dimensões externas e internas
-    // da janela e cobre a tela enquanto ele estiver aberto.
+    // menu do próprio navegador em alguns casos. Esta camada combina
+    // três sinais independentes em vez de depender só da diferença de
+    // dimensões (que sozinha é fácil de escapar redimensionando o
+    // DevTools pra caber dentro do limite):
+    //   1) diferença entre as dimensões externas e internas da janela
+    //   2) o `debugger` de verdade pausa a aba quando o DevTools está
+    //      aberto (com o depurador anexado) — mede quanto tempo essa
+    //      linha leva; sem DevTools é um no-op instantâneo
+    //   3) o console só chega a formatar/inspecionar um objeto quando o
+    //      painel de Console está de fato renderizando — um toString()
+    //      que só roda nesse caso vira a isca
     (function () {
+      if (modoTeste) return;
       var LIMITE = 160; // largura aproximada do painel do DevTools
+      var LIMITE_PAUSA_MS = 100; // acima disso, o `debugger` pausou a aba de verdade
       var avisoVisivel = false;
 
       // Em mobile, o teclado virtual e a barra de endereço que soma/some ao
       // rolar mudam innerHeight na hora, sem nenhum DevTools aberto — o
-      // mesmo teste que funciona bem no desktop dispararia um falso
-      // positivo ali (bloqueando a tela) assim que o viajante tocasse,
-      // por exemplo, na busca do Mapa do Nexus. Por isso esta camada
-      // específica só roda em telas com ponteiro fino (mouse/trackpad) —
-      // as outras duas camadas (clique direito e atalhos) continuam
-      // valendo em qualquer dispositivo.
+      // sinal de dimensão sozinho dispararia um falso positivo ali assim
+      // que o viajante tocasse, por exemplo, na busca do Mapa do Nexus.
+      // Por isso ele fica de fora no mobile; os outros dois sinais (que
+      // não sofrem desse falso positivo) continuam valendo em qualquer
+      // dispositivo, inclusive contra depuração remota via USB.
       var ehProvavelmenteMobile = (window.matchMedia && window.matchMedia('(pointer:coarse)').matches) || window.innerWidth < 768;
-      if (ehProvavelmenteMobile) return;
 
       function criarAviso() {
         var aviso = document.createElement('div');
@@ -344,10 +462,38 @@
         return aviso;
       }
 
-      function verificar() {
+      function sinalDimensao() {
+        if (ehProvavelmenteMobile) return false;
         var difLargura = window.outerWidth - window.innerWidth;
         var difAltura = window.outerHeight - window.innerHeight;
-        var provavelmenteAberto = difLargura > LIMITE || difAltura > LIMITE;
+        return difLargura > LIMITE || difAltura > LIMITE;
+      }
+
+      function sinalDebugger() {
+        var inicio = Date.now();
+        debugger;
+        return (Date.now() - inicio) > LIMITE_PAUSA_MS;
+      }
+
+      // Captura a referência nativa AGORA — a camada de console limpo,
+      // logo abaixo, substitui console.log por um no-op, e se o sinal
+      // chamasse console.log diretamente (em vez desta referência já
+      // guardada) ele mesmo se anularia.
+      var logNativo = (console && console.log) ? console.log.bind(console) : function () {};
+      var iscaConsoleAcionada = false;
+      var iscaConsole = { toString: function () { iscaConsoleAcionada = true; return ''; } };
+      function sinalConsole() {
+        iscaConsoleAcionada = false;
+        try { logNativo('%c', iscaConsole); } catch (e) {}
+        return iscaConsoleAcionada;
+      }
+
+      function verificar() {
+        var sinaisFracos = 0;
+        if (sinalDimensao()) sinaisFracos++;
+        if (sinalConsole()) sinaisFracos++;
+        var pausouNoDebugger = sinalDebugger(); // sinal forte — sozinho já basta
+        var provavelmenteAberto = pausouNoDebugger || sinaisFracos >= 2;
 
         if (provavelmenteAberto && !avisoVisivel) {
           avisoVisivel = true;
@@ -362,6 +508,32 @@
       setInterval(verificar, 1000);
     })();
 
+    // ---- Camada extra: console limpo e neutralizado ----
+    // Mesmo sem o painel de Console aberto, alguém pode ter deixado o
+    // DevTools em segundo plano ou usar uma extensão que espia o
+    // console. Substitui os métodos por no-ops e varre o que sobrar
+    // periodicamente — aplicado tanto no documento externo quanto no
+    // interno (reaplicado a cada carga do iframe, como a proteção básica).
+    (function () {
+      if (modoTeste) return;
+
+      function neutralizarConsole(win) {
+        if (!win || !win.console || win.console.__nexusNeutralizado) return;
+        win.console.__nexusNeutralizado = true;
+        var limparDeVerdade = win.console.clear ? win.console.clear.bind(win.console) : function () {};
+        ['log', 'warn', 'error', 'info', 'debug', 'trace', 'dir', 'table', 'group', 'groupCollapsed', 'groupEnd', 'assert', 'count']
+          .forEach(function (metodo) {
+            try { win.console[metodo] = function () {}; } catch (e) {}
+          });
+        win.setInterval(limparDeVerdade, 1500);
+      }
+
+      neutralizarConsole(window);
+      frame.addEventListener('load', function () {
+        try { neutralizarConsole(frame.contentWindow); } catch (erro) {}
+      });
+    })();
+
     // ---- Camada extra: página-isca ao perder o foco ----
     // "Salvar como" pelo menu do navegador não dispara evento
     // nenhum, mas pra abrir esse menu o usuário precisa antes
@@ -372,6 +544,7 @@
     // vazia; só volta com um clique explícito nela, nunca
     // sozinho ao reganhar o foco.
     (function () {
+      if (modoTeste) return;
       var urlGuardada = null;
       var scrollGuardado = { x: 0, y: 0 };
       var mostrandoIsca = false;
@@ -449,6 +622,13 @@
       window.addEventListener('blur', verificarFoco);
       window.addEventListener('focus', verificarFoco);
       setInterval(verificarFoco, 400);
+
+      // Rede de segurança adicional: minimizar a janela ou trocar de
+      // app (mobile) às vezes não dispara 'blur' de forma confiável,
+      // mas sempre dispara 'visibilitychange'.
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) mostrarIsca();
+      });
 
       // Reaproveita o 'load' do iframe: se quem carregou foi a
       // isca, escuta o clique nela; se foi a página real voltando,
