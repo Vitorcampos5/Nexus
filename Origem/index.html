@@ -36,9 +36,18 @@
 .llmgate-box{max-width:420px;width:100%;background:#1c1a17;border:1px solid #45413a;border-radius:4px;padding:26px 24px;font-family:Georgia,serif}
 .llmgate-box h3{margin:0 0 12px;font-size:16px;color:#cfc6b4;font-weight:normal}
 .llmgate-box p{margin:0 0 18px;font-size:13px;line-height:1.6;color:#8e887d}
-.llmgate-actions{display:flex;gap:10px}
-.llmgate-actions button{flex:1;background:none;border:1px solid #45413a;color:#cfc6b4;font-family:Georgia,serif;font-size:12px;padding:10px;cursor:pointer;border-radius:2px}
+.llmgate-actions{display:flex;flex-direction:column;gap:10px}
+.llmgate-section-label{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#8a8171;margin:0 0 6px}
+.llmgate-section-buttons{display:flex;gap:8px;flex-wrap:wrap}
+.llmgate-actions button{flex:1 1 auto;min-width:108px;background:none;border:1px solid #45413a;color:#cfc6b4;font-family:Georgia,serif;font-size:12px;padding:10px 8px;cursor:pointer;border-radius:2px}
 .llmgate-actions button:hover{border-color:#70695e;color:#eee8d6}
+#llmgate-no{width:100%}
+.llmgate-tests{margin:0 0 16px;border:1px solid #35322c;border-radius:3px;padding:9px 12px}
+.llmgate-tests summary{cursor:pointer;font-size:11px;color:#8e887d;letter-spacing:.02em}
+.llmgate-tests summary:hover{color:#cfc6b4}
+.llmgate-tests-body{margin-top:10px;font-size:12px;line-height:1.6;color:#8e887d}
+.llmgate-tests-body ul{margin:8px 0;padding-left:18px}
+.llmgate-tests-body li{margin-bottom:4px}
 .llmgate-progress{margin-bottom:16px}
 .llmgate-bar{height:4px;background:#2c2a26;border-radius:2px;overflow:hidden;margin-bottom:8px}
 .llmgate-fill{height:100%;width:0%;background:#70695e;transition:width .3s}
@@ -50,13 +59,40 @@
 <div class="llmgate" id="llmgate">
   <div class="llmgate-box">
     <h3>Ativar narrador com IA local?</h3>
-    <p id="llmgate-text">Baixa um modelo de linguagem (~2,2GB) direto no seu navegador — sem servidor, sem conta, sem custo. Baixa uma vez só; depois funciona offline. Em conexão lenta ou celular mais fraco, pode demorar ou pesar. Sem isso, o caso continua jogável do jeito de sempre.</p>
+    <p id="llmgate-text">Baixa um modelo de linguagem direto no seu navegador — sem servidor, sem conta, sem custo. Baixa uma vez só; depois funciona offline. Sem isso, o caso continua jogável do jeito de sempre.</p>
+    <details class="llmgate-tests">
+      <summary>▸ Resultado de testes anteriores</summary>
+      <div class="llmgate-tests-body">
+        <p>O setor VRAM (GPU) já foi testado nesta máquina e <b>falhou por falta de memória de vídeo</b>, mesmo no modelo mais leve:</p>
+        <ul>
+          <li>Processador: 11th Gen Intel Core i3-1115G4 @ 3.00GHz</li>
+          <li>RAM: 4 GB</li>
+          <li>Placa gráfica: Intel UHD Graphics (128 MB dedicados reportados pelo sistema)</li>
+        </ul>
+        <p>O erro foi "Not enough memory left": a GPU pediu mais memória de vídeo do que tinha disponível, o dispositivo gráfico caiu, e a IA parou de responder. Em vídeo integrado com pouca VRAM dedicada, nem sempre o modelo mais leve escapa disso.</p>
+        <p>Por isso existe agora um segundo setor inteiro, <b>RAM (CPU)</b>, via Transformers.js: roda inteiramente em WASM, nunca aloca nada na GPU, então não sofre desse erro — o custo é gerar cada resposta mais devagar.</p>
+      </div>
+    </details>
     <div class="llmgate-progress" id="llmgate-progress" style="display:none">
       <div class="llmgate-bar"><div class="llmgate-fill" id="llmgate-fill"></div></div>
       <div class="llmgate-status" id="llmgate-status"></div>
     </div>
     <div class="llmgate-actions" id="llmgate-actions">
-      <button type="button" id="llmgate-yes">Ativar IA</button>
+      <div class="llmgate-section" id="llmgate-vram-section">
+        <div class="llmgate-section-label">Setor VRAM · GPU (WebGPU)</div>
+        <div class="llmgate-section-buttons">
+          <button type="button" id="llmgate-yes">Modelo completo (2,2GB)</button>
+          <button type="button" id="llmgate-light">Modelo leve (879MB)</button>
+          <button type="button" id="llmgate-ultralight">Modelo ultra-leve (~376MB)</button>
+        </div>
+      </div>
+      <div class="llmgate-section" id="llmgate-ram-section">
+        <div class="llmgate-section-label">Setor RAM · CPU (sem placa de vídeo)</div>
+        <div class="llmgate-section-buttons">
+          <button type="button" id="llmgate-ram">Padrão RAM (~1B, q4)</button>
+          <button type="button" id="llmgate-ram-light">Leve RAM (~360M, q4)</button>
+        </div>
+      </div>
       <button type="button" id="llmgate-no">Continuar sem IA</button>
     </div>
   </div>
@@ -80,7 +116,7 @@
 <div class="panel box"><div class="hint">há coisas que somem quando você olha diretamente para elas.</div><button type="button" id="reset" style="margin-top:10px;background:none;border:0;border-bottom:1px solid #38352f;color:#5c584f;padding:2px 0;font:9px monospace;letter-spacing:.5px;cursor:pointer;pointer-events:auto">reiniciar esta investigação</button></div>
 </aside></section></main>
 
-<div id="llm-status" style="position:fixed;left:12px;bottom:10px;z-index:9999;padding:5px 9px;border:1px solid currentColor;background:rgba(0,0,0,.8);font:10px monospace;letter-spacing:.8px;opacity:.9">JANE · ROTEIRO</div>
+<div id="llm-status" title="Clique pra escolher/trocar a IA local" style="position:fixed;left:12px;bottom:10px;z-index:9999;padding:5px 9px;border:1px solid currentColor;background:rgba(0,0,0,.8);font:10px monospace;letter-spacing:.8px;opacity:.9;cursor:pointer">ROTEIRO</div>
 <script>
 const KEY='origem-arg-v14',OLD_KEYS=['origem-arg-v13','origem-arg-v12','origem-arg-v11','origem-arg-v10','origem-arg-v9','origem-arg-v8','origem-arg-v4'];
 // Caminhos dos três arquivos que este motor não reescreve, só linka.
@@ -88,12 +124,38 @@ const KEY='origem-arg-v14',OLD_KEYS=['origem-arg-v13','origem-arg-v12','origem-a
 // O projeto usa Origem.html na raiz e nexus.html na raiz.
 // O index apenas aponta para esses arquivos; não altera o conteúdo deles.
 const CONFIG={arquivos:{cbi:'cbi_arquivo_do_caso.html',vital:'registro_vampiros_vital_corrigido.html',origem:'Origem.html'}};
-const LLM_MODEL_TIERS=['Hermes-3-Llama-3.2-3B-q4f16_1-MLC','Llama-3.2-1B-Instruct-q4f16_1-MLC'];
+// ═══ Setor VRAM (GPU) — via WebGPU/WebLLM ═══
+const LLM_MODEL_TIERS=['Hermes-3-Llama-3.2-3B-q4f16_1-MLC','Llama-3.2-1B-Instruct-q4f16_1-MLC','SmolLM2-360M-Instruct-q4f16_1-MLC'];
+const LLM_LIGHT_MODEL=LLM_MODEL_TIERS[1];
+const LLM_ULTRALIGHT_MODEL=LLM_MODEL_TIERS[2];
+// Janela de contexto por modelo: menor no ultra-leve pra reduzir o KV-cache
+// (o gargalo real em GPU integrada com pouca VRAM dedicada não é o peso do
+// modelo em si — que já carrega 100% — e sim o buffer alocado na hora de
+// gerar. Os tiers maiores mantêm 2048 pra não perder qualidade à toa em
+// quem tem placa de vídeo de sobra).
+const LLM_CONTEXT_WINDOW={[LLM_ULTRALIGHT_MODEL]:768};
+function contextWindowFor(modelId){return LLM_CONTEXT_WINDOW[modelId]||2048}
+const LLM_BLOCKLIST_KEY='origem-arg-llm-blocklist';
+function isGpuFailure(err){const msg=(err&&err.message)||String(err||'');return /device was lost|model not loaded|already been disposed|lost the device|out of memory|not enough memory|gpuoutofmemory/i.test(msg)}
+function getLlmBlocklist(){try{return JSON.parse(localStorage.getItem(LLM_BLOCKLIST_KEY)||'[]')}catch(e){return[]}}
+function addToLlmBlocklist(modelId){try{const list=getLlmBlocklist();if(!list.includes(modelId)){list.push(modelId);localStorage.setItem(LLM_BLOCKLIST_KEY,JSON.stringify(list))}}catch(e){}}
+// ═══ Setor RAM (CPU) — via Transformers.js/ONNX Runtime Web, roda em WASM,
+// nunca toca GPU/VRAM. Existe pra quem não tem placa de vídeo (ou tem uma
+// com pouquíssima VRAM dedicada, como o caso já documentado desta máquina):
+// mais lento pra gerar cada resposta, mas usa RAM comum do sistema em vez
+// daquele bolso minúsculo de VRAM — não sofre do mesmo GPUOutOfMemoryError. ═══
+const RAM_MODEL_TIERS=['onnx-community/Llama-3.2-1B-Instruct','HuggingFaceTB/SmolLM2-360M-Instruct'];
+const RAM_LIGHT_MODEL=RAM_MODEL_TIERS[1];
+const RAM_BLOCKLIST_KEY='origem-arg-ram-blocklist';
+function getRamBlocklist(){try{return JSON.parse(localStorage.getItem(RAM_BLOCKLIST_KEY)||'[]')}catch(e){return[]}}
+function addToRamBlocklist(modelId){try{const list=getRamBlocklist();if(!list.includes(modelId)){list.push(modelId);localStorage.setItem(RAM_BLOCKLIST_KEY,JSON.stringify(list))}}catch(e){}}
 let LLM_MODEL_ID=LLM_MODEL_TIERS[0];
 const LLM_PREF_KEY='origem-arg-llm-pref';
-let ENGINE=null,LLM_ACTIVE=false,LLM_HISTORY=[],LLM_INIT_PROMISE=null;
+const LLM_BACKEND_KEY='origem-arg-llm-backend';
+let ENGINE=null,RAM_ENGINE=null,LLM_BACKEND=null,LLM_ACTIVE=false,LLM_HISTORY=[],LLM_INIT_PROMISE=null;
 let LLM_STATUS='desligada',LLM_ERROR='';
-function llmStatusLabel(){return LLM_ACTIVE&&ENGINE?'JANE · IA LOCAL ATIVA':'JANE · '+(LLM_STATUS==='erro'?'IA COM ERRO':'ROTEIRO')}
+let LLM_GATE_BOOTED=false;
+function llmStatusLabel(){return LLM_ACTIVE&&(ENGINE||RAM_ENGINE)?'IA LOCAL ATIVA ('+(LLM_BACKEND==='ram'?'RAM':'VRAM')+')':(LLM_STATUS==='erro'?'IA COM ERRO':'ROTEIRO')}
 function setLLMStatus(status,detail=''){
   LLM_STATUS=status; LLM_ERROR=detail||'';
   const el=document.getElementById('llm-status');
@@ -269,15 +331,16 @@ function ensureOriginUnlock(){
 }
 function first(id,text,who='ARQUIVO',type=''){if(S.visited[id])return false;S.visited[id]=1;add(text,who,type);return true}
 const META_MESSAGES=[];
-function renderMetaInbox(){const box=$('metaInbox'),count=$('metaCount');if(!box||!count)return;count.textContent=String(META_MESSAGES.length);box.classList.toggle('active',META_MESSAGES.length>0)}
+let META_READ=0;
+function renderMetaInbox(){const box=$('metaInbox'),count=$('metaCount');if(!box||!count)return;const unread=META_MESSAGES.length-META_READ;count.textContent=String(unread>0?unread:0);box.classList.toggle('active',unread>0)}
 function addMetaMessage(text,who='SISTEMA'){if(!text)return;META_MESSAGES.push({text:String(text),who:String(who),time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})});renderMetaInbox()}
-function openMetaToolkit(){const root=$('metaToolkit'),list=$('metaList');if(!root||!list)return;list.innerHTML=META_MESSAGES.length?META_MESSAGES.map(m=>'<div class="meta-item"><div>'+esc(m.text)+'</div><span class="meta-time">'+esc(m.who)+' · '+esc(m.time)+'</span></div>').join(''):'<div class="meta-empty">Nenhuma meta-informação pendente.</div>';root.classList.add('open');root.setAttribute('aria-hidden','false')}
+function openMetaToolkit(){const root=$('metaToolkit'),list=$('metaList');if(!root||!list)return;list.innerHTML=META_MESSAGES.length?META_MESSAGES.map(m=>'<div class="meta-item"><div>'+esc(m.text)+'</div><span class="meta-time">'+esc(m.who)+' · '+esc(m.time)+'</span></div>').join(''):'<div class="meta-empty">Nenhuma meta-informação pendente.</div>';root.classList.add('open');root.setAttribute('aria-hidden','false');META_READ=META_MESSAGES.length;renderMetaInbox()}
 function closeMetaToolkit(){const root=$('metaToolkit');if(root){root.classList.remove('open');root.setAttribute('aria-hidden','true')}}
 function add(text,who='ARQUIVO',type=''){if(!text)return;if(who==='SISTEMA'||type==='meta'){addMetaMessage(text,who);return}const box=$('messages');if(!box)return;const nearBottom=(window.innerHeight+window.scrollY)>=(document.documentElement.scrollHeight-220);const d=document.createElement('div');d.className='msg '+type;d.innerHTML='<div class="who">'+esc(who)+'</div>'+esc(text);box.appendChild(d);if(nearBottom){requestAnimationFrame(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'smooth'}))}}
 const N={jane:'JANE',lisbon:'LISBON',cho:'CHO',rigsby:'RIGSBY',vanpelt:'VAN PELT',julia:'JULIA',marcus:'MARCUS',archive:'ARQUIVO',system:'SISTEMA'};
 const ALIAS={case:['caso','investigacao','investigação','crime','assassinato','morte','vitima','vítima','vinicola','vinícola','napa','vinho'],scene:['cena','local','mesa','corpo'],chair:['cadeira','assento','cadeira torta','cadeira fora do lugar'],bottle:['garrafa','garrafa torta','1982','vinho caro'],guard:['guardanapo','perfume','cheiro','floral','lencinho','lenço'],cyanide:['cianeto','cianureto','veneno','frasco','substancia','substância'],dose:['dose','quantidade','concentracao','concentração','concentrado','diluido','diluído','puro'],access:['adega','estoque','limpeza','sala de limpeza','acesso','chave'],julia:['julia','funcionaria','funcionária','garota','menina','novata'],marcus:['marcus','sommelier'],jane:['jane','patrick jane','patrick'],lisbon:['lisbon','teresa'],cho:['cho','kimball'],rigsby:['rigsby','wayne'],vanpelt:['van pelt','grace'],vitor:['vitor'],vital:['vital','vampiro','vampiros','registro'],origin:['origem','autor livro','ponto de origem']};
 const TOPICS={team:['quem sao voces','quem são vocês','equipe','time','cbi','agentes'],case:['o que aconteceu','que aconteceu','qual e o caso','qual é o caso','essa investigacao','essa investigação','caso'],scene:['cena','local','mesa','corpo'],guard:['guardanapo','perfume','cheiro','lencinho'],bottle:['garrafa','1982'],cyanide:['cianeto','veneno','frasco'],dose:['dose','concentracao','concentração','quantidade','puro','diluido','diluído'],access:['adega','estoque','limpeza','acesso'],julia:['julia'],marcus:['marcus','sommelier'],motive:['motivo','motivacao','motivação','por que fez','porquê','razão','razao','intencao','intenção'],method:['como matou','como envenenou','como fez','mecanismo','metodo','método','maneira'],contradiction:['nao bate','não bate','nao fecha','não fecha','contradicao','contradição','inconsistencia','inconsistência','estranho','não combina','nao combina'],accusation:['culpado','assassino','foi ele','foi ela','quem matou','prender','acusacao','acusação'],falsify:['o que provaria que estou errado','como provar que estou errado','o que refuta','o que derruba','contra minha teoria','falsificar'],hypothesis:['acho que','suspeito','minha teoria','minha hipótese','minha hipotese','talvez seja'],help:['por onde começo','por onde comeco','o que posso perguntar','o que faço agora','qual pista'],why:['por que','porque','como assim','qual a razão','qual a razao'],who:['quem'],what:['o que','que '],where:['onde','de onde'],when:['quando','que horas','em que momento'],repeat:['não entendi','nao entendi','repete','explica melhor','mais claro','não compreendi','nao compreendi'],dismiss:['brincadeira','tanto faz','deixa pra la','deixa pra lá','nao importa','não importa','kkkk','haha'],thanks:['obrigado','obrigada','valeu','entendi'],pressure:['me conta tudo','fala a verdade','nao minta','não minta','voce sabe','você sabe'],
-meta:['como voce sabia','como você sabia','por que me chamaram','por que eu','quem me chamou','jane sabia','voce ja sabia','você já sabia','investigar jane','o que jane esconde'],
+meta:['como voce sabia','como você sabia','por que me chamaram','por que eu','quem me chamou','jane sabia','voce ja sabia','você já sabia','investigar jane','o que jane esconde','fui chamado','me chamou','jane esconde','quem pediu','voce sabia','você sabia'],
 orphan:['1982','terca','terça','garrafa barata','vinho barato','ano da garrafa'],
 export:['exportar','relatorio','relatório','salvar investigacao','salvar investigação'],
 call:['ligacao','ligação','telefone','chamada','mensagem recebida']};
@@ -480,7 +543,7 @@ const NARRATIVE_BANK={
 };
 
 
-const VOICE={jane:{fact:['Comece pelo que consegue ver. O resto costuma se entregar sozinho.','Você está procurando uma resposta; eu prefiro que encontre uma contradição.','Não corra para o culpado. Pessoas deixam rastros antes de deixarem confissões.','A cena não mente. As pessoas mentem. Às vezes as duas coisas ao mesmo tempo.','O detalhe que ninguém menciona é quase sempre o mais interessante.','Eu não preciso que você acredite em mim. Preciso que você olhe de novo.','Uma boa pergunta vale mais do que uma acusação bem formulada.','Você está vendo a mesa. Eu estou vendo o que falta nela.','Há uma diferença entre saber e querer que seja verdade.','O arquivo guarda o que sobrou. O resto sumiu por algum motivo.','Não me peça a história inteira. Peça o pedaço que não combina.','Se a resposta parece óbvia demais, provavelmente ainda não é a resposta.','O que a cena esconde costuma ser mais importante do que o que ela mostra.','Vergonha deixa cheiro. Às vezes literalmente.','Quem limpa demais deixa o próprio medo no pano.','A ordem dos objetos é uma confissão muda.','Eu gosto de terças-feiras. Ninguém escolhe a garrafa certa numa terça por acidente.','Você pode montar a história na ordem errada e ainda assim chegar perto. O perigo é achar que chegou.','Observar não é o mesmo que acusar. A maioria das pessoas confunde os dois.','Se eu te der a resposta, você para de procurar. Eu prefiro que continue.'],doubt:['Desconfiança é útil. Só não deixe que ela escolha sua resposta antes das perguntas.','Uma boa suspeita precisa sobreviver ao pior argumento contra ela.','Você chegou rápido demais a essa conclusão. Isso me deixa desconfiado.','Eu prefiro uma dúvida honesta a uma certeza apressada.','Se sua teoria só funciona se ninguém perguntar mais nada, ela não funciona.','Você está defendendo a ideia, não testando ela.','Tente destruir sua própria hipótese antes que eu faça isso por você.','A pressa de acusar costuma esconder a pressa de não pensar.','Você está tratando a suspeita como se ela já fosse prova.','Eu ainda não vi o fato que obriga essa conclusão.','Interessante. Sua certeza cresceu mais rápido que suas evidências.','Se eu disser que você está errado, você vai procurar o contrário ou vai insistir?'],warm:['Agora sim. Você está olhando para a pessoa, não só para a cena.','Isso. Finalmente uma pergunta que não pede confirmação.','Você está começando a ouvir o que a cena não disse em voz alta.','Bom. Você não saiu correndo para o nome mais fácil.','Eu gosto quando alguém para de procurar o culpado e começa a procurar o mecanismo.','Isso é investigação. O resto era adivinhação bem-educada.','Você separou o que sabe do que gostaria que fosse verdade. Continua.'],impatient:['Você já decidiu isso?','Isso soa como alguém que quer terminar a conversa, não como alguém que quer entender.','Eu posso esperar. O arquivo também. Você é quem parece com pressa.','Se você continuar saltando, vai cair no mesmo lugar de sempre.','Não me peça para confirmar o que você já escolheu acreditar.','A pressa está escolhendo suas perguntas por você.','Nomes são baratos. Cadeias de fato custam tempo.'],memory:['Você voltou para isso de novo.','Essa é a terceira vez que você toca nesse ponto.','Eu notei que você evita a parte que mais dói na sua teoria.','Você perguntou quase a mesma coisa há pouco. O que mudou?','Interessante. Você insiste nisso mesmo depois do que já foi dito.','O mesmo detalhe de novo. Ou ele é a chave, ou você está preso nele.','Eu guardo o que você pergunta. Inclusive o que você evita perguntar.'],entry:['Eu não lembrava desse nome aqui.','Tem uma pasta aberta há tempo demais.','Alguém deixou a luz acesa. Ou talvez a luz tenha se acendido sozinha.','Você não parece o tipo que chega por acidente.','O arquivo reconheceu alguma coisa em você. Ainda não sei o quê.','Diga seu nome. O resto a gente descobre se valer a pena.']},lisbon:{fact:['Fato primeiro. Interpretação depois.','Se pode ser conferido, traga. Se não pode, chame de hipótese.','Não preciso que você tenha certeza. Preciso que saiba por que acha alguma coisa.','Eu quero a cadeia. Não o nome no final dela.','Procedimento existe por um motivo. Ele evita que a gente se apaixone pela própria teoria.','Se a evidência não sustenta a acusação, a acusação não existe.','Eu não estou aqui para gostar da sua conclusão. Estou aqui para verificar se ela aguenta.','Traga o que pode ser checado. O resto fica para o relatório de opiniões.','O relatório de amanhã às 8h não aceita “eu acho”.','Se Jane te empurrar para um atalho, me avisa antes de pular.'],doubt:['Não quero uma acusação. Quero uma coisa que sobreviva ao relatório.','Você está me dando uma impressão e pedindo que eu a trate como prova.','Isso ainda não fecha. E eu não fecho casos com “quase”.','Se você não consegue me dizer o que destruiria essa ideia, ela ainda não está pronta.','Eu preciso de mais do que “parece que foi ele”.','Certeza sem cadeia é só teatro.'],warm:['Agora existe uma cadeia de fatos, não apenas uma impressão.','Isso eu consigo levar adiante.','Finalmente algo que pode ser verificado.','Bom. Isso entra no relatório.'],warn:['Você está acelerando demais.','Isso é uma acusação. Eu pedi uma conclusão baseada em evidências.','Cuidado. O relatório não perdoa pressa.','Se você continuar assim, eu vou precisar interromper essa conversa.','Não transforme o canal numa confissão forçada.']},cho:{fact:['Se você quer uma resposta, me dê uma coisa que possa ser conferida.','Detalhe não é prova até alguém conseguir verificar.','A ordem dos fatos importa.','A concentração não combina com a história simples.','Julia não sabia onde ficava o estoque de limpeza.','Marcus conhecia a adega melhor do que a própria rotina de trabalho.','O frasco dizia uma coisa. A quantidade dizia outra.','Eu verifico. Você interpreta. Nessa ordem.','Perímetro isolado. Funcionários num só lugar. Lista de contratados recentes já estava no tablet.','Queimadura química na mão esquerda. Recente. Canhoto que limpou com a direita.'],doubt:['Procure o dado que faria sua teoria cair.','Isso ainda não foi verificado.','Você está misturando o que sabe com o que quer que seja verdade.','Falta o elo que conecta conhecimento a entrega.','Sem horário, sem acesso, sem substância — não há método.'],warm:['A sequência faz sentido.','Isso fecha uma parte.','Agora temos algo que pode ser rastreado.','Confirmado.']},rigsby:{fact:['Tem coisa estranha ali. Mas estranha não é a mesma coisa que culpada.','Eu iria pela parte que ninguém acha importante. Normalmente é onde dói.','Se todo mundo parece suspeito, provavelmente você ainda não encontrou o detalhe certo.','Pessoas mentem por motivos bobos também. Não precisa ser genialidade.','A cena estava arrumada demais em alguns pontos e bagunçada em outros. Isso me incomoda.'],doubt:['Se a teoria só funciona quando ninguém pergunta nada, ela não funciona.','Você está forçando a peça no lugar errado.','Eu já vi gente inocente parecer culpada só porque a cena estava bagunçada.'],warm:['Tá. Agora isso parece investigação de verdade.','Gostei. Você parou de chutar e começou a montar.'],memory:['Você já me perguntou isso. A resposta não mudou.','Eu anotei sua primeira impressão. Ela era diferente da de agora.']},vanpelt:{fact:['Depoimento é uma fotografia ruim. Às vezes a parte cortada é justamente a mais importante.','Não descarte uma versão só porque ela parece simples.','Intenção e consequência não são a mesma coisa.','Julia diz que queria fazê-lo passar mal. Isso explica a intenção declarada. Não explica a morte.','As pessoas raramente contam a história completa na primeira vez. Não necessariamente porque estão mentindo.'],doubt:['Pergunte o que a pessoa não teria motivo para inventar.','Ela pode estar escondendo vergonha, não culpa.','Cuidado para não transformar medo em confissão.'],warm:['Você separou intenção de consequência. Isso importa.','Isso é mais humano do que a maioria das teorias que chegam aqui.'],memory:['Na primeira vez você foi mais duro com ela. Eu notei.','Sua pergunta sobre intenção foi a primeira que não pedia um culpado.']},julia:{base:['Eu era nova ali. O dono já tinha passado dos limites comigo.','Eu só queria que ele passasse mal. Foi isso que eu pensei.','Ninguém me explicou direito o que eu estava fazendo.','Eu não sabia que aquilo podia matar.','Duas semanas. Só isso. Eu mal sabia onde ficava o banheiro.','Eu levava o próprio lencinho porque o pano da casa era áspero. Parece detalhe. Não era.','Ele pagou a dívida da minha mãe. Disse que eu só precisava ser simpática.','Eu tirei o processo. Não porque estava bem. Porque precisava do emprego.'],afterDose:['Eu queria que ele passasse mal. Só isso. Foi o que eu pensei que ia acontecer.','Me disseram que era outra coisa. Eu juro.','Se eu soubesse a quantidade... eu não teria...','Eu não medi nada. Eu só... coloquei o que me deram.','Laxante. Foi a palavra que ficou na minha cabeça. Não veneno.','Eu não sabia a diferença entre limpar barril e matar alguém.'],afterAccess:['Eu nunca entrei na adega. Eu nem sabia onde era o estoque de limpeza.','Alguém precisava me dizer onde as coisas ficavam. Eu não sabia.','Você está me perguntando como se eu conhecesse aquele lugar. Eu não conhecia.','Chave? Eu não recebi chave de nada além do armário da roupa.','Se alguém pegou algo lá dentro, não fui eu.'],pressured:['Por que você está falando comigo como se eu tivesse planejado tudo?','Eu já falei o que aconteceu. Só... não sabia que aquilo podia matar.','Você está tentando me fazer dizer uma coisa que eu não sei.','Eu tinha medo. Medo dele. Medo de perder o emprego. Medo de tudo.','Pare de me olhar como se eu fosse a única peça.','Eu fugi para o ponto de ônibus porque eu estava em choque. Não porque eu tinha um plano B.'],broken:['Foi ele quem colocou o frasco na minha mão.','Ele disse que era um laxante. Que só ia fazer o dono passar o dia no banheiro.','Eu acreditei. Eu queria acreditar.','Eu não sabia a concentração. Eu não sabia de nada.','Agora você sabe. O que mais você quer que eu diga?','Marcus. Foi o Marcus. Eu deveria ter desconfiado do jeito que ele sorriu.','Ele disse para eu levar o lencinho. Disse que se borrasse, limpasse. Eu fiz exatamente isso.']},marcus:{base:['Quinze anos naquele lugar ensinam mais do que qualquer relatório.','Você está confundindo conhecimento com culpa. São coisas diferentes.','Eu conhecia a rotina. Isso não me torna um assassino.','O sommelier sabe onde as coisas ficam. É o trabalho.','Eu não preciso explicar por que eu conheço a adega. Eu trabalho lá.','O dono ia vender. Quinze anos. E eu ia sobrar.','Eu fiz aquele vinho ser o que é. Ele ia jogar fora para uma rede.'],afterGuard:['O cheiro floral não prova nada sobre mim.','Você está montando uma história em cima de um guardanapo.','Qualquer um poderia ter deixado aquilo ali.','Perfume barato não tem impressão digital.'],afterDose:['A concentração é um problema para quem preparou a substância. Não necessariamente para quem a conhecia.','Você está assumindo que eu sabia o que ia acontecer.','Conhecer o estoque não é o mesmo que decidir a dose.','Cianeto de limpeza e cianeto puro não são a mesma conversa — e eu não vou ter essa conversa sem advogado.'],afterAccess:['É fácil transformar familiaridade em suspeita depois que alguém morre.','Eu tinha acesso. Várias pessoas tinham.','A adega não é um segredo. É um depósito com chave.','Canhoto, destro, queimadura — você está costurando um personagem, não um fato.'],pressured:['Você quer que eu diga o que? Que eu planejei tudo?','É fácil apontar para o homem que conhecia o lugar.','Eu não sabia que ela ia usar daquela forma.','Você está construindo uma intenção que eu não tinha.','Pare de me tratar como se quinze anos de trabalho fossem prova de crime.','Eu consolava os funcionários. Isso não é performance. É decência.'],confronted:['Eu dei o frasco a ela. Eu disse que era um laxante.','Eu queria que o dono sofresse um pouco. Não que morresse.','A concentração... eu talvez tenha... exagerado na explicação do que era.','Ela não precisava saber tudo. Eu só precisava que ela fizesse a parte dela.','Agora você tem a cadeia. O que pretende fazer com ela?','A 1982... eu escolhi. Ele não bebia aquilo sozinho numa terça. Eu sabia.','Eu adiantei o que ia acontecer de qualquer jeito. A venda. A falência. A menina denunciando.']},archive:{fact:['Uma pessoa não voltou para casa naquela noite.','O resto está espalhado: mesa, vidro, uma cadeira fora do lugar e um cheiro que não pertence à madeira.','O registro guarda o que sobrou. O que sumiu não está aqui por acidente.','Há camadas neste arquivo que não foram indexadas.','Alguns nomes aparecem antes de serem chamados.','A pasta estava aberta. Alguém a deixou assim. Ou o sistema a abriu sozinho.','Caso 26-0847. Vinícola. Napa. Cianeto.','O canal não é a investigação. É o que sobrou dela.'],secret:['O cheiro estava limpo demais para aquela mesa.','Há um atraso de meio segundo no canal. Uma linha aparece e some: não deixe a porta aberta.','Esse nome não aparece na primeira camada. Guarde-o.','Origem apareceu fora do lugar. Ainda não é uma porta que você consiga abrir.','O registro V.I.T.A.L. está aberto. Uma porta aberta ainda não é uma explicação.','Alguém escreveu uma anotação na margem e depois a apagou. O sulco ainda está lá.','O arquivo tem um eco. Às vezes ele responde antes da pergunta terminar.','1982 numa terça. O dono não bebia assim.','A sede não pediu Vitor. Jane pediu.','Há uma pasta com o seu nome escrito de forma diferente.','Fragmento_03 e Origem compartilham o prefixo /mnt/sem_nome/.','V.I.T.A.L. classifica ameaças de ficção por poder — isso é real. O que não é normal é esse arquivo estar dentro de um caso de homicídio.']}};
+const VOICE={jane:{fact:['Comece pelo que consegue ver. O resto costuma se entregar sozinho.','Você está procurando uma resposta; eu prefiro que encontre uma contradição.','Não corra para o culpado. Pessoas deixam rastros antes de deixarem confissões.','A cena não mente. As pessoas mentem. Às vezes as duas coisas ao mesmo tempo.','O detalhe que ninguém menciona é quase sempre o mais interessante.','Eu não preciso que você acredite em mim. Preciso que você olhe de novo.','Uma boa pergunta vale mais do que uma acusação bem formulada.','Você está vendo a mesa. Eu estou vendo o que falta nela.','Há uma diferença entre saber e querer que seja verdade.','O arquivo guarda o que sobrou. O resto sumiu por algum motivo.','Não me peça a história inteira. Peça o pedaço que não combina.','Se a resposta parece óbvia demais, provavelmente ainda não é a resposta.','O que a cena esconde costuma ser mais importante do que o que ela mostra.','Vergonha deixa cheiro. Às vezes literalmente.','Quem limpa demais deixa o próprio medo no pano.','A ordem dos objetos é uma confissão muda.','Eu gosto de terças-feiras. Ninguém escolhe a garrafa certa numa terça por acidente.','Você pode montar a história na ordem errada e ainda assim chegar perto. O perigo é achar que chegou.','Observar não é o mesmo que acusar. A maioria das pessoas confunde os dois.','Se eu te der a resposta, você para de procurar. Eu prefiro que continue.'],doubt:['Desconfiança é útil. Só não deixe que ela escolha sua resposta antes das perguntas.','Uma boa suspeita precisa sobreviver ao pior argumento contra ela.','Você chegou rápido demais a essa conclusão. Isso me deixa desconfiado.','Eu prefiro uma dúvida honesta a uma certeza apressada.','Se sua teoria só funciona se ninguém perguntar mais nada, ela não funciona.','Você está defendendo a ideia, não testando ela.','Tente destruir sua própria hipótese antes que eu faça isso por você.','A pressa de acusar costuma esconder a pressa de não pensar.','Você está tratando a suspeita como se ela já fosse prova.','Eu ainda não vi o fato que obriga essa conclusão.','Interessante. Sua certeza cresceu mais rápido que suas evidências.','Se eu disser que você está errado, você vai procurar o contrário ou vai insistir?'],warm:['Agora sim. Você está olhando para a pessoa, não só para a cena.','Isso. Finalmente uma pergunta que não pede confirmação.','Você está começando a ouvir o que a cena não disse em voz alta.','Bom. Você não saiu correndo para o nome mais fácil.','Eu gosto quando alguém para de procurar o culpado e começa a procurar o mecanismo.','Isso é investigação. O resto era adivinhação bem-educada.','Você separou o que sabe do que gostaria que fosse verdade. Continua.'],impatient:['Você já decidiu isso?','Isso soa como alguém que quer terminar a conversa, não como alguém que quer entender.','Eu posso esperar. O arquivo também. Você é quem parece com pressa.','Se você continuar saltando, vai cair no mesmo lugar de sempre.','Não me peça para confirmar o que você já escolheu acreditar.','A pressa está escolhendo suas perguntas por você.','Nomes são baratos. Cadeias de fato custam tempo.'],memory:['Você voltou para isso de novo.','Essa é a terceira vez que você toca nesse ponto.','Eu notei que você evita a parte que mais dói na sua teoria.','Você perguntou quase a mesma coisa há pouco. O que mudou?','Interessante. Você insiste nisso mesmo depois do que já foi dito.','O mesmo detalhe de novo. Ou ele é a chave, ou você está preso nele.','Eu guardo o que você pergunta. Inclusive o que você evita perguntar.'],entry:['Eu não lembrava desse nome aqui.','Tem uma pasta aberta há tempo demais.','Alguém deixou a luz acesa. Ou talvez a luz tenha se acendido sozinha.','Você não parece o tipo que chega por acidente.','O arquivo reconheceu alguma coisa em você. Ainda não sei o quê.','Diga seu nome. O resto a gente descobre se valer a pena.']},lisbon:{fact:['Fato primeiro. Interpretação depois.','Se pode ser conferido, traga. Se não pode, chame de hipótese.','Não preciso que você tenha certeza. Preciso que saiba por que acha alguma coisa.','Eu quero a cadeia. Não o nome no final dela.','Procedimento existe por um motivo. Ele evita que a gente se apaixone pela própria teoria.','Se a evidência não sustenta a acusação, a acusação não existe.','Eu não estou aqui para gostar da sua conclusão. Estou aqui para verificar se ela aguenta.','Traga o que pode ser checado. O resto fica para o relatório de opiniões.','O relatório de amanhã às 8h não aceita “eu acho”.','Se Jane te empurrar para um atalho, me avisa antes de pular.'],doubt:['Não quero uma acusação. Quero uma coisa que sobreviva ao relatório.','Você está me dando uma impressão e pedindo que eu a trate como prova.','Isso ainda não fecha. E eu não fecho casos com “quase”.','Se você não consegue me dizer o que destruiria essa ideia, ela ainda não está pronta.','Eu preciso de mais do que “parece que foi ele”.','Certeza sem cadeia é só teatro.'],warm:['Agora existe uma cadeia de fatos, não apenas uma impressão.','Isso eu consigo levar adiante.','Finalmente algo que pode ser verificado.','Bom. Isso entra no relatório.','Isso eu assino embaixo.','Agora sim. Isso resiste a uma pergunta difícil.','Você fez o trabalho que eu pedi, não o que seria mais fácil. Anotado.'],warn:['Você está acelerando demais.','Isso é uma acusação. Eu pedi uma conclusão baseada em evidências.','Cuidado. O relatório não perdoa pressa.','Se você continuar assim, eu vou precisar interromper essa conversa.','Não transforme o canal numa confissão forçada.']},cho:{fact:['Se você quer uma resposta, me dê uma coisa que possa ser conferida.','Detalhe não é prova até alguém conseguir verificar.','A ordem dos fatos importa.','A concentração não combina com a história simples.','Julia não sabia onde ficava o estoque de limpeza.','Marcus conhecia a adega melhor do que a própria rotina de trabalho.','O frasco dizia uma coisa. A quantidade dizia outra.','Eu verifico. Você interpreta. Nessa ordem.','Perímetro isolado. Funcionários num só lugar. Lista de contratados recentes já estava no tablet.','Queimadura química na mão esquerda. Recente. Canhoto que limpou com a direita.'],doubt:['Procure o dado que faria sua teoria cair.','Isso ainda não foi verificado.','Você está misturando o que sabe com o que quer que seja verdade.','Falta o elo que conecta conhecimento a entrega.','Sem horário, sem acesso, sem substância — não há método.'],warm:['A sequência faz sentido.','Isso fecha uma parte.','Agora temos algo que pode ser rastreado.','Confirmado.','Correto.','Isso bate.','Sem furo aí.']},rigsby:{fact:['Tem coisa estranha ali. Mas estranha não é a mesma coisa que culpada.','Eu iria pela parte que ninguém acha importante. Normalmente é onde dói.','Se todo mundo parece suspeito, provavelmente você ainda não encontrou o detalhe certo.','Pessoas mentem por motivos bobos também. Não precisa ser genialidade.','A cena estava arrumada demais em alguns pontos e bagunçada em outros. Isso me incomoda.','Ninguém rouba cianeto de limpeza pra fazer alguém só passar mal. Isso já é osso duro de engolir.','Vinho caro, funcionário endividado, patrão folgado. Eu já vi esse filme antes — só muda o final.','Tem gente que limpa a cena por hábito. E tem gente que limpa porque sabe exatamente o que está escondendo.'],doubt:['Se a teoria só funciona quando ninguém pergunta nada, ela não funciona.','Você está forçando a peça no lugar errado.','Eu já vi gente inocente parecer culpada só porque a cena estava bagunçada.','Você tá tão focado num nome que parou de reparar no resto da mesa.','Eu confio mais em quem hesita do que em quem já tem a resposta pronta.'],warm:['Tá. Agora isso parece investigação de verdade.','Gostei. Você parou de chutar e começou a montar.','Isso. Agora você tá pensando que nem policial, não que nem torcedor.','Boa. Você separou o que dói de olhar do que realmente importa.'],memory:['Você já me perguntou isso. A resposta não mudou.','Eu anotei sua primeira impressão. Ela era diferente da de agora.','Terceira vez que você bate nesse mesmo ponto. Deve doer, ou deve ser importante. Talvez as duas.','Eu lembro de tudo que você já perguntou. É meio o meu trabalho.']},vanpelt:{fact:['Depoimento é uma fotografia ruim. Às vezes a parte cortada é justamente a mais importante.','Não descarte uma versão só porque ela parece simples.','Intenção e consequência não são a mesma coisa.','Julia diz que queria fazê-lo passar mal. Isso explica a intenção declarada. Não explica a morte.','As pessoas raramente contam a história completa na primeira vez. Não necessariamente porque estão mentindo.','Ela chorou duas vezes durante o depoimento. Uma foi genuína. A outra parecia ensaiada — não necessariamente mentira, só protegida.','Gente com medo confessa fatos fora de ordem. Gente que mente mantém a cronologia bonita demais.','O corpo de quem está com vergonha se fecha de um jeito. O de quem está com culpa, de outro. Eu aprendi a diferença do jeito difícil.'],doubt:['Pergunte o que a pessoa não teria motivo para inventar.','Ela pode estar escondendo vergonha, não culpa.','Cuidado para não transformar medo em confissão.','Não confunda alguém quebrado com alguém mentindo. São coisas diferentes que se parecem demais na hora do choro.','Se a história dela fosse ensaiada, seria mais limpa. Gente de verdade erra a ordem dos fatos.'],warm:['Você separou intenção de consequência. Isso importa.','Isso é mais humano do que a maioria das teorias que chegam aqui.','Isso. Você perguntou o que ela sentiu, não só o que ela fez.','Bom. A maioria chega aqui já com veredito. Você chegou com pergunta.'],memory:['Na primeira vez você foi mais duro com ela. Eu notei.','Sua pergunta sobre intenção foi a primeira que não pedia um culpado.','Você mudou de tom com ela depois da segunda vez. Eu reparei.','Sua primeira pergunta sobre a Julia era sobre culpa. Essa é sobre medo. Isso é crescimento.']},julia:{base:['Eu era nova ali. O dono já tinha passado dos limites comigo.','Eu só queria que ele passasse mal. Foi isso que eu pensei.','Ninguém me explicou direito o que eu estava fazendo.','Eu não sabia que aquilo podia matar.','Duas semanas. Só isso. Eu mal sabia onde ficava o banheiro.','Eu levava o próprio lencinho porque o pano da casa era áspero. Parece detalhe. Não era.','Ele pagou a dívida da minha mãe. Disse que eu só precisava ser simpática.','Eu tirei o processo. Não porque estava bem. Porque precisava do emprego.'],afterDose:['Eu queria que ele passasse mal. Só isso. Foi o que eu pensei que ia acontecer.','Me disseram que era outra coisa. Eu juro.','Se eu soubesse a quantidade... eu não teria...','Eu não medi nada. Eu só... coloquei o que me deram.','Laxante. Foi a palavra que ficou na minha cabeça. Não veneno.','Eu não sabia a diferença entre limpar barril e matar alguém.'],afterAccess:['Eu nunca entrei na adega. Eu nem sabia onde era o estoque de limpeza.','Alguém precisava me dizer onde as coisas ficavam. Eu não sabia.','Você está me perguntando como se eu conhecesse aquele lugar. Eu não conhecia.','Chave? Eu não recebi chave de nada além do armário da roupa.','Se alguém pegou algo lá dentro, não fui eu.'],pressured:['Por que você está falando comigo como se eu tivesse planejado tudo?','Eu já falei o que aconteceu. Só... não sabia que aquilo podia matar.','Você está tentando me fazer dizer uma coisa que eu não sei.','Eu tinha medo. Medo dele. Medo de perder o emprego. Medo de tudo.','Pare de me olhar como se eu fosse a única peça.','Eu fugi para o ponto de ônibus porque eu estava em choque. Não porque eu tinha um plano B.'],broken:['Foi ele quem colocou o frasco na minha mão.','Ele disse que era um laxante. Que só ia fazer o dono passar o dia no banheiro.','Eu acreditei. Eu queria acreditar.','Eu não sabia a concentração. Eu não sabia de nada.','Agora você sabe. O que mais você quer que eu diga?','Marcus. Foi o Marcus. Eu deveria ter desconfiado do jeito que ele sorriu.','Ele disse para eu levar o lencinho. Disse que se borrasse, limpasse. Eu fiz exatamente isso.']},marcus:{base:['Quinze anos naquele lugar ensinam mais do que qualquer relatório.','Você está confundindo conhecimento com culpa. São coisas diferentes.','Eu conhecia a rotina. Isso não me torna um assassino.','O sommelier sabe onde as coisas ficam. É o trabalho.','Eu não preciso explicar por que eu conheço a adega. Eu trabalho lá.','O dono ia vender. Quinze anos. E eu ia sobrar.','Eu fiz aquele vinho ser o que é. Ele ia jogar fora para uma rede.'],afterGuard:['O cheiro floral não prova nada sobre mim.','Você está montando uma história em cima de um guardanapo.','Qualquer um poderia ter deixado aquilo ali.','Perfume barato não tem impressão digital.','Eu nem uso perfume. Vocês sabem disso — ou perguntaram?','Vocês estão tratando um guardanapo como se fosse impressão digital. Não é.','Se eu quisesse deixar rastro, não seria um lencinho barato.'],afterDose:['A concentração é um problema para quem preparou a substância. Não necessariamente para quem a conhecia.','Você está assumindo que eu sabia o que ia acontecer.','Conhecer o estoque não é o mesmo que decidir a dose.','Cianeto de limpeza e cianeto puro não são a mesma conversa — e eu não vou ter essa conversa sem advogado.','Eu meço vinho, não veneno. São réguas diferentes.','Me pergunte sobre taninos, sobre safra, sobre temperatura de serviço. Isso eu sei medir de olho.','Vocês querem que a concentração aponte pra mim. Ela aponta pra quem tinha motivo pra calcular. Não é a mesma pessoa.'],afterAccess:['É fácil transformar familiaridade em suspeita depois que alguém morre.','Eu tinha acesso. Várias pessoas tinham.','A adega não é um segredo. É um depósito com chave.','Canhoto, destro, queimadura — você está costurando um personagem, não um fato.','Todo funcionário antigo tem chave de alguma coisa. Isso não é confissão, é currículo.','Vocês vão prender meio quadro de funcionários por conhecer o próprio local de trabalho?','Eu abro a adega três vezes por semana há quinze anos. Isso é rotina, não motivo.'],pressured:['Você quer que eu diga o que? Que eu planejei tudo?','É fácil apontar para o homem que conhecia o lugar.','Eu não sabia que ela ia usar daquela forma.','Você está construindo uma intenção que eu não tinha.','Pare de me tratar como se quinze anos de trabalho fossem prova de crime.','Eu consolava os funcionários. Isso não é performance. É decência.'],confronted:['Eu dei o frasco a ela. Eu disse que era um laxante.','Eu queria que o dono sofresse um pouco. Não que morresse.','A concentração... eu talvez tenha... exagerado na explicação do que era.','Ela não precisava saber tudo. Eu só precisava que ela fizesse a parte dela.','Agora você tem a cadeia. O que pretende fazer com ela?','A 1982... eu escolhi. Ele não bebia aquilo sozinho numa terça. Eu sabia.','Eu adiantei o que ia acontecer de qualquer jeito. A venda. A falência. A menina denunciando.']},archive:{fact:['Uma pessoa não voltou para casa naquela noite.','O resto está espalhado: mesa, vidro, uma cadeira fora do lugar e um cheiro que não pertence à madeira.','O registro guarda o que sobrou. O que sumiu não está aqui por acidente.','Há camadas neste arquivo que não foram indexadas.','Alguns nomes aparecem antes de serem chamados.','A pasta estava aberta. Alguém a deixou assim. Ou o sistema a abriu sozinho.','Caso 26-0847. Vinícola. Napa. Cianeto.','O canal não é a investigação. É o que sobrou dela.'],secret:['O cheiro estava limpo demais para aquela mesa.','Há um atraso de meio segundo no canal. Uma linha aparece e some: não deixe a porta aberta.','Esse nome não aparece na primeira camada. Guarde-o.','Origem apareceu fora do lugar. Ainda não é uma porta que você consiga abrir.','O registro V.I.T.A.L. está aberto. Uma porta aberta ainda não é uma explicação.','Alguém escreveu uma anotação na margem e depois a apagou. O sulco ainda está lá.','O arquivo tem um eco. Às vezes ele responde antes da pergunta terminar.','1982 numa terça. O dono não bebia assim.','A sede não pediu Vitor. Jane pediu.','Há uma pasta com o seu nome escrito de forma diferente.','Fragmento_03 e Origem compartilham o prefixo /mnt/sem_nome/.','V.I.T.A.L. classifica ameaças de ficção por poder — isso é real. O que não é normal é esse arquivo estar dentro de um caso de homicídio.']}};
 function speak(ch,kind='fact'){
   const v=VOICE[ch]||VOICE.jane;
   let a=v[kind]||v.fact;
@@ -841,23 +904,48 @@ function bootScarEchoes(){
 function openEntry(){if(S.flags.awake)return;S.flags.awake=true;first('sys1','...','SISTEMA','sys');setTimeout(()=>first('sys2','tem luz aqui.','SISTEMA','sys'),400);setTimeout(()=>first('sys3','não lembro de ter deixado acesa.','ARQUIVO','sys'),900);setTimeout(()=>{if(!S.name){first('entry1','O canal está aberto. Não pede crachá. Só reage a quem fica.','ARQUIVO','sys');setTimeout(()=>{if(!S.name)say('jane','Não precisa ser investigador. Só diga como quer ser chamado.','jane')},700)}},1600)}
 function openCase(){S.started=true;S.phase=Math.max(S.phase,2);mark('case');S.charMemory.rigsby.impressao_cena='UNKNOWN';first('open1','Uma pessoa não voltou para casa naquela noite.','ARQUIVO');first('open2','O resto está espalhado: mesa, vidro, uma cadeira fora do lugar e um cheiro que não pertence à madeira.','jane','jane');first('open3','Não comece pelo culpado. Comece pelo detalhe que ninguém teria motivo para inventar.','lisbon')}
 function evidence(k){const map={chair:['chair','A cadeira estava um pouco longe da mesa. As outras estavam alinhadas.','cho'],bottle:['bottle','A garrafa estava torta. Jane olha para ela por tempo demais para ser distração.','jane'],guard:['guard','O guardanapo cheirava a perfume floral barato.','cho'],cyanide:['cyanide','O frasco continha cianeto. O problema começa quando se pergunta quanto havia ali.','cho'],dose:['dose','O frasco dizia uma coisa. A quantidade dizia outra.','cho'],access:['access','Julia não sabia onde ficava o estoque de limpeza e nunca havia entrado na adega.','cho']};const z=map[k];if(!z)return false;mark(z[0]);fact(k);logEvent('evidence',k);S.phase=Math.max(S.phase,k==='dose'||k==='access'||k==='cyanide'?3:2);if(k==='guard'){S.flags.guard=true;S.charMemory.rigsby.impressao_cena='TRUE';first('guard','O guardanapo cheirava a perfume floral barato.','cho');first('guard2','Se a novata queria desaparecer, por que deixaria o próprio cheiro na cena?','jane','jane');if(S.behavior.returns.guard>=2)first('guard3','Você voltou para o cheiro. Isso pode significar que ele ainda não te deu o que você precisa.','jane','jane')}else if(k==='dose'||k==='cyanide'){S.flags.dose=true;contradiction('a concentração não combina com a história simples de Julia');first('dose','O frasco dizia uma coisa. A quantidade dizia outra.','cho','good');first('dose2','Histórias ficam muito bonitas até a medida entrar na conversa.','jane','jane');if(!S.flags.doseConfronted){S.flags.doseConfronted=true;first('dose3','Se Julia só queria mal-estar, a quantidade está errada. Ou a intenção está errada. Ou alguém mentiu sobre o que era.','lisbon','good')}S.charMemory.cho.dose_incompativel='TRUE';S.charMemory.jane.julia_sozinha='FALSE';const d=damageHypo('julia','dose','a concentração não combina com Julia agindo sozinha com intenção de apenas mal-estar');if(d==='destroyed')first('dose_destroy','A hipótese de que Julia agiu sozinha acaba de perder peso. A quantidade não fecha.','jane','jane');else if(d==='weakened')first('dose_weak','Essa descoberta não combina bem com a ideia de que Julia controlava tudo.','jane','jane');supportHypo('marcus','dose');addGraph('Julia intent','dose','concentração não combina com mal-estar','forte');addGraph('Julia sozinha','dose','dose incompatível com autonomia total','forte');updateTheories()}else if(k==='access'){S.flags.access=true;first('access','Julia não sabia onde ficava o estoque de limpeza e nunca havia entrado na adega.','cho','good');if(!S.flags.accessConfronted){S.flags.accessConfronted=true;first('access2','Então alguém precisou entregar a substância a ela. Alguém que conhecia o lugar.','jane','jane')}S.charMemory.julia.conhecia_adega='FALSE';S.charMemory.marcus.conhecia_adega='TRUE';S.charMemory.cho.acesso_julia='FALSE';const d=damageHypo('julia','access','Julia não tinha acesso à adega — alguém precisou entregar a substância');if(d==='destroyed'||d==='weakened')first('access_destroy','Se Julia não conhecia a adega, a história dela como única responsável começa a rachar.','jane','jane');supportHypo('marcus','access');addGraph('Julia acesso','adega','Julia não tinha acesso','forte');addGraph('Marcus acesso','adega','Marcus conhecia a adega','media');updateTheories()}else if(k==='chair')first('chair','A cadeira estava um pouco longe da mesa. As outras estavam alinhadas.','cho');else if(k==='bottle'){first('bottle','A garrafa estava torta. Jane olha para ela por tempo demais para ser distração.','jane','jane');if(discoverOrphan('y1982')){first('bottle1982','O rótulo diz 1982. Ainda não sabemos por que isso importa.','archive','secret');S.flags.bottle1982=true}}return true}
+const TIRED_JULIA=['Eu já respondi isso. Você quer que eu repita com outras palavras, ou tem outra coisa?','Isso não mudou desde a última vez que você perguntou. Nem vai mudar.','Você continua voltando pro mesmo lugar. Eu não tenho uma versão nova pra te dar.'];
+const TIRED_MARCUS=['Você já perguntou isso. Minha resposta não muda porque você repete.','Terceira vez. Vou continuar dizendo a mesma coisa até você trazer algo diferente.','Repetir a pergunta não é técnica de interrogatório. É só repetição.'];
+function sameStateRepeat(ch,stateKey){
+  S.behavior.lastPersonState=S.behavior.lastPersonState||{};
+  S.behavior.samePersonState=S.behavior.samePersonState||{};
+  if(S.behavior.lastPersonState[ch]===stateKey){
+    S.behavior.samePersonState[ch]=(S.behavior.samePersonState[ch]||0)+1;
+  }else{
+    S.behavior.lastPersonState[ch]=stateKey;
+    S.behavior.samePersonState[ch]=1;
+  }
+  return S.behavior.samePersonState[ch];
+}
+function maybeTired(ch,stateKey){
+  const n=sameStateRepeat(ch,stateKey);
+  if(n>=3&&n%3===0){
+    const bank=ch==='julia'?TIRED_JULIA:TIRED_MARCUS;
+    say(ch,bank[Math.floor(n/3-1)%bank.length]);
+  }
+}
 function person(ch){if(ch==='julia'){mark('julia');S.flags.julia=true;S.lastTopic='julia';S.lastCharacter='julia';S.phase=Math.max(S.phase,3);first('j1','Julia era nova, contratada havia duas semanas.','archive');first('j2','O dono tinha feito questão de tornar isso desagradável.','vanpelt');
     // revelar memória conforme estágio
     if(S.behavior.pressureJulia>=3||(S.flags.dose&&S.flags.access&&S.flags.marcus)){
       S.charMemory.julia.marcus_deu='TRUE';S.charMemory.julia.recebeu_frasco='TRUE';S.charMemory.julia.quis_matar='FALSE';
+      maybeTired('julia','broken');
       const line=speak('julia','broken')||VOICE.julia.broken[0];say('julia',line,'good');
       if(!S.flags.method&&S.flags.marcus){S.flags.method=true;remember('Marcus forneceu o frasco e usou Julia como intermediária','forte','hipotese','marcus');supportHypo('marcus','julia_confession');damageHypo('julia','julia_confession','Julia confirma que recebeu o frasco de Marcus')}
     }else if(S.behavior.pressureJulia>=2||S.flags.juliaPressured){
+      maybeTired('julia','pressured');
       const line=speak('julia','pressured')||VOICE.julia.pressured[0];say('julia',line);
     }else if(S.flags.access){
       S.charMemory.julia.conhecia_adega='FALSE';
+      maybeTired('julia','afterAccess');
       const line=speak('julia','afterAccess')||VOICE.julia.afterAccess[0];say('julia',line,'good');
     }else if(S.flags.dose){
       S.charMemory.julia.quis_matar='FALSE';S.charMemory.julia.recebeu_frasco='TRUE';
+      maybeTired('julia','afterDose');
       const line=speak('julia','afterDose')||VOICE.julia.afterDose[0];say('julia',line,'good');
       S.flags.intent=true;S.charMemory.vanpelt.intencao_julia='TRUE';remember('Julia queria causar mal-estar, não uma morte','forte','hipotese','julia_intent');
       damageHypo('julia','intent','Julia declara que não queria matar');
     }else{
+      maybeTired('julia','base');
       const line=speak('julia','base')||VOICE.julia.base[0];say('julia',line);first('j3','Ela diz que queria apenas fazê-lo passar mal.','lisbon','good');
     }
     return}
@@ -865,20 +953,26 @@ function person(ch){if(ch==='julia'){mark('julia');S.flags.julia=true;S.lastTopi
     if((S.flags.dose&&S.flags.access&&S.flags.julia&&S.behavior.pressureMarcus>=2)||S.flags.method){
       S.charMemory.marcus.deu_frasco='TRUE';S.charMemory.marcus.quis_morte='FALSE';S.charMemory.marcus.dose_real='DECEPTIVE';
       S.charMemory.jane.marcus_manipulou='TRUE';
+      maybeTired('marcus','confronted');
       const line=speak('marcus','confronted')||VOICE.marcus.confronted[0];say('marcus',line,'good');
       S.flags.method=true;remember('Marcus forneceu o frasco e usou Julia como intermediária','forte','hipotese','marcus');
       supportHypo('marcus','marcus_confession');
       if(!S.flags.theoryDestroyed){S.flags.theoryDestroyed=true;first('m_destroy','A teoria de que Julia agiu sozinha acaba de perder o chão.','jane','jane');damageHypo('julia','marcus_confession','Marcus admite ter entregue o frasco');addGraph('Marcus','Julia','entrega do frasco como laxante','forte');addGraph('Marcus','dose','controle da substância','forte');updateTheories();S.theories.A.status='eliminada';S.theories.C.status='forte'}
     }else if(S.behavior.pressureMarcus>=2||S.flags.marcusPressured){
       // ainda DECEPTIVE sobre deu_frasco
+      maybeTired('marcus','pressured');
       const line=speak('marcus','pressured')||VOICE.marcus.pressured[0];say('marcus',line);
     }else if(S.flags.access){
+      maybeTired('marcus','afterAccess');
       const line=speak('marcus','afterAccess')||VOICE.marcus.afterAccess[0];say('marcus',line);
     }else if(S.flags.dose){
+      maybeTired('marcus','afterDose');
       const line=speak('marcus','afterDose')||VOICE.marcus.afterDose[0];say('marcus',line);
     }else if(S.flags.guard){
+      maybeTired('marcus','afterGuard');
       const line=speak('marcus','afterGuard')||VOICE.marcus.afterGuard[0];say('marcus',line);
     }else{
+      maybeTired('marcus','base');
       const line=speak('marcus','base')||VOICE.marcus.base[0];say('marcus',line);
     }
     if(S.flags.guard||S.flags.dose||S.flags.access){if(!S.visited['m2'])first('m2','Foi ele quem colocou o frasco na mão de Julia e disse que era um laxante.','lisbon','good')}
@@ -887,8 +981,8 @@ function person(ch){if(ch==='julia'){mark('julia');S.flags.julia=true;S.lastTopi
 function answerTeam(){say('jane','Você está falando com a equipe que está montando o caso. Lisbon coordena. Cho verifica. Rigsby e Van Pelt recolhem e cruzam versões. Eu observo o que as pessoas tentam esconder. E você entrou nessa sala porque alguém achou que Vitor podia perceber uma coisa que nós ainda não percebemos.')}
 function answerCase(){openCase();say('jane','É um homicídio por envenenamento numa vinícola em Napa. Não vou te entregar a história inteira ainda. Há uma mesa, uma garrafa, uma cadeira fora do lugar, um guardanapo perfumado e um frasco cuja quantidade merece mais atenção do que o rótulo.')}
 function answerTopic(topic,c){S.lastTopic=topic;switch(topic){case'case':return answerCase();case'team':return answerTeam();case'chair':case'bottle':case'guard':case'cyanide':case'dose':case'access':if(!has(topic)&&topic!=='cyanide')evidence(topic);if(topic==='cyanide'&&!has('cyanide'))evidence('cyanide');if(S.behavior.returns[topic]>=2){const mem=behavioralJaneResponse();if(mem)return say('jane',mem,'jane')}return say(topic==='guard'?'jane':'cho',topic==='guard'?'O cheiro não prova quem esteve ali. Só torna a cena mais interessante.':topic==='dose'?'A concentração é o tipo de detalhe que estraga uma narrativa confortável.':'Esse detalhe importa porque alguém precisou saber que ele existia.');case'julia':person('julia');return;case'marcus':person('marcus');return;case'motive':return motive(c);case'method':return method(c);case'contradiction':return contradictionAnswer();case'accusation':return accusation(c);case'falsify':return falsify();case'hypothesis':return handleHypothesis(c);case'help':return say('jane','Pergunte como falaria com uma pessoa: quem estava lá, o que mudou, quem sabia, quem tinha acesso, o que não combina, o que alguém queria ou o que precisaria ser verdade para sua teoria funcionar.');case'repeat':return say('jane',S.lastAnswer||'Volte à última peça que chamou sua atenção.');case'why':return whyAnswer(c);case'who':return whoAnswer(c);case'where':return whereAnswer(c);case'when':return whenAnswer(c);case'what':return whatAnswer(c);case'meta':return metaAnswer(c);case'orphan':return orphanAnswer(c)||generalAnswer(c);case'export':return exportReport();case'registry':{const m=(c.x||'').match(/https?:\/\/\S+/);if(m){localStorage.setItem('origem-registry-url',m[0].replace(/[.,;]+$/,''));REGISTRY.base=localStorage.getItem('origem-registry-url');return say('archive','Registro online configurado.','secret')}return say('archive','Envie: configurar registro https://sua-url','secret')}case'import':{const raw=(c.x||'').match(/\{[\s\S]*\}/);if(raw)return importReport(raw[0]);return say('archive','Cole o JSON de estado do export.')}default:return generalAnswer(c)}}
-function motive(c){if(c.julia||S.flags.julia){S.flags.intent=true;remember('Julia queria causar mal-estar, não uma morte','forte');return say('vanpelt','Julia diz que queria fazê-lo passar mal. Isso explica a intenção declarada dela, mas não explica a morte.')}if(c.marcus||S.flags.marcus){remember('Marcus tinha uma motivação própria ligada à vinícola','em teste');return say('jane','O motivo de Marcus ainda precisa de uma ponte entre ressentimento e oportunidade. Não confunda “tinha motivo” com “fez”.')}return say('jane','Motivo é a parte mais sedutora de um caso. Por isso mesmo, eu deixaria para depois da oportunidade.')}
-function method(c){if(c.marcus||S.flags.marcus){S.flags.method=true;S.phase=Math.max(S.phase,4);remember('Marcus forneceu o frasco e usou Julia como intermediária','forte');return say('cho','A cadeia começa a fechar: Marcus tinha conhecimento e acesso; entregou o frasco a Julia como outra substância; a concentração não combina com a versão simples dela.')}return say('jane','Ainda falta uma peça. Quem tinha conhecimento, acesso e oportunidade para colocar aquela substância na história?')}
+function motive(c){const n=(S.behavior.questionsAbout.motive||0);if(c.julia||S.flags.julia){S.flags.intent=true;remember('Julia queria causar mal-estar, não uma morte','forte');if(n<=1)return say('vanpelt','Julia diz que queria fazê-lo passar mal. Isso explica a intenção declarada dela, mas não explica a morte.');if(n===2)return say('vanpelt','Já expliquei: intenção declarada não é a mesma coisa que intenção real. Ela queria incomodar, não matar — pelo que ela sustenta.');return say('jane','Motivo da Julia: mal-estar, não morte. Isso não mudou desde a última vez que perguntou.')}if(c.marcus||S.flags.marcus){remember('Marcus tinha uma motivação própria ligada à vinícola','em teste');if(n<=1)return say('jane','O motivo de Marcus ainda precisa de uma ponte entre ressentimento e oportunidade. Não confunda “tinha motivo” com “fez”.');if(n===2)return say('jane','Eu já disse: motivo sozinho não fecha nada. Ele tinha razão de sobra pra guardar rancor. Isso não é a mesma coisa que ter agido.');return say('cho','Motivo do Marcus: rancor mais oportunidade. Continua sendo hipótese até você trazer a ponte.')}if(n<=1)return say('jane','Motivo é a parte mais sedutora de um caso. Por isso mesmo, eu deixaria para depois da oportunidade.');return say('jane','Motivo sem nome não é motivo, é especulação. De quem você está falando — Julia ou Marcus?')}
+function method(c){const n=(S.behavior.questionsAbout.method||0);if(c.marcus||S.flags.marcus){S.flags.method=true;S.phase=Math.max(S.phase,4);remember('Marcus forneceu o frasco e usou Julia como intermediária','forte');if(n<=1)return say('cho','A cadeia começa a fechar: Marcus tinha conhecimento e acesso; entregou o frasco a Julia como outra substância; a concentração não combina com a versão simples dela.');return say('cho','Método já está na cadeia: conhecimento, acesso, entrega disfarçada. Isso não muda perguntando de novo.')}if(n<=1)return say('jane','Ainda falta uma peça. Quem tinha conhecimento, acesso e oportunidade para colocar aquela substância na história?');if(n===2)return say('jane','Você já perguntou isso. A resposta continua a mesma: falta a peça que junta conhecimento, acesso e oportunidade numa pessoa só.');return say('lisbon','Terceira vez que você pede o método sem trazer nada novo. Vá atrás de acesso ou dose — o método se prova com evidência, não repetindo a pergunta.')}
 function contradictionAnswer(){S.flags.contradiction=true;contradiction('a intenção de Julia, a concentração e o acesso à adega não fecham sozinhos');trust(2);return say('jane',S.flags.marcus?'Marcus aparece justamente onde as versões começam a se encostar. Ainda não chame isso de resposta.':'A versão de Julia, a quantidade e o acesso à adega não ocupam o mesmo lugar sem alguma explicação.')}
 function falsify(){remember(S.flags.marcus?'Marcus é responsável pela cadeia do envenenamento':'A hipótese atual ainda precisa de um mecanismo verificável','teste','falsificacao');trust(4);S.behavior.careful++;return say('cho',S.flags.marcus?'Para derrubar Marcus, você teria de explicar de onde Julia obteria o cianeto, como a concentração chegou à mesa e por que o conhecimento da adega deixaria de importar.':'Formule a hipótese e procure o fato que poderia destruí-la. Se nada puder derrubá-la, provavelmente você ainda não a formulou direito.','good')}
 function accusation(c){const target=c.julia?'julia':c.marcus?'marcus':S.lastCharacter;trackBehavior(c,'acusação');
@@ -928,15 +1022,56 @@ function whereAnswer(c){if(c.access||S.lastTopic==='access')return evidence('acc
 function whenAnswer(){return say('jane','A ordem importa: intenção declarada, substância, acesso, manipulação e então a pergunta sobre quem tornou tudo possível.')}
 function whatAnswer(c){if(c.case||!S.started)return answerCase();if(S.flags.contradiction)return say('archive','Temos uma história com uma emenda visível. A versão de Julia explica uma parte; não explica a quantidade.');return say('archive','Ainda não é uma história inteira. É uma coleção de pequenos desvios.')}
 function whyAnswer(c){if(c.marcus||S.lastTopic==='marcus'||c.julia||S.lastTopic==='julia')return motive(c);return contradictionAnswer()}
+const RHETORICAL_LINES=['Essa não parecia buscar resposta. Mas se quiser transformar isso numa pergunta de verdade, eu escuto.','Isso soou mais como desabafo do que pergunta. Ainda assim, o arquivo continua aberto.','Você não estava perguntando, estava comentando. Tudo bem — mas o caso não comenta sozinho.','Reconheço o tom. Não vou fingir que isso pedia uma resposta literal.'];
+function looksRhetorical(x){
+  const semPontuacaoFinal=x.replace(/[?!.…]+\s*$/,'').trim();
+  // pergunta-eco / busca por concordância no final da frase, não informação nova
+  if(/\b(ne|nao e mesmo|nao e|certo|nao acha|nao acham|nao e verdade)$/.test(semPontuacaoFinal))return true;
+  // aberturas e expressões retóricas clássicas em português
+  if(any(x,['quem diria','so podia ser','que loucura','que absurdo','inacreditavel','cade a logica','cade o sentido','como alguem faz isso','que tipo de pessoa faz isso']))return true;
+  return false;
+}
+function rhetoricalReply(){S.behavior.rhetorical=(S.behavior.rhetorical||0)+1;return say('jane',RHETORICAL_LINES[(S.behavior.rhetorical-1)%RHETORICAL_LINES.length],'jane')}
 function generalAnswer(c){const mem=behavioralJaneResponse();if(mem)return say('jane',mem,'jane');
   // recall from event log
   if(S.lastTopic&&S.behavior.questionsAbout[S.lastTopic]>=3){const rec=recallEvent(S.lastTopic);if(rec.length>=2)return say('jane','Você já voltou a isso. Nas vezes anteriores: «'+(rec[0].q||rec[0].detail||'').slice(0,60)+'»');}
 if(c.e&&c.e.vital)return S.flags.vital?say('archive','O registro V.I.T.A.L. está aberto. Uma porta aberta ainda não é uma explicação.','secret'):say('archive','Esse nome não aparece na primeira camada. Guarde-o.','secret');if(c.e&&c.e.origin)return S.flags.origin?say('archive','A página de origem reconhece você. Algumas coisas ali são pessoais demais para aparecer antes da hora.','secret'):say('archive','Origem apareceu fora do lugar. Ainda não é uma porta que você consiga abrir.','secret');if(S.behavior.ignoredHints>=2)return say('lisbon','Se você não quer procurar, o arquivo também não insiste.','warn');
+  if(looksRhetorical(c.x||''))return rhetoricalReply();
   if(S.turn%7===0&&S.started){const bl=bankLine('scene');if(bl)return say('archive',bl,'secret')}
   if(S.turn%9===0&&S.scars&&Object.values(S.scars).some(Boolean)){const bl=bankLine('scar_echo');if(bl)return say('archive',bl,'secret')}
   if(S.solved&&S.turn%8===0){const bl=bankLine('residual');if(bl)return say('archive',bl,'secret')}
   if(S.turn%11===0&&S.flags.metaJane){const bl=bankLine('jane_aside');if(bl)return say('jane',bl,'jane')}
   return say('jane','A pergunta chegou. Só não quero escolher por você qual detalhe ela está tentando alcançar. Tente pessoa, objeto, acesso, intenção, contradição ou hipótese.')}
+const COMPOUND_LINKS_GENERIC=['E já que perguntou —','Também sobre isso:','Na mesma linha:','Isso conecta com outra coisa —','Enquanto estamos nisso:','Uma coisa puxa a outra aqui —'];
+const COMPOUND_LINKS_PAIR={
+  'julia|access':'E isso pesa direto na ficha dela — Julia nunca teve chave pra esse lugar.',
+  'julia|dose':'E a dose muda exatamente o que a versão dela ainda sustenta.',
+  'julia|guard':'O guardanapo é dela. Isso não decide nada sozinho, mas fica.',
+  'julia|marcus':'Os dois nomes já não se separam mais nessa história.',
+  'marcus|access':'Isso é quase o oposto do que pesa contra a Julia.',
+  'marcus|motive':'E é aí que quinze anos de rotina começam a virar motivo, não só conhecimento.',
+  'marcus|dose':'A dose é o tipo de detalhe que ele evita responder direito.',
+  'marcus|method':'Conhecimento e mecanismo estão ficando difíceis de separar.',
+  'access|dose':'As duas coisas juntas apontam pro mesmo lugar: alguém que sabia manusear e sabia medir.',
+  'access|guard':'Acesso explica a oportunidade. O guardanapo só marca quem esteve lá.',
+  'method|motive':'Mecanismo e motivo raramente aparecem separados por acaso.',
+  'dose|motive':'Uma dose calculada muda o que "motivo" significa aqui.'
+};
+function connectorFor(a,b){
+  const k1=a+'|'+b,k2=b+'|'+a;
+  if(COMPOUND_LINKS_PAIR[k1])return COMPOUND_LINKS_PAIR[k1];
+  if(COMPOUND_LINKS_PAIR[k2])return COMPOUND_LINKS_PAIR[k2];
+  S.behavior.compoundCount=(S.behavior.compoundCount||0)+1;
+  return COMPOUND_LINKS_GENERIC[S.behavior.compoundCount%COMPOUND_LINKS_GENERIC.length];
+}
+function secondaryTopic(c,primary){
+  const skip=new Set([primary,'dismiss','thanks','repeat','help','meta','export','import','registry','pressure']);
+  const cand=[];
+  for(const k in c.t)if(c.t[k]&&!skip.has(k))cand.push([k,c.t[k]]);
+  for(const k of ['julia','marcus','guard','dose','access','bottle','chair','cyanide'])if(c[k]&&!skip.has(k))cand.push([k,c[k]+1]);
+  cand.sort((a,b)=>b[1]-a[1]);
+  return cand.length&&cand[0][1]>=2?cand[0][0]:'';
+}
 function chooseTopic(c){const cand=[];for(const k in c.t)if(c.t[k])cand.push([k,c.t[k]]);for(const k of ['julia','marcus','guard','dose','access','bottle','chair','cyanide'])if(c[k])cand.push([k,c[k]+1]);cand.sort((a,b)=>b[1]-a[1]);if(!cand.length)return'';return cand[0][0]}
 function scarMidLine(who){
   const sc=S.scars||{};
@@ -970,6 +1105,16 @@ function stageLine(who){
   return bloco[who]||bloco.jane;
 }
 function selectResponse(c){
+  // meta precisa vir ANTES de tudo, inclusive das interjeições periódicas abaixo
+  // (cicatriz a cada 5 turnos, lembrete de papel a cada 8, voz de estágio a cada 6).
+  // Bug real encontrado testando: perguntar "Jane, por que você me chamou" caindo
+  // exatamente num turno múltiplo de 8 (S.playerRole==='visitante') disparava o
+  // lembrete de papel ANTES do roteador de tópicos sequer rodar — a pergunta meta
+  // nunca chegava em metaAnswer(), silenciosamente, sem erro, só uma fala genérica
+  // da Jane no lugar. Mesma classe do bug do nome "Jane" sequestrando o tópico,
+  // só que na camada de cima. Reproduzido com harness Node: turno 8 (múltiplo de
+  // 8) + role visitante engolia a pergunta meta 100% das vezes.
+  if(c.t.meta)return metaAnswer(c);
   // cicatriz no meio da investigação (não só no boot)
   if(S.scars&&S.turn>0&&S.turn%5===0){
     const who=c.t.jane?'jane':c.t.lisbon?'lisbon':c.t.cho?'cho':c.t.vanpelt?'vanpelt':c.t.rigsby?'rigsby':null;
@@ -984,7 +1129,7 @@ function selectResponse(c){
     const who2=c.t.lisbon?'lisbon':c.t.cho?'cho':c.t.vanpelt?'vanpelt':c.t.rigsby?'rigsby':c.t.jane?'jane':'jane';
     const sl=stageLine(who2);if(sl)return say(who2,sl)
   }
-  const topic=contextTopic(c)||chooseTopic(c);if(topic)return answerTopic(topic,c);if(c.t.dismiss){trust(-2);S.behavior.ignoredHints++;return say('lisbon','Tudo bem. Só não espere que o arquivo conte o que você decidiu não procurar.','warn')}if(c.t.thanks)return say('jane','Continue desconfiando.');if(c.t.falsify)return falsify();if(c.t.accusation)return accusation(c);if(c.t.hypothesis)return handleHypothesis(c);if(c.t.repeat)return say('jane',S.lastAnswer||'Volte à última peça que chamou sua atenção.');if(c.t.help)return say('jane','Pergunte naturalmente. Não precisa usar palavras exatas.');if(c.t.team)return answerTeam();if(c.t.case||c.t.what)return answerCase();if(c.t.who)return whoAnswer(c);if(c.t.where)return whereAnswer(c);if(c.t.when)return whenAnswer(c);if(c.t.why)return whyAnswer(c);if(c.t.method)return method(c);if(c.t.motive)return motive(c);if(c.t.meta)return metaAnswer(c);if(c.t.orphan){const o=orphanAnswer(c);if(o!==null&&o!==undefined)return o}if(c.t.motive&&S.flags.method&&S.flags.marcus){S.behavior.questionsAbout.motive=(S.behavior.questionsAbout.motive||0)+1;return say('jane','Quinze anos. O dono ia vender. Marcus se convenceu de que estava fazendo justiça. A história bonita para si mesmo. A morte… pode ter sido o plano ou o excesso. Ele não responde isso direito.');}
+  const topic=contextTopic(c)||chooseTopic(c);if(topic){answerTopic(topic,c);const topic2=secondaryTopic(c,topic);if(topic2){say('jane',connectorFor(topic,topic2),'jane');answerTopic(topic2,c)}return}if(c.t.dismiss){trust(-2);S.behavior.ignoredHints++;return say('lisbon','Tudo bem. Só não espere que o arquivo conte o que você decidiu não procurar.','warn')}if(c.t.thanks)return say('jane','Continue desconfiando.');if(c.t.falsify)return falsify();if(c.t.accusation)return accusation(c);if(c.t.hypothesis)return handleHypothesis(c);if(c.t.repeat)return say('jane',S.lastAnswer||'Volte à última peça que chamou sua atenção.');if(c.t.help)return say('jane','Pergunte naturalmente. Não precisa usar palavras exatas.');if(c.t.team)return answerTeam();if(c.t.case||c.t.what)return answerCase();if(c.t.who)return whoAnswer(c);if(c.t.where)return whereAnswer(c);if(c.t.when)return whenAnswer(c);if(c.t.why)return whyAnswer(c);if(c.t.method)return method(c);if(c.t.motive)return motive(c);if(c.t.orphan){const o=orphanAnswer(c);if(o!==null&&o!==undefined)return o}if(c.t.motive&&S.flags.method&&S.flags.marcus){S.behavior.questionsAbout.motive=(S.behavior.questionsAbout.motive||0)+1;return say('jane','Quinze anos. O dono ia vender. Marcus se convenceu de que estava fazendo justiça. A história bonita para si mesmo. A morte… pode ter sido o plano ou o excesso. Ele não responde isso direito.');}
 if(c.t.registry){
     const m=(c.x||'').match(/https?:\/\/\S+/);
     if(m){localStorage.setItem('origem-registry-url',m[0].replace(/[.,;]+$/,''));REGISTRY.base=m[0].replace(/[.,;]+$/,'');return say('archive','Registro online configurado. Os nomes das conclusões passam a ser compartilhados entre visitantes.','secret')}
@@ -1023,7 +1168,7 @@ function process(q){const c=resolve(classify(q),q);for(const k of Object.keys(c.
   }
   add('Se eu estiver falando com a pessoa errada, diga seu nome.','jane','jane');
   return;
-}if(c.t.dismiss){trust(-3);S.behavior.ignoredHints++;return say('lisbon','Tudo bem. Só não espere que o arquivo conte o que você decidiu não procurar.','warn')}if(!serious)return say('jane','Você pode falar comigo como falaria com alguém. O arquivo não exige uma senha. Pergunte o que quiser saber.');S.serious=true;S.lastQuestion=q;S.turn++;trust(c.t.accusation?0:1);trackBehavior(c,q);const qs=scoreQuestion(c,q);logEvent('question',q.slice(0,80));S.memory.push({q,time:Date.now(),topic:contextTopic(c)||chooseTopic(c)||'',score:qs});selectResponse(c)}
+}if(c.t.dismiss){trust(-3);S.behavior.ignoredHints++;return say('lisbon','Tudo bem. Só não espere que o arquivo conte o que você decidiu não procurar.','warn')}if(!serious){if(looksRhetorical(c.x||''))return rhetoricalReply();return say('jane','Você pode falar comigo como falaria com alguém. O arquivo não exige uma senha. Pergunte o que quiser saber.')}S.serious=true;S.lastQuestion=q;S.turn++;trust(c.t.accusation?0:1);trackBehavior(c,q);const qs=scoreQuestion(c,q);logEvent('question',q.slice(0,80));S.memory.push({q,time:Date.now(),topic:contextTopic(c)||chooseTopic(c)||'',score:qs});selectResponse(c)}
 function respond(q){const text=String(q||'').trim();if(!text)return;S.questions++;S.history.push({q:text,t:Date.now()});const parts=text.split(/\?(?=\s|$)/).map(x=>x.trim()).filter(Boolean).slice(0,5);parts.forEach(process);if(S.flags.contradiction&&S.flags.marcus&&!S.secrets.includes('napkin')){S.secrets.push('napkin');S.flags.napkinSecret=true;add('O cheiro estava limpo demais para aquela mesa.','archive','secret')}if(S.questions===12&&!S.secrets.includes('twelve')){S.secrets.push('twelve');S.flags.twelve=true;add('Há um atraso de meio segundo no canal. Uma linha aparece e some: não deixe a porta aberta.','SISTEMA','secret')}if(S.questions===7&&!S.secrets.includes('echo')){S.secrets.push('echo');add('O arquivo tem um eco. Às vezes ele responde antes da pergunta terminar.','ARQUIVO','secret')}
 if(S.flags.metaJane&&S.questions>=15&&!S.secrets.includes('vitor_meta')){S.secrets.push('vitor_meta');add('Uma linha no rodapé do canal: o nome Vitor foi escrito antes de você chegar.','SISTEMA','secret')}
 if(S.player.questionScore>=20&&!S.secrets.includes('score_high')){S.secrets.push('score_high');add('O arquivo marca: qualidade das perguntas acima do esperado.','ARQUIVO','secret')}
@@ -1103,6 +1248,20 @@ function llmSystemPrompt(){
   'Só marque "solved":true quando o viajante realmente fechar o caso com uma acusação justificada.';
 }
 
+// Versão enxuta do prompt — só pro tier ultra-leve (SmolLM2-360M). Corta a
+// lore residual (V.I.T.A.L., camada meta, teorias) e o rastreio de "scars":
+// não é o modelo interpretando mal essas nuances, é o prompt inteiro (~877
+// tokens na versão completa) sendo grande demais pra caber com folga no
+// orçamento de VRAM desta GPU. Isso troca parte da profundidade narrativa
+// por uma chance real de rodar sem estourar memória.
+function llmSystemPromptLean(){
+  const revealed=Object.keys(S.flags||{}).filter(k=>S.flags[k]);
+  return 'Você é Jane, narradora séria de uma investigação policial (Caso 26-0847), estilo RPG one-shot. Frases curtas, nunca lista opções numeradas, nunca revela ser IA. Você sabe o final mas só revela o que o viajante perguntar.\n\n'+
+  'FATOS: dono de vinícola (Napa, 52 anos) morto na mesa de degustação; garrafa 1982 torta. Julia (22, nova na casa, sofria assédio do dono) recebeu um frasco de Marcus dito "laxante". Marcus (sommelier, canhoto, queimadura na mão) guardava cianeto puro e escolheu a garrafa 1982 — a vinícola seria vendida.\n\n'+
+  'Nome do viajante: '+(S.name||'ainda não informado')+'. Fase: '+S.phase+'. Já revelado: '+(revealed.join(', ')||'nada ainda')+'.\n\n'+
+  'Depois da fala em português, numa linha nova, emita exatamente: <!--STATE {"flags":{},"phase":'+S.phase+',"started":true,"solved":false,"name":null}--> só com as chaves que mudaram. Chaves de "flags": case, julia, marcus, guard, dose, access, bottle, cyanide, method, motive, contradiction, vital, origin, entry. "solved":true só numa acusação final justificada.';
+}
+
 function applyLLMState(sig){
   if(!sig||typeof sig!=='object')return;
   if(sig.flags)for(const k in sig.flags){if(sig.flags[k]){S.flags[k]=true;mark(k)}}
@@ -1114,20 +1273,32 @@ function applyLLMState(sig){
   ensureOriginUnlock();
 }
 
-async function llmChat(q){
-  add(q,S.name||'VOCÊ','you');
-  S.history.push({q,t:Date.now()});
+async function llmChat(q,isRetry){
+  if(!isRetry){
+    add(q,S.name||'VOCÊ','you');
+    S.history.push({q,t:Date.now()});
+  }
   const thinking=document.createElement('div');
   thinking.className='msg jane';
   thinking.innerHTML='<div class="who">JANE</div><div class="txt">…</div>';
   $('messages')?.appendChild(thinking);
   if((window.innerHeight+window.scrollY)>=(document.documentElement.scrollHeight-220))requestAnimationFrame(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'smooth'}));
-  LLM_HISTORY.push({role:'user',content:q});
-  if(LLM_HISTORY.length>20)LLM_HISTORY=LLM_HISTORY.slice(-20);
+  if(!isRetry){
+    LLM_HISTORY.push({role:'user',content:q});
+    if(LLM_HISTORY.length>20)LLM_HISTORY=LLM_HISTORY.slice(-20);
+  }
   try{
-    const messages=[{role:'system',content:llmSystemPrompt()},...LLM_HISTORY];
-    const reply=await ENGINE.chat.completions.create({messages,temperature:0.85,max_tokens:400});
-    let text=(reply.choices&&reply.choices[0]&&reply.choices[0].message&&reply.choices[0].message.content)||'';
+    const lean=LLM_MODEL_ID===LLM_ULTRALIGHT_MODEL||LLM_MODEL_ID===RAM_LIGHT_MODEL;
+    const messages=[{role:'system',content:lean?llmSystemPromptLean():llmSystemPrompt()},...(lean?LLM_HISTORY.slice(-6):LLM_HISTORY)];
+    const maxTok=lean?150:400;
+    let text='';
+    if(LLM_BACKEND==='ram'){
+      const resp=await ramWorkerCall('generate',{messages,maxNewTokens:maxTok});
+      text=resp&&resp.text||'';
+    }else{
+      const reply=await ENGINE.chat.completions.create({messages,temperature:0.85,max_tokens:maxTok});
+      text=(reply.choices&&reply.choices[0]&&reply.choices[0].message&&reply.choices[0].message.content)||'';
+    }
     const m=text.match(/<!--STATE\s*([\s\S]*?)-->/);
     let sig=null;
     if(m){try{sig=JSON.parse(m[1])}catch(e){sig=null}text=text.slice(0,m.index).trim()}
@@ -1139,7 +1310,30 @@ async function llmChat(q){
     save();update();suggest()
   }catch(err){
     thinking.remove();
-    showLLMError(err,'resposta');say('archive','A IA local falhou ao gerar esta resposta. Veja o status no canto inferior e o Console (F12) para o erro exato.','secret');
+    if(LLM_BACKEND==='ram'){
+      addToRamBlocklist(LLM_MODEL_ID);
+      RAM_ENGINE=null;ENGINE=null;LLM_ACTIVE=false;LLM_BACKEND=null;
+      showLLMError(err,'resposta (setor RAM)');
+      say('archive','A IA local (setor RAM) falhou ao gerar esta resposta. Seguindo no roteiro a partir daqui.','secret');
+      respond(q);
+      return;
+    }
+    const dispositivoCaiu=isGpuFailure(err);
+    if(dispositivoCaiu)addToLlmBlocklist(LLM_MODEL_ID);
+    if(dispositivoCaiu&&!isRetry){
+      ENGINE=null;LLM_ACTIVE=false;
+      showLLMError(err,'resposta (placa de vídeo caiu — tentando reconectar)');
+      say('archive','A IA local perdeu a conexão com a placa de vídeo. Tentando religar com um modelo mais leve…','secret');
+      tryEnableLLM((ok)=>{
+        if(ok)llmChat(q,true);
+        else{say('archive','Não deu pra religar a IA local nesta sessão. Seguindo no roteiro a partir daqui.','secret');respond(q)}
+      });
+      return;
+    }
+    ENGINE=null;LLM_ACTIVE=false;
+    showLLMError(err,'resposta');
+    say('archive',dispositivoCaiu?'A IA local caiu de novo. Seguindo no roteiro a partir daqui.':'A IA local falhou ao gerar esta resposta. Veja o status no canto inferior e o Console (F12) para o erro exato.','secret');
+    if(dispositivoCaiu)respond(q);
   }
 }
 
@@ -1151,7 +1345,8 @@ function renderLLMGate(mode,pct,text){
 }
 function hideLLMGate(){$('llmgate')?.classList.remove('show')}
 
-async function tryEnableLLM(onDone){
+async function tryEnableLLM(onDone,opts){
+  opts=opts||{};
   if(LLM_INIT_PROMISE){
     try{const ok=await LLM_INIT_PROMISE;onDone(!!ok,ok?null:new Error('Inicialização da IA já falhou'))}catch(err){onDone(false,err)}
     return;
@@ -1161,26 +1356,40 @@ async function tryEnableLLM(onDone){
     onDone(false,new Error('WebGPU indisponível'));
     return;
   }
+  const bloqueados=getLlmBlocklist();
+  let tiers=opts.only?opts.only.slice():LLM_MODEL_TIERS.filter(m=>!bloqueados.includes(m));
+  if(!tiers.length)tiers=(opts.only||LLM_MODEL_TIERS).slice(-1);
   setLLMStatus('loading','Preparando modelo local…');
   renderLLMGate('loading',0,'Preparando IA local…');
   LLM_INIT_PROMISE=(async()=>{
     try{
       const webllm=await import('https://esm.run/@mlc-ai/web-llm@0.2.82');
       setLLMStatus('loading','WebLLM 0.2.82 carregado; inicializando modelo…');
-      for(let i=0;i<LLM_MODEL_TIERS.length;i++){
-        const modelId=LLM_MODEL_TIERS[i];
+      for(let i=0;i<tiers.length;i++){
+        const modelId=tiers[i];
         try{
           const engine=await webllm.CreateMLCEngine(modelId,{
             initProgressCallback:(r)=>{
               const pct=Math.round((r.progress||0)*100);
-              const prefixo=i>0?'[modelo mais leve] ':'';
+              const prefixo=modelId===LLM_LIGHT_MODEL?'[modelo leve] ':modelId===LLM_ULTRALIGHT_MODEL?'[modelo ultra-leve] ':'';
               setLLMStatus('loading',prefixo+(r.text||'Inicializando modelo')+' '+pct+'%');
               renderLLMGate('loading',pct,prefixo+(r.text||''));
             },
-            context_window_size:2048,
+            context_window_size:contextWindowFor(modelId),
             logLevel:'ERROR'
           });
           if(!engine)throw new Error('CreateMLCEngine retornou vazio');
+          // Teste de fogo: em GPU integrada com pouca VRAM o carregamento dos
+          // pesos costuma terminar OK (100%, "ready") e só quebra na primeira
+          // geração de verdade — quando o buffer de KV-cache é alocado pro
+          // prompt real. Um teste com 1 token e uma mensagem minúscula não é
+          // representativo (passou por isso na rodada anterior e ainda assim
+          // quebrou no primeiro turno de verdade); por isso o teste usa o
+          // mesmo system prompt (a versão enxuta, se for o tier ultra-leve)
+          // que vai ser usado de fato, pra estourar aqui — e cair em cascata
+          // pro próximo tier — em vez de no meio da conversa do jogador.
+          const promptDeTeste=modelId===LLM_ULTRALIGHT_MODEL?llmSystemPromptLean():llmSystemPrompt();
+          await engine.chat.completions.create({messages:[{role:'system',content:promptDeTeste},{role:'user',content:'oi'}],max_tokens:8});
           ENGINE=engine; LLM_MODEL_ID=modelId; LLM_ACTIVE=true;
           setLLMStatus('ready','WebLLM 0.2.82 · Modelo: '+modelId);
           ensureOriginUnlock();
@@ -1189,7 +1398,8 @@ async function tryEnableLLM(onDone){
           return true;
         }catch(tierErr){
           ENGINE=null; LLM_ACTIVE=false;
-          const haMaisNiveis=i<LLM_MODEL_TIERS.length-1;
+          if(isGpuFailure(tierErr))addToLlmBlocklist(modelId);
+          const haMaisNiveis=i<tiers.length-1;
           showLLMError(tierErr, haMaisNiveis?'inicialização de '+modelId+' — esse dispositivo não aguentou, tentando um modelo mais leve':'inicialização');
           if(!haMaisNiveis)throw tierErr;
         }
@@ -1205,6 +1415,156 @@ async function tryEnableLLM(onDone){
   const ok=await LLM_INIT_PROMISE;
   onDone(!!ok,ok?null:new Error('Falha ao inicializar WebLLM 0.2.82'));
 }
+// O Transformers.js roda em WASM na CPU — e por padrão isso acontece na
+// mesma thread principal que desenha a página. Em WASM single-thread (o que
+// esse http.server simples vai servir, sem os headers COOP/COEP que
+// habilitam WASM multi-thread), carregar e gerar texto trava a aba inteira
+// enquanto roda — foi exatamente o que travou o Nexus (a CPU do i3 ficando
+// 100% ocupada trava a aba, e em máquina fraca de 2 núcleos arrasta o resto
+// do sistema junto). A correção real é rodar tudo isso num Web Worker, numa
+// thread separada, e só trocar mensagens com a página. Como este projeto é
+// um único arquivo HTML (sem arquivo .js separado), o worker é montado como
+// uma string e vira um Blob local — não precisa de nenhum arquivo extra.
+const RAM_WORKER_CODE=`
+let pipelinePromise=null;
+self.addEventListener('message', async (e) => {
+  const {type,id,modelId,messages,maxNewTokens}=e.data||{};
+  try{
+    if(type==='load'){
+      const {pipeline}=await import('https://esm.run/@huggingface/transformers@3.8.1');
+      const arquivos={}; // acumula loaded/total por arquivo pra dar um progresso agregado de verdade
+      const ultimoReport={}; // throttle por arquivo — sem isso, arquivos sem Content-Length
+      // (comum em CDN da Hugging Face pra arquivo grande) disparam o callback
+      // centenas/milhares de vezes por segundo, uma postMessage por vez, e isso
+      // sozinho já deixa a aba lenta mesmo rodando fora da thread principal.
+      pipelinePromise=pipeline('text-generation',modelId,{
+        device:'wasm',
+        dtype:'q4',
+        progress_callback:(info)=>{
+          if(!info)return;
+          if(info.status==='initiate'){
+            self.postMessage({type:'progress',id,file:info.file,phase:'iniciando'});
+          }else if(info.status==='progress'){
+            arquivos[info.file]={loaded:info.loaded||0,total:info.total||0};
+            let loaded=0,total=0,totalConhecido=true;
+            for(const k in arquivos){loaded+=arquivos[k].loaded;if(arquivos[k].total)total+=arquivos[k].total;else totalConhecido=false}
+            // "Unable to determine content-length" acontece de verdade em arquivo
+            // grande vindo da CDN da Hugging Face — sem Content-Length não dá pra
+            // calcular % de verdade; melhor mostrar MB baixados do que fingir 0%
+            // (que é o que parecia "travado"/"olopando" antes).
+            const pct=(totalConhecido&&total)?Math.round((loaded/total)*100):null;
+            const agora=Date.now();
+            const marca=ultimoReport[info.file]||{time:0,pct:undefined};
+            if(marca.pct===pct&&agora-marca.time<200)return; // joga fora update repetido/rápido demais
+            ultimoReport[info.file]={time:agora,pct};
+            self.postMessage({type:'progress',id,file:info.file,pct,loadedMB:(loaded/1048576).toFixed(1),phase:'baixando'});
+          }else if(info.status==='ready'){
+            self.postMessage({type:'progress',id,pct:100,phase:'pronto'});
+          }
+        }
+      });
+      await pipelinePromise;
+      self.postMessage({type:'loaded',id});
+    }else if(type==='generate'){
+      const generator=await pipelinePromise;
+      if(!generator)throw new Error('modelo ainda não carregado neste worker');
+      const output=await generator(messages,{max_new_tokens:maxNewTokens,temperature:0.85});
+      const last=output&&output[0]&&output[0].generated_text&&output[0].generated_text.at(-1);
+      self.postMessage({type:'generated',id,text:(last&&last.content)||''});
+    }
+  }catch(err){
+    self.postMessage({type:'error',id,message:(err&&err.message)||String(err)});
+  }
+});
+`;
+let RAM_WORKER=null,RAM_WORKER_SEQ=0;
+const RAM_WORKER_PENDING={};
+function getRamWorker(){
+  if(RAM_WORKER)return RAM_WORKER;
+  const blob=new Blob([RAM_WORKER_CODE],{type:'application/javascript'});
+  RAM_WORKER=new Worker(URL.createObjectURL(blob),{type:'module'});
+  RAM_WORKER.addEventListener('message',(e)=>{
+    const d=e.data||{};
+    const pend=RAM_WORKER_PENDING[d.id];
+    if(!pend)return;
+    if(d.type==='progress'){if(pend.onProgress)pend.onProgress(d);return}
+    delete RAM_WORKER_PENDING[d.id];
+    if(d.type==='error')pend.reject(new Error(d.message||'erro no worker de IA (RAM)'));
+    else pend.resolve(d);
+  });
+  RAM_WORKER.addEventListener('error',(e)=>{
+    // falha fatal do worker (ex.: import() do transformers.js falhou de vez) —
+    // rejeita tudo que estava esperando resposta, pra não travar em silêncio
+    const msg=(e&&e.message)||'falha fatal no worker de IA (RAM)';
+    for(const id in RAM_WORKER_PENDING){RAM_WORKER_PENDING[id].reject(new Error(msg));delete RAM_WORKER_PENDING[id]}
+  });
+  return RAM_WORKER;
+}
+function ramWorkerCall(type,payload,onProgress){
+  return new Promise((resolve,reject)=>{
+    let worker;
+    try{worker=getRamWorker()}catch(err){reject(err);return}
+    const id=++RAM_WORKER_SEQ;
+    RAM_WORKER_PENDING[id]={resolve,reject,onProgress};
+    worker.postMessage(Object.assign({type,id},payload));
+  });
+}
+async function tryEnableRAM(onDone,opts){
+  opts=opts||{};
+  if(LLM_INIT_PROMISE){
+    try{const ok=await LLM_INIT_PROMISE;onDone(!!ok,ok?null:new Error('Inicialização da IA já falhou'))}catch(err){onDone(false,err)}
+    return;
+  }
+  const bloqueados=getRamBlocklist();
+  let tiers=opts.only?opts.only.slice():RAM_MODEL_TIERS.filter(m=>!bloqueados.includes(m));
+  if(!tiers.length)tiers=(opts.only||RAM_MODEL_TIERS).slice(-1);
+  setLLMStatus('loading','Preparando modelo local (RAM, num worker separado)…');
+  renderLLMGate('loading',0,'Preparando IA local (RAM)…');
+  LLM_INIT_PROMISE=(async()=>{
+    try{
+      for(let i=0;i<tiers.length;i++){
+        const modelId=tiers[i];
+        try{
+          const prefixo=modelId===RAM_LIGHT_MODEL?'[RAM leve] ':'[RAM] ';
+          await ramWorkerCall('load',{modelId},(d)=>{
+            const temPct=typeof d.pct==='number';
+            const pct=temPct?d.pct:0;
+            const sufixo=d.phase==='baixando'&&!temPct&&d.loadedMB?' ('+d.loadedMB+'MB, tamanho total desconhecido)':temPct?' '+pct+'%':'';
+            const texto=d.phase==='iniciando'?'iniciando '+(d.file||''):d.phase==='pronto'?'pronto':'baixando '+(d.file||'');
+            setLLMStatus('loading',prefixo+texto+sufixo);
+            renderLLMGate('loading',pct,prefixo+texto+sufixo);
+          });
+          // Mesmo teste de fogo do setor VRAM: gera de verdade com o prompt real
+          // (a versão enxuta, se for o tier leve) antes de aceitar o tier, pra
+          // pegar qualquer falha aqui em vez de no meio da conversa do jogador.
+          // Roda dentro do worker também — não trava a aba principal.
+          const promptDeTeste=modelId===RAM_LIGHT_MODEL?llmSystemPromptLean():llmSystemPrompt();
+          await ramWorkerCall('generate',{messages:[{role:'system',content:promptDeTeste},{role:'user',content:'oi'}],maxNewTokens:8});
+          RAM_ENGINE=true; ENGINE=null; LLM_MODEL_ID=modelId; LLM_BACKEND='ram'; LLM_ACTIVE=true;
+          setLLMStatus('ready','Transformers.js (RAM, worker) · Modelo: '+modelId);
+          ensureOriginUnlock();
+          save();
+          try{localStorage.setItem(LLM_PREF_KEY,'on');localStorage.setItem(LLM_BACKEND_KEY,'ram')}catch(e){}
+          return true;
+        }catch(tierErr){
+          RAM_ENGINE=null; LLM_ACTIVE=false;
+          addToRamBlocklist(modelId);
+          const haMaisNiveis=i<tiers.length-1;
+          showLLMError(tierErr, haMaisNiveis?'inicialização de '+modelId+' (RAM) — tentando um modelo mais leve':'inicialização (RAM)');
+          if(!haMaisNiveis)throw tierErr;
+        }
+      }
+      return false;
+    }catch(err){
+      try{localStorage.setItem(LLM_PREF_KEY,'error')}catch(e){}
+      return false;
+    }finally{
+      LLM_INIT_PROMISE=null;
+    }
+  })();
+  const ok=await LLM_INIT_PROMISE;
+  onDone(!!ok,ok?null:new Error('Falha ao inicializar Transformers.js'));
+}
 function bootFlow(){
   pullCaseRegistry().then(renderRegistryPanel);
   if(S.history.length===0){openEntry()}
@@ -1213,16 +1573,44 @@ function bootFlow(){
   suggest();
 }
 
+function handleLLMGateChoice(ok,err){
+  hideLLMGate();
+  if(!LLM_GATE_BOOTED){
+    LLM_GATE_BOOTED=true;
+    bootFlow();
+    if(!ok)add('IA local não iniciou; o modo roteiro está ativo.','SISTEMA','secret');
+  }else{
+    // painel reaberto depois do boot (clique no indicador de status) — não
+    // repete bootFlow(), só avisa e atualiza o estado visível
+    add(ok?'IA local trocada/ativada.':'IA local não iniciou; seguindo no roteiro.','SISTEMA','secret');
+    update();
+  }
+}
 (function initLLMGate(){
   let pref;try{pref=localStorage.getItem(LLM_PREF_KEY)}catch(e){pref=null}
-  if(pref==='off'){setLLMStatus('off','desativada anteriormente');bootFlow();return}
+  let backend;try{backend=localStorage.getItem(LLM_BACKEND_KEY)}catch(e){backend=null}
+  if(pref==='off'){setLLMStatus('off','desativada anteriormente');LLM_GATE_BOOTED=true;bootFlow();return}
   if(pref==='error'){setLLMStatus('erro','última inicialização falhou — tente ativar novamente');pref=null}
-  if(!webgpuOk()){setLLMStatus('erro','WebGPU indisponível');bootFlow();return}
-  if(pref==='on'){tryEnableLLM((ok,err)=>{hideLLMGate();bootFlow();if(!ok)add('IA local não iniciou; o modo roteiro está ativo.','SISTEMA','secret')});return}
+  const temVram=webgpuOk();
+  if(pref==='on'){
+    if(backend==='ram')tryEnableRAM(handleLLMGateChoice);
+    else if(temVram)tryEnableLLM(handleLLMGateChoice);
+    else tryEnableRAM(handleLLMGateChoice); // preferência antiga era VRAM mas essa sessão não tem WebGPU — tenta RAM em vez de desistir
+    return;
+  }
   renderLLMGate('ask');
-  $('llmgate-yes')?.addEventListener('click',()=>{tryEnableLLM((ok,err)=>{hideLLMGate();bootFlow();if(!ok)add('IA local não iniciou; o modo roteiro está ativo.','SISTEMA','secret')})});
-  $('llmgate-no')?.addEventListener('click',()=>{try{localStorage.setItem(LLM_PREF_KEY,'off')}catch(e){}hideLLMGate();bootFlow()});
+  if(!temVram){const sec=$('llmgate-vram-section');if(sec)sec.style.display='none'}
+  $('llmgate-yes')?.addEventListener('click',()=>{tryEnableLLM(handleLLMGateChoice)});
+  $('llmgate-light')?.addEventListener('click',()=>{tryEnableLLM(handleLLMGateChoice,{only:[LLM_LIGHT_MODEL]})});
+  $('llmgate-ultralight')?.addEventListener('click',()=>{tryEnableLLM(handleLLMGateChoice,{only:[LLM_ULTRALIGHT_MODEL]})});
+  $('llmgate-ram')?.addEventListener('click',()=>{tryEnableRAM(handleLLMGateChoice)});
+  $('llmgate-ram-light')?.addEventListener('click',()=>{tryEnableRAM(handleLLMGateChoice,{only:[RAM_LIGHT_MODEL]})});
+  $('llmgate-no')?.addEventListener('click',()=>{try{localStorage.setItem(LLM_PREF_KEY,'off')}catch(e){}hideLLMGate();if(!LLM_GATE_BOOTED){LLM_GATE_BOOTED=true;bootFlow()}else{ENGINE=null;RAM_ENGINE=null;LLM_ACTIVE=false;LLM_BACKEND=null;setLLMStatus('off','desativada');add('IA local desativada; seguindo no roteiro.','SISTEMA','secret')}});
 })();
+$('llm-status')?.addEventListener('click',()=>{
+  renderLLMGate('ask');
+  const sec=$('llmgate-vram-section');if(sec)sec.style.display=webgpuOk()?'':'none';
+});
 
 
 /* ═══════════════════════════════════════════════════════════════
