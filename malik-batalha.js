@@ -191,6 +191,14 @@
   // overflow de ninguém.
   function falarMalik(raiz, texto, callback) {
     var rect = raiz.getBoundingClientRect();
+    if (!rect.width && !rect.height) {
+      // O elemento-âncora ainda não tem layout — nascer com esse rect
+      // zerado jogava a bolha inteira no canto (0,0) da tela. Espera um
+      // quadro (tempo de sobra pro layout assentar) e tenta de novo, em
+      // vez de desenhar torto.
+      requestAnimationFrame(function () { falarMalik(raiz, texto, callback); });
+      return;
+    }
     var caixaFala = el('div', 'position:fixed;left:' + (rect.left + rect.width / 2) + 'px;top:' + (rect.top - 10) + 'px;transform:translate(-50%,-100%);width:min(86vw,420px);background:rgba(7,8,13,.92);border:1px solid rgba(255,43,58,.4);border-radius:6px;padding:.6rem .8rem;font-family:Consolas,monospace;font-size:12.5px;line-height:1.5;color:#E8C97A;opacity:0;transition:opacity .35s ease;white-space:pre-wrap;min-height:2.6em;z-index:700015;');
     document.body.appendChild(caixaFala);
     // A bolha cresce conforme o texto quebra linha (2-3 linhas em falas
@@ -226,6 +234,10 @@
   // vermelho/dourado dele — dá pra saber quem tá falando só pela cor.
   function falarIrmaos(raiz, texto, callback) {
     var rect = raiz.getBoundingClientRect();
+    if (!rect.width && !rect.height) {
+      requestAnimationFrame(function () { falarIrmaos(raiz, texto, callback); });
+      return;
+    }
     var caixaFala = el('div', 'position:fixed;left:' + (rect.left + rect.width / 2) + 'px;top:' + (rect.top - 10) + 'px;transform:translate(-50%,-100%);width:min(86vw,420px);background:rgba(7,8,13,.92);border:1px solid rgba(180,210,255,.45);border-radius:6px;padding:.6rem .8rem;font-family:Consolas,monospace;font-size:12.5px;line-height:1.5;color:#CFE0FF;opacity:0;transition:opacity .35s ease;white-space:pre-wrap;min-height:2.6em;z-index:700015;');
     document.body.appendChild(caixaFala);
     // mesma proteção de falarMalik — nunca deixa o topo sair da tela
