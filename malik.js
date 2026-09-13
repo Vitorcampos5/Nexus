@@ -110,7 +110,7 @@
               // em cima), e o script inteiro para de funcionar em
               // silêncio. Texto não tem essa restrição.
               // ————————————————————————————————————————————————————————————
-             var DATA_DESPERTAR = { dia: '08', mes: '09', hora: '22', minuto: '00' };
+             var DATA_DESPERTAR = { dia: '20', mes: '09', hora: '21', minuto: '36' };
              // Exposta globalmente — o cronômetro em nexus.html lê daqui
              // (mesma origem, via window.top) em vez de manter cópia
              // própria. Antes tinha duas cópias independentes: editar

@@ -81,6 +81,12 @@
   };
 
   var ativo = false; // impede dois confrontos simultâneos
+  // Exposta só pro botão de recomeço (modo de teste) conseguir chamar
+  // iniciarConfrontoMalik de novo depois que a luta já terminou — sem
+  // isso, `ativo` (pensada pra impedir dois confrontos ao mesmo tempo
+  // numa luta real) ficava true pra sempre e bloqueava qualquer nova
+  // chamada, mesmo com a tela de fim já removida (dava tela preta).
+  window.NexusMalikPermitirNovaLuta = function () { ativo = false; };
   var audioDoMalik = null; // quando as trilhas dele existirem, apontar aqui — o silenciador abaixo já ignora essa referência
   var pararDeSilenciar = null;
 
@@ -668,6 +674,15 @@
       });
       } // fim iniciarSequenciaCaptura
     } else {
+      // Retomando (F5 no meio da luta, ou reload sem começar do zero): a
+      // sequência de captura acima é o único lugar que normalmente
+      // posiciona o elemento da alma (style.left/top) — pulando direto
+      // pra revelarMalik() sem isso, a alma ficava com left/top nunca
+      // definidos, e o navegador renderizava ela presa no canto superior
+      // esquerdo da caixa, mesmo com almaX/almaY (as variáveis) já
+      // corretas (centro). Sincroniza aqui antes de revelar.
+      alma.style.left = (almaX - ALMA_TAM / 2) + 'px';
+      alma.style.top = (almaY - ALMA_TAM / 2) + 'px';
       revelarMalik();
     }
 
@@ -768,13 +783,18 @@
     // "A Linha" — ataque 1D: tudo reduzido a um único eixo. Um feixe
     // varre a caixa (horizontal ou vertical, trocando de eixo às vezes
     // ao bater na borda) — só dói depois do telegraph inicial.
+    // "A Linha" — ataque 1D: tudo reduzido a um único eixo. Uma barra
+    // varre a caixa continuamente (nunca para) e alterna, de tempos em
+    // tempos, entre perigosa e piscando (aviso, sem dano) — o piscar é
+    // uma janela de segurança por cima do movimento contínuo, não uma
+    // pausa nele.
     function fase2Cache() {
       limparProjeteis();
       trocarPoseMalik(retrato, POSE_POR_FASE.cache);
       var horizontal = true;
       var pos = CAIXA_H / 2, dir = 1;
       var perigoso = false;
-      var feixe = el('div', 'position:absolute;z-index:6;background:linear-gradient(90deg,transparent,' + VERMELHO + ',transparent);box-shadow:0 0 16px ' + VERMELHO + ';pointer-events:none;opacity:.5;transition:opacity .3s ease;');
+      var feixe = el('div', 'position:absolute;z-index:6;background:linear-gradient(90deg,transparent,' + VERMELHO + ',transparent);box-shadow:0 0 16px ' + VERMELHO + ';pointer-events:none;opacity:.3;');
       caixa.appendChild(feixe);
       function posicionarFeixe() {
         if (horizontal) {
@@ -786,11 +806,28 @@
         }
       }
       posicionarFeixe();
-      daquiA(900, function () {
+
+      // Ciclo de aviso: pisca por ~1s (seguro), depois fica perigosa por
+      // um tempo (continuando a se mover o tempo todo), depois pisca de
+      // novo — se repete durante toda a fase.
+      function cicloAviso() {
         if (faseAtual !== 2 || modoAtual !== 'fase') return;
-        perigoso = true;
-        feixe.style.opacity = '.92';
-      });
+        perigoso = false;
+        var piscadas = 0;
+        var pisca = setInterval(function () {
+          if (faseAtual !== 2 || modoAtual !== 'fase') { clearInterval(pisca); return; }
+          piscadas++;
+          feixe.style.opacity = (piscadas % 2) ? '.85' : '.25';
+          if (piscadas >= 6) {
+            clearInterval(pisca);
+            perigoso = true;
+            feixe.style.opacity = '.92';
+            daquiA(2200 + Math.random() * 500, cicloAviso);
+          }
+        }, 170);
+      }
+      daquiA(600, cicloAviso);
+
       var intervalo = setInterval(function () {
         if (faseAtual !== 2 || modoAtual !== 'fase') { clearInterval(intervalo); if (feixe.parentNode) feixe.remove(); return; }
         var limite = horizontal ? CAIXA_H : CAIXA_W;
@@ -900,40 +937,19 @@
       }
       daquiA(700, golpe);
 
-      // Complementar: a broca original — retângulos vermelhos surgindo
-      // dos 4 cantos, de vida curta. De propósito difíceis de acertar o
-      // viajante (janela curta, cantos fáceis de evitar por instinto) —
-      // tensão de fundo por cima das paredes do cubo, não a ameaça
-      // principal desta fase.
-      var CANTOS_BROCA = [[0, 0], [1, 0], [0, 1], [1, 1]];
-      var retangulosBroca = [];
+      // Complementar: a broca original — bolinhas nascendo do centro e
+      // se espalhando em espiral (raio cresce junto com o ângulo). Tensão
+      // de fundo por cima das paredes do cubo, não a ameaça principal
+      // desta fase. Usa spawnProjetil — mesma colisão de sempre.
+      var angBroca = Math.random() * Math.PI * 2;
       var brocaLoop = setInterval(function () {
-        if (faseAtual !== 4 || modoAtual !== 'fase') {
-          clearInterval(brocaLoop);
-          retangulosBroca.forEach(function (r) { if (r.parentNode) r.remove(); });
-          return;
-        }
-        var canto = CANTOS_BROCA[Math.floor(Math.random() * CANTOS_BROCA.length)];
-        var lw = 60 + Math.random() * 30, lh = 60 + Math.random() * 30;
-        var left = canto[0] ? CAIXA_W - lw : 0;
-        var top = canto[1] ? CAIXA_H - lh : 0;
-        var ret = el('div', 'position:absolute;z-index:6;left:' + left + 'px;top:' + top + 'px;width:' + lw + 'px;height:' + lh + 'px;background:rgba(255,43,58,.35);border:2px solid ' + VERMELHO + ';box-shadow:0 0 10px ' + VERMELHO + ';pointer-events:none;opacity:0;transition:opacity .3s ease;');
-        caixa.appendChild(ret);
-        retangulosBroca.push(ret);
-        requestAnimationFrame(function () { ret.style.opacity = '1'; });
-        daquiA(500, function () {
-          if (faseAtual === 4 && modoAtual === 'fase') {
-            var dentro = almaX >= left && almaX <= left + lw && almaY >= top && almaY <= top + lh;
-            if (dentro) aplicarDano(7 + Math.random() * 4);
-          }
-          ret.style.opacity = '0';
-          daquiA(300, function () {
-            if (ret.parentNode) ret.remove();
-            var idx = retangulosBroca.indexOf(ret);
-            if (idx !== -1) retangulosBroca.splice(idx, 1);
-          });
-        });
-      }, 1400);
+        if (faseAtual !== 4 || modoAtual !== 'fase') { clearInterval(brocaLoop); return; }
+        angBroca += 0.55;
+        var raio = 20 + (angBroca % 6) * 24;
+        var cx = CAIXA_W / 2, cy = CAIXA_H / 2;
+        var x = cx + Math.cos(angBroca) * raio, y = cy + Math.sin(angBroca) * raio;
+        spawnProjetil({ x: x, y: y, vx: Math.cos(angBroca + Math.PI / 2) * 2.2, vy: Math.sin(angBroca + Math.PI / 2) * 2.2, cor: '#ff5540', tam: 6 });
+      }, 90);
     }
 
     // "O Impossível" — ataque 4D: paradoxo temporal. Círculos azuis
@@ -957,37 +973,68 @@
       }, 50);
 
       var zombandoAgora = false; // trava — sem ela, errar vários vermelhos seguidos empilhava várias falas na mesma posição, texto piscando/embaralhado
+      var proximaCor = Math.random() < 0.5 ? 'azul' : 'vermelho'; // primeira sorteada, dali em diante sempre alterna
+      var circulosAtivos = []; // pra nenhum círculo novo nascer em cima de um que já existe
 
       function novoCirculo() {
         if (faseAtual !== 5 || modoAtual !== 'fase') return;
-        var azul = Math.random() < 0.5;
+        var azul = proximaCor === 'azul';
+        proximaCor = azul ? 'vermelho' : 'azul'; // nunca a mesma cor duas vezes seguidas
+
         var raio = 27 + Math.random() * 15;
-        var x = raio + Math.random() * (CAIXA_W - raio * 2);
-        var y = raio + Math.random() * (CAIXA_H - raio * 2);
+        var x, y, tentativas = 0;
+        do {
+          x = raio + Math.random() * (CAIXA_W - raio * 2);
+          y = raio + Math.random() * (CAIXA_H - raio * 2);
+          tentativas++;
+        } while (tentativas < 14 && circulosAtivos.some(function (c) {
+          var dx0 = c.x - x, dy0 = c.y - y;
+          return Math.sqrt(dx0 * dx0 + dy0 * dy0) < (c.raio + raio + 18);
+        }));
+
         var cor = azul ? AZUL : VERMELHO;
         var circulo = el('div', 'position:absolute;z-index:6;left:' + (x - raio) + 'px;top:' + (y - raio) + 'px;width:' + (raio * 2) + 'px;height:' + (raio * 2) + 'px;border-radius:50%;border:2px solid ' + cor + ';background:' + cor + '26;box-shadow:0 0 12px ' + cor + ';pointer-events:none;opacity:0;transition:opacity .35s ease;');
         caixa.appendChild(circulo);
         requestAnimationFrame(function () { circulo.style.opacity = '1'; });
 
+        // Estado próprio (não os x/y fixos de antes) — o círculo persegue
+        // o viajante devagar, então a posição muda com o tempo.
+        var estado = { x: x, y: y, raio: raio };
+        circulosAtivos.push(estado);
+        function removerDosAtivos() {
+          var idx = circulosAtivos.indexOf(estado);
+          if (idx !== -1) circulosAtivos.splice(idx, 1);
+        }
+
+        var VELOCIDADE = 0.5;
         var checagem = setInterval(function () {
-          if (faseAtual !== 5 || modoAtual !== 'fase') { clearInterval(checagem); if (circulo.parentNode) circulo.remove(); return; }
-          var dx2 = almaX - x, dy2 = almaY - y;
-          var dentro = Math.sqrt(dx2 * dx2 + dy2 * dy2) < raio;
+          if (faseAtual !== 5 || modoAtual !== 'fase') { clearInterval(checagem); removerDosAtivos(); if (circulo.parentNode) circulo.remove(); return; }
+          var dxp = almaX - estado.x, dyp = almaY - estado.y;
+          var distP = Math.sqrt(dxp * dxp + dyp * dyp);
+          if (distP > 3) {
+            estado.x += (dxp / distP) * VELOCIDADE;
+            estado.y += (dyp / distP) * VELOCIDADE;
+            circulo.style.left = (estado.x - raio) + 'px';
+            circulo.style.top = (estado.y - raio) + 'px';
+          }
+          var dentro = distP < raio;
           if (!dentro) return;
           if (azul && movendoAgora) {
             // Paradoxo: "por ter desviado, isso te acertou" — puxa a
             // alma de volta pro centro do círculo, visualmente, como se
             // nunca tivesse saído dali.
             clearInterval(checagem);
+            removerDosAtivos();
             circulo.style.borderColor = '#fff';
             alma.style.transition = 'left .35s cubic-bezier(.2,.9,.2,1), top .35s cubic-bezier(.2,.9,.2,1)';
-            alma.style.left = (x - ALMA_TAM / 2) + 'px';
-            alma.style.top = (y - ALMA_TAM / 2) + 'px';
+            alma.style.left = (estado.x - ALMA_TAM / 2) + 'px';
+            alma.style.top = (estado.y - ALMA_TAM / 2) + 'px';
             setTimeout(function () { alma.style.transition = ''; }, 380);
             aplicarDano(10 + Math.random() * 5);
             if (circulo.parentNode) circulo.remove();
           } else if (!azul && !movendoAgora) {
             clearInterval(checagem);
+            removerDosAtivos();
             aplicarDano(10 + Math.random() * 5);
             if (!zombandoAgora) {
               zombandoAgora = true;
@@ -999,6 +1046,7 @@
 
         daquiA(2600, function () {
           clearInterval(checagem);
+          removerDosAtivos();
           if (circulo.parentNode) {
             circulo.style.opacity = '0';
             setTimeout(function () { if (circulo.parentNode) circulo.remove(); }, 350);
@@ -1157,18 +1205,6 @@
       limparProjeteis();
       rodando = false;
 
-      // Atalho de teste: pula a cutscene inteira (~46s: fantasmas,
-      // esferas, cameo do Leyn, último ataque do Malik, expulsão) e vai
-      // direto pro estado final — poeira marcada, luta resolvida, ícone
-      // revertido. Sem isso, testar "só a luta" via ?malikTeste=1
-      // dependia de esperar a cutscene toda rodar (ou de não fechar o
-      // teste antes dela terminar) só pra confirmar o resultado.
-      if (/[?&]malikTeste=1\b/.test(location.search)) {
-        var esferaEls = []; // restauracaoCompleta espera essa variável — as normais são declaradas mais abaixo, que a gente nem chega a rodar aqui
-        restauracaoCompleta();
-        return;
-      }
-
       var choques = 0;
       var vibra = setInterval(function () {
         choques++;
@@ -1181,7 +1217,7 @@
       var fantasma1 = null, fantasma2 = null, linha = null, anel = null;
       var esferaEls = [];
       var mensagemEl = null, leynEl = null, leynAnimacaoAtual = null;
-      var ALTURA_LEYN = 170;
+      var ALTURA_LEYN = Math.round(window.innerHeight * 0.68); // relativo à tela — subido de novo: o personagem é alto/estreito (307:987), então a largura real fica bem menor que a altura sugere
 
       function fantasmasJuntos() {
         linha = el('div', 'position:relative;display:flex;align-items:center;gap:14px;');
@@ -1202,6 +1238,14 @@
 
         anel = el('div', 'position:absolute;width:' + (ALMA_TAM + 16) + 'px;height:' + (ALMA_TAM + 16) + 'px;border-radius:50%;border:1px solid rgba(180,210,255,.6);left:' + (almaX - (ALMA_TAM + 16) / 2) + 'px;top:' + (almaY - (ALMA_TAM + 16) / 2) + 'px;opacity:0;transition:opacity 1s ease;box-shadow:0 0 14px rgba(180,210,255,.5);pointer-events:none;');
         caixa.appendChild(anel);
+        // O escudo dos irmãos acompanha o viajante — sem isso ele nascia
+        // preso na posição de quando apareceu e nunca mais se mexia,
+        // mesmo com a alma andando livre pela caixa depois.
+        var seguirAnel = setInterval(function () {
+          if (!anel || !anel.parentNode) { clearInterval(seguirAnel); return; }
+          anel.style.left = (almaX - (ALMA_TAM + 16) / 2) + 'px';
+          anel.style.top = (almaY - (ALMA_TAM + 16) / 2) + 'px';
+        }, 30);
         requestAnimationFrame(function () { anel.style.opacity = '1'; });
       }
 
@@ -1288,7 +1332,7 @@
 
             daquiA(900, function () {
               falarIrmaos(linha || caixa, 'Ainda estamos aqui.', function () {
-                daquiA(300, function () { falarMalik(caixa, '...Isso não deveria ter segurado.'); });
+                daquiA(300, function () { falarMalik(caixa, 'Vamos ver quanto tempo vocês conseguem comprar.'); });
               });
             });
           });
@@ -1339,6 +1383,39 @@
             flash.style.opacity = '1';
             setTimeout(function () { flash.style.opacity = '0'; setTimeout(function () { flash.remove(); }, 200); }, 90);
           });
+
+          // A estocada acerta perto do quadro com o efeito de fogo (~950ms
+          // dentro da tira de 1400ms) — o HP dele despenca rápido, não aos
+          // poucos: alguns números caindo em sequência bem curta, não uma
+          // barra suave. Retrato reage com sacudida + flash vermelho.
+          daquiA(950, function () {
+            retrato.style.transition = 'transform .08s ease';
+            var sacudidas = 0;
+            var sacode = setInterval(function () {
+              sacudidas++;
+              retrato.style.transform = 'translateX(' + (sacudidas % 2 ? -6 : 6) + 'px)';
+              if (sacudidas > 5) { clearInterval(sacode); retrato.style.transform = 'none'; }
+            }, 45);
+            var flashVermelho = el('div', 'position:absolute;inset:0;background:' + VERMELHO + ';opacity:.5;mix-blend-mode:screen;pointer-events:none;transition:opacity .3s ease;');
+            retrato.appendChild(flashVermelho);
+            requestAnimationFrame(function () { flashVermelho.style.opacity = '0'; });
+            daquiA(320, function () { if (flashVermelho.parentNode) flashVermelho.remove(); });
+
+            var hpFalso = 100;
+            var numeroHP = el('div', 'position:absolute;left:50%;top:-4px;transform:translateX(-50%);font-family:Consolas,monospace;font-size:13px;font-weight:bold;color:' + VERMELHO + ';text-shadow:0 0 8px rgba(255,43,58,.8);pointer-events:none;white-space:nowrap;');
+            retrato.appendChild(numeroHP);
+            var quedaHP = setInterval(function () {
+              hpFalso -= 8 + Math.random() * 10;
+              if (hpFalso <= 0) {
+                hpFalso = 0;
+                numeroHP.textContent = 'HP 0%';
+                clearInterval(quedaHP);
+                daquiA(500, function () { if (numeroHP.parentNode) numeroHP.remove(); });
+              } else {
+                numeroHP.textContent = 'HP ' + Math.floor(hpFalso) + '%';
+              }
+            }, 60);
+          });
         });
       }
 
@@ -1368,8 +1445,7 @@
           if (audioDoMalik.volume <= 0.001) { clearInterval(fadeAudio); audioDoMalik.pause(); }
         }, 90);
         daquiA(1700, function () {
-          retomarNexus();
-          raiz.remove();
+          var testando = /[?&]malikTeste=1\b/.test(location.search);
           esferaEls.forEach(function (o) { o.remove(); });
           if (pararDeSilenciar) pararDeSilenciar();
           // M.A.L.I.K. em si foi embora — mas vitória no B é cara, não
@@ -1394,6 +1470,30 @@
             }
           } catch (e) {}
           try { if (window.NexusMalikRestaurarAgora) window.NexusMalikRestaurarAgora(); } catch (e) {}
+
+          if (testando) {
+            // Fica na tela — retomarNexus()+raiz.remove() revelava o
+            // nexus de novo por baixo, o que já é "voltar pro nexus" na
+            // prática mesmo sem reload nenhum. Em teste, cobre a luta
+            // inteira e mostra um botão de recomeço no lugar.
+            raiz.remove();
+            var fimTeste = el('div', 'position:fixed;inset:0;z-index:850000;background:#050505;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;font-family:Georgia,serif;');
+            var titulo = el('div', 'color:' + OURO + ';font-size:17px;letter-spacing:.04em;text-align:center;', 'Batalha do Cenário B concluída.');
+            var botao = el('button', 'padding:11px 26px;background:transparent;border:1px solid ' + OURO + ';color:' + OURO + ';font-family:Georgia,serif;font-size:14px;letter-spacing:.05em;cursor:pointer;', 'Recomeçar a luta do Cenário B');
+            botao.addEventListener('click', function () {
+              fimTeste.remove();
+              try { localStorage.removeItem('malik_batalha_progresso'); } catch (e5) {}
+              ativo = false; // sem isso, a trava de "confronto já em andamento" bloqueava a nova chamada (tela preta)
+              if (window.iniciarConfrontoMalik) window.iniciarConfrontoMalik('B', { ausente: false });
+            });
+            fimTeste.appendChild(titulo);
+            fimTeste.appendChild(botao);
+            document.body.appendChild(fimTeste);
+            return;
+          }
+
+          retomarNexus();
+          raiz.remove();
         });
       }
 

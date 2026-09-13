@@ -10,12 +10,17 @@
    futuro do index.html mostra só a tela de "fora do ar", sem nem
    tentar carregar o iframe. Não expira sozinho. Só um reset manual
    (apagar a chave abaixo do localStorage) liga o Nexus de novo.
+
+   Em ?malikTeste=1, a tela ganha um botão "Recomeçar a luta do
+   Cenário A" — só em teste; no site publicado o Cenário A continua
+   sem volta nenhuma, como sempre foi.
    ============================================================
 */
 (function () {
   'use strict';
 
   var CHAVE = 'malik_nexus_apagado';
+  var modoTeste = /[?&]malikTeste=1\b/.test(location.search);
 
   // Extraído numa função à parte pra poder rodar em dois momentos: no
   // carregamento (se já tinha sido apagado antes) e agora mesmo, na hora
@@ -30,6 +35,22 @@
     var tela = document.createElement('div');
     tela.style.cssText = 'position:fixed;inset:0;z-index:900000;background:#000;color:#c8c8c8;font-family:Consolas,monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:15px;letter-spacing:.04em;text-align:center;line-height:2;';
     tela.innerHTML = 'ERR_CONNECTION_TIMED_OUT<br>este link não respondeu.<br><br><span style="color:#ff2b3a">NEXUS REMOVIDO.</span>';
+
+    if (modoTeste) {
+      var botao = document.createElement('button');
+      botao.textContent = 'Recomeçar a luta do Cenário A';
+      botao.style.cssText = 'margin-top:28px;padding:11px 26px;background:transparent;border:1px solid #C4A35A;color:#C4A35A;font-family:Consolas,monospace;font-size:13px;letter-spacing:.05em;cursor:pointer;';
+      botao.addEventListener('click', function () {
+        try { localStorage.removeItem(CHAVE); } catch (e) {}
+        try { localStorage.removeItem('malik_batalha_progresso'); } catch (e) {} // sem isso, a segunda tentativa cai no caminho de retomada (progresso salvo da primeira) e reproduz o bug da alma presa no canto
+        tela.remove();
+        if (window.NexusMalikPermitirNovaLuta) window.NexusMalikPermitirNovaLuta(); // sem isso, a trava de "confronto já em andamento" bloqueava a nova chamada (tela preta)
+        if (window.iniciarConfrontoMalik) window.iniciarConfrontoMalik('A', { ausente: false });
+      });
+      tela.appendChild(document.createElement('br'));
+      tela.appendChild(botao);
+    }
+
     if (document.body) {
       document.body.appendChild(tela);
     } else {
@@ -57,6 +78,7 @@
   }
 
   // Já foi apagado antes: o iframe NUNCA recebe seu src — fica vazio,
-  // pra sempre, até alguém decidir religar manualmente.
+  // pra sempre, até alguém decidir religar manualmente (ou, em teste,
+  // clicar no botão de recomeço acima).
   mostrarTelaApagada();
 })();
