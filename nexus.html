@@ -103,22 +103,19 @@
       #dragonball-panel.celebrando .db-orb.completo { animation:none !important; box-shadow:0 0 22px rgba(255,217,138,1) !important; filter:brightness(1.3) !important; }
     }
 
-    /* ── Painel de leitura de Valtheris — lê a mesma chave que o próprio
-       Valtheris_hub.html já grava (localStorage 'valtheris_read'); não
-       escreve nada, só lê — a lógica de marcar saga como lida continua
-       vivendo só no hub. 21 Sagas de Além do Véu (S1–S21) + a Saga 0 de
-       Sob o Luar (S0_luar) = 22 no total.
-       Fica empilhado ACIMA do #dragonball-panel (mesmo left:1rem, bottom
-       maior) em vez de ao lado — era a posição só do mobile antes, agora
-       é o padrão em qualquer largura de tela, por isso a media query
-       antiga saiu. O #cancao-painel, mais abaixo no arquivo, já sabe se
-       reposicionar acima deste painel também (não só do de Esferas). ── */
-    #valtheris-painel { position:fixed; left:1rem; bottom:4.1rem; z-index:30; background:rgba(7,8,13,.88); border:1px solid rgba(204,64,96,.22); border-radius:8px; padding:.55rem .7rem; user-select:none; display:flex; align-items:center; gap:.45rem; white-space:nowrap; transition:border-color .25s ease, box-shadow .25s ease; }
-    #valtheris-painel .vp-olho { width:14px; height:10px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #CC4060, #7a1f30 70%); box-shadow:0 0 5px rgba(204,64,96,.55); flex:none; position:relative; }
-    #valtheris-painel .vp-olho::after { content:''; position:absolute; inset:0; margin:auto; width:3px; height:3px; border-radius:50%; background:#150507; }
-    #valtheris-painel .vp-count { font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.1em; color:#CC4060; }
-    #valtheris-painel.completo { border-color:rgba(204,64,96,.65); box-shadow:0 0 18px rgba(204,64,96,.35); }
-    #valtheris-painel.completo .vp-count { color:#ff7a9c; }
+    /* ── Painel da Estação — antes era o de leitura de Valtheris
+       (#valtheris-painel, lia 'valtheris_read'); esse contador de sagas
+       lidas vai passar a viver como pergaminhos dentro da própria nave
+       (nave/estacao_interior_embutido.html), então esse slot na pilha
+       do canto virou a Estação em vez de continuar duplicando o dado.
+       Mesma posição/empilhamento de antes (acima do #dragonball-panel),
+       só trocou o conteúdo: uma prévia ao vivo do exterior da nave
+       (mesmo arquivo estacao_nexus_embutido.html) + um link pra entrar. ── */
+    #estacao-painel { position:fixed; left:1rem; bottom:4.1rem; z-index:30; background:rgba(7,8,13,.88); border:1px solid rgba(57,255,138,.25); border-radius:8px; padding:.4rem; user-select:none; display:flex; flex-direction:column; align-items:stretch; gap:.35rem; text-decoration:none; transition:border-color .25s ease, box-shadow .25s ease; }
+    #estacao-painel:hover, #estacao-painel:focus-visible { border-color:rgba(57,255,138,.65); box-shadow:0 0 18px rgba(57,255,138,.3); }
+    #estacao-painel .ep-preview { width:112px; height:70px; border:0; border-radius:5px; display:block; pointer-events:none; }
+    #estacao-painel .ep-entrar { font-family:'Cinzel',serif; font-size:.62rem; letter-spacing:.09em; color:#39ff8a; text-align:center; }
+
 
     /* ── Painel da Canção da Tempestade — o componente base (círculo,
        ícone, estado .completa) vem de Lib/cancao-tempestade.js, mas essa
@@ -444,37 +441,31 @@
   </div>
 </div>
 
-<div id="valtheris-painel" title="Sagas de Valtheris lidas">
-  <span class="vp-olho"></span>
-  <span class="vp-count">0/22</span>
-</div>
+<a id="estacao-painel" href="nave/estacao_interior_embutido.html" title="Entrar na Estação Nexus">
+  <iframe class="ep-preview" src="nave/estacao_nexus_embutido.html" loading="lazy" tabindex="-1"></iframe>
+  <span class="ep-entrar">Estação →</span>
+</a>
+<!-- a contagem de sagas de Valtheris lidas (localStorage 'valtheris_read', 22 no
+     total) que morava aqui como texto vai virar pergaminhos dentro da nave —
+     ainda não implementado; quando fizer, ler a mesma chave, só que lá dentro. -->
+
 <script>
 (function () {
-  var TOTAL_SAGAS = 22; // S1–S21 (Além do Véu) + S0_luar (Sob o Luar)
-  var lidas = [];
-  try { lidas = JSON.parse(localStorage.getItem('valtheris_read') || '[]'); } catch (e) {}
-  if (!Array.isArray(lidas)) lidas = [];
-  var painel = document.getElementById('valtheris-painel');
-  painel.querySelector('.vp-count').textContent = lidas.length + '/' + TOTAL_SAGAS;
-  if (lidas.length >= TOTAL_SAGAS) painel.classList.add('completo');
-})();
-
-/* ── O #dragonball-panel expande no hover/toque e cresce por cima do
+  /* ── O #dragonball-panel expande no hover/toque e cresce por cima do
    bottom:4.1rem fixo deste painel — essa folga só dá conta do estado
    colapsado dele (foi o que aconteceu no print que o usuário mandou:
-   o valtheris-painel ficou entalado dentro do painel "Esferas
+   o painel ficou entalado dentro do painel "Esferas
    encontradas" expandido). Em vez de aumentar a distância fixa (que
    sobraria espaço vazio a maior parte do tempo), um ResizeObserver
-   sobe o painel de Valtheris junto, sempre colado acima do topo atual
+   sobe o painel da Estação junto, sempre colado acima do topo atual
    do de Esferas com 20px de folga, em qualquer estado. ── */
-(function () {
   var painelEsferas = document.getElementById('dragonball-panel');
-  var painelValtheris = document.getElementById('valtheris-painel');
-  if (!painelEsferas || !painelValtheris) return;
+  var painelEstacao = document.getElementById('estacao-painel');
+  if (!painelEsferas || !painelEstacao) return;
 
   function reposicionar() {
     var topeEsferas = window.innerHeight - painelEsferas.getBoundingClientRect().top;
-    painelValtheris.style.bottom = (topeEsferas + 20) + 'px';
+    painelEstacao.style.bottom = (topeEsferas + 20) + 'px';
   }
   reposicionar();
 
@@ -3580,13 +3571,13 @@ window.addEventListener('pageshow', function(e) {
      incluir o script; a única coisa que falta resolver aqui é a posição:
      por padrão ele mora no mesmo canto inferior esquerdo que o
      #dragonball-panel desta página, então colidiria com ele — e também
-     com o #valtheris-painel, que fica empilhado entre os dois (e agora
-     também sobe sozinho quando o de Esferas expande — ver o script logo
-     depois do #valtheris-painel, mais acima no arquivo).
-     Em vez de ler a posição do #valtheris-painel ao vivo (ele tem seu
+     com o #estacao-painel (antigo #valtheris-painel), que fica empilhado
+     entre os dois (e agora também sobe sozinho quando o de Esferas
+     expande — ver o script logo depois dele, mais acima no arquivo).
+     Em vez de ler a posição do #estacao-painel ao vivo (ele tem seu
      próprio ResizeObserver reagindo ao de Esferas, e não dá pra garantir
      que os dois observers rodem sempre nessa ordem), este painel soma a
-     altura atual do de Esferas + a altura fixa do de Valtheris (que não
+     altura atual do de Esferas + a altura fixa do da Estação (que não
      muda de tamanho, só de posição) + as folgas entre os três — assim
      não depende de ler um valor que outro script também está
      escrevendo, só de medir os dois de forma independente. Um
@@ -3597,7 +3588,7 @@ window.addEventListener('pageshow', function(e) {
 (function () {
   if (!window.NexusCancao) return;
   var painelEsferas = document.getElementById('dragonball-panel');
-  var painelValtheris = document.getElementById('valtheris-painel');
+  var painelEstacao = document.getElementById('estacao-painel');
   if (!painelEsferas) return;
 
   // aoPainelPronto entrega o #cancao-painel assim que ele existir de
@@ -3606,9 +3597,9 @@ window.addEventListener('pageshow', function(e) {
   NexusCancao.aoPainelPronto(function (painelCancao) {
     function reposicionar() {
       var topeEsferas = window.innerHeight - painelEsferas.getBoundingClientRect().top;
-      var alturaValtheris = painelValtheris ? painelValtheris.offsetHeight : 0;
-      var acimaDeValtheris = topeEsferas + 20 + alturaValtheris; // onde o topo do valtheris-painel também se apoia
-      painelCancao.style.bottom = (acimaDeValtheris + 20) + 'px'; // acima do valtheris + 20px de respiro
+      var alturaEstacao = painelEstacao ? painelEstacao.offsetHeight : 0;
+      var acimaDaEstacao = topeEsferas + 20 + alturaEstacao; // onde o topo do estacao-painel também se apoia
+      painelCancao.style.bottom = (acimaDaEstacao + 20) + 'px'; // acima da estação + 20px de respiro
     }
     reposicionar();
 
