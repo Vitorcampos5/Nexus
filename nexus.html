@@ -120,10 +120,6 @@
     #valtheris-painel.completo { border-color:rgba(204,64,96,.65); box-shadow:0 0 18px rgba(204,64,96,.35); }
     #valtheris-painel.completo .vp-count { color:#ff7a9c; }
 
-    /* Painéis de Esferas e Valtheris saem do hub: viram objetos no
-       interior da nave. A Estação Nexus (3D) ocupa este canto. */
-    #dragonball-panel, #valtheris-painel { display: none !important; }
-
     /* ── Painel da Canção da Tempestade — o componente base (círculo,
        ícone, estado .completa) vem de Lib/cancao-tempestade.js, mas essa
        página não carrega o style.css do diário TLOZ, então o visual
@@ -393,10 +389,10 @@
       <span class="fb-link__msg">a tempestade espiral não gira sem palco — isto chegou de outro jeito.</span>
     </a>
 
-    <a class="fb-link" href="Nave/estacao_interior.html">
+    <a class="fb-link" href="Nave/estacao_nexus.html">
       <span class="fb-link__tag">Nave</span>
       <span class="fb-link__title">Estação Nexus</span>
-      <span class="fb-link__msg">a sala de comando espera — embarque pela eclusa.</span>
+      <span class="fb-link__msg">a estação ainda responde, mesmo sem o motor 3D.</span>
     </a>
   </div>
 </div>
@@ -1177,7 +1173,6 @@ window.addEventListener('resize', () => {
       g.position.x = g.userData.def.orbit.r * orbitScale;
     }
   });
-  if (typeof posicionarEstacaoNoCanto === 'function') posicionarEstacaoNoCanto();
 
   // Só recalcula o modo automaticamente se o viajante nunca escolheu um
   // manualmente — depois de um toque no botão, a escolha vale até ele
@@ -1984,6 +1979,7 @@ const symbolDefs = [
   { id:'origem',    tag:'Retrato',     title:'Antes do Autor-Livro', cta:'Entrar \u2192', color:'#D9B776', sealed:false, href:'Origem/arg.html',                orbit:{ r:3.4, speed:0.28, tx: 33, tz:-18 }, create:createOrigemPoint  },
   { id:'covers',    tag:'M\u00fasica',      title:'Covers',              cta:'Ouvir \u2192',  color:'#9B7FD4', sealed:false, href:'Covers/covers.html',                orbit:{ r:3.9, speed:0.33, tx:-40, tz:  6 }, create:createCoversMask   },
   { id:'recordacoes', tag:'Jogos',     title:'Recorda\u00e7\u00f5es',    cta:'Abrir \u2192',  color:'#5EC4BB', sealed:false, href:'Recorda%C3%A7%C3%B5es/recorda%C3%A7%C3%B5es.html', orbit:{ r:3.6, speed:0.31, tx:-24, tz: 18 }, create:createRecordacoesStack },
+  { id:'estacao',   tag:'Nave',        title:'Esta\u00e7\u00e3o Nexus',      cta:'Abordar \u2192', color:'#39FF8A', sealed:false, href:'Nave/estacao_nexus.html',           orbit:{ r:4.2, speed:0.22, tx:  8, tz:-25 }, create:createEstacaoNexus },
 ];
 
 const pivots    = [];
@@ -2014,46 +2010,6 @@ symbolDefs.forEach(function(def, i) {
     }
   });
 });
-
-/* ── Estação Nexus: fora da órbita, ancorada no canto inferior esquerdo
-   (onde ficavam os painéis de Esferas e Valtheris). Clique leva ao
-   interior da nave; os painéis passam a existir como objetos lá dentro. ── */
-var estacaoDef = {
-  id: 'estacao',
-  tag: 'Nave',
-  title: 'Esta\u00e7\u00e3o Nexus',
-  cta: 'Abordar \u2192',
-  color: '#39FF8A',
-  sealed: false,
-  href: 'Nave/estacao_interior.html'
-};
-var estacaoPivot = new THREE.Object3D();
-scene.add(estacaoPivot);
-var estacaoGroup = createEstacaoNexus();
-estacaoGroup.scale.setScalar(responsiveScale * 1.2);
-estacaoGroup.userData = { id: 'estacao', def: estacaoDef, baseScale: responsiveScale * 1.2, docked: true };
-estacaoPivot.add(estacaoGroup);
-estacaoGroup.traverse(function (o) {
-  if (o.isMesh) {
-    allMeshes.push(o);
-    o.userData.baseEI = o.material.emissiveIntensity;
-    o.userData.baseColor = o.material.color.getHex();
-    o.userData.baseEmissive = o.material.emissive.getHex();
-  }
-});
-var _estacaoNdc = new THREE.Vector3();
-function posicionarEstacaoNoCanto() {
-  var nx = mob ? -0.78 : -0.84;
-  var ny = mob ? -0.70 : -0.66;
-  _estacaoNdc.set(nx, ny, 0.62);
-  _estacaoNdc.unproject(camera);
-  estacaoPivot.position.copy(_estacaoNdc);
-  estacaoPivot.quaternion.copy(camera.quaternion);
-  var s = responsiveScale * 1.2;
-  estacaoGroup.userData.baseScale = s;
-  if (typeof navegando === 'undefined' || !navegando) estacaoGroup.scale.setScalar(s);
-}
-posicionarEstacaoNoCanto();
 
 // ═══ Poeira estelar — o estado visual de "quebrado", persistente
 // (localStorage) até a resolução da batalha ou a cura. Nada de
@@ -2605,11 +2561,6 @@ const clock = new THREE.Clock();
     g.rotation.y += 0.38 * dt;
     g.rotation.x += 0.14 * dt;
   });
-  if (typeof estacaoGroup !== 'undefined' && estacaoGroup) {
-    estacaoGroup.rotation.y += 0.55 * dt;
-    estacaoGroup.rotation.x = Math.sin(clock.elapsedTime * 0.85) * 0.1;
-    posicionarEstacaoNoCanto();
-  }
   if (drillPhase === 'sleep') {
     // Repouso: a orientação (broca "olhando" pra câmera) já está calculada
     // em atualizarOrientacaoRepouso() — aqui só gira sobre o próprio eixo.
@@ -3746,11 +3697,23 @@ window.addEventListener('pageshow', function(e) {
   // seguro (ver o comentário no fim de cancao-tempestade.js).
   NexusCancao.aoPainelPronto(function (painelCancao) {
     function reposicionar() {
-      painelCancao.style.left = '1.2rem';
-      painelCancao.style.bottom = (mob ? '7.2rem' : '8.5rem');
+      var topeEsferas = window.innerHeight - painelEsferas.getBoundingClientRect().top;
+      var alturaValtheris = painelValtheris ? painelValtheris.offsetHeight : 0;
+      var acimaDeValtheris = topeEsferas + 20 + alturaValtheris; // onde o topo do valtheris-painel também se apoia
+      painelCancao.style.bottom = (acimaDeValtheris + 20) + 'px'; // acima do valtheris + 20px de respiro
     }
     reposicionar();
-    window.addEventListener('resize', reposicionar);
+
+    if (window.ResizeObserver) {
+      new ResizeObserver(reposicionar).observe(painelEsferas);
+    } else {
+      // sem ResizeObserver: ainda cobre o caso mais comum (hover no desktop,
+      // toque no mobile) que é o que muda a altura desse painel.
+      painelEsferas.addEventListener('mouseenter', reposicionar);
+      painelEsferas.addEventListener('mouseleave', reposicionar);
+      painelEsferas.addEventListener('click', reposicionar);
+      window.addEventListener('resize', reposicionar);
+    }
   });
 })();
 
