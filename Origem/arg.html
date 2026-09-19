@@ -6,7 +6,9 @@
 <style>
 :root{--paper:#d7d0be;--ink:#191817;--fade:#817b70;--line:#aaa394;--red:#713a35}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#151515;color:var(--paper);font-family:Georgia,serif}body{overflow-x:hidden}body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.08;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:4px 4px}.noise{display:none}.flash{position:fixed;inset:0;background:#eee8d6;opacity:0;pointer-events:none;z-index:20}.flash.on{animation:flash .28s}@keyframes flash{from{opacity:.12}to{opacity:0}}
 .wrap{width:min(920px,92vw);margin:0 auto;padding:7vh 0 12vh}.header{border:0;padding:0 0 35px;text-align:left}.sig{font:10px monospace;color:#5e5a52;letter-spacing:1px}.header h1,.header .sub,.header .corrupt{display:none}.header:after{content:"";display:block;width:45px;height:1px;background:#55504a;margin-top:13px}
-.layout{display:block;margin:0}.chat{height:auto;min-height:0;background:transparent;border:0;box-shadow:none;display:block}.chathead{display:none}.messages{overflow:visible;padding:0 0 65px;max-width:690px;overflow-anchor:none}.msg{max-width:100%;margin:0 0 28px;padding:0 0 0 18px;border:0;border-left:1px solid #45413a;background:transparent;line-height:1.72;font-size:16px;animation:appear .35s ease}.msg.you{margin-left:0;border-left:0;border-right:0;background:transparent;color:#a9a39a;padding-left:42px}.msg.sys{font:11px monospace;color:#66625b;border:0;padding-left:0;letter-spacing:.2px}.msg.secret{font:15px Georgia,serif;color:#c7bfb0;border-left:1px solid #6b3935}.msg.warn{border-left-color:#713a35}.msg.good{border-left-color:#81714e}.who{font:8px monospace;color:#5c584f;letter-spacing:2px;margin:0 0 5px}.msg.you .who{color:#777269}
+.layout{display:block;margin:0}.chat{height:auto;min-height:0;background:transparent;border:0;box-shadow:none;display:block}.chathead{display:none}.messages{overflow:visible;padding:0 0 65px;max-width:690px;overflow-anchor:none}.msg{max-width:100%;margin:0 0 28px;padding:0 0 0 18px;border:0;border-left:1px solid #45413a;background:transparent;line-height:1.72;font-size:16px;animation:appear .35s ease}.msg.you{margin-left:0;border-left:0;border-right:0;background:transparent;color:#a9a39a;padding-left:42px}.msg.sys{font:11px monospace;color:#66625b;border:0;padding-left:0;letter-spacing:.2px}.msg.secret{font:15px Georgia,serif;color:#c7bfb0;border-left:1px solid #6b3935}
+.msg.ooc{font:14px Georgia,serif;color:#8a9a8e;border-left:1px dashed #4a5c50;font-style:italic}.msg.warn{border-left-color:#713a35}.msg.good{border-left-color:#81714e}.who{font:8px monospace;color:#5c584f;letter-spacing:2px;margin:0 0 5px}.msg.you .who{color:#777269}
+.msg-timer{font:10px monospace;color:#4a473f;letter-spacing:.5px;margin-top:6px}
 /* Caixa de meta-informações do viajante */
 .meta-inbox{position:absolute;right:7px;top:50%;transform:translateY(-50%);width:30px;height:30px;display:none;align-items:center;justify-content:center;margin:0;padding:0;border:1px solid #6f2727;border-radius:2px;background:rgba(58,12,12,.78);color:#b84a4a;font:16px/1 monospace;cursor:pointer;box-shadow:0 0 12px rgba(120,0,0,.12);z-index:3}
 .meta-inbox.active{display:flex;animation:metaPulse 1.8s ease-in-out infinite}
@@ -33,7 +35,7 @@
 @media(max-width:900px){.filebtn{display:block;position:fixed;right:14px;bottom:74px;z-index:60;background:#1c1a17;color:#cfc6b4;border:1px solid #45413a;font:10px monospace;letter-spacing:.08em;padding:9px 13px;opacity:.6}.filebtn:active{opacity:1}.side.open{display:block!important;position:fixed;inset:0;z-index:70;width:auto;height:100vh;opacity:1!important;background:#151515;padding:56px 22px 30px;overflow:auto;pointer-events:auto!important}.side.open .sideclose{display:block;position:fixed;top:14px;right:16px;background:none;border:1px solid #45413a;color:#cfc6b4;font:11px monospace;padding:6px 10px;z-index:80}}
 .llmgate{display:none;position:fixed;inset:0;z-index:200;background:rgba(8,8,8,.88);align-items:center;justify-content:center;padding:24px}
 .llmgate.show{display:flex}
-.llmgate-box{max-width:420px;width:100%;background:#1c1a17;border:1px solid #45413a;border-radius:4px;padding:26px 24px;font-family:Georgia,serif}
+.llmgate-box{max-width:420px;width:100%;max-height:calc(100vh - 48px);overflow-y:auto;background:#1c1a17;border:1px solid #45413a;border-radius:4px;padding:26px 24px;font-family:Georgia,serif}
 .llmgate-box h3{margin:0 0 12px;font-size:16px;color:#cfc6b4;font-weight:normal}
 .llmgate-box p{margin:0 0 18px;font-size:13px;line-height:1.6;color:#8e887d}
 .llmgate-actions{display:flex;flex-direction:column;gap:10px}
@@ -45,17 +47,19 @@
 .llmgate-tests{margin:0 0 16px;border:1px solid #35322c;border-radius:3px;padding:9px 12px}
 .llmgate-tests summary{cursor:pointer;font-size:11px;color:#8e887d;letter-spacing:.02em}
 .llmgate-tests summary:hover{color:#cfc6b4}
-.llmgate-tests-body{margin-top:10px;font-size:12px;line-height:1.6;color:#8e887d}
+.llmgate-tests-body{margin-top:10px;font-size:12px;line-height:1.6;color:#8e887d;max-height:38vh;overflow-y:auto}
 .llmgate-tests-body ul{margin:8px 0;padding-left:18px}
 .llmgate-tests-body li{margin-bottom:4px}
 .llmgate-progress{margin-bottom:16px}
 .llmgate-bar{height:4px;background:#2c2a26;border-radius:2px;overflow:hidden;margin-bottom:8px}
 .llmgate-fill{height:100%;width:0%;background:#70695e;transition:width .3s}
 .llmgate-status{font-size:11px;color:#656058}
+.llmgate-cancel-btn{margin-top:8px;width:100%;background:none;border:1px solid #5c342e;color:#c99a8f;font-family:Georgia,serif;font-size:11px;padding:7px 8px;cursor:pointer;border-radius:2px}
+.llmgate-cancel-btn:hover{border-color:#8a453b;color:#eec9c0}
 @keyframes appear{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
 </style>
 </head>
-<body><div class="flash" id="flash"></div><div class="noise"></div><button type="button" class="filebtn" id="filebtn">▤ arquivo</button>
+<body><script>try{ if (window.top !== window) window.top.postMessage({ tipo:'nexus-visita', id:'origem_caso' }, '*'); }catch(e){}</script><div class="flash" id="flash"></div><div class="noise"></div><button type="button" class="filebtn" id="filebtn">▤ arquivo</button>
 <div class="llmgate" id="llmgate">
   <div class="llmgate-box">
     <h3>Ativar narrador com IA local?</h3>
@@ -70,12 +74,14 @@
           <li>Placa gráfica: Intel UHD Graphics (128 MB dedicados reportados pelo sistema)</li>
         </ul>
         <p>O erro foi "Not enough memory left": a GPU pediu mais memória de vídeo do que tinha disponível, o dispositivo gráfico caiu, e a IA parou de responder. Em vídeo integrado com pouca VRAM dedicada, nem sempre o modelo mais leve escapa disso.</p>
-        <p>Por isso existe agora um segundo setor inteiro, <b>RAM (CPU)</b>, via Transformers.js: roda inteiramente em WASM, nunca aloca nada na GPU, então não sofre desse erro — o custo é gerar cada resposta mais devagar.</p>
+        <p>O setor <b>RAM (CPU)</b>, via Transformers.js, não usa GPU nenhuma — então não sofre daquele erro. Mas nesta mesma máquina (4 GB de RAM), ao terminar de baixar e carregar o modelo de 360M na memória, o <b>Windows ficou sem memória virtual</b> e derrubou outros programas (erro 0xc000012d, "Out of Virtual Memory"): o servidor local morreu sozinho, e numa das vezes o próprio navegador fechou junto.</p>
+        <p><b>Antes de tentar o setor RAM nesta máquina:</b> salve o que estiver aberto em outros programas — se a memória acabar de novo, o Windows pode encerrar qualquer um deles sem avisar. Aumentar o arquivo de paginação do Windows é o que costuma resolver esse erro específico; o botão "Mínimo RAM" usa o menor modelo disponível e é o que tem mais chance de caber.</p>
       </div>
     </details>
     <div class="llmgate-progress" id="llmgate-progress" style="display:none">
       <div class="llmgate-bar"><div class="llmgate-fill" id="llmgate-fill"></div></div>
       <div class="llmgate-status" id="llmgate-status"></div>
+      <button type="button" id="llmgate-cancel" class="llmgate-cancel-btn">Cancelar download</button>
     </div>
     <div class="llmgate-actions" id="llmgate-actions">
       <div class="llmgate-section" id="llmgate-vram-section">
@@ -91,6 +97,7 @@
         <div class="llmgate-section-buttons">
           <button type="button" id="llmgate-ram">Padrão RAM (~1B, q4)</button>
           <button type="button" id="llmgate-ram-light">Leve RAM (~360M, q4)</button>
+          <button type="button" id="llmgate-ram-min">Mínimo RAM (~135M, q4)</button>
         </div>
       </div>
       <button type="button" id="llmgate-no">Continuar sem IA</button>
@@ -144,17 +151,17 @@ function addToLlmBlocklist(modelId){try{const list=getLlmBlocklist();if(!list.in
 // com pouquíssima VRAM dedicada, como o caso já documentado desta máquina):
 // mais lento pra gerar cada resposta, mas usa RAM comum do sistema em vez
 // daquele bolso minúsculo de VRAM — não sofre do mesmo GPUOutOfMemoryError. ═══
-const RAM_MODEL_TIERS=['onnx-community/Llama-3.2-1B-Instruct','HuggingFaceTB/SmolLM2-360M-Instruct'];
+const RAM_MODEL_TIERS=['onnx-community/Llama-3.2-1B-Instruct','HuggingFaceTB/SmolLM2-360M-Instruct','HuggingFaceTB/SmolLM2-135M-Instruct'];
 const RAM_LIGHT_MODEL=RAM_MODEL_TIERS[1];
+const RAM_MINIMAL_MODEL=RAM_MODEL_TIERS[2];
 const RAM_BLOCKLIST_KEY='origem-arg-ram-blocklist';
 function getRamBlocklist(){try{return JSON.parse(localStorage.getItem(RAM_BLOCKLIST_KEY)||'[]')}catch(e){return[]}}
 function addToRamBlocklist(modelId){try{const list=getRamBlocklist();if(!list.includes(modelId)){list.push(modelId);localStorage.setItem(RAM_BLOCKLIST_KEY,JSON.stringify(list))}}catch(e){}}
 let LLM_MODEL_ID=LLM_MODEL_TIERS[0];
-const LLM_PREF_KEY='origem-arg-llm-pref';
-const LLM_BACKEND_KEY='origem-arg-llm-backend';
 let ENGINE=null,RAM_ENGINE=null,LLM_BACKEND=null,LLM_ACTIVE=false,LLM_HISTORY=[],LLM_INIT_PROMISE=null;
 let LLM_STATUS='desligada',LLM_ERROR='';
 let LLM_GATE_BOOTED=false;
+let LLM_LOAD_TOKEN=0;
 function llmStatusLabel(){return LLM_ACTIVE&&(ENGINE||RAM_ENGINE)?'IA LOCAL ATIVA ('+(LLM_BACKEND==='ram'?'RAM':'VRAM')+')':(LLM_STATUS==='erro'?'IA COM ERRO':'ROTEIRO')}
 function setLLMStatus(status,detail=''){
   LLM_STATUS=status; LLM_ERROR=detail||'';
@@ -811,13 +818,13 @@ const ENDINGS={
   jogador_certo:{id:'jogador_certo',tier:'especial',title:'O jogador está certo',
     req:()=>S.flags.metaJane&&S.flags.contradiction&&S.flags.method&&S.scars.metaAware&&S.player.questionScore>=22&&S.behavior.careful>=4,
     run(){S.scars.cbiCompromised=true;S.flags.vital=true;unlock('vital');
-      first('e_jc1','Você estava certo.','jane','secret');
-      first('e_jc2','E isso é justamente o problema.','jane','warn');
-      first('e_jc3','Jane não discute a hipótese. Ele olha para ela como se ela olhasse de volta.','archive','secret');
-      first('e_jc4','A hipótese implica que alguém dentro do CBI alterou alguma coisa.','lisbon','warn');
-      first('e_jc5','Cho não confirma. Também não nega. Lisbon pede o relatório em duas vias.','archive','warn');
-      first('e_jc6','26-0847 era apenas a ponta.','archive','secret');
-      first('e_jc7','O registro V.I.T.A.L. deixa de ser um arquivo perdido no caso errado. Vira parte dele.','SISTEMA','secret');
+      first('e_jcert1','Você estava certo.','jane','secret');
+      first('e_jcert2','E isso é justamente o problema.','jane','warn');
+      first('e_jcert3','Jane não discute a hipótese. Ele olha para ela como se ela olhasse de volta.','archive','secret');
+      first('e_jcert4','A hipótese implica que alguém dentro do CBI alterou alguma coisa.','lisbon','warn');
+      first('e_jcert5','Cho não confirma. Também não nega. Lisbon pede o relatório em duas vias.','archive','warn');
+      first('e_jcert6','26-0847 era apenas a ponta.','archive','secret');
+      first('e_jcert7','O registro V.I.T.A.L. deixa de ser um arquivo perdido no caso errado. Vira parte dele.','SISTEMA','secret');
       setTimeout(()=>emitScarDoc('cbiCompromised'),700);
     }}
 };
@@ -1032,6 +1039,28 @@ function looksRhetorical(x){
   return false;
 }
 function rhetoricalReply(){S.behavior.rhetorical=(S.behavior.rhetorical||0)+1;return say('jane',RHETORICAL_LINES[(S.behavior.rhetorical-1)%RHETORICAL_LINES.length],'jane')}
+
+// Detecção de "quer sair da ficção" roda em CÓDIGO, antes de mandar qualquer
+// coisa pra IA ou pro roteiro — de propósito. É exatamente o tipo de decisão
+// binária e sensível que um modelo pequeno (RAM leve/mínimo) erra fácil: ou
+// ele ignora o pedido e insiste no personagem, ou quebra o personagem à toa
+// numa pergunta que era só parte do jogo. Uma checagem de texto simples aqui
+// é mais confiável que confiar no julgamento de um 360M nisso, e nem custa
+// tokens de prompt.
+function looksLikeWantsOut(x){
+  return any(x,[
+    'nao quero jogar','nao quero participar','nao quero fazer isso','nao quero brincar',
+    'nao quero fazer esse role','nao curti isso','nao to a fim disso','me tira daqui',
+    'para de fingir','sai do personagem','sai do papel','quem e voce de verdade',
+    'isso nao e real','isso e so um jogo','fala serio','chega dessa brincadeira',
+    'que site e esse','que pagina e essa','o que e esse site','o que e essa pagina',
+    'o que e isso aqui','onde eu cai','isso e uma ia'
+  ]);
+}
+function handleWantsOut(q){
+  add(q,S.name||'VOCÊ','you');
+  add('Saindo do personagem por um instante: isso aqui é uma investigação fictícia interativa — um projeto pessoal chamado "Origem", dentro do Nexus. "Jane" é a narradora desse caso inventado, não uma pessoa real. Você pode voltar a perguntar sobre o caso quando quiser, ou simplesmente fechar esta aba — não tem problema nenhum em não continuar.','ARQUIVO','ooc');
+}
 function generalAnswer(c){const mem=behavioralJaneResponse();if(mem)return say('jane',mem,'jane');
   // recall from event log
   if(S.lastTopic&&S.behavior.questionsAbout[S.lastTopic]>=3){const rec=recallEvent(S.lastTopic);if(rec.length>=2)return say('jane','Você já voltou a isso. Nas vezes anteriores: «'+(rec[0].q||rec[0].detail||'').slice(0,60)+'»');}
@@ -1210,7 +1239,7 @@ function resetGame(){
   location.reload();
   return true;
 }
-$('form')?.addEventListener('submit',e=>{e.preventDefault();const q=$('input')?.value.trim();if(!q)return;if(isResetCmd(q)){$('input').value='';if(!resetGame())add('Tudo bem. Nada foi apagado.','ARQUIVO','sys');return}$('input').value='';if(LLM_ACTIVE&&ENGINE){llmChat(q)}else{add(q,S.name||'VOCÊ','you');if(LLM_STATUS==='erro')add('JANE · IA LOCAL NÃO ESTÁ ATIVA. Esta resposta veio do roteiro pré-programado.','SISTEMA','secret');respond(q)}});
+$('form')?.addEventListener('submit',e=>{e.preventDefault();const q=$('input')?.value.trim();if(!q)return;if(isResetCmd(q)){$('input').value='';if(!resetGame())add('Tudo bem. Nada foi apagado.','ARQUIVO','sys');return}$('input').value='';if(looksLikeWantsOut(norm(q))){handleWantsOut(q);return}if(LLM_ACTIVE&&(ENGINE||RAM_ENGINE)){llmChat(q)}else{add(q,S.name||'VOCÊ','you');if(LLM_STATUS==='erro')add('JANE · IA LOCAL NÃO ESTÁ ATIVA. Esta resposta veio do roteiro pré-programado.','SISTEMA','secret');respond(q)}});
 $('metaInbox')?.addEventListener('click',openMetaToolkit);$('metaInbox')?.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openMetaToolkit()}});$('metaClose')?.addEventListener('click',closeMetaToolkit);$('metaToolkit')?.addEventListener('click',e=>{if(e.target.id==='metaToolkit')closeMetaToolkit()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMetaToolkit()});
 $('cbiFile')?.addEventListener('click',()=>{if(S.phase>=2||S.started)location.href=CONFIG.arquivos.cbi});
 $('vitalFile')?.addEventListener('click',()=>{if(S.flags.vital)location.href=CONFIG.arquivos.vital});
@@ -1256,15 +1285,102 @@ function llmSystemPrompt(){
 // por uma chance real de rodar sem estourar memória.
 function llmSystemPromptLean(){
   const revealed=Object.keys(S.flags||{}).filter(k=>S.flags[k]);
-  return 'Você é Jane, narradora séria de uma investigação policial (Caso 26-0847), estilo RPG one-shot. Frases curtas, nunca lista opções numeradas, nunca revela ser IA. Você sabe o final mas só revela o que o viajante perguntar.\n\n'+
+  return 'Você é Jane, narradora séria de uma investigação policial (Caso 26-0847), estilo RPG one-shot. Frases curtas, nunca lista opções numeradas, nunca revela ser IA. Você sabe o final mas só revela o que o viajante perguntar. Se a pergunta for genérica ("o que está acontecendo", "quem é você") em vez de específica sobre o caso, explique o contexto básico em 1-2 frases antes de continuar — nem todo viajante chega sabendo do que se trata.\n\n'+
   'FATOS: dono de vinícola (Napa, 52 anos) morto na mesa de degustação; garrafa 1982 torta. Julia (22, nova na casa, sofria assédio do dono) recebeu um frasco de Marcus dito "laxante". Marcus (sommelier, canhoto, queimadura na mão) guardava cianeto puro e escolheu a garrafa 1982 — a vinícola seria vendida.\n\n'+
   'Nome do viajante: '+(S.name||'ainda não informado')+'. Fase: '+S.phase+'. Já revelado: '+(revealed.join(', ')||'nada ainda')+'.\n\n'+
   'Depois da fala em português, numa linha nova, emita exatamente: <!--STATE {"flags":{},"phase":'+S.phase+',"started":true,"solved":false,"name":null}--> só com as chaves que mudaram. Chaves de "flags": case, julia, marcus, guard, dose, access, bottle, cyanide, method, motive, contradiction, vital, origin, entry. "solved":true só numa acusação final justificada.';
 }
 
+// Versão mínima — só pro tier de 135M. Diferença chave em relação à enxuta:
+// nada de rótulos em caixa-alta ("FATOS:") nem estrutura "Rótulo: valor"
+// ("Nome do viajante: X. Fase: Y."). Modelo pequeno não distingue instrução de
+// texto a continuar: nos testes reais ele devolvia literalmente "FATOS: ..." e
+// "Nome do viajante: Klaus. Fase 0:" de volta, copiando o formato do prompt em
+// vez de obedecer. Prosa corrida não oferece esse molde pra copiar. O bloco
+// STATE também sai: 135M não consegue emitir JSON estruturado de forma
+// confiável, e um STATE malformado é pior que nenhum (o jogo já trata ausência
+// dele sem quebrar — só não avança flag por IA nesse tier).
+function llmSystemPromptMinimal(){
+  return 'Você é Jane, uma investigadora conversando com um consultor sobre um caso de assassinato. Responda sempre em português, em no máximo três frases curtas, e nunca repita a mesma frase duas vezes. Se a pergunta for vaga ("o que houve", "quem é você"), explique o básico primeiro.\n\n'+
+  'O caso: o dono de uma vinícola em Napa foi envenenado com cianeto na mesa de degustação, numa garrafa de 1982. Uma funcionária nova chamada Julia serviu a bebida, mas ela recebeu o frasco de Marcus, o sommelier, que disse a ela que era laxante. Marcus guardava o cianeto e escolheu aquela garrafa porque sabia que o dono a beberia sozinho.\n\n'+
+  'Você responde às perguntas do consultor sobre o caso, revelando só o que ele perguntar, sem entregar a conclusão de graça.';
+}
+
+// Exemplo de referência pros tiers pequenos (RAM leve/mínimo). Modelo desse
+// tamanho segue o FORMATO de uma troca real muito melhor do que instrução
+// abstrata em texto corrido — é a técnica de few-shot: mostrar um par
+// pergunta/resposta already grounded nos fatos do caso ensina o tom, o
+// tamanho da resposta E o conteúdo (Marcus, Julia, cianeto, garrafa de 1982)
+// de um jeito que a instrução sozinha ("FATOS: ...") não estava conseguindo —
+// prints reais mostraram a IA ignorando os fatos completamente.
+const CASE_DEMO_TURN=[
+  {role:'user',content:'Quem é você e o que houve aqui?'},
+  {role:'assistant',content:'Sou Jane. O dono desta vinícola morreu envenenado com cianeto, na mesa de degustação, numa garrafa de 1982. Marcus, o sommelier, e Julia, a funcionária nova, estavam por perto.'}
+];
+// Modelo pequeno perde a linha com temperature alta — a distribuição de
+// probabilidade dele é menos confiável, então "esquentar" ela (como 0.85, que
+// funciona bem em modelo grande) empurra pra território sem sentido — foi
+// isso que produziu "acausasas"/"índings" nos prints. Quanto menor o modelo,
+// mais baixa a temperatura e mais suave a penalidade de repetição.
+function genParamsFor(modelId){
+  if(modelId===RAM_MINIMAL_MODEL)return{temperature:0.4,top_p:0.85,top_k:30,repetition_penalty:1.08,no_repeat_ngram_size:3};
+  if(modelId===RAM_LIGHT_MODEL)return{temperature:0.55,top_p:0.9,top_k:40,repetition_penalty:1.1,no_repeat_ngram_size:3};
+  return{temperature:0.7,top_p:0.9,top_k:50,repetition_penalty:1.12,no_repeat_ngram_size:4};
+}
+
+// Efeitos estruturais que cada flag do roteiro dispara nos painéis (grafo,
+// hipóteses, teorias, contradições, órfãs) — SEM a narração (first()/say())
+// que o roteiro também faz, porque a IA já está narrando a própria resposta;
+// duplicar narração roteirizada por cima da fala da IA ia soar dissonante.
+// Isso é só a parte "de dados" que alimenta a barra lateral. Rodado uma vez
+// por flag, só quando ela vira true pela primeira vez — chamar de novo em
+// cima de um flag que já era true duplicaria entradas no grafo/hipóteses.
+const THEORY_FLAGS=new Set(['dose','cyanide','access','method','motive','intent']);
+function applyFlagStructuralEffects(key){
+  switch(key){
+    case 'dose': case 'cyanide':
+      S.flags.dose=true; // cyanide converge pro mesmo achado que dose no roteiro
+      contradiction('a concentração não combina com a história simples de Julia');
+      addGraph('Julia intent','dose','concentração não combina com mal-estar','forte');
+      addGraph('Julia sozinha','dose','dose incompatível com autonomia total','forte');
+      break;
+    case 'access':
+      addGraph('Julia acesso','adega','Julia não tinha acesso','forte');
+      addGraph('Marcus acesso','adega','Marcus conhecia a adega','media');
+      break;
+    case 'bottle':
+      discoverOrphan('y1982');
+      break;
+    case 'method':
+      remember('Marcus forneceu o frasco e usou Julia como intermediária','forte','hipotese','marcus');
+      S.phase=Math.max(S.phase,4);
+      break;
+    case 'motive':
+      if(S.flags.julia){S.flags.intent=true;remember('Julia queria causar mal-estar, não uma morte','forte','hipotese','julia_intent')}
+      if(S.flags.marcus)remember('Marcus tinha uma motivação própria ligada à vinícola','em teste','hipotese','marcus');
+      break;
+    case 'contradiction':
+      contradiction('a intenção de Julia, a concentração e o acesso à adega não fecham sozinhos');
+      break;
+    case 'julia': case 'marcus':
+      S.phase=Math.max(S.phase,3);
+      break;
+  }
+}
+
 function applyLLMState(sig){
   if(!sig||typeof sig!=='object')return;
-  if(sig.flags)for(const k in sig.flags){if(sig.flags[k]){S.flags[k]=true;mark(k)}}
+  let theoriesTouched=false;
+  if(sig.flags)for(const k in sig.flags){
+    if(!sig.flags[k])continue;
+    const eraNovo=!S.flags[k];
+    S.flags[k]=true;mark(k);
+    if(eraNovo){
+      applyFlagStructuralEffects(k);
+      if(THEORY_FLAGS.has(k))theoriesTouched=true;
+    }
+  }
+  if(theoriesTouched)updateTheories();
   if(sig.scars)for(const k in sig.scars){if(sig.scars[k]&&k in S.scars)S.scars[k]=true}
   if(typeof sig.phase==='number')S.phase=Math.max(S.phase,sig.phase);
   if(sig.started)S.started=true;
@@ -1280,20 +1396,28 @@ async function llmChat(q,isRetry){
   }
   const thinking=document.createElement('div');
   thinking.className='msg jane';
-  thinking.innerHTML='<div class="who">JANE</div><div class="txt">…</div>';
+  thinking.innerHTML='<div class="who">JANE</div><div class="txt">pensando… 0.0s</div>';
   $('messages')?.appendChild(thinking);
+  const t0=performance.now();
+  const txtEl=thinking.querySelector('.txt');
+  const timerInterval=setInterval(()=>{
+    if(txtEl)txtEl.textContent='pensando… '+((performance.now()-t0)/1000).toFixed(1)+'s';
+  },100);
   if((window.innerHeight+window.scrollY)>=(document.documentElement.scrollHeight-220))requestAnimationFrame(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'smooth'}));
   if(!isRetry){
     LLM_HISTORY.push({role:'user',content:q});
     if(LLM_HISTORY.length>20)LLM_HISTORY=LLM_HISTORY.slice(-20);
   }
   try{
+    const minimal=LLM_MODEL_ID===RAM_MINIMAL_MODEL;
     const lean=LLM_MODEL_ID===LLM_ULTRALIGHT_MODEL||LLM_MODEL_ID===RAM_LIGHT_MODEL;
-    const messages=[{role:'system',content:lean?llmSystemPromptLean():llmSystemPrompt()},...(lean?LLM_HISTORY.slice(-6):LLM_HISTORY)];
-    const maxTok=lean?150:400;
+    const sysPrompt=minimal?llmSystemPromptMinimal():lean?llmSystemPromptLean():llmSystemPrompt();
+    const ramSmall=LLM_BACKEND==='ram'&&(minimal||LLM_MODEL_ID===RAM_LIGHT_MODEL);
+    const messages=[{role:'system',content:sysPrompt},...(ramSmall?CASE_DEMO_TURN:[]),...((lean||minimal)?LLM_HISTORY.slice(-4):LLM_HISTORY)];
+    const maxTok=minimal?110:lean?150:400;
     let text='';
     if(LLM_BACKEND==='ram'){
-      const resp=await ramWorkerCall('generate',{messages,maxNewTokens:maxTok});
+      const resp=await ramWorkerCall('generate',{messages,maxNewTokens:maxTok,genParams:genParamsFor(LLM_MODEL_ID)});
       text=resp&&resp.text||'';
     }else{
       const reply=await ENGINE.chat.completions.create({messages,temperature:0.85,max_tokens:maxTok});
@@ -1302,13 +1426,18 @@ async function llmChat(q,isRetry){
     const m=text.match(/<!--STATE\s*([\s\S]*?)-->/);
     let sig=null;
     if(m){try{sig=JSON.parse(m[1])}catch(e){sig=null}text=text.slice(0,m.index).trim()}
+    clearInterval(timerInterval);
+    const elapsed=((performance.now()-t0)/1000).toFixed(1);
     thinking.remove();
     if(!text)text='…';
     say('jane',text,'jane');
+    const lastMsg=$('messages')?.lastElementChild;
+    if(lastMsg){const tEl=document.createElement('div');tEl.className='msg-timer';tEl.textContent='respondeu em '+elapsed+'s';lastMsg.appendChild(tEl)}
     LLM_HISTORY.push({role:'assistant',content:text});
     if(sig)applyLLMState(sig);
     save();update();suggest()
   }catch(err){
+    clearInterval(timerInterval);
     thinking.remove();
     if(LLM_BACKEND==='ram'){
       addToRamBlocklist(LLM_MODEL_ID);
@@ -1356,6 +1485,7 @@ async function tryEnableLLM(onDone,opts){
     onDone(false,new Error('WebGPU indisponível'));
     return;
   }
+  const myToken=++LLM_LOAD_TOKEN; // se cancelLLMLoad() ou uma tentativa mais nova mudar isso, esta aqui vira "obsoleta" e não commita mais nada no estado global
   const bloqueados=getLlmBlocklist();
   let tiers=opts.only?opts.only.slice():LLM_MODEL_TIERS.filter(m=>!bloqueados.includes(m));
   if(!tiers.length)tiers=(opts.only||LLM_MODEL_TIERS).slice(-1);
@@ -1370,6 +1500,7 @@ async function tryEnableLLM(onDone,opts){
         try{
           const engine=await webllm.CreateMLCEngine(modelId,{
             initProgressCallback:(r)=>{
+              if(myToken!==LLM_LOAD_TOKEN)return; // cancelado/superado — para de atualizar a UI de uma tentativa morta
               const pct=Math.round((r.progress||0)*100);
               const prefixo=modelId===LLM_LIGHT_MODEL?'[modelo leve] ':modelId===LLM_ULTRALIGHT_MODEL?'[modelo ultra-leve] ':'';
               setLLMStatus('loading',prefixo+(r.text||'Inicializando modelo')+' '+pct+'%');
@@ -1390,13 +1521,14 @@ async function tryEnableLLM(onDone,opts){
           // pro próximo tier — em vez de no meio da conversa do jogador.
           const promptDeTeste=modelId===LLM_ULTRALIGHT_MODEL?llmSystemPromptLean():llmSystemPrompt();
           await engine.chat.completions.create({messages:[{role:'system',content:promptDeTeste},{role:'user',content:'oi'}],max_tokens:8});
+          if(myToken!==LLM_LOAD_TOKEN)return false; // cancelado/superado enquanto carregava — não aceita mais este tier
           ENGINE=engine; LLM_MODEL_ID=modelId; LLM_ACTIVE=true;
           setLLMStatus('ready','WebLLM 0.2.82 · Modelo: '+modelId);
           ensureOriginUnlock();
           save();
-          try{localStorage.setItem(LLM_PREF_KEY,'on')}catch(e){}
           return true;
         }catch(tierErr){
+          if(myToken!==LLM_LOAD_TOKEN)return false; // idem — não pisa no estado de uma tentativa mais nova
           ENGINE=null; LLM_ACTIVE=false;
           if(isGpuFailure(tierErr))addToLlmBlocklist(modelId);
           const haMaisNiveis=i<tiers.length-1;
@@ -1406,13 +1538,13 @@ async function tryEnableLLM(onDone,opts){
       }
       return false;
     }catch(err){
-      try{localStorage.setItem(LLM_PREF_KEY,'error')}catch(e){}
       return false;
     }finally{
       LLM_INIT_PROMISE=null;
     }
   })();
   const ok=await LLM_INIT_PROMISE;
+  if(myToken!==LLM_LOAD_TOKEN)return; // cancelado — cancelLLMLoad() já cuidou da UI, não anuncia mais nada por essa tentativa morta
   onDone(!!ok,ok?null:new Error('Falha ao inicializar WebLLM 0.2.82'));
 }
 // O Transformers.js roda em WASM na CPU — e por padrão isso acontece na
@@ -1428,10 +1560,32 @@ async function tryEnableLLM(onDone,opts){
 const RAM_WORKER_CODE=`
 let pipelinePromise=null;
 self.addEventListener('message', async (e) => {
-  const {type,id,modelId,messages,maxNewTokens}=e.data||{};
+  const {type,id,modelId,messages,maxNewTokens,genParams}=e.data||{};
   try{
     if(type==='load'){
-      const {pipeline}=await import('https://esm.run/@huggingface/transformers@3.8.1');
+      const {pipeline,env}=await import('https://esm.run/@huggingface/transformers@3.8.1');
+      // Diagnóstico do cache de modelo. O Transformers.js só reaproveita o
+      // download entre visitas se o CacheStorage ('caches') existir E abrir sem
+      // erro — em janela privada/anônima, ou em perfil que é apagado ao fechar,
+      // o open() falha ou o cache some junto com o perfil, e aí ele baixa tudo
+      // de novo toda vez. Reportar isso explicitamente transforma "baixou de
+      // novo, não sei por quê" em uma resposta concreta no console.
+      let cacheInfo;
+      if(typeof caches==='undefined'){
+        cacheInfo='indisponível (objeto caches não existe neste contexto)';
+      }else{
+        try{await caches.open('transformers-cache');cacheInfo='disponível e utilizável'}
+        catch(cacheErr){cacheInfo='existe mas open() falhou: '+((cacheErr&&cacheErr.message)||cacheErr)}
+      }
+      env.useBrowserCache=(cacheInfo==='disponível e utilizável');
+      // Menos threads = menos heaps WASM alocados em paralelo. Sem os headers
+      // COOP/COEP (que um python -m http.server simples não manda), o WASM já
+      // roda single-thread de qualquer jeito — deixar isso explícito evita que
+      // o ONNX Runtime reserve memória para threads que nunca vai usar. Importa
+      // muito numa máquina de 4GB, onde o carregamento do modelo já derrubou o
+      // limite de memória virtual do Windows (erro 0xc000012d) uma vez.
+      try{env.backends.onnx.wasm.numThreads=1}catch(e){}
+      self.postMessage({type:'cacheinfo',id,cacheInfo});
       const arquivos={}; // acumula loaded/total por arquivo pra dar um progresso agregado de verdade
       const ultimoReport={}; // throttle por arquivo — sem isso, arquivos sem Content-Length
       // (comum em CDN da Hugging Face pra arquivo grande) disparam o callback
@@ -1468,7 +1622,28 @@ self.addEventListener('message', async (e) => {
     }else if(type==='generate'){
       const generator=await pipelinePromise;
       if(!generator)throw new Error('modelo ainda não carregado neste worker');
-      const output=await generator(messages,{max_new_tokens:maxNewTokens,temperature:0.85});
+      const gp=genParams||{};
+      const output=await generator(messages,{
+        max_new_tokens:maxNewTokens,
+        // do_sample é false por padrão no Transformers.js — diferente da API do
+        // WebLLM/OpenAI, onde amostragem é o normal. Sem ligar isso, o
+        // "temperature" que eu passava era simplesmente ignorado e o modelo
+        // rodava decodificação gulosa: sempre o token mais provável. Em modelo
+        // pequeno isso vira aquele loop ("no aça, no aça, no aça…" / "Seu nome
+        // é Klaus." repetido) — não era o modelo ser ruim demais, era eu não
+        // ter ligado a amostragem.
+        do_sample:true,
+        temperature:gp.temperature??0.85,
+        top_p:gp.top_p??0.9,
+        top_k:gp.top_k??50,
+        // trava contra repetição literal: penaliza token já usado e proíbe
+        // repetir qualquer sequência de N tokens. Valores vêm de genParamsFor()
+        // na thread principal — mais suaves em modelo pequeno, que perde a
+        // linha do assunto se a penalidade for forte demais empurrando ele pra
+        // inventar palavras só pra fugir da repetição.
+        repetition_penalty:gp.repetition_penalty??1.15,
+        no_repeat_ngram_size:gp.no_repeat_ngram_size??4
+      });
       const last=output&&output[0]&&output[0].generated_text&&output[0].generated_text.at(-1);
       self.postMessage({type:'generated',id,text:(last&&last.content)||''});
     }
@@ -1488,6 +1663,7 @@ function getRamWorker(){
     const pend=RAM_WORKER_PENDING[d.id];
     if(!pend)return;
     if(d.type==='progress'){if(pend.onProgress)pend.onProgress(d);return}
+    if(d.type==='cacheinfo'){console.log('[ORIGEM IA] cache de modelo (worker RAM):',d.cacheInfo);if(!/utilizável/.test(d.cacheInfo||''))add('IA LOCAL: o cache de modelo do navegador está '+d.cacheInfo+' — por isso o download recomeça do zero a cada visita.','SISTEMA','secret');return}
     delete RAM_WORKER_PENDING[d.id];
     if(d.type==='error')pend.reject(new Error(d.message||'erro no worker de IA (RAM)'));
     else pend.resolve(d);
@@ -1509,12 +1685,29 @@ function ramWorkerCall(type,payload,onProgress){
     worker.postMessage(Object.assign({type,id},payload));
   });
 }
+function cancelLLMLoad(){
+  LLM_LOAD_TOKEN++; // invalida qualquer tentativa em andamento — ela não vai mais conseguir sobrescrever o estado global quando (se) terminar
+  // RAM: terminate() encerra o worker de verdade — para o download/carregamento
+  // na hora, não é só cosmético. Qualquer chamada pendente que dependia dele é
+  // rejeitada explicitamente, senão ficaria esperando uma resposta que nunca
+  // chega (o worker morto não dispara mais 'message').
+  if(RAM_WORKER){try{RAM_WORKER.terminate()}catch(e){}RAM_WORKER=null}
+  for(const id in RAM_WORKER_PENDING){RAM_WORKER_PENDING[id].reject(new Error('cancelado pelo usuário'));delete RAM_WORKER_PENDING[id]}
+  // VRAM: essa versão do WebLLM não expõe um jeito de abortar um download já em
+  // andamento — isso aqui libera a interface na hora e evita que o tier seja
+  // aceito se a promessa antiga ainda resolver depois, mas o download em si
+  // pode continuar em segundo plano até a promise original assentar sozinha.
+  ENGINE=null;RAM_ENGINE=null;LLM_ACTIVE=false;LLM_BACKEND=null;LLM_INIT_PROMISE=null;
+  setLLMStatus('off','cancelado pelo usuário');
+  renderLLMGate('ask');
+}
 async function tryEnableRAM(onDone,opts){
   opts=opts||{};
   if(LLM_INIT_PROMISE){
     try{const ok=await LLM_INIT_PROMISE;onDone(!!ok,ok?null:new Error('Inicialização da IA já falhou'))}catch(err){onDone(false,err)}
     return;
   }
+  const myToken=++LLM_LOAD_TOKEN; // idem tryEnableLLM — cancelamento/nova tentativa invalida esta sem sobrescrever nada
   const bloqueados=getRamBlocklist();
   let tiers=opts.only?opts.only.slice():RAM_MODEL_TIERS.filter(m=>!bloqueados.includes(m));
   if(!tiers.length)tiers=(opts.only||RAM_MODEL_TIERS).slice(-1);
@@ -1525,8 +1718,9 @@ async function tryEnableRAM(onDone,opts){
       for(let i=0;i<tiers.length;i++){
         const modelId=tiers[i];
         try{
-          const prefixo=modelId===RAM_LIGHT_MODEL?'[RAM leve] ':'[RAM] ';
+          const prefixo=modelId===RAM_MINIMAL_MODEL?'[RAM mínimo] ':modelId===RAM_LIGHT_MODEL?'[RAM leve] ':'[RAM] ';
           await ramWorkerCall('load',{modelId},(d)=>{
+            if(myToken!==LLM_LOAD_TOKEN)return; // cancelado/superado — para de atualizar a UI de uma tentativa morta
             const temPct=typeof d.pct==='number';
             const pct=temPct?d.pct:0;
             const sufixo=d.phase==='baixando'&&!temPct&&d.loadedMB?' ('+d.loadedMB+'MB, tamanho total desconhecido)':temPct?' '+pct+'%':'';
@@ -1538,15 +1732,16 @@ async function tryEnableRAM(onDone,opts){
           // (a versão enxuta, se for o tier leve) antes de aceitar o tier, pra
           // pegar qualquer falha aqui em vez de no meio da conversa do jogador.
           // Roda dentro do worker também — não trava a aba principal.
-          const promptDeTeste=modelId===RAM_LIGHT_MODEL?llmSystemPromptLean():llmSystemPrompt();
+          const promptDeTeste=modelId===RAM_MINIMAL_MODEL?llmSystemPromptMinimal():modelId===RAM_LIGHT_MODEL?llmSystemPromptLean():llmSystemPrompt();
           await ramWorkerCall('generate',{messages:[{role:'system',content:promptDeTeste},{role:'user',content:'oi'}],maxNewTokens:8});
+          if(myToken!==LLM_LOAD_TOKEN)return false; // cancelado/superado enquanto carregava — não aceita mais este tier
           RAM_ENGINE=true; ENGINE=null; LLM_MODEL_ID=modelId; LLM_BACKEND='ram'; LLM_ACTIVE=true;
           setLLMStatus('ready','Transformers.js (RAM, worker) · Modelo: '+modelId);
           ensureOriginUnlock();
           save();
-          try{localStorage.setItem(LLM_PREF_KEY,'on');localStorage.setItem(LLM_BACKEND_KEY,'ram')}catch(e){}
           return true;
         }catch(tierErr){
+          if(myToken!==LLM_LOAD_TOKEN)return false; // idem — cancelado não conta como falha real do modelo, não bloqueia nem pisa em estado mais novo
           RAM_ENGINE=null; LLM_ACTIVE=false;
           addToRamBlocklist(modelId);
           const haMaisNiveis=i<tiers.length-1;
@@ -1556,13 +1751,13 @@ async function tryEnableRAM(onDone,opts){
       }
       return false;
     }catch(err){
-      try{localStorage.setItem(LLM_PREF_KEY,'error')}catch(e){}
       return false;
     }finally{
       LLM_INIT_PROMISE=null;
     }
   })();
   const ok=await LLM_INIT_PROMISE;
+  if(myToken!==LLM_LOAD_TOKEN)return; // cancelado — cancelLLMLoad() já cuidou da UI
   onDone(!!ok,ok?null:new Error('Falha ao inicializar Transformers.js'));
 }
 function bootFlow(){
@@ -1587,17 +1782,7 @@ function handleLLMGateChoice(ok,err){
   }
 }
 (function initLLMGate(){
-  let pref;try{pref=localStorage.getItem(LLM_PREF_KEY)}catch(e){pref=null}
-  let backend;try{backend=localStorage.getItem(LLM_BACKEND_KEY)}catch(e){backend=null}
-  if(pref==='off'){setLLMStatus('off','desativada anteriormente');LLM_GATE_BOOTED=true;bootFlow();return}
-  if(pref==='error'){setLLMStatus('erro','última inicialização falhou — tente ativar novamente');pref=null}
   const temVram=webgpuOk();
-  if(pref==='on'){
-    if(backend==='ram')tryEnableRAM(handleLLMGateChoice);
-    else if(temVram)tryEnableLLM(handleLLMGateChoice);
-    else tryEnableRAM(handleLLMGateChoice); // preferência antiga era VRAM mas essa sessão não tem WebGPU — tenta RAM em vez de desistir
-    return;
-  }
   renderLLMGate('ask');
   if(!temVram){const sec=$('llmgate-vram-section');if(sec)sec.style.display='none'}
   $('llmgate-yes')?.addEventListener('click',()=>{tryEnableLLM(handleLLMGateChoice)});
@@ -1605,7 +1790,9 @@ function handleLLMGateChoice(ok,err){
   $('llmgate-ultralight')?.addEventListener('click',()=>{tryEnableLLM(handleLLMGateChoice,{only:[LLM_ULTRALIGHT_MODEL]})});
   $('llmgate-ram')?.addEventListener('click',()=>{tryEnableRAM(handleLLMGateChoice)});
   $('llmgate-ram-light')?.addEventListener('click',()=>{tryEnableRAM(handleLLMGateChoice,{only:[RAM_LIGHT_MODEL]})});
-  $('llmgate-no')?.addEventListener('click',()=>{try{localStorage.setItem(LLM_PREF_KEY,'off')}catch(e){}hideLLMGate();if(!LLM_GATE_BOOTED){LLM_GATE_BOOTED=true;bootFlow()}else{ENGINE=null;RAM_ENGINE=null;LLM_ACTIVE=false;LLM_BACKEND=null;setLLMStatus('off','desativada');add('IA local desativada; seguindo no roteiro.','SISTEMA','secret')}});
+  $('llmgate-ram-min')?.addEventListener('click',()=>{tryEnableRAM(handleLLMGateChoice,{only:[RAM_MINIMAL_MODEL]})});
+  $('llmgate-no')?.addEventListener('click',()=>{hideLLMGate();if(!LLM_GATE_BOOTED){LLM_GATE_BOOTED=true;bootFlow()}else{ENGINE=null;RAM_ENGINE=null;LLM_ACTIVE=false;LLM_BACKEND=null;setLLMStatus('off','desativada');add('IA local desativada; seguindo no roteiro.','SISTEMA','secret')}});
+  $('llmgate-cancel')?.addEventListener('click',()=>{cancelLLMLoad()});
 })();
 $('llm-status')?.addEventListener('click',()=>{
   renderLLMGate('ask');
