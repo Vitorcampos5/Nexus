@@ -35,6 +35,8 @@
 @media(max-width:900px){.filebtn{display:block;position:fixed;right:14px;bottom:74px;z-index:60;background:#1c1a17;color:#cfc6b4;border:1px solid #45413a;font:10px monospace;letter-spacing:.08em;padding:9px 13px;opacity:.6}.filebtn:active{opacity:1}.side.open{display:block!important;position:fixed;inset:0;z-index:70;width:auto;height:100vh;opacity:1!important;background:#151515;padding:56px 22px 30px;overflow:auto;pointer-events:auto!important}.side.open .sideclose{display:block;position:fixed;top:14px;right:16px;background:none;border:1px solid #45413a;color:#cfc6b4;font:11px monospace;padding:6px 10px;z-index:80}}
 .llmgate{display:none;position:fixed;inset:0;z-index:200;background:rgba(8,8,8,.88);align-items:center;justify-content:center;padding:24px}
 .llmgate.show{display:flex}
+body.gate-open #filebtn,body.gate-open #llm-status,body.gate-open #mp-status{display:none!important}
+.mp-role-btn.selected{border-color:#8a7a4a;color:#eee8d6;background:rgba(138,122,74,.15)}
 .llmgate-box{max-width:420px;width:100%;max-height:calc(100vh - 48px);overflow-y:auto;background:#1c1a17;border:1px solid #45413a;border-radius:4px;padding:26px 24px;font-family:Georgia,serif}
 .llmgate-box h3{margin:0 0 12px;font-size:16px;color:#cfc6b4;font-weight:normal}
 .llmgate-box p{margin:0 0 18px;font-size:13px;line-height:1.6;color:#8e887d}
@@ -104,6 +106,50 @@
     </div>
   </div>
 </div>
+<div class="llmgate" id="mpgate">
+  <div class="llmgate-box">
+    <h3>Sessão compartilhada</h3>
+    <p>Convide outras pessoas pra investigar junto. Cada uma pode interpretar um papel — Julia ou Marcus respondem como a pessoa mesmo, em vez do roteiro/IA. Papel que ninguém pegar continua sendo respondido do jeito de sempre. A sincronização é por um serviço externo gratuito e passa por todo mundo que souber o código — não é privado nem tem senha real, é só pra jogar com gente que você convidou.</p>
+    <div id="mpgate-form">
+      <div class="llmgate-section">
+        <div class="llmgate-section-label">Seu nome nesta sessão</div>
+        <div class="llmgate-section-buttons"><input type="text" id="mp-name" placeholder="como quer ser chamado" maxlength="24" style="flex:1 1 auto;background:#141210;border:1px solid #45413a;color:#cfc6b4;font-family:Georgia,serif;font-size:13px;padding:8px"/></div>
+      </div>
+      <div class="llmgate-section">
+        <div class="llmgate-section-label">Seu papel</div>
+        <div class="llmgate-section-buttons">
+          <button type="button" class="mp-role-btn" data-role="consultor">Consultor (padrão)</button>
+          <button type="button" class="mp-role-btn" data-role="julia">Julia</button>
+          <button type="button" class="mp-role-btn" data-role="marcus">Marcus</button>
+        </div>
+      </div>
+      <div class="llmgate-section" id="mpgate-msg" style="display:none"></div>
+      <div class="llmgate-section">
+        <div class="llmgate-section-label">Criar uma sessão nova</div>
+        <div class="llmgate-section-buttons"><button type="button" id="mp-create">Criar e me dar um código</button></div>
+      </div>
+      <div class="llmgate-section">
+        <div class="llmgate-section-label">Entrar com um código</div>
+        <div class="llmgate-section-buttons">
+          <input type="text" id="mp-code" placeholder="código (5 letras)" maxlength="5" style="flex:1 1 auto;text-transform:uppercase;background:#141210;border:1px solid #45413a;color:#cfc6b4;font-family:monospace;font-size:14px;padding:8px;letter-spacing:2px"/>
+          <button type="button" id="mp-join">Entrar</button>
+        </div>
+      </div>
+      <button type="button" id="mp-close">Fechar</button>
+    </div>
+    <div id="mpgate-active" style="display:none">
+      <div class="llmgate-section">
+        <div class="llmgate-section-label">Código desta sessão (compartilhe com quem convidar)</div>
+        <div class="llmgate-section-buttons"><div id="mp-code-display" style="font:20px monospace;letter-spacing:4px;color:#cfc6b4"></div></div>
+      </div>
+      <div class="llmgate-section">
+        <div class="llmgate-section-label">Quem está aqui</div>
+        <div id="mpRoster" style="font-size:12px;line-height:1.7;color:#8e887d"></div>
+      </div>
+      <button type="button" id="mp-leave" class="llmgate-cancel-btn">Sair da sessão</button>
+    </div>
+  </div>
+</div>
 <a class="nexusbtn" href="../nexus.html" aria-label="Voltar para o Nexus">◆ Nexus</a>
 <main class="wrap">
 <header class="header"><div class="sig">/mnt/sem_nome/fragmento_03</div></header>
@@ -124,6 +170,7 @@
 </aside></section></main>
 
 <div id="llm-status" title="Clique pra escolher/trocar a IA local" style="position:fixed;left:12px;bottom:10px;z-index:9999;padding:5px 9px;border:1px solid currentColor;background:rgba(0,0,0,.8);font:10px monospace;letter-spacing:.8px;opacity:.9;cursor:pointer">ROTEIRO</div>
+<div id="mp-status" title="Clique pra criar ou entrar numa sessão compartilhada" style="position:fixed;left:12px;bottom:38px;z-index:9999;padding:5px 9px;border:1px solid currentColor;background:rgba(0,0,0,.8);font:10px monospace;letter-spacing:.8px;opacity:.9;cursor:pointer">SESSÃO · SOLO</div>
 <script>
 const KEY='origem-arg-v14',OLD_KEYS=['origem-arg-v13','origem-arg-v12','origem-arg-v11','origem-arg-v10','origem-arg-v9','origem-arg-v8','origem-arg-v4'];
 // Caminhos dos três arquivos que este motor não reescreve, só linka.
@@ -193,6 +240,46 @@ const REGISTRY={
   cacheKey:'origem-arg-registry-cache-v1',
   enabled:true
 };
+// ── Acesso ao bin ExtendsClass: leitura sem cache, escrita VERIFICADA ──
+// Antes: o PATCH era enviado sem checar a resposta. Se falhasse (CORS do PATCH,
+// 4xx, 413...), o nome ficava só no cache local e ninguém via o erro.
+async function binGet(url){
+  const u=url+(url.indexOf('?')>=0?'&':'?')+'_='+Date.now();
+  const r=await fetch(u,{method:'GET',mode:'cors'});
+  if(!r.ok)throw new Error('GET HTTP '+r.status);
+  const d=await r.json();
+  return (d&&typeof d==='object'&&!Array.isArray(d))?d:{entries:Array.isArray(d)?d:[]};
+}
+function mergePatch(target,patch){ // RFC 7386
+  if(patch===null||typeof patch!=='object'||Array.isArray(patch))return patch;
+  const out=(target&&typeof target==='object'&&!Array.isArray(target))?Object.assign({},target):{};
+  Object.keys(patch).forEach(k=>{
+    if(patch[k]===null)delete out[k];
+    else out[k]=mergePatch(out[k],patch[k]);
+  });
+  return out;
+}
+async function binWrite(url,partial){
+  // PATCH foi retirado daqui: testado de verdade, o preflight OPTIONS do
+  // ExtendsClass respondeu HTTP 500 tanto pro PATCH quanto pro PUT vindos de
+  // http://localhost — não era o merge-patch em si, então manter os dois só
+  // gastava uma requisição bloqueada a mais e confundia o log. Fica só
+  // ler tudo, mesclar aqui e regravar inteiro com PUT (era o verbo que já
+  // funcionava antes de qualquer PATCH entrar no código).
+  let cur;
+  try{ cur=await binGet(url); }
+  catch(err){ throw new Error('leitura antes de gravar falhou ('+(err&&err.message||'rede/CORS')+')'); }
+  const merged=mergePatch(cur,partial);
+  try{
+    const r=await fetch(url,{method:'PUT',mode:'cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(merged)});
+    if(!r.ok)throw new Error('PUT HTTP '+r.status);
+    return 'put';
+  }catch(err){
+    const msg=(err&&err.message)||'rede/CORS';
+    const dica=/^https?:\/\/localhost/.test(location.origin)?' — rodando em localhost: o preflight do ExtendsClass pode não aceitar essa origem; teste no endereço publicado antes de assumir que é o merge':'';
+    throw new Error('PUT bloqueado ('+msg+')'+dica);
+  }
+}
 function registryUrl(suffix){
   if(REGISTRY.base){
     const b=REGISTRY.base.replace(/\/$/,'');
@@ -232,23 +319,24 @@ async function pushCaseRegistry(endingId){
   registryCacheSet(list);
   try{
     const url=registryUrl('write');
-    // ExtendsClass: GET lista → PUT {entries:[...]}
+    // ExtendsClass: lê a lista atual (sem cache) e grava {entries:[...]} com verificação
     if(/extendsclass\.com/.test(url)&&!REGISTRY.base){
       let remote=[];
-      try{
-        const r=await fetch(url,{method:'GET',mode:'cors'});
-        if(r.ok){
-          const data=await r.json();
-          remote=Array.isArray(data)?data:(data&&data.entries)||[];
-        }
-      }catch(e){}
+      try{const d=await binGet(url);remote=Array.isArray(d.entries)?d.entries:[]}catch(e){}
       remote=remote.filter(x=>!(x&&x.name===entry.name&&x.ending===entry.ending&&x.day===entry.day));
       remote.push(entry);
       if(remote.length>200)remote=remote.slice(-200);
-      await fetch(url,{method:'PUT',mode:'cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({entries:remote})});
-      registryCacheSet(remote);
-      logEvent('registry','online:'+entry.name);
-      renderRegistryPanel(remote);
+      try{
+        const via=await binWrite(url,{entries:remote});
+        REGISTRY.lastStatus='gravado online ('+via+') · '+new Date().toLocaleTimeString();
+        registryCacheSet(remote);
+        logEvent('registry','online:'+entry.name+':'+via);
+      }catch(err){
+        REGISTRY.lastStatus='FALHOU ao gravar online — '+err.message+' · nome só neste navegador';
+        logEvent('registry','write-fail:'+err.message);
+        try{console.warn('[registro] falha ao gravar:',err)}catch(_){}
+      }
+      renderRegistryPanel(registryCacheGet());
       return;
     }
     if(REGISTRY.base&&/script\.google\.com|macros\/s\//.test(REGISTRY.base)){
@@ -265,18 +353,28 @@ async function pullCaseRegistry(){
   let list=registryCacheGet();
   try{
     const url=registryUrl('read');
-    const res=await fetch(url,{method:'GET',mode:'cors'});
-    if(res.ok){
-      const data=await res.json();
-      if(Array.isArray(data))list=data;
-      else if(data&&Array.isArray(data.entries))list=data.entries;
-      else if(data&&typeof data==='object'){
-        list=Object.keys(data).map(k=>({id:k,...(data[k]||{})})).filter(x=>x.name);
-      }
-      list=(list||[]).filter(x=>x&&x.name).sort((a,b)=>(a.at||'').localeCompare(b.at||''));
-      registryCacheSet(list);
+    let data;
+    if(/extendsclass\.com/.test(url))data=await binGet(url);
+    else{const res=await fetch(url,{method:'GET',mode:'cors'});if(!res.ok)throw new Error('GET HTTP '+res.status);data=await res.json()}
+    if(Array.isArray(data))list=data;
+    else if(data&&Array.isArray(data.entries))list=data.entries;
+    else if(data&&typeof data==='object'){
+      list=Object.keys(data).filter(k=>k!=='sessions').map(k=>({id:k,...(data[k]||{})})).filter(x=>x.name);
     }
-  }catch(e){}
+    list=(list||[]).filter(x=>x&&x.name).sort((a,b)=>(a.at||'').localeCompare(b.at||''));
+    registryCacheSet(list);
+    if(!/FALHOU/.test(REGISTRY.lastStatus||''))REGISTRY.lastStatus='lido do canal · '+list.length+' entrada(s) · '+new Date().toLocaleTimeString();
+    // cura: se este navegador já concluiu um final mas o canal não tem esse nome+final, reenvia uma vez
+    try{
+      const ed=(S.endingActive)||(S.endingsReached&&S.endingsReached[S.endingsReached.length-1]);
+      if(S.name&&ed&&!REGISTRY.healTried&&!list.some(x=>x.name===S.name&&x.ending===ed)){
+        REGISTRY.healTried=true;
+        pushCaseRegistry(ed);
+      }
+    }catch(e){}
+  }catch(e){
+    REGISTRY.lastStatus='FALHOU ao ler o canal — '+(e&&e.message||'rede/CORS')+' · mostrando cache local';
+  }
   return list;
 }
 
@@ -284,16 +382,147 @@ function renderRegistryPanel(list){
   const el=$('caseRegistry');
   if(!el)return;
   if(!list||!list.length){
-    el.innerHTML='<div class="hint">Nenhum nome registrado neste canal ainda.</div>';
+    el.innerHTML='<div class="hint">Nenhum nome registrado neste canal ainda.'+(REGISTRY.lastStatus?'<br><span style="opacity:.5">canal: '+esc(REGISTRY.lastStatus)+'</span>':'')+'</div>';
     return;
   }
   // agrupar por nome (última conclusão)
   const byName={};
   list.forEach(x=>{byName[x.name]=x});
   const rows=Object.values(byName).slice(-40).reverse();
-  el.innerHTML=rows.map(x=>'<div class="hypo"><strong>'+esc(x.name)+'</strong> · '+(x.role?esc(x.role)+' · ':'')+esc(x.endingTitle||x.ending)+' <span style="opacity:.55">'+(x.day||'')+'</span></div>').join('');
+  el.innerHTML=rows.map(x=>'<div class="hypo"><strong>'+esc(x.name)+'</strong> · '+(x.role?esc(x.role)+' · ':'')+esc(x.endingTitle||x.ending)+' <span style="opacity:.55">'+(x.day||'')+'</span></div>').join('')+(REGISTRY.lastStatus?'<div style="opacity:.5;margin-top:6px">canal: '+esc(REGISTRY.lastStatus)+'</div>':'');
 }
 
+// ═══════════════ Sessão compartilhada (multiplayer) ═══════════════
+// Mesmo bin do registry (cafbbdf), mesma API sem conta/chave. Cada sessão
+// vive em sessions.{CODIGO} dentro do bin; tudo por baixo é modelado como
+// OBJETO indexado por ID, nunca array — JSON Merge Patch mescla objeto
+// aninhado com segurança por chave, mas SUBSTITUI array inteiro. Se
+// "messages" fosse array, dois jogadores escrevendo quase ao mesmo tempo
+// fariam um PATCH apagar a mensagem do outro; como objeto-por-id, os dois
+// PATCHes se somam sem se pisar. Sincronização é só polling — sem backend
+// de verdade pra empurrar evento, isso tem uns segundos de atraso sempre.
+const MP_BIN_URL='https://extendsclass.com/api/json-storage/bin/cafbbdf';
+const MP_POLL_MS=4000;
+const MP_CLIENT_KEY='origem-arg-mp-client-id';
+function mpClientId(){
+  try{
+    let id=localStorage.getItem(MP_CLIENT_KEY);
+    if(!id){id='c'+Math.random().toString(36).slice(2,10);localStorage.setItem(MP_CLIENT_KEY,id)}
+    return id;
+  }catch(e){return 'c'+Math.random().toString(36).slice(2,10)}
+}
+function mpGenCode(){
+  const alfabeto='ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // sem 0/O/1/I — pra não confundir na hora de digitar
+  let s='';for(let i=0;i<5;i++)s+=alfabeto[Math.floor(Math.random()*alfabeto.length)];
+  return s;
+}
+function mpNewMsgId(){return 'm'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+let MP_SESSION=null; // {code, clientId, name, role} — role: 'consultor'|'julia'|'marcus'
+let MP_POLL_TIMER=null;
+let MP_SEEN_MSGS={};
+let MP_LAST_SESSAO=null;
+
+async function mpFetchBin(){
+  try{return await binGet(MP_BIN_URL)}
+  catch(e){throw new Error('Não consegui ler o bin ('+e.message+').')}
+}
+async function mpPatch(partial){
+  try{await binWrite(MP_BIN_URL,partial)}
+  catch(e){throw new Error('Não consegui gravar no bin ('+e.message+').')}
+}
+async function mpCreateSession(name,role){
+  const code=mpGenCode();
+  const clientId=mpClientId();
+  const sessao={createdAt:new Date().toISOString(),roles:{julia:null,marcus:null},consultores:{},messages:{}};
+  if(role==='julia'||role==='marcus')sessao.roles[role]={name,clientId};
+  else sessao.consultores[clientId]=name;
+  await mpPatch({sessions:{[code]:sessao}});
+  MP_SESSION={code,clientId,name,role};
+  MP_SEEN_MSGS={};
+  return code;
+}
+async function mpJoinSession(code,name,role){
+  code=String(code||'').trim().toUpperCase();
+  const bin=await mpFetchBin();
+  const sessao=bin.sessions&&bin.sessions[code];
+  if(!sessao)throw new Error('Sessão "'+code+'" não encontrada.');
+  const clientId=mpClientId();
+  if(role==='julia'||role==='marcus'){
+    const ocupado=sessao.roles&&sessao.roles[role];
+    if(ocupado&&ocupado.clientId!==clientId)throw new Error('O papel de '+role+' já está ocupado por '+ocupado.name+'.');
+    await mpPatch({sessions:{[code]:{roles:{[role]:{name,clientId}}}}});
+  }else{
+    await mpPatch({sessions:{[code]:{consultores:{[clientId]:name}}}});
+  }
+  MP_SESSION={code,clientId,name,role};
+  MP_SEEN_MSGS={};
+  // marca as mensagens que já existiam como "já vistas", pra não re-imprimir o histórico inteiro de uma vez
+  if(sessao.messages)for(const id in sessao.messages)MP_SEEN_MSGS[id]=true;
+  return sessao;
+}
+async function mpSendMessage(text,asRole,npcWho){
+  if(!MP_SESSION)return null;
+  const id=mpNewMsgId();
+  const msg={from:MP_SESSION.name,role:asRole||MP_SESSION.role,text,ts:Date.now()};
+  if(npcWho)msg.npcWho=npcWho;
+  MP_SEEN_MSGS[id]=true; // já é meu, não preciso que o polling me mostre de volta
+  await mpPatch({sessions:{[MP_SESSION.code]:{messages:{[id]:msg}}}});
+  return id;
+}
+function mpLeaveSession(){
+  if(MP_POLL_TIMER){clearInterval(MP_POLL_TIMER);MP_POLL_TIMER=null}
+  MP_SESSION=null;
+  MP_SEEN_MSGS={};
+}
+function mpRoleLabel(role){return role==='julia'?'Julia':role==='marcus'?'Marcus':'Consultor'}
+// Decide se uma pergunta deveria esperar por um humano ou cair no roteiro/IA:
+// só espera se o texto menciona claramente Julia ou Marcus pelo nome E esse
+// papel está reivindicado por um humano nesta sessão. Qualquer outro caso
+// (não menciona ninguém específico, ou menciona um papel vago) cai no motor
+// de sempre, gerado localmente por quem perguntou.
+function mpTargetRole(text,sessao){
+  const e=detectEntities(norm(text));
+  if(e.julia&&sessao.roles&&sessao.roles.julia)return 'julia';
+  if(e.marcus&&sessao.roles&&sessao.roles.marcus)return 'marcus';
+  return null;
+}
+async function mpPoll(){
+  if(!MP_SESSION)return;
+  try{
+    const bin=await mpFetchBin();
+    const sessao=bin.sessions&&bin.sessions[MP_SESSION.code];
+    if(!sessao)return;
+    MP_LAST_SESSAO=sessao;
+    mpRenderNewMessages(sessao);
+    mpRenderRoster(sessao);
+  }catch(e){}
+}
+function mpRenderNewMessages(sessao){
+  const novas=Object.keys(sessao.messages||{}).filter(id=>!MP_SEEN_MSGS[id]);
+  if(!novas.length)return;
+  novas.sort((a,b)=>(sessao.messages[a].ts||0)-(sessao.messages[b].ts||0));
+  MP_SUPPRESS_BROADCAST=true;
+  for(const id of novas){
+    MP_SEEN_MSGS[id]=true;
+    const m=sessao.messages[id];
+    if(!m)continue;
+    if(m.role==='npc'){add(m.text,m.npcWho||'ARQUIVO','secret');continue}
+    const who=(m.from||'?')+' · '+mpRoleLabel(m.role);
+    add(m.text,who,m.role==='consultor'?'you':'secret');
+  }
+  MP_SUPPRESS_BROADCAST=false;
+}
+function mpRenderRoster(sessao){
+  const el=$('mpRoster');
+  if(!el)return;
+  const nomes=Object.values(sessao.consultores||{});
+  const linhas=[
+    'Consultores: '+(nomes.length?esc(nomes.join(', ')):'ninguém ainda'),
+    'Julia: '+(sessao.roles&&sessao.roles.julia?esc(sessao.roles.julia.name):'—— vaga aberta (roteiro/IA responde) ——'),
+    'Marcus: '+(sessao.roles&&sessao.roles.marcus?esc(sessao.roles.marcus.name):'—— vaga aberta (roteiro/IA responde) ——')
+  ];
+  el.innerHTML=linhas.join('<br>');
+}
 const base={version:14,name:'',playerRole:'',phase:0,trust:30,serious:false,started:false,solved:false,history:[],found:[],
 flags:{guard:false,dose:false,julia:false,access:false,marcus:false,method:false,intent:false,contradiction:false,vital:false,origin:false,entry:false,awake:false,napkinSecret:false,twelve:false,doseConfronted:false,accessConfronted:false,juliaPressured:false,marcusPressured:false,theoryDestroyed:false,earlyAccusation:false,metaJane:false,callReceived:false,call2:false,bottle1982:false,orphanTuesday:false,theoryA:false,theoryB:false,theoryC:false,exportUsed:false},
 hypotheses:[],contradictions:[],unlocked:[],secrets:[],entities:{},topics:[],lastTopic:'',lastCharacter:'',lastEvidence:'',turn:0,lastQuestion:'',lastAnswer:'',wrongAccusations:0,visited:{},facts:{},questions:0,memory:[],asked:{},replies:{},
@@ -343,7 +572,20 @@ function renderMetaInbox(){const box=$('metaInbox'),count=$('metaCount');if(!box
 function addMetaMessage(text,who='SISTEMA'){if(!text)return;META_MESSAGES.push({text:String(text),who:String(who),time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})});renderMetaInbox()}
 function openMetaToolkit(){const root=$('metaToolkit'),list=$('metaList');if(!root||!list)return;list.innerHTML=META_MESSAGES.length?META_MESSAGES.map(m=>'<div class="meta-item"><div>'+esc(m.text)+'</div><span class="meta-time">'+esc(m.who)+' · '+esc(m.time)+'</span></div>').join(''):'<div class="meta-empty">Nenhuma meta-informação pendente.</div>';root.classList.add('open');root.setAttribute('aria-hidden','false');META_READ=META_MESSAGES.length;renderMetaInbox()}
 function closeMetaToolkit(){const root=$('metaToolkit');if(root){root.classList.remove('open');root.setAttribute('aria-hidden','true')}}
-function add(text,who='ARQUIVO',type=''){if(!text)return;if(who==='SISTEMA'||type==='meta'){addMetaMessage(text,who);return}const box=$('messages');if(!box)return;const nearBottom=(window.innerHeight+window.scrollY)>=(document.documentElement.scrollHeight-220);const d=document.createElement('div');d.className='msg '+type;d.innerHTML='<div class="who">'+esc(who)+'</div>'+esc(text);box.appendChild(d);if(nearBottom){requestAnimationFrame(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'smooth'}))}}
+let MP_SUPPRESS_BROADCAST=false;
+function add(text,who='ARQUIVO',type=''){if(!text)return;if(who==='SISTEMA'||type==='meta'){addMetaMessage(text,who);return}
+  // Numa sessão compartilhada, se eu sou o consultor e o roteiro/IA acabou de
+  // gerar uma fala de personagem localmente (porque ninguém reivindicou o
+  // papel perguntado), essa fala precisa aparecer pros outros jogadores
+  // também — não só na minha tela. add() é o único cano por onde TUDO passa
+  // (roteiro e IA), então o gancho fica aqui, um lugar só, em vez de espalhar
+  // isso por dentro de respond()/llmChat(). A flag de supressão evita eco
+  // infinito: nunca rebroadcast do que já veio sincronizado, nem da minha
+  // própria pergunta (que já é mandada explicitamente por mpSendMessage).
+  if(MP_SESSION&&MP_SESSION.role==='consultor'&&!MP_SUPPRESS_BROADCAST&&who!=='VOCÊ'){
+    mpSendMessage(text,'npc',who).catch(()=>{});
+  }
+  const box=$('messages');if(!box)return;const nearBottom=(window.innerHeight+window.scrollY)>=(document.documentElement.scrollHeight-220);const d=document.createElement('div');d.className='msg '+type;d.innerHTML='<div class="who">'+esc(who)+'</div>'+esc(text);box.appendChild(d);if(nearBottom){requestAnimationFrame(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'smooth'}))}}
 const N={jane:'JANE',lisbon:'LISBON',cho:'CHO',rigsby:'RIGSBY',vanpelt:'VAN PELT',julia:'JULIA',marcus:'MARCUS',archive:'ARQUIVO',system:'SISTEMA'};
 const ALIAS={case:['caso','investigacao','investigação','crime','assassinato','morte','vitima','vítima','vinicola','vinícola','napa','vinho'],scene:['cena','local','mesa','corpo'],chair:['cadeira','assento','cadeira torta','cadeira fora do lugar'],bottle:['garrafa','garrafa torta','1982','vinho caro'],guard:['guardanapo','perfume','cheiro','floral','lencinho','lenço'],cyanide:['cianeto','cianureto','veneno','frasco','substancia','substância'],dose:['dose','quantidade','concentracao','concentração','concentrado','diluido','diluído','puro'],access:['adega','estoque','limpeza','sala de limpeza','acesso','chave'],julia:['julia','funcionaria','funcionária','garota','menina','novata'],marcus:['marcus','sommelier'],jane:['jane','patrick jane','patrick'],lisbon:['lisbon','teresa'],cho:['cho','kimball'],rigsby:['rigsby','wayne'],vanpelt:['van pelt','grace'],vitor:['vitor'],vital:['vital','vampiro','vampiros','registro'],origin:['origem','autor livro','ponto de origem']};
 const TOPICS={team:['quem sao voces','quem são vocês','equipe','time','cbi','agentes'],case:['o que aconteceu','que aconteceu','qual e o caso','qual é o caso','essa investigacao','essa investigação','caso'],scene:['cena','local','mesa','corpo'],guard:['guardanapo','perfume','cheiro','lencinho'],bottle:['garrafa','1982'],cyanide:['cianeto','veneno','frasco'],dose:['dose','concentracao','concentração','quantidade','puro','diluido','diluído'],access:['adega','estoque','limpeza','acesso'],julia:['julia'],marcus:['marcus','sommelier'],motive:['motivo','motivacao','motivação','por que fez','porquê','razão','razao','intencao','intenção'],method:['como matou','como envenenou','como fez','mecanismo','metodo','método','maneira'],contradiction:['nao bate','não bate','nao fecha','não fecha','contradicao','contradição','inconsistencia','inconsistência','estranho','não combina','nao combina'],accusation:['culpado','assassino','foi ele','foi ela','quem matou','prender','acusacao','acusação'],falsify:['o que provaria que estou errado','como provar que estou errado','o que refuta','o que derruba','contra minha teoria','falsificar'],hypothesis:['acho que','suspeito','minha teoria','minha hipótese','minha hipotese','talvez seja'],help:['por onde começo','por onde comeco','o que posso perguntar','o que faço agora','qual pista'],why:['por que','porque','como assim','qual a razão','qual a razao'],who:['quem'],what:['o que','que '],where:['onde','de onde'],when:['quando','que horas','em que momento'],repeat:['não entendi','nao entendi','repete','explica melhor','mais claro','não compreendi','nao compreendi'],dismiss:['brincadeira','tanto faz','deixa pra la','deixa pra lá','nao importa','não importa','kkkk','haha'],thanks:['obrigado','obrigada','valeu','entendi'],pressure:['me conta tudo','fala a verdade','nao minta','não minta','voce sabe','você sabe'],
@@ -1239,7 +1481,31 @@ function resetGame(){
   location.reload();
   return true;
 }
-$('form')?.addEventListener('submit',e=>{e.preventDefault();const q=$('input')?.value.trim();if(!q)return;if(isResetCmd(q)){$('input').value='';if(!resetGame())add('Tudo bem. Nada foi apagado.','ARQUIVO','sys');return}$('input').value='';if(looksLikeWantsOut(norm(q))){handleWantsOut(q);return}if(LLM_ACTIVE&&(ENGINE||RAM_ENGINE)){llmChat(q)}else{add(q,S.name||'VOCÊ','you');if(LLM_STATUS==='erro')add('JANE · IA LOCAL NÃO ESTÁ ATIVA. Esta resposta veio do roteiro pré-programado.','SISTEMA','secret');respond(q)}});
+async function mpHandleSubmit(q){
+  if(MP_SESSION.role==='julia'||MP_SESSION.role==='marcus'){
+    // Sou um humano jogando o suspeito: meu texto É a resposta em
+    // personagem, direto — não passa por roteiro nem IA nenhuma.
+    MP_SUPPRESS_BROADCAST=true;
+    add(q,MP_SESSION.name+' · '+mpRoleLabel(MP_SESSION.role),'secret');
+    MP_SUPPRESS_BROADCAST=false;
+    try{await mpSendMessage(q,MP_SESSION.role)}catch(e){add('Não consegui enviar — tenta de novo em alguns segundos.','SISTEMA','secret')}
+    return;
+  }
+  // Sou o consultor: minha mensagem é uma pergunta de verdade.
+  if(looksLikeWantsOut(norm(q))){handleWantsOut(q);return}
+  MP_SUPPRESS_BROADCAST=true;
+  add(q,MP_SESSION.name+' · Consultor','you');
+  MP_SUPPRESS_BROADCAST=false;
+  try{await mpSendMessage(q,'consultor')}catch(e){add('Não consegui enviar — tenta de novo em alguns segundos.','SISTEMA','secret');return}
+  const alvo=mpTargetRole(q,MP_LAST_SESSAO||{});
+  if(alvo)return; // papel reivindicado por um humano — só espera a resposta chegar pelo polling
+  // ninguém reivindicou o papel perguntado (ou a pergunta não era pra um
+  // suspeito específico) — o motor de sempre responde, e o gancho dentro de
+  // add() já cuida de replicar essa fala pros outros jogadores da sessão
+  if(LLM_ACTIVE&&(ENGINE||RAM_ENGINE))llmChat(q);
+  else respond(q);
+}
+$('form')?.addEventListener('submit',e=>{e.preventDefault();const q=$('input')?.value.trim();if(!q)return;if(isResetCmd(q)){$('input').value='';if(!resetGame())add('Tudo bem. Nada foi apagado.','ARQUIVO','sys');return}$('input').value='';if(MP_SESSION){mpHandleSubmit(q);return}if(looksLikeWantsOut(norm(q))){handleWantsOut(q);return}if(LLM_ACTIVE&&(ENGINE||RAM_ENGINE)){llmChat(q)}else{add(q,S.name||'VOCÊ','you');if(LLM_STATUS==='erro')add('JANE · IA LOCAL NÃO ESTÁ ATIVA. Esta resposta veio do roteiro pré-programado.','SISTEMA','secret');respond(q)}});
 $('metaInbox')?.addEventListener('click',openMetaToolkit);$('metaInbox')?.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openMetaToolkit()}});$('metaClose')?.addEventListener('click',closeMetaToolkit);$('metaToolkit')?.addEventListener('click',e=>{if(e.target.id==='metaToolkit')closeMetaToolkit()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMetaToolkit()});
 $('cbiFile')?.addEventListener('click',()=>{if(S.phase>=2||S.started)location.href=CONFIG.arquivos.cbi});
 $('vitalFile')?.addEventListener('click',()=>{if(S.flags.vital)location.href=CONFIG.arquivos.vital});
@@ -1469,10 +1735,11 @@ async function llmChat(q,isRetry){
 function renderLLMGate(mode,pct,text){
   const gate=$('llmgate');if(!gate)return;
   gate.classList.add('show');
+  document.body.classList.add('gate-open');
   if(mode==='ask'){$('llmgate-progress').style.display='none';$('llmgate-actions').style.display='flex'}
   else if(mode==='loading'){$('llmgate-actions').style.display='none';$('llmgate-progress').style.display='block';$('llmgate-fill').style.width=(pct||0)+'%';$('llmgate-status').textContent=text||('Baixando… '+(pct||0)+'%')}
 }
-function hideLLMGate(){$('llmgate')?.classList.remove('show')}
+function hideLLMGate(){$('llmgate')?.classList.remove('show');if(!$('mpgate')?.classList.contains('show'))document.body.classList.remove('gate-open')}
 
 async function tryEnableLLM(onDone,opts){
   opts=opts||{};
@@ -1768,7 +2035,10 @@ function bootFlow(){
   suggest();
 }
 
+const LLMGATE_SEEN_KEY='origem-llmgate-seen';
+function markLLMGateSeen(){try{localStorage.setItem(LLMGATE_SEEN_KEY,'1')}catch(e){}}
 function handleLLMGateChoice(ok,err){
+  markLLMGateSeen();
   hideLLMGate();
   if(!LLM_GATE_BOOTED){
     LLM_GATE_BOOTED=true;
@@ -1783,7 +2053,15 @@ function handleLLMGateChoice(ok,err){
 }
 (function initLLMGate(){
   const temVram=webgpuOk();
-  renderLLMGate('ask');
+  let jaVisto=false;try{jaVisto=localStorage.getItem(LLMGATE_SEEN_KEY)==='1'}catch(e){}
+  if(jaVisto){
+    // já perguntou antes nesta máquina — não interrompe de novo sozinho.
+    // o painel continua disponível a qualquer momento pelo indicador
+    // "IA local" no canto (clique nele reabre a escolha).
+    if(!LLM_GATE_BOOTED){LLM_GATE_BOOTED=true;bootFlow()}
+  }else{
+    renderLLMGate('ask');
+  }
   if(!temVram){const sec=$('llmgate-vram-section');if(sec)sec.style.display='none'}
   $('llmgate-yes')?.addEventListener('click',()=>{tryEnableLLM(handleLLMGateChoice)});
   $('llmgate-light')?.addEventListener('click',()=>{tryEnableLLM(handleLLMGateChoice,{only:[LLM_LIGHT_MODEL]})});
@@ -1791,13 +2069,70 @@ function handleLLMGateChoice(ok,err){
   $('llmgate-ram')?.addEventListener('click',()=>{tryEnableRAM(handleLLMGateChoice)});
   $('llmgate-ram-light')?.addEventListener('click',()=>{tryEnableRAM(handleLLMGateChoice,{only:[RAM_LIGHT_MODEL]})});
   $('llmgate-ram-min')?.addEventListener('click',()=>{tryEnableRAM(handleLLMGateChoice,{only:[RAM_MINIMAL_MODEL]})});
-  $('llmgate-no')?.addEventListener('click',()=>{hideLLMGate();if(!LLM_GATE_BOOTED){LLM_GATE_BOOTED=true;bootFlow()}else{ENGINE=null;RAM_ENGINE=null;LLM_ACTIVE=false;LLM_BACKEND=null;setLLMStatus('off','desativada');add('IA local desativada; seguindo no roteiro.','SISTEMA','secret')}});
+  $('llmgate-no')?.addEventListener('click',()=>{markLLMGateSeen();hideLLMGate();if(!LLM_GATE_BOOTED){LLM_GATE_BOOTED=true;bootFlow()}else{ENGINE=null;RAM_ENGINE=null;LLM_ACTIVE=false;LLM_BACKEND=null;setLLMStatus('off','desativada');add('IA local desativada; seguindo no roteiro.','SISTEMA','secret')}});
   $('llmgate-cancel')?.addEventListener('click',()=>{cancelLLMLoad()});
 })();
 $('llm-status')?.addEventListener('click',()=>{
   renderLLMGate('ask');
   const sec=$('llmgate-vram-section');if(sec)sec.style.display=webgpuOk()?'':'none';
 });
+
+(function initMultiplayerGate(){
+  let papelEscolhido='consultor';
+  function mostrarErro(msg){const el=$('mpgate-msg');if(!el)return;el.style.display=msg?'block':'none';el.innerHTML=msg?'<div class="llmgate-section-label" style="color:#c99a8f">'+esc(msg)+'</div>':''}
+  function abrirGate(){
+    $('mpgate')?.classList.add('show');
+    document.body.classList.add('gate-open');
+    if(MP_SESSION){$('mpgate-form').style.display='none';$('mpgate-active').style.display='block';$('mp-code-display').textContent=MP_SESSION.code}
+    else{$('mpgate-form').style.display='block';$('mpgate-active').style.display='none'}
+  }
+  function fecharGate(){$('mpgate')?.classList.remove('show');if(!$('llmgate')?.classList.contains('show'))document.body.classList.remove('gate-open')}
+  function atualizarStatus(){
+    const el=$('mp-status');
+    if(!el)return;
+    el.textContent=MP_SESSION?('SESSÃO '+MP_SESSION.code+' · '+mpRoleLabel(MP_SESSION.role).toUpperCase()):'SESSÃO · SOLO';
+  }
+  document.querySelectorAll('.mp-role-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      papelEscolhido=btn.dataset.role;
+      document.querySelectorAll('.mp-role-btn').forEach(b=>b.classList.toggle('selected',b===btn));
+    });
+  });
+  $('mp-create')?.addEventListener('click',async()=>{
+    const nome=($('mp-name')?.value||'').trim().slice(0,24)||'Anônimo';
+    mostrarErro('');
+    try{
+      const code=await mpCreateSession(nome,papelEscolhido);
+      MP_POLL_TIMER=setInterval(mpPoll,MP_POLL_MS);
+      mpPoll();
+      atualizarStatus();
+      abrirGate();
+      add('Sessão '+code+' criada. Compartilhe o código com quem você convidar.','SISTEMA','secret');
+    }catch(e){mostrarErro(e.message||'Não consegui criar a sessão.')}
+  });
+  $('mp-join')?.addEventListener('click',async()=>{
+    const nome=($('mp-name')?.value||'').trim().slice(0,24)||'Anônimo';
+    const code=($('mp-code')?.value||'').trim().toUpperCase();
+    if(!code){mostrarErro('Digite um código.');return}
+    mostrarErro('');
+    try{
+      await mpJoinSession(code,nome,papelEscolhido);
+      MP_POLL_TIMER=setInterval(mpPoll,MP_POLL_MS);
+      mpPoll();
+      atualizarStatus();
+      abrirGate();
+      add('Você entrou na sessão '+code+' como '+mpRoleLabel(papelEscolhido)+'.','SISTEMA','secret');
+    }catch(e){mostrarErro(e.message||'Não consegui entrar nessa sessão.')}
+  });
+  $('mp-leave')?.addEventListener('click',()=>{
+    mpLeaveSession();
+    atualizarStatus();
+    fecharGate();
+    add('Você saiu da sessão compartilhada. Voltando pro jogo solo.','SISTEMA','secret');
+  });
+  $('mp-close')?.addEventListener('click',fecharGate);
+  $('mp-status')?.addEventListener('click',abrirGate);
+})();
 
 
 /* ═══════════════════════════════════════════════════════════════

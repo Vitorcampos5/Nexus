@@ -528,16 +528,44 @@ p{line-height:1.65;margin:0 0 12px;}
     var url = base
       ? (/script\.google\.com|macros\/s\//.test(base) ? base+'?action=list' : base+'/case_260847/entries.json')
       : binUrl;
-    fetch(url,{method:'GET',mode:'cors'}).then(function(r){return r.ok?r.json():null}).then(function(data){
-      if(!data)return;
+    // GET sem cache: a documentação do próprio ExtendsClass tem um relato de
+    // usuário reportando GET sempre voltando dado antigo, resolvido como
+    // cache do navegador. cache:'no-store' cobre navegador que respeita a
+    // opção; o parâmetro ?_=timestamp cobre qualquer proxy/CDN intermediário
+    // que só decida por cache olhando se a URL mudou.
+    // Linha de diagnóstico visível: diz de onde vieram os dados que estão na tela.
+    var stEl=document.createElement('p');
+    stEl.style.cssText='font:11px Special Elite,monospace;color:#6b6252;margin:8px 0 0';
+    listEl.parentNode.appendChild(stEl);
+    function status(t){ stEl.textContent=t; }
+    status('canal: lendo… (por enquanto mostrando cache local de '+cached.length+' entrada(s))');
+    function tratar(data,via){
       var list=[];
       if(Array.isArray(data)) list=data;
-      else if(data.entries&&Array.isArray(data.entries)) list=data.entries;
-      else if(typeof data==='object') list=Object.keys(data).map(function(k){return Object.assign({id:k},data[k]);});
+      else if(data&&data.entries&&Array.isArray(data.entries)) list=data.entries;
+      else if(data&&typeof data==='object') list=Object.keys(data).filter(function(k){return k!=='sessions';}).map(function(k){return Object.assign({id:k},data[k]);});
       list=list.filter(function(x){return x&&x.name;});
+      try{console.log('[registro] resposta bruta ('+via+'):',data)}catch(e){}
       try{localStorage.setItem(cacheKey,JSON.stringify(list.slice(-200)))}catch(e){}
       paint(list);
-    }).catch(function(){});
+      status('canal: AO VIVO ('+via+') · '+list.length+' entrada(s) · '+new Date().toLocaleTimeString());
+    }
+    function ler(opts,via,q){
+      var u=url+(q?(url.indexOf('?')>=0?'&':'?')+'_='+Date.now():'');
+      return fetch(u,opts).then(function(r){
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        return r.json();
+      }).then(function(d){ tratar(d,via); });
+    }
+    // 1ª tentativa: requisição simples. 2ª: com no-store. 3ª: com query anti-cache.
+    // (no-store manda Cache-Control/Pragma, que alguns servidores bloqueiam no CORS
+    // e a falha era engolida — o cache antigo ficava na tela sem ninguém perceber.)
+    ler({method:'GET',mode:'cors'},'simples',false)
+      .catch(function(e1){ return ler({method:'GET',mode:'cors',cache:'no-store'},'no-store',false).catch(function(e2){
+        return ler({method:'GET',mode:'cors'},'query',true).catch(function(e3){
+          status('canal: FALHOU ('+e1.message+' / '+e2.message+' / '+e3.message+') — tela mostra só o cache local antigo');
+        });
+      }); });
   })();
 
 // Cicatrizes do canal ARG
