@@ -110,7 +110,7 @@
               // em cima), e o script inteiro para de funcionar em
               // silêncio. Texto não tem essa restrição.
               // ————————————————————————————————————————————————————————————
-             var DATA_DESPERTAR = { dia: '20', mes: '09', hora: '21', minuto: '36' };
+             var DATA_DESPERTAR = { dia: '30', mes: '09', hora: '13', minuto: '00' };
              // Exposta globalmente — o cronômetro em nexus.html lê daqui
              // (mesma origem, via window.top) em vez de manter cópia
              // própria. Antes tinha duas cópias independentes: editar
@@ -748,7 +748,14 @@
      // painéis voltem a refletir o estado real, sem precisar
      // adivinhar (e arriscar errar) cada variável interna do
      // nexus.html a partir de fora dele.
-     try { frame.contentWindow.location.reload(); } catch (e) {}
+     //
+     // Em modo de teste, NÃO recarrega — a luta deve ir até o fim e
+     // parar aí, sem "redirecionar" de volta pro nexus. O estado
+     // (poeira/resolvido/ícone) já foi todo aplicado acima; só o reload
+     // (que revela o nexus de novo) fica de fora.
+     if (!modoTeste) {
+       try { frame.contentWindow.location.reload(); } catch (e) {}
+     }
    }
 
    // Exposta pro Cenário B (malik-batalha.js) chamar quando "O Nexus

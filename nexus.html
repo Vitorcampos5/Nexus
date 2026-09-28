@@ -67,145 +67,20 @@
       .drill-notes .note, .drill-invocation__title, .drill-invocation__subtitle { animation:none !important; opacity:1 !important; transform:none !important; }
     }
 
-    /* ── Painel das Esferas do Dragão — canto inferior esquerdo, minimizado até
-       hover (desktop) ou toque (mobile) — o toggle real é feito via JS com a
-       classe .expandido, não por :hover puro, pra não depender de como cada
-       navegador touch simula hover. ── */
-    #dragonball-panel { position:fixed; left:1rem; bottom:1rem; z-index:30; background:rgba(7,8,13,.88); border:1px solid rgba(232,224,208,.14); border-radius:8px; padding:.55rem .7rem; cursor:pointer; user-select:none; transition:background .25s ease, border-color .25s ease; }
-    #dragonball-panel.expandido { background:rgba(7,8,13,.96); border-color:rgba(196,163,90,.35); }
-    .db-mini { display:flex; align-items:center; gap:.45rem; white-space:nowrap; }
-    .db-mini-orb { width:14px; height:14px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #FFD98A, #E8891A 62%, #A34E08); box-shadow:0 0 5px rgba(232,137,26,.55); flex:none; }
-    .db-mini-count { font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.1em; color:var(--gold); }
-    .db-expanded { display:none; margin-top:.65rem; max-width:210px; }
-    #dragonball-panel.expandido .db-expanded { display:block; }
-    .db-panel-title { font-family:'EB Garamond',serif; font-style:italic; font-size:.75rem; color:var(--dim); margin-bottom:.55rem; }
-    .db-grid { display:flex; flex-wrap:wrap; gap:.4rem; }
-    .db-orb { position:relative; width:24px; height:24px; border-radius:50%; background:#1a1a1f; opacity:.4; flex:none; }
-    .db-orb.achada { background:radial-gradient(circle at 35% 30%, #FFD98A, #E8891A 62%, #A34E08); box-shadow:0 0 6px rgba(232,137,26,.55); opacity:1; }
-    .db-orb .estrela { position:absolute; width:4px; height:4px; background:#C21818; clip-path:polygon(50% 0%, 61% 35%, 98% 35%, 68% 56%, 79% 91%, 50% 69%, 21% 91%, 32% 56%, 2% 35%, 39% 35%); }
+    /* ── Painel da Estação Nexus — substitui os antigos #dragonball-panel
+       (Esferas) e #valtheris-painel (Sagas lidas): ambos os sistemas
+       agora vivem dentro da nave, em 3D (ver Nave/estacao_interior.html).
+       Aqui fica só um atalho fixo pro canto, sem expandir/recolher feito
+       os dois painéis de antes — clicar embarca na Estação. ── */
+    #estacao-painel { position:fixed; left:1rem; bottom:1rem; z-index:30; display:flex; align-items:center; gap:.5rem; background:rgba(7,8,13,.88); border:1px solid rgba(57,255,138,.25); border-radius:8px; padding:.55rem .75rem; text-decoration:none; user-select:none; transition:border-color .25s ease, box-shadow .25s ease; }
+    #estacao-painel:hover, #estacao-painel:focus-visible { border-color:rgba(57,255,138,.65); box-shadow:0 0 14px rgba(57,255,138,.35); }
+    #estacao-painel .ep-nave { width:15px; height:15px; flex:none; }
+    #estacao-painel .ep-label { font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.08em; color:#8FE8B8; white-space:nowrap; }
 
-    /* ── Conjunto completo (7/7) — o painel ganha um brilho dourado
-       permanente (o "troféu"), e na primeira vez que o conjunto se
-       completa, um pulso mais intenso toca por cima disso (a
-       "cutscene"), acompanhado do som — ver celebrarConclusao() no JS. ── */
-    #dragonball-panel.completo { border-color:rgba(232,137,26,.65); box-shadow:0 0 18px rgba(232,137,26,.35); }
-    #dragonball-panel.completo .db-mini-count { color:#FFD98A; }
-    .db-resgatar { display:none; margin:.5rem 0 0; font-family:'EB Garamond',serif; font-style:italic; font-size:.72rem; color:#FFD98A; text-decoration:underline; cursor:pointer; text-align:center; }
-    #dragonball-panel.completo .db-resgatar { display:block; }
-    .db-resgatar:hover { color:#fff; }
-    .db-orb.completo { box-shadow:0 0 10px rgba(255,217,138,.75); }
-    #dragonball-panel.celebrando .db-orb.completo { animation:dbPulso 1.4s ease-in-out infinite; }
-    @keyframes dbPulso {
-      0%, 100% { box-shadow:0 0 10px rgba(255,217,138,.75); filter:brightness(1); }
-      50%      { box-shadow:0 0 22px rgba(255,217,138,1); filter:brightness(1.45); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      #dragonball-panel.celebrando .db-orb.completo { animation:none !important; box-shadow:0 0 22px rgba(255,217,138,1) !important; filter:brightness(1.3) !important; }
-    }
+    /* Painel/quadro da Canção da Tempestade (Irmãos Compositores) saiu
+       daqui — virou um quadro 3D de verdade dentro da nave. Ver
+       Nave/estacao_interior.html (quadroCancaoMoldura). */
 
-    /* ── Painel de leitura de Valtheris — lê a mesma chave que o próprio
-       Valtheris_hub.html já grava (localStorage 'valtheris_read'); não
-       escreve nada, só lê — a lógica de marcar saga como lida continua
-       vivendo só no hub. 21 Sagas de Além do Véu (S1–S21) + a Saga 0 de
-       Sob o Luar (S0_luar) = 22 no total.
-       Fica empilhado ACIMA do #dragonball-panel (mesmo left:1rem, bottom
-       maior) em vez de ao lado — era a posição só do mobile antes, agora
-       é o padrão em qualquer largura de tela, por isso a media query
-       antiga saiu. O #cancao-painel, mais abaixo no arquivo, já sabe se
-       reposicionar acima deste painel também (não só do de Esferas). ── */
-    #valtheris-painel { position:fixed; left:1rem; bottom:4.1rem; z-index:30; background:rgba(7,8,13,.88); border:1px solid rgba(204,64,96,.22); border-radius:8px; padding:.55rem .7rem; user-select:none; display:flex; align-items:center; gap:.45rem; white-space:nowrap; transition:border-color .25s ease, box-shadow .25s ease; }
-    #valtheris-painel .vp-olho { width:14px; height:10px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #CC4060, #7a1f30 70%); box-shadow:0 0 5px rgba(204,64,96,.55); flex:none; position:relative; }
-    #valtheris-painel .vp-olho::after { content:''; position:absolute; inset:0; margin:auto; width:3px; height:3px; border-radius:50%; background:#150507; }
-    #valtheris-painel .vp-count { font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.1em; color:#CC4060; }
-    #valtheris-painel.completo { border-color:rgba(204,64,96,.65); box-shadow:0 0 18px rgba(204,64,96,.35); }
-    #valtheris-painel.completo .vp-count { color:#ff7a9c; }
-
-    /* ── Painel da Canção da Tempestade — o componente base (círculo,
-       ícone, estado .completa) vem de Lib/cancao-tempestade.js, mas essa
-       página não carrega o style.css do diário TLOZ, então o visual
-       precisa estar aqui. Mesma paleta prateado→dourado das outras
-       páginas. ── */
-    .cancao-painel {
-      position: fixed; left: 1.2rem; bottom: 1.2rem; z-index: 700;
-      width: 40px; height: 40px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(10,10,14,.85);
-      border: 1px solid rgba(184,184,192,.35);
-      transition: border-color .4s ease, box-shadow .4s ease;
-      animation: cancaoFloat 4s ease-in-out infinite;
-    }
-    @keyframes cancaoFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
-    .cancao-nota {
-      width: 18px; height: 18px; fill: none; flex: none;
-      stroke: #B8B8C0; stroke-width: 1.6;
-      stroke-linecap: round; stroke-linejoin: round;
-      transition: stroke .4s ease, filter .4s ease;
-    }
-    .cancao-painel.completa { border-color: rgba(232,137,26,.65); box-shadow: 0 0 18px rgba(232,137,26,.5); }
-    .cancao-painel.completa .cancao-nota { stroke: #FFD98A; filter: drop-shadow(0 0 7px rgba(255,217,138,.85)); }
-    .cancao-painel.piscando { cursor: pointer; animation: cancaoFloat 4s ease-in-out infinite, cancaoPiscar 1.6s ease-in-out infinite; }
-    @keyframes cancaoPiscar {
-      0%, 100% { box-shadow: 0 0 0 rgba(184,184,192,0); border-color: rgba(184,184,192,.35); }
-      50%      { box-shadow: 0 0 16px rgba(184,184,192,.85); border-color: rgba(184,184,192,.9); }
-    }
-
-    /* ── Versão "conjunto completo" — só depois que OOT, MM e Recordações
-       já foram todos encontrados. Ganha o mesmo padrão de expandir do
-       #dragonball-panel (hover no desktop, toque no mobile, variável
-       `mob` compartilhada), com os Irmãos Compositores reunidos por
-       dentro. Ver a segunda IIFE lá no fim do arquivo. ── */
-    #cancao-painel.expansivel { cursor: pointer; }
-    #cancao-painel.expandido {
-      width: auto; height: auto;
-      max-width: min(280px, calc(100vw - 3rem));
-      border-radius: 14px; padding: .85rem;
-      background: rgba(10,8,4,.96);
-      flex-direction: column; align-items: center;
-      animation-play-state: paused;
-    }
-    .cancao-expandido { display: none; width: 100%; margin-top: .65rem; position: relative; }
-    .cancao-expandido.aberto { display: block; }
-
-    .cancao-notas-fundo { position: absolute; inset: -8px; overflow: hidden; pointer-events: none; z-index: 0; border-radius: 10px; }
-    .cancao-notas-fundo span { position: absolute; bottom: -8%; color: rgba(255,217,138,.4); font-size: 1.1rem; animation: notaSubindo linear infinite; }
-    @keyframes notaSubindo {
-      0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
-      12%  { opacity: 1; }
-      88%  { opacity: 1; }
-      100% { transform: translateY(-280px) translateX(var(--desvio, 10px)) rotate(18deg); opacity: 0; }
-    }
-
-    .cancao-irmaos-img { position: relative; z-index: 1; width: 100%; display: block; border-radius: 8px; margin-bottom: .65rem; filter: drop-shadow(0 8px 18px rgba(0,0,0,.55)); }
-
-    .cancao-dialogo { position: relative; z-index: 1; font-family:'EB Garamond',serif; font-size: .82rem; line-height: 1.55; color: #FFEFC8; text-align: left; }
-    .cancao-dialogo p { margin-bottom: .6rem; }
-    .cancao-escolha { display: flex; gap: .5rem; margin-top: .5rem; }
-    .cancao-escolha button {
-      all: unset; box-sizing: border-box; cursor: pointer; text-align: center; flex: 1;
-      font-family: 'Cinzel', serif; font-size: .62rem; letter-spacing: .12em; text-transform: uppercase;
-      padding: .5rem .6rem; border: 1px solid rgba(255,217,138,.5); color: #FFD98A;
-      transition: background .2s ease, color .2s ease;
-    }
-    .cancao-escolha button:hover { background: rgba(255,217,138,.15); color: #fff; }
-    @media (prefers-reduced-motion: reduce) {
-      .cancao-notas-fundo span { animation: none !important; opacity: .5 !important; }
-    }
-
-    /* ── Dispersão das esferas — ao voltar do Segredo depois de um desejo
-       concedido, as 7 esferas saem do slot, giram, e voam pra fora em
-       direções diferentes (--dx/--dy definidos por esfera via JS) antes
-       de sumir, simbolizando elas se espalhando pelo universo de novo.
-       Só depois dessa animação terminar é que o reset de dados acontece
-       de verdade (ver dispersarEsferas() no JS). ── */
-    .db-orb.dispersando { animation: dbDispersar 1.3s cubic-bezier(.32,.62,.4,1) forwards; z-index: 5; }
-    @keyframes dbDispersar {
-      0%   { transform: translate(0,0) rotate(0deg) scale(1); opacity: 1; }
-      25%  { transform: translate(0,0) rotate(340deg) scale(1.2); opacity: 1; }
-      100% { transform: translate(var(--dx), var(--dy)) rotate(1080deg) scale(.15); opacity: 0; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .db-orb.dispersando { animation: none !important; opacity: 0 !important; transition: opacity .5s ease; }
-    }
 
     /* ── Marca permanente de "já completado antes" — um pequeno selo
        dourado no mini-indicador do canto, que fica mesmo depois do
@@ -438,70 +313,15 @@
   <p class="drill-invocation__subtitle">A broca que cria céus desperta</p>
 </div>
 
-<div id="dragonball-panel">
-  <div class="db-mini">
-    <span class="db-mini-orb"></span>
-    <span class="db-mini-count">0/7</span>
-  </div>
-  <div class="db-expanded">
-    <p class="db-panel-title">Esferas encontradas</p>
-    <div class="db-grid"></div>
-    <p class="db-resgatar">✦ Reivindicar o desejo</p>
-  </div>
-</div>
-
-<div id="valtheris-painel" title="Sagas de Valtheris lidas">
-  <span class="vp-olho"></span>
-  <span class="vp-count">0/22</span>
-</div>
-<script>
-(function () {
-  var TOTAL_SAGAS = 22; // S1–S21 (Além do Véu) + S0_luar (Sob o Luar)
-  var lidas = [];
-  try { lidas = JSON.parse(localStorage.getItem('valtheris_read') || '[]'); } catch (e) {}
-  if (!Array.isArray(lidas)) lidas = [];
-  var painel = document.getElementById('valtheris-painel');
-  painel.querySelector('.vp-count').textContent = lidas.length + '/' + TOTAL_SAGAS;
-  if (lidas.length >= TOTAL_SAGAS) painel.classList.add('completo');
-})();
-
-/* ── O #dragonball-panel expande no hover/toque e cresce por cima do
-   bottom:4.1rem fixo deste painel — essa folga só dá conta do estado
-   colapsado dele (foi o que aconteceu no print que o usuário mandou:
-   o valtheris-painel ficou entalado dentro do painel "Esferas
-   encontradas" expandido). Em vez de aumentar a distância fixa (que
-   sobraria espaço vazio a maior parte do tempo), um ResizeObserver
-   sobe o painel de Valtheris junto, sempre colado acima do topo atual
-   do de Esferas com 20px de folga, em qualquer estado. ── */
-(function () {
-  var painelEsferas = document.getElementById('dragonball-panel');
-  var painelValtheris = document.getElementById('valtheris-painel');
-  if (!painelEsferas || !painelValtheris) return;
-
-  function reposicionar() {
-    var topeEsferas = window.innerHeight - painelEsferas.getBoundingClientRect().top;
-    painelValtheris.style.bottom = (topeEsferas + 20) + 'px';
-  }
-  reposicionar();
-
-  if (window.ResizeObserver) {
-    new ResizeObserver(reposicionar).observe(painelEsferas);
-  } else {
-    // sem ResizeObserver: ainda cobre o caso mais comum (hover no desktop,
-    // toque no mobile) que é o que muda a altura desse painel.
-    painelEsferas.addEventListener('mouseenter', reposicionar);
-    painelEsferas.addEventListener('mouseleave', reposicionar);
-    painelEsferas.addEventListener('click', reposicionar);
-    window.addEventListener('resize', reposicionar);
-  }
-})();
-</script>
+<a id="estacao-painel" href="Nave/estacao_nexus.html" title="Estação Nexus — esferas, sagas de Valtheris e mapa, tudo dentro da nave">
+  <svg class="ep-nave" viewBox="0 0 24 24" fill="#39FF8A"><path d="M12 2l4.6 13.2-4.6-2.6-4.6 2.6L12 2z"/></svg>
+  <span class="ep-label">Estação Nexus</span>
+</a>
 
 
 <script src="Lib/drill-obj-data.js"></script>
 <script src="Lib/three.min.js"></script>
 <script src="Lib/OBJLoader.js"></script>
-<script src="Lib/dragonball.js"></script>
 <script>
 (function () {
 'use strict';
@@ -556,539 +376,12 @@ window.NexusPararTudoAudio = function () {
    mudar a data do sistema com a página já aberta é refletido no
    segundo seguinte, igual ao resto do sistema.
 ═══════════════════════════════════════════ */
-(function () {
-  var DATA_DESPERTAR_PADRAO = { dia: '30', mes: '10', hora: '23', minuto: '59' }; // respaldo, só usado se aberto fora do iframe (ou antes do malik.js definir a de verdade)
-
-  // Antes isso era lido uma vez só, aqui em cima, no instante em que este
-  // script rodava. Só que o iframe do nexus.html normalmente termina de
-  // carregar e rodar ANTES do malik.js (script com defer, um dos últimos
-  // do index.html) chegar a definir window.NexusMalikDataDespertar — então
-  // essa leitura única quase sempre pegava undefined e ficava presa no
-  // valor de respaldo pro resto da sessão, mesmo depois do malik.js já
-  // ter definido o valor de verdade. Daí a sensação de "duas datas" pra
-  // manter sincronizadas. Ler de novo a cada chamada (calcularAlvoDesvio
-  // já roda a cada tick, ver comentário logo abaixo) resolve isso sem
-  // precisar acertar a ordem de carregamento: assim que malik.js define o
-  // valor, o próximo tick já reflete.
-  function dataDespertarAtual() {
-    try {
-      if (window.top && window.top !== window && window.top.NexusMalikDataDespertar) {
-        return window.top.NexusMalikDataDespertar;
-      }
-    } catch (e) {}
-    return DATA_DESPERTAR_PADRAO;
-  }
-
-  var modoTeste = false;
-  try { modoTeste = /[?&]malikTeste=1\b/.test((window.top || window).location.search); } catch (e) {}
-  if (modoTeste) return; // em teste o confronto pula direto pra luta — um cronômetro pra data real só confundiria
-
-  var CHAVE_RESOLVIDO = 'malik_resolvido_em';
-  var CHAVE_APAGADO = 'malik_nexus_apagado';
-
-  // Recalculado por inteiro a cada tick — nunca fica preso a um valor
-  // de quando a página carregou. Só os campos dia/mês/hora/minuto do
-  // alvo são fixos; o ano usa sempre o ano corrente na hora do cálculo,
-  // então mudar o relógio do sistema pra outro ano também é respeitado.
-  // parseInt com base 10 explícita: o malik.js agora guarda esses campos
-  // como texto (ex.: "09"), não número, pra poder ter zero à esquerda
-  // sem quebrar a sintaxe lá; isso lê "09" como 9 de verdade aqui.
-  function calcularAlvoDesvio() {
-    var alvo = dataDespertarAtual();
-    var agora = new Date();
-    return new Date(agora.getFullYear(), parseInt(alvo.mes, 10) - 1, parseInt(alvo.dia, 10), parseInt(alvo.hora, 10) || 0, parseInt(alvo.minuto, 10) || 0, 0);
-  }
-
-  // ═══ Dígito com brilho multi-camada (a técnica que dá o "peso" ao
-  // tubo: 3-4 passadas de fillText com shadowBlur decrescente e cor
-  // esquentando pro centro — halo largo → brilho → núcleo pálido) —
-  // parametrizado por cor RGB, então o mesmo desenho serve pro âmbar
-  // ativo, pro vermelho da corrupção, e pro âmbar envelhecido pós-luta.
-  function desenharDigitoGlow(ctx, W, H, digito, rgb, fraco) {
-    ctx.clearRect(0, 0, W, H);
-    var cx = W / 2, cy = H * 0.72;
-    ctx.textAlign = 'center';
-    ctx.font = '900 ' + Math.floor(H * 0.62) + 'px Arial, sans-serif';
-    var texto = String(digito);
-    if (fraco) {
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = 'rgba(' + rgb + ',.28)';
-      ctx.fillText(texto, cx, cy);
-      return;
-    }
-    ctx.shadowColor = 'rgb(' + rgb + ')';
-    ctx.shadowBlur = H * 0.26;
-    ctx.fillStyle = 'rgba(' + rgb + ',.55)';
-    ctx.fillText(texto, cx, cy);
-    ctx.shadowBlur = H * 0.14;
-    ctx.fillStyle = 'rgb(' + rgb + ')';
-    ctx.fillText(texto, cx, cy);
-    ctx.shadowBlur = H * 0.05;
-    ctx.fillStyle = 'rgba(255,235,200,.9)';
-    ctx.fillText(texto, cx, cy);
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = 'rgba(255,250,240,.55)';
-    ctx.fillText(texto, cx, cy);
-  }
-
-  function desenharDigitoFantasma(ctx, W, H, digito) {
-    ctx.clearRect(0, 0, W, H);
-    ctx.textAlign = 'center';
-    ctx.font = '900 ' + Math.floor(H * 0.62) + 'px Arial, sans-serif';
-    ctx.fillStyle = 'rgba(120,70,40,.18)';
-    ctx.fillText(String(digito), W / 2, H * 0.72);
-  }
-
-  // ═══ Um tubo detalhado — base, dois dígitos-fantasma (profundidade),
-  // dígito principal (blending aditivo), grade em wireframe (o "ânodo"
-  // visível por trás do vidro), vidro com clearcoat, cúpula, pino de
-  // evacuação. raio/altura controlam a escala — a mesma função serve
-  // pro HUD pequeno e pro visualizador grande. ═══
-  function criarTuboDetalhado(raio, altura) {
-    var grupo = new THREE.Group();
-
-    var baseTubo = new THREE.Mesh(
-      new THREE.CylinderGeometry(raio * 0.78, raio * 0.82, altura * 0.08, 16),
-      new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.6, metalness: 0.5 })
-    );
-    baseTubo.position.y = -altura / 2 - altura * 0.04;
-    grupo.add(baseTubo);
-
-    var W = 128, H = 200;
-    function novoCanvasDigito() {
-      var c = document.createElement('canvas'); c.width = W; c.height = H;
-      return { canvas: c, ctx: c.getContext('2d') };
-    }
-
-    // dígitos-fantasma: dois planos dimmed, ligeiramente atrás e
-    // deslocados — dão profundidade ao tubo, como o catodo real de um
-    // nixie mostrando os outros dígitos apagados atrás do aceso
-    var fantasmas = [0, 1].map(function (fi) {
-      var cd = novoCanvasDigito();
-      desenharDigitoFantasma(cd.ctx, W, H, (fi + 3) % 10);
-      var tex = new THREE.CanvasTexture(cd.canvas);
-      var mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0.5, depthWrite: false, side: THREE.DoubleSide, toneMapped: false });
-      var plane = new THREE.Mesh(new THREE.PlaneGeometry(raio * 1.3, raio * 2.1), mat);
-      plane.position.set(raio * (fi === 0 ? -0.12 : 0.1), 0, raio * (fi === 0 ? -0.28 : -0.4));
-      plane.rotation.y = fi === 0 ? 0.18 : -0.14;
-      plane.renderOrder = 1;
-      grupo.add(plane);
-    });
-
-    var digCanvas = novoCanvasDigito();
-    var digTex = new THREE.CanvasTexture(digCanvas.canvas);
-    var digMat = new THREE.MeshBasicMaterial({ map: digTex, transparent: true, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false });
-    var digPlane = new THREE.Mesh(new THREE.PlaneGeometry(raio * 1.55, raio * 2.5), digMat);
-    digPlane.renderOrder = 2;
-    grupo.add(digPlane);
-
-    // grade — cilindro aberto em wireframe, sugerindo o suporte metálico
-    // por trás do vidro sem precisar modelar fios individuais
-    var grade = new THREE.Mesh(
-      new THREE.CylinderGeometry(raio * 0.62, raio * 0.62, altura * 0.82, 10, 4, true),
-      new THREE.MeshBasicMaterial({ color: 0x8a6a3a, wireframe: true, transparent: true, opacity: 0.22, depthWrite: false })
-    );
-    grupo.add(grade);
-
-    var vidro = new THREE.Mesh(
-      new THREE.CylinderGeometry(raio, raio, altura, 24, 1, true),
-      new THREE.MeshPhysicalMaterial({ color: 0x3a2418, transparent: true, opacity: 0.22, roughness: 0.08, metalness: 0.02, clearcoat: 1, clearcoatRoughness: 0.1, side: THREE.DoubleSide, depthWrite: false })
-    );
-    grupo.add(vidro);
-
-    var cupula = new THREE.Mesh(
-      new THREE.SphereGeometry(raio, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2),
-      new THREE.MeshStandardMaterial({ color: 0xC8CAD2, roughness: 0.15, metalness: 0.9 })
-    );
-    cupula.position.y = altura / 2;
-    grupo.add(cupula);
-
-    var pino = new THREE.Mesh(
-      new THREE.CylinderGeometry(raio * 0.06, raio * 0.06, raio * 0.3, 8),
-      new THREE.MeshStandardMaterial({ color: 0xB8B8BE, roughness: 0.3, metalness: 0.8 })
-    );
-    pino.position.y = altura / 2 + raio * 0.18;
-    grupo.add(pino);
-
-    var luz = new THREE.PointLight(0xff8a3a, 0, raio * 8);
-    luz.position.set(0, 0, raio * 0.4);
-    grupo.add(luz);
-
-    var ultimoDesenho = null;
-    function setDigito(valor, rgb, fraco) {
-      var chave = valor + '|' + rgb + '|' + (fraco ? 1 : 0);
-      if (ultimoDesenho === chave) return;
-      ultimoDesenho = chave;
-      desenharDigitoGlow(digCanvas.ctx, W, H, valor, rgb, fraco);
-      digTex.needsUpdate = true;
-      luz.color.set('rgb(' + rgb + ')');
-      luz.intensity = fraco ? 0.1 : 1.3;
-    }
-
-    return { grupo: grupo, setDigito: setDigito, luz: luz };
-  }
-
-  function p2(n) { return (n < 10 ? '0' : '') + n; }
-
-  function apagadoDeVez() {
-    try { return !!localStorage.getItem(CHAVE_APAGADO); } catch (e) { return false; }
-  }
-
-  // linhas finas escuras sobre o vidro — mesma ideia das cicatrizes nos
-  // símbolos 3D principais, aplicada aqui pro estado pós-batalha
-  function adicionarRachadurasNoTubo(tuboObj, raio, altura) {
-    if (tuboObj.temRachaduras) return;
-    tuboObj.temRachaduras = true;
-    var seed = Math.random() * 50;
-    var matRacha = new THREE.MeshBasicMaterial({ color: 0x120604, transparent: true, opacity: 0.75 });
-    var nLinhas = 3;
-    for (var i = 0; i < nLinhas; i++) {
-      var comp = altura * (0.3 + Math.random() * 0.35);
-      var racha = new THREE.Mesh(new THREE.BoxGeometry(raio * 0.02, comp, raio * 0.02), matRacha);
-      racha.position.set((Math.random() - 0.5) * raio * 1.2, (Math.random() - 0.5) * altura * 0.5, raio * (Math.random() > 0.5 ? 1 : -1) * 0.85);
-      racha.rotation.z = (Math.random() - 0.5) * 1.2;
-      racha.rotation.y = Math.sin(seed + i) * 0.6;
-      tuboObj.grupo.add(racha);
-    }
-  }
-
-  function calcularDigitosECor(agora) {
-    var apagado = apagadoDeVez();
-    if (apagado) return null;
-
-    var resolvidoEmStr = null;
-    try { resolvidoEmStr = localStorage.getItem(CHAVE_RESOLVIDO); } catch (e) {}
-    if (resolvidoEmStr) {
-      var resolvidoEm = new Date(resolvidoEmStr).getTime();
-      if (!isNaN(resolvidoEm)) {
-        var decorrido = agora - resolvidoEm;
-        var dR = Math.min(99, Math.floor(decorrido / 86400000));
-        var hR = Math.floor(decorrido / 3600000) % 24;
-        var mR = Math.floor(decorrido / 60000) % 60;
-        var sR = Math.floor(decorrido / 1000) % 60;
-        return { digitos: (p2(dR) + p2(hR) + p2(mR) + p2(sR)).split(''), rgb: '201,122,74', modo: 'posBatalha' };
-      }
-    }
-
-    var alvo = calcularAlvoDesvio();
-    var restante = alvo.getTime() - agora;
-    var passou = restante <= 0;
-    var abs = Math.abs(restante);
-    var d = Math.min(99, Math.floor(abs / 86400000));
-    var h = Math.floor(abs / 3600000) % 24;
-    var m = Math.floor(abs / 60000) % 60;
-    var s = Math.floor(abs / 1000) % 60;
-    var digitos = (p2(d) + p2(h) + p2(m) + p2(s)).split('');
-
-    var rgb = '255,176,96';
-    if (passou) {
-      var t = Math.min(1, abs / (30 * 60000));
-      var r = 255, g = Math.round(176 - (176 - 43) * t), b = Math.round(96 - (96 - 58) * t);
-      rgb = r + ',' + g + ',' + b;
-    }
-    return { digitos: digitos, rgb: rgb, modo: passou ? 'corrupcao' : 'contagem' };
-  }
-
-  // ═══════════════ HUD pequeno, canto superior esquerdo ═══════════════
-  function iniciarMedidor() {
-    // no mobile encolhe pra não brigar de espaço com o resto do topo da
-    // página (menu/ícones ao lado) — no desktop fica exatamente como era.
-    var escala = window.innerWidth <= 640 ? 0.75 : 1;
-    var LARGURA = Math.round(236 * escala), ALTURA = Math.round(74 * escala);
-    var host = document.createElement('div');
-    host.style.cssText = 'position:fixed;left:12px;top:12px;z-index:600000;width:' + LARGURA + 'px;height:' + ALTURA + 'px;cursor:pointer;';
-    host.title = 'Clique pra ver de perto';
-    document.body.appendChild(host);
-
-    var canvas = document.createElement('canvas');
-    canvas.width = LARGURA * 2; canvas.height = ALTURA * 2; // retina
-    canvas.style.width = LARGURA + 'px'; canvas.style.height = ALTURA + 'px';
-    canvas.style.display = 'block';
-    host.appendChild(canvas);
-    host.addEventListener('click', function () { abrirVisualizadorNixie(); });
-
-    var scene = new THREE.Scene();
-    var camera = new THREE.OrthographicCamera(-LARGURA / 40, LARGURA / 40, ALTURA / 40, -ALTURA / 40, 0.1, 100);
-    camera.position.set(0, 0.4, 11);
-    camera.lookAt(0, 0, 0);
-
-    var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-    renderer.setPixelRatio(2);
-    renderer.setSize(LARGURA, ALTURA, false);
-
-    scene.add(new THREE.AmbientLight(0x554433, 1.1));
-    var luzFrontal = new THREE.PointLight(0xffb060, 1.4, 20);
-    luzFrontal.position.set(0, 2, 6);
-    scene.add(luzFrontal);
-
-    var base = new THREE.Mesh(
-      new THREE.BoxGeometry(9.6, 0.35, 1.6),
-      new THREE.MeshStandardMaterial({ color: 0x2a2118, roughness: 0.8, metalness: 0.2 })
-    );
-    base.position.set(0, -1.55, 0);
-    scene.add(base);
-
-    var N_DIGITOS = 8; // DD:HH:MM:SS
-    var raioTubo = 0.44, alturaTubo = 2.5;
-    var espaco = 9.6 / N_DIGITOS;
-    var tubos = [];
-    for (var i = 0; i < N_DIGITOS; i++) {
-      var t = criarTuboDetalhado(raioTubo, alturaTubo);
-      t.grupo.position.x = (i - (N_DIGITOS - 1) / 2) * espaco;
-      scene.add(t.grupo);
-      tubos.push(t);
-    }
-
-    function renderizar() {
-      var agora = Date.now();
-      var info = calcularDigitosECor(agora);
-      if (!info) { host.remove(); clearInterval(intervalo); return; }
-
-      for (var i = 0; i < tubos.length; i++) {
-        var tubo = tubos[i];
-        var valorMostrado = info.digitos[i];
-        var fraco = false;
-        if (info.modo === 'corrupcao' && Math.random() < 0.04) valorMostrado = String(Math.floor(Math.random() * 10));
-        if (info.modo === 'posBatalha') {
-          adicionarRachadurasNoTubo(tubo, raioTubo, alturaTubo);
-          fraco = Math.random() < 0.045;
-        }
-        tubo.setDigito(valorMostrado, info.rgb, fraco);
-      }
-      renderer.render(scene, camera);
-    }
-
-    var intervalo = setInterval(renderizar, 1000);
-    renderizar();
-
-    var w = null;
-    try { w = window.top || window; } catch (e) { w = window; }
-    document.addEventListener('visibilitychange', function () {
-      if (!document.hidden) renderizar();
-    });
-  }
-
-  // ═══════════════ visualizador em tela cheia — a mesma cena, maior,
-  // com placa/componentes decorativos e órbita feita à mão (arrastar,
-  // beliscar, rolar) — sem depender de addons como OrbitControls, que
-  // não vêm no three.min.js puro. ═══════════════
-  var visualizadorAberto = false;
-  function abrirVisualizadorNixie() {
-    if (visualizadorAberto) return;
-    visualizadorAberto = true;
-
-    var overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;z-index:950000;background:radial-gradient(ellipse at 50% 40%,#161310 0%,#070605 75%);display:flex;flex-direction:column;align-items:center;justify-content:center;';
-    document.body.appendChild(overlay);
-
-    var fechar = document.createElement('button');
-    fechar.textContent = '✕';
-    fechar.style.cssText = 'position:absolute;right:18px;top:18px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2);color:#E8E0D0;font-size:16px;cursor:pointer;z-index:2;';
-    overlay.appendChild(fechar);
-
-    var canvasArea = document.createElement('div');
-    canvasArea.style.cssText = 'width:min(94vw,900px);height:min(62vh,560px);position:relative;touch-action:none;';
-    overlay.appendChild(canvasArea);
-
-    var canvas = document.createElement('canvas');
-    canvas.style.cssText = 'width:100%;height:100%;display:block;cursor:grab;';
-    canvasArea.appendChild(canvas);
-
-    var dica = document.createElement('div');
-    dica.style.cssText = 'margin-top:14px;font-family:Consolas,monospace;font-size:11px;letter-spacing:.06em;color:rgba(232,224,208,.4);text-align:center;';
-    dica.textContent = 'arraste para girar · role ou belisque para aproximar';
-    overlay.appendChild(dica);
-
-    var scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0a0806, 0.028);
-    var camera = new THREE.PerspectiveCamera(42, 900 / 560, 0.1, 200);
-    var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
-
-    function redimensionar() {
-      var w = canvasArea.clientWidth, h = canvasArea.clientHeight;
-      camera.aspect = w / h; camera.updateProjectionMatrix();
-      renderer.setSize(w, h, false);
-    }
-    redimensionar();
-    window.addEventListener('resize', redimensionar);
-
-    scene.add(new THREE.AmbientLight(0x554433, 0.8));
-    scene.add(new THREE.HemisphereLight(0xfff2df, 0x1a1006, 0.5));
-    var chave = new THREE.DirectionalLight(0xffe0b0, 1.1);
-    chave.position.set(4, 6, 5);
-    scene.add(chave);
-    var contraluz = new THREE.DirectionalLight(0x4a6a9a, 0.35);
-    contraluz.position.set(-5, 3, -4);
-    scene.add(contraluz);
-
-    // placa — mesma ideia de perfboard da referência, simplificada
-    var placa = new THREE.Mesh(
-      new THREE.BoxGeometry(13, 0.4, 3.2),
-      new THREE.MeshStandardMaterial({ color: 0x2a2118, roughness: 0.85, metalness: 0.15 })
-    );
-    placa.position.y = -2.1;
-    scene.add(placa);
-
-    // assinatura esculpida na madeira — "El Psy Congroo", perto da borda
-    // da frente da placa, como uma marca de fabricante. Mesma técnica dos
-    // dígitos (canvas 2D → textura), mas com sombra+friso simulando um
-    // sulco gravado em vez de vidro aceso. Antes vivia como legenda HTML
-    // abaixo do visualizador; agora é parte do objeto 3D.
-    (function esculpirAssinatura() {
-      var W = 512, H = 96;
-      var c = document.createElement('canvas'); c.width = W; c.height = H;
-      var ctx = c.getContext('2d');
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.font = 'italic 40px Georgia, "Cormorant Garamond", serif';
-      var cx = W / 2, cy = H / 2, texto = 'El Psy Congroo';
-      ctx.fillStyle = 'rgba(0,0,0,.5)';
-      ctx.fillText(texto, cx - 1, cy - 1);
-      ctx.fillStyle = 'rgba(214,180,110,.28)';
-      ctx.fillText(texto, cx + 1, cy + 1);
-      ctx.fillStyle = 'rgba(18,12,7,.8)';
-      ctx.fillText(texto, cx, cy);
-
-      var tex = new THREE.CanvasTexture(c);
-      var mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, side: THREE.DoubleSide, toneMapped: false });
-      var largura = 2.4, altura = largura * (H / W);
-      var plano = new THREE.Mesh(new THREE.PlaneGeometry(largura, altura), mat);
-      plano.rotation.x = -Math.PI / 2;
-      plano.position.set(0, -1.89, 1.35); // topo da placa, faixa livre perto da borda da frente
-      scene.add(plano);
-    })();
-
-    // componentes decorativos espalhados — resistores/capacitores simples
-    (function espalharComponentes() {
-      var seed = 17;
-      function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
-      for (var i = 0; i < 14; i++) {
-        var eraTuboClaro = rnd() > 0.5; // sorteio original decidia resistor (cilindro claro,
-        if (eraTuboClaro) continue;     // parecia tubo de cigarro) vs capacitor — removi o claro
-        var comp = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.11, 0.11, 0.35, 12),
-          new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.4, metalness: 0.5 })
-        );
-        comp.position.set((rnd() - 0.5) * 11.5, -1.85, (rnd() - 0.5) * 2.4);
-        scene.add(comp);
-      }
-    })();
-
-    var N_DIGITOS = 8;
-    var raioTubo = 0.62, alturaTubo = 3.4;
-    var espaco = 13.5 / N_DIGITOS;
-    var tubos = [];
-    for (var i = 0; i < N_DIGITOS; i++) {
-      var t = criarTuboDetalhado(raioTubo, alturaTubo);
-      t.grupo.position.x = (i - (N_DIGITOS - 1) / 2) * espaco;
-      scene.add(t.grupo);
-      tubos.push(t);
-    }
-
-    function atualizarDigitos() {
-      var info = calcularDigitosECor(Date.now());
-      if (!info) return;
-      for (var i = 0; i < tubos.length; i++) {
-        var tubo = tubos[i];
-        var valorMostrado = info.digitos[i];
-        var fraco = false;
-        if (info.modo === 'corrupcao' && Math.random() < 0.04) valorMostrado = String(Math.floor(Math.random() * 10));
-        if (info.modo === 'posBatalha') {
-          adicionarRachadurasNoTubo(tubo, raioTubo, alturaTubo);
-          fraco = Math.random() < 0.045;
-        }
-        tubo.setDigito(valorMostrado, info.rgb, fraco);
-      }
-    }
-    atualizarDigitos();
-    var intervaloDigitos = setInterval(atualizarDigitos, 1000);
-
-    // ---- órbita feita à mão: coordenadas esféricas (theta/phi/raio),
-    // arrastar com mouse ou touch gira, roda/beliscar dá zoom, e
-    // auto-rotação retoma sozinha depois de 3.5s parado ----
-    var theta = 0.6, phi = 1.15, raioCam = 11;
-    var autoRotacao = true, ultimaInteracao = 0;
-
-    function atualizarCamera() {
-      var phiClamp = Math.max(0.35, Math.min(1.5, phi));
-      camera.position.set(
-        raioCam * Math.sin(phiClamp) * Math.sin(theta),
-        raioCam * Math.cos(phiClamp),
-        raioCam * Math.sin(phiClamp) * Math.cos(theta)
-      );
-      camera.lookAt(0, -0.2, 0);
-    }
-    atualizarCamera();
-
-    var arrastando = false, ultimoX = 0, ultimoY = 0;
-    function aoDown(x, y) { arrastando = true; ultimoX = x; ultimoY = y; autoRotacao = false; ultimaInteracao = Date.now(); canvas.style.cursor = 'grabbing'; }
-    function aoMove(x, y) {
-      if (!arrastando) return;
-      theta -= (x - ultimoX) * 0.008;
-      phi -= (y - ultimoY) * 0.008;
-      ultimoX = x; ultimoY = y;
-      ultimaInteracao = Date.now();
-    }
-    function aoUp() { arrastando = false; canvas.style.cursor = 'grab'; }
-
-    canvas.addEventListener('mousedown', function (e) { aoDown(e.clientX, e.clientY); });
-    window.addEventListener('mousemove', function (e) { aoMove(e.clientX, e.clientY); });
-    window.addEventListener('mouseup', aoUp);
-
-    var ultimaDistanciaTouch = null;
-    canvas.addEventListener('touchstart', function (e) {
-      if (e.touches.length === 1) aoDown(e.touches[0].clientX, e.touches[0].clientY);
-      else if (e.touches.length === 2) ultimaDistanciaTouch = distanciaTouch(e.touches);
-    }, { passive: true });
-    canvas.addEventListener('touchmove', function (e) {
-      if (e.touches.length === 1) aoMove(e.touches[0].clientX, e.touches[0].clientY);
-      else if (e.touches.length === 2) {
-        var d = distanciaTouch(e.touches);
-        if (ultimaDistanciaTouch) { raioCam = Math.max(5, Math.min(22, raioCam - (d - ultimaDistanciaTouch) * 0.02)); }
-        ultimaDistanciaTouch = d;
-        autoRotacao = false; ultimaInteracao = Date.now();
-      }
-    }, { passive: true });
-    canvas.addEventListener('touchend', function () { aoUp(); ultimaDistanciaTouch = null; });
-    function distanciaTouch(touches) {
-      var dx = touches[0].clientX - touches[1].clientX, dy = touches[0].clientY - touches[1].clientY;
-      return Math.sqrt(dx * dx + dy * dy);
-    }
-
-    canvas.addEventListener('wheel', function (e) {
-      e.preventDefault();
-      raioCam = Math.max(5, Math.min(22, raioCam + e.deltaY * 0.01));
-      autoRotacao = false; ultimaInteracao = Date.now();
-    }, { passive: false });
-
-    var rodando = true;
-    function animar() {
-      if (!rodando) return;
-      requestAnimationFrame(animar);
-      if (!autoRotacao && Date.now() - ultimaInteracao > 3500) autoRotacao = true;
-      if (autoRotacao && !arrastando) theta += 0.0022;
-      atualizarCamera();
-      renderer.render(scene, camera);
-    }
-    animar();
-
-    function fecharVisualizador() {
-      rodando = false;
-      clearInterval(intervaloDigitos);
-      window.removeEventListener('resize', redimensionar);
-      overlay.remove();
-      visualizadorAberto = false;
-    }
-    fechar.addEventListener('click', fecharVisualizador);
-    overlay.addEventListener('click', function (e) { if (e.target === overlay) fecharVisualizador(); });
-    var aoEsc = function (e) { if (e.key === 'Escape') { fecharVisualizador(); document.removeEventListener('keydown', aoEsc); } };
-    document.addEventListener('keydown', aoEsc);
-  }
-
-  if (document.body) iniciarMedidor();
-  else document.addEventListener('DOMContentLoaded', iniciarMedidor);
-})();
+/* ═══════════════════════════════════════════
+   CRONÔMETRO DE M.A.L.I.K. (TUBOS NIXIE)
+   Saiu daqui — os 8 tubos (HUD pequeno + visualizador em tela cheia)
+   viraram objetos 3D de verdade dentro da Estação Nexus, numa
+   prateleira própria. Ver Nave/estacao_interior.html.
+═══════════════════════════════════════════ */
 
 
 /* ═══════════════════════════════════════════
@@ -1907,65 +1200,6 @@ function createStar() {
 }
 
 
-/* ── ESTAÇÃO NEXUS: silhueta da nave ── */
-function createEstacaoNexus() {
-  const group = new THREE.Group();
-  const mHull = stdMat(0x6A8A7C, 0x2A4A3C, 0.55);
-  const mGlow = stdMat(0x39FF8A, 0x12FF68, 0.95);
-  const mGold = stdMat(0xC4A35A, 0x8C6A28, 0.45);
-
-  // fuselagem central
-  const body = new THREE.Mesh(
-    new THREE.BoxGeometry(0.55 * sc, 0.22 * sc, 1.15 * sc),
-    mHull
-  );
-  group.add(body);
-
-  // proa afilada
-  const nose = new THREE.Mesh(
-    new THREE.ConeGeometry(0.18 * sc, 0.42 * sc, 4),
-    mHull
-  );
-  nose.rotation.x = Math.PI / 2;
-  nose.position.z = 0.72 * sc;
-  group.add(nose);
-
-  // asas
-  const wingL = new THREE.Mesh(
-    new THREE.BoxGeometry(0.72 * sc, 0.06 * sc, 0.38 * sc),
-    mHull
-  );
-  wingL.position.set(-0.48 * sc, 0, -0.05 * sc);
-  wingL.rotation.z = 0.12;
-  group.add(wingL);
-  const wingR = wingL.clone();
-  wingR.position.x = 0.48 * sc;
-  wingR.rotation.z = -0.12;
-  group.add(wingR);
-
-  // motores (brilho verde)
-  [-0.18, 0.18].forEach(function (x) {
-    const eng = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.07 * sc, 0.09 * sc, 0.12 * sc, 10),
-      mGlow
-    );
-    eng.rotation.x = Math.PI / 2;
-    eng.position.set(x * sc, 0, -0.62 * sc);
-    group.add(eng);
-  });
-
-  // anel de energia
-  const ring = new THREE.Mesh(
-    new THREE.TorusGeometry(0.28 * sc, 0.025 * sc, 8, 24),
-    mGold
-  );
-  ring.rotation.x = Math.PI / 2;
-  ring.position.y = 0.14 * sc;
-  group.add(ring);
-
-  return group;
-}
-
 /* ═══════════════════════════════════════════
    SISTEMA ORBITAL
 ═══════════════════════════════════════════ */
@@ -1979,8 +1213,10 @@ const symbolDefs = [
   { id:'origem',    tag:'Retrato',     title:'Antes do Autor-Livro', cta:'Entrar \u2192', color:'#D9B776', sealed:false, href:'Origem/arg.html',                orbit:{ r:3.4, speed:0.28, tx: 33, tz:-18 }, create:createOrigemPoint  },
   { id:'covers',    tag:'M\u00fasica',      title:'Covers',              cta:'Ouvir \u2192',  color:'#9B7FD4', sealed:false, href:'Covers/covers.html',                orbit:{ r:3.9, speed:0.33, tx:-40, tz:  6 }, create:createCoversMask   },
   { id:'recordacoes', tag:'Jogos',     title:'Recorda\u00e7\u00f5es',    cta:'Abrir \u2192',  color:'#5EC4BB', sealed:false, href:'Recorda%C3%A7%C3%B5es/recorda%C3%A7%C3%B5es.html', orbit:{ r:3.6, speed:0.31, tx:-24, tz: 18 }, create:createRecordacoesStack },
-  { id:'estacao',   tag:'Nave',        title:'Esta\u00e7\u00e3o Nexus',      cta:'Abordar \u2192', color:'#39FF8A', sealed:false, href:'Nave/estacao_nexus.html',           orbit:{ r:4.2, speed:0.22, tx:  8, tz:-25 }, create:createEstacaoNexus },
 ];
+// A Estação Nexus não orbita mais (ver #estacao-painel, fixo no canto,
+// e Nave/estacao_interior.html) — createEstacaoNexus() e triggerEstacao()
+// saíram junto, junto com o caso 'estacao' no dispatch de clique abaixo.
 
 const pivots    = [];
 const allMeshes = [];
@@ -2346,7 +1582,17 @@ function renderizarMenuMobile() {
   if (fp === mmUltimoFingerprint && mmListaEl.childElementCount) return; // nada mudou desde o último desenho
   mmUltimoFingerprint = fp;
 
-  if (!defs.length) { mmListaEl.innerHTML = '<p class="mm-vazio">os caminhos ainda estão despertando…</p>'; return; }
+  // Entrada estática da Estação Nexus — ela não faz mais parte de
+  // symbolDefs/pivots (não orbita mais), então coletarDefsAtuais() nunca
+  // a traz sozinha. Sem isso, o modo simples não tinha como chegar lá.
+  var htmlEstacao =
+    '<a class="mm-link" href="Nave/estacao_nexus.html" data-id="estacao" style="border-left-color:#39FF8A4D">' +
+      '<span class="mm-link__tag">Nave</span>' +
+      '<span class="mm-link__title">Estação Nexus</span>' +
+      '<span class="mm-link__cta" style="color:#39FF8A">Entrar →</span>' +
+    '</a>';
+
+  if (!defs.length) { mmListaEl.innerHTML = '<p class="mm-vazio">os caminhos ainda estão despertando…</p>' + htmlEstacao; return; }
 
   mmListaEl.innerHTML = defs.map(function (def) {
     var travado = !!(def.quebrado || def.sealed);
@@ -2360,13 +1606,14 @@ function renderizarMenuMobile() {
              '<span class="mm-link__title">' + def.title + '</span>' +
              '<span class="mm-link__cta"' + estiloCta + '>' + texto + '</span>' +
            '</a>';
-  }).join('');
+  }).join('') + htmlEstacao;
 }
 
 if (mmListaEl) {
   mmListaEl.addEventListener('click', function (e) {
     var a = e.target.closest ? e.target.closest('.mm-link') : null;
     if (!a) return;
+    if (a.getAttribute('data-id') === 'estacao') return; // link estático de verdade — deixa navegar normal, sem checarDestino/cortina
     e.preventDefault();
     var def = coletarDefsAtuais().filter(function (d) { return d.id === a.getAttribute('data-id'); })[0];
     if (def) tratarCliqueMobile(def);
@@ -3285,8 +2532,7 @@ var mensagensQueda = {
   origem:    'o ponto de partida não respondeu.',
   covers:    'a voz não atravessou o véu.',
   recordacoes: 'as fotos ainda não revelaram.',
-  mal:       'a luz ainda está a caminho.',
-  estacao:   'a eclusa não respondeu.'
+  mal:       'a luz ainda está a caminho.'
 };
 
 // Primeira aplicação do modo — só agora, porque é o primeiro ponto do
@@ -3294,28 +2540,6 @@ var mensagensQueda = {
 // renderizarMenuMobile ao desenhar um portal travado) já existem.
 aplicarModo();
 
-
-function triggerEstacao(def) {
-  // convergência rápida + cortina verde da eclusa
-  var g = null;
-  pivots.forEach(function(piv) {
-    if (piv.userData.group && piv.userData.group.userData.id === 'estacao') {
-      g = piv.userData.group;
-      piv.userData.frozen = true;
-    } else {
-      piv.userData.frozen = true;
-      if (piv.userData.group) piv.userData.group.visible = false;
-    }
-  });
-  if (g) {
-    g.position.set(0, 0, 0);
-    g.scale.setScalar((g.userData.baseScale || 1) * 1.35);
-  }
-  curtain.style.background = '#030508';
-  curtain.style.opacity = '1';
-  curtain.style.pointerEvents = 'all';
-  setTimeout(function () { window.location.href = def.href; }, 750);
-}
 
 function checarDestino(href) {
   if (window.location.protocol === 'file:') return Promise.resolve(true);
@@ -3357,7 +2581,6 @@ function triggerSymbol(group) {
     else if (def.id==='covers')    triggerCovers(def);
     else if (def.id==='recordacoes') triggerRecordacoes(def);
     else if (def.id==='mal')       triggerMal(def);
-    else if (def.id==='estacao')   triggerEstacao(def);
   });
 }
 
@@ -3436,205 +2659,10 @@ window.addEventListener('pageshow', function(e) {
 
 /* ═══════════════════════════════════════════
    PAINEL DAS ESFERAS DO DRAGÃO
+   Saiu daqui — a lógica completa (progresso real,
+   HUD, reivindicar o desejo) agora mora dentro da
+   nave, em 3D. Ver Nave/estacao_interior.html.
 ═══════════════════════════════════════════ */
-(function () {
-  var painel = document.getElementById('dragonball-panel');
-  if (!painel || !window.NexusEsferas) return;
-
-  // Arranjos de estrela originais (não são as posições exatas de nenhuma
-  // obra específica) — só o bastante pra dar pra contar 1 a 7 de relance.
-  var POSICOES_ESTRELA = {
-    1: [[0,0]],
-    2: [[-4,-3],[4,3]],
-    3: [[0,-6],[-5,4],[5,4]],
-    4: [[-5,-5],[5,-5],[-5,5],[5,5]],
-    5: [[0,-7],[-6,-1],[6,-1],[-4,6],[4,6]],
-    6: [[-5,-6],[5,-6],[-5,0],[5,0],[-5,6],[5,6]],
-    7: [[0,-7],[-6,-4],[6,-4],[-6,3],[6,3],[-3,7],[3,7]]
-  };
-
-  // Só toca a cutscene (som + pulso + painel forçado aberto) na primeira
-  // vez que o conjunto se completa nesse navegador — depois disso o
-  // painel fica com o brilho dourado permanente (o "troféu"), sem repetir
-  // o efeito toda vez que o Nexus for recarregado.
-  var CHAVE_CUTSCENE_VISTA = 'nexus_esferas_cutscene_vista';
-  // Sinal que o Segredo grava antes de redirecionar pra cá, avisando que
-  // um desejo acabou de ser concedido — ver dispersarEsferas() abaixo.
-  var CHAVE_DISPERSAR = 'nexus_esferas_dispersar';
-  // Marca PERMANENTE (nunca limpa pelo resetar()) provando que o
-  // conjunto já foi completado ao menos uma vez neste navegador.
-  var CHAVE_COMPLETOU_ANTES = 'nexus_esferas_completado_antes';
-  var esferasAudio = null;
-  var _gestoRegistradoParaSom = false;
-
-  // O navegador bloqueia áudio que não vem de uma ação direta do usuário
-  // (clique, toque, tecla) NESTA página — como a celebração dispara
-  // sozinha (ao carregar, ou via evento de outra aba), o play() é sempre
-  // rejeitado nesse primeiro disparo. O brilho e o painel expandido
-  // continuam automáticos (isso não é bloqueado); o som espera o
-  // próximo gesto do usuário na página pra tocar.
-  function aguardarGestoParaTocarSom() {
-    if (_gestoRegistradoParaSom) return;
-    _gestoRegistradoParaSom = true;
-
-    function tentarNovamente() {
-      window.removeEventListener('click', tentarNovamente);
-      window.removeEventListener('touchstart', tentarNovamente);
-      window.removeEventListener('keydown', tentarNovamente);
-      try {
-        esferasAudio.currentTime = 0;
-        esferasAudio.play().catch(function () {});
-      } catch (e) {}
-    }
-
-    window.addEventListener('click', tentarNovamente);
-    window.addEventListener('touchstart', tentarNovamente);
-    window.addEventListener('keydown', tentarNovamente);
-  }
-
-  function tocarSomConclusao() {
-    try {
-      if (!esferasAudio) {
-        esferasAudio = new Audio('Assets/esferas-completas.mp3');
-        window.NexusAudioRegistro.push(function () { esferasAudio.pause(); });
-      }
-      esferasAudio.currentTime = 0;
-      esferasAudio.volume = 0.85;
-      var promessa = esferasAudio.play();
-      if (promessa && typeof promessa.catch === 'function') {
-        promessa.catch(function () { aguardarGestoParaTocarSom(); });
-      }
-    } catch (e) { aguardarGestoParaTocarSom(); }
-  }
-
-  function celebrarSePrimeiraVez() {
-    var jaViu = false;
-    try { jaViu = localStorage.getItem(CHAVE_CUTSCENE_VISTA) === '1'; } catch (e) {}
-    if (jaViu) return;
-    try { localStorage.setItem(CHAVE_CUTSCENE_VISTA, '1'); } catch (e) {}
-    // Um ciclo novo de verdade se completou — qualquer escolha antiga
-    // do Segredo (de um desejo já concedido antes) agora é de um ciclo
-    // encerrado, então pode expirar. Ver o comentário em
-    // Segredo/index.html sobre por que isso NÃO é limpo antes disso.
-    try { sessionStorage.removeItem('segredo_escolha_feita'); } catch (e) {}
-
-    painel.classList.add('expandido', 'celebrando');
-    tocarSomConclusao();
-    setTimeout(function () { painel.classList.remove('celebrando'); }, 8000);
-  }
-
-  // Link "Reivindicar o desejo" — só existe/aparece quando o painel está
-  // .completo (ver CSS). Leva pra cena do Shen Long, compilada à parte
-  // via Haxe/OpenFL e publicada em Segredo/index.html (irmã de Assets/ e
-  // Lib/ na raiz do Nexus — ver o projeto "SegredoNexus" pra recompilar).
-  var linkResgatar = painel.querySelector('.db-resgatar');
-  if (linkResgatar) {
-    linkResgatar.addEventListener('click', function () {
-      window.location.href = 'Segredo/index.html';
-    });
-  }
-
-  function montarOrb(n, completo) {
-    var orb = document.createElement('div');
-    orb.className = 'db-orb' + (n ? ' achada' : '') + (completo ? ' completo' : '');
-    if (n) {
-      POSICOES_ESTRELA[n].forEach(function (p) {
-        var e = document.createElement('span');
-        e.className = 'estrela';
-        e.style.left = (12 + p[0] - 2) + 'px';
-        e.style.top  = (12 + p[1] - 2) + 'px';
-        orb.appendChild(e);
-      });
-    }
-    return orb;
-  }
-
-  function aplicarMarcaCompletouAntes() {
-    var jaCompletouAntes = false;
-    try { jaCompletouAntes = localStorage.getItem(CHAVE_COMPLETOU_ANTES) === '1'; } catch (e) {}
-    var miniOrb = painel.querySelector('.db-mini-orb');
-    if (miniOrb) miniOrb.classList.toggle('ja-completou', jaCompletouAntes);
-  }
-
-  // As esferas saem do slot, giram, e voam pra fora em direções
-  // diferentes antes de sumir — só depois disso terminar é que os dados
-  // são resetados de verdade (ver uso logo abaixo, perto de atualizarPainel).
-  function dispersarEsferas(aoTerminar) {
-    painel.classList.add('expandido');
-    var orbs = painel.querySelectorAll('.db-orb.completo');
-    var atraso = 0;
-    orbs.forEach(function (orb, i) {
-      var angulo = (i / orbs.length) * Math.PI * 2 + (Math.random() - .5);
-      var distancia = 90 + Math.random() * 70;
-      orb.style.setProperty('--dx', (Math.cos(angulo) * distancia).toFixed(1) + 'px');
-      orb.style.setProperty('--dy', (Math.sin(angulo) * distancia).toFixed(1) + 'px');
-      setTimeout(function () { orb.classList.add('dispersando'); }, atraso);
-      atraso += 70;
-    });
-    var duracaoAnimacao = reduzMovimentoPanel() ? 500 : 1300;
-    setTimeout(aoTerminar, atraso + duracaoAnimacao);
-  }
-
-  function reduzMovimentoPanel() {
-    try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
-  }
-
-  function atualizarPainel() {
-    var achadas = NexusEsferas.getEncontradas(); // ex.: [3, 7]
-    var completo = achadas.length === NexusEsferas.TOTAL;
-    painel.querySelector('.db-mini-count').textContent = achadas.length + '/' + NexusEsferas.TOTAL;
-    var grid = painel.querySelector('.db-grid');
-    grid.innerHTML = '';
-    for (var n = 1; n <= NexusEsferas.TOTAL; n++) {
-      grid.appendChild(montarOrb(achadas.indexOf(n) !== -1 ? n : 0, completo));
-    }
-    painel.classList.toggle('completo', completo);
-    aplicarMarcaCompletouAntes();
-    if (completo) celebrarSePrimeiraVez();
-  }
-
-  atualizarPainel();
-
-  // O Segredo avisou (antes de redirecionar) que um desejo acabou de
-  // ser concedido — o painel ainda está com as 7 esferas (o reset de
-  // dados só acontece DEPOIS da animação, de propósito, pra ter algo
-  // "cheio" pra animar saindo).
-  var pedindoDispersao = false;
-  try { pedindoDispersao = localStorage.getItem(CHAVE_DISPERSAR) === '1'; } catch (e) {}
-  if (pedindoDispersao) {
-    painel.classList.add('expandido');
-    setTimeout(function () {
-      dispersarEsferas(function () {
-        try {
-          // concederDesejo() (não resetar() puro) — além de zerar os
-          // dados, bloqueia novas esferas por um ano, igual ao cânone:
-          // as esferas viram pedra e ficam espalhadas pelo mundo até
-          // poderem ser reunidas de novo.
-          NexusEsferas.concederDesejo();
-          localStorage.removeItem(CHAVE_CUTSCENE_VISTA);
-          localStorage.removeItem(CHAVE_DISPERSAR);
-          localStorage.setItem(CHAVE_COMPLETOU_ANTES, '1');
-        } catch (e) {}
-        atualizarPainel();
-      });
-    }, 900);
-  }
-
-  // Desktop: abre no hover, fecha ao tirar o mouse. Mobile: alterna no toque
-  // (sem depender de :hover, que em touch se comporta de forma inconsistente
-  // entre navegadores).
-  if (mob) {
-    painel.addEventListener('click', function () { painel.classList.toggle('expandido'); });
-  } else {
-    painel.addEventListener('mouseenter', function () { painel.classList.add('expandido'); });
-    painel.addEventListener('mouseleave', function () { painel.classList.remove('expandido'); });
-  }
-
-  // Se o progresso mudar em outra aba (storage) ou ao voltar de uma página
-  // de projeto (pageshow, cobre o bfcache), atualiza sem precisar recarregar.
-  window.addEventListener('storage', atualizarPainel);
-  window.addEventListener('pageshow', atualizarPainel);
-})();
 
 })(); // IIFE
 </script>
@@ -3667,249 +2695,42 @@ window.addEventListener('pageshow', function(e) {
 })();
 </script>
 
-<!-- ═══ Canção da Tempestade — painel de progresso dos fragmentos ═══
-     O painel (nota prateada → azul) já se cria e se atualiza sozinho ao
-     incluir o script; a única coisa que falta resolver aqui é a posição:
-     por padrão ele mora no mesmo canto inferior esquerdo que o
-     #dragonball-panel desta página, então colidiria com ele — e também
-     com o #valtheris-painel, que fica empilhado entre os dois (e agora
-     também sobe sozinho quando o de Esferas expande — ver o script logo
-     depois do #valtheris-painel, mais acima no arquivo).
-     Em vez de ler a posição do #valtheris-painel ao vivo (ele tem seu
-     próprio ResizeObserver reagindo ao de Esferas, e não dá pra garantir
-     que os dois observers rodem sempre nessa ordem), este painel soma a
-     altura atual do de Esferas + a altura fixa do de Valtheris (que não
-     muda de tamanho, só de posição) + as folgas entre os três — assim
-     não depende de ler um valor que outro script também está
-     escrevendo, só de medir os dois de forma independente. Um
-     ResizeObserver no de Esferas recalcula tudo sempre que ele mudar de
-     tamanho. ── -->
+<!-- O painel/quadro da Canção da Tempestade e o reencontro dos Irmãos
+     Compositores saíram inteiros daqui — moraram nesta página só como
+     um ícone flutuante + card expansível; agora são um quadro 3D de
+     verdade dentro da nave (Nave/estacao_interior.html). A única ponta
+     solta de trazer isso pra cá: malik-cicatriz.js, mais abaixo, ainda
+     chama window.NexusIrmaosMostrarRedirecionamento() quando o viajante
+     clica numa página quebrada, esperando um painel pra mostrar a dica
+     na hora. Sem painel aqui pra mostrar nada, o stub abaixo só guarda
+     a dica pendente (mesma chave que Nave/estacao_interior.html já lê
+     em dialogoIrmaosHTML()) — a dica aparece na próxima vez que o
+     jogador abrir o quadro dentro da nave, não mais na hora, no hub. -->
+<!-- cancao-tempestade.js continua carregado — NÃO é só do painel que
+     saiu: window.NexusCancao.completaTudo() também trava o gatilho
+     secreto da broca (a sequência tocada no teclado/toque, logo acima
+     neste arquivo) e outros pontos que só checam se a canção já foi
+     toda aprendida. O CSS abaixo esconde só o ícone flutuante que o
+     script cria sozinho (criarPainel(), lá dentro dele) — a API
+     continua funcionando normalmente por baixo. -->
+<style>#cancao-painel { display: none !important; }</style>
 <script src="Lib/cancao-tempestade.js"></script>
 <script>
-(function () {
-  if (!window.NexusCancao) return;
-  var painelEsferas = document.getElementById('dragonball-panel');
-  var painelValtheris = document.getElementById('valtheris-painel');
-  if (!painelEsferas) return;
-
-  // aoPainelPronto entrega o #cancao-painel assim que ele existir de
-  // verdade — pegar o elemento direto com getElementById aqui não é
-  // seguro (ver o comentário no fim de cancao-tempestade.js).
-  NexusCancao.aoPainelPronto(function (painelCancao) {
-    function reposicionar() {
-      var topeEsferas = window.innerHeight - painelEsferas.getBoundingClientRect().top;
-      var alturaValtheris = painelValtheris ? painelValtheris.offsetHeight : 0;
-      var acimaDeValtheris = topeEsferas + 20 + alturaValtheris; // onde o topo do valtheris-painel também se apoia
-      painelCancao.style.bottom = (acimaDeValtheris + 20) + 'px'; // acima do valtheris + 20px de respiro
-    }
-    reposicionar();
-
-    if (window.ResizeObserver) {
-      new ResizeObserver(reposicionar).observe(painelEsferas);
-    } else {
-      // sem ResizeObserver: ainda cobre o caso mais comum (hover no desktop,
-      // toque no mobile) que é o que muda a altura desse painel.
-      painelEsferas.addEventListener('mouseenter', reposicionar);
-      painelEsferas.addEventListener('mouseleave', reposicionar);
-      painelEsferas.addEventListener('click', reposicionar);
-      window.addEventListener('resize', reposicionar);
-    }
-  });
-})();
-
-/* ═══ Irmãos Compositores reunidos — só quando os 3 fragmentos da
-   Canção da Tempestade já foram todos encontrados (OOT + MM +
-   Recordações). Antes disso o painel continua só o ícone simples. ═══ */
-(function () {
-  if (!window.NexusCancao || !NexusCancao.completaTudo()) return;
-
-  NexusCancao.aoPainelPronto(function (painel) {
-
-  painel.classList.add('expansivel');
-
-  // notas decorativas subindo no fundo do painel expandido — só visual,
-  // posições/tempos fixos (não precisa ser aleatório de verdade aqui)
-  var NOTAS = [
-    { left:'6%',  dur:'7.5s', delay:'0s',   desvio:'-12px' },
-    { left:'22%', dur:'9s',   delay:'1.6s', desvio:'14px'  },
-    { left:'40%', dur:'6.8s', delay:'.5s',  desvio:'-8px'  },
-    { left:'58%', dur:'8.4s', delay:'2.3s', desvio:'16px'  },
-    { left:'75%', dur:'7.2s', delay:'1.1s', desvio:'-10px' },
-    { left:'90%', dur:'9.6s', delay:'3.1s', desvio:'9px'   }
-  ];
-  var GLIFOS = ['\u266A', '\u266B', '\u266C'];
-  var notasHtml = NOTAS.map(function (n, i) {
-    return '<span style="left:' + n.left + ';animation-duration:' + n.dur +
-      ';animation-delay:' + n.delay + ';--desvio:' + n.desvio + ';">' + GLIFOS[i % GLIFOS.length] + '</span>';
-  }).join('');
-
-  var expandido = document.createElement('div');
-  expandido.className = 'cancao-expandido';
-  expandido.style.display = 'none';
-  expandido.innerHTML =
-    '<div class="cancao-notas-fundo">' + notasHtml + '</div>' +
-    '<img class="cancao-irmaos-img" src="Assets/irmaos-compositores.png" alt="Os dois Irmãos Compositores, lado a lado, reunidos">' +
-    '<div class="cancao-dialogo"></div>';
-  painel.appendChild(expandido);
-
-  // abre/fecha em dois passos redundantes de propósito: a classe (que já
-  // cuida do visual completo) E o display inline direto no elemento — não
-  // depender só do seletor composto #cancao-painel.expandido funcionando
-  // é o que garante que isso aparece mesmo se algum outro CSS da página
-  // interferir de um jeito que eu não previ.
-  function abrirPainel() {
-    painel.classList.add('expandido');
-    expandido.classList.add('aberto');
-    expandido.style.display = 'block';
-  }
-  function fecharPainel() {
-    painel.classList.remove('expandido');
-    expandido.classList.remove('aberto');
-    expandido.style.display = 'none';
-  }
-
-  var textoDialogo = expandido.querySelector('.cancao-dialogo');
-  var CANCAO_SRC = "Tloz/music/Song of Storms (Zelda's Vocal OST Extended Remix).mp3"; // mesmo arquivo referenciado em MM.html
-  var audioCancao = null;
-  var brocaSequenciaAtiva = false; // true assim que a sequência é reconhecida até a duração real da libera-me-from-hell se esgotar
-  var DURACAO_LIBERA_ME_FROM_HELL_MS = 289000; // 4min49s — ela mesma não "termina" sozinha (a tempestade fica no centro depois), então uso um timer com a duração real em vez de esperar o 'ended' dela
-  var timerBroca = null;
-
-  function tocarCancao() {
-    try {
-      if (!audioCancao) {
-        audioCancao = new Audio(CANCAO_SRC);
-        audioCancao.addEventListener('ended', function () { NexusCancao.marcarCancaoOuvida(); });
-        window.NexusAudioRegistro.push(function () { audioCancao.pause(); });
-      }
-      if (audioCancao.ended) audioCancao.currentTime = 0; // já tinha terminado antes — toca nova vez do início
-      audioCancao.volume = .8;
-      audioCancao.play().catch(function () {});
-    } catch (e) {}
-  }
-
-  function estaTocandoAgora() {
-    return !!(audioCancao && !audioCancao.paused && !audioCancao.ended);
-  }
-
-  function iniciarDialogo() {
-    NexusCancao.marcarConversouComIrmaos(); // qualquer abertura já conta como "ter conversado" com eles
-
-    // já está tocando agora mesmo — não repete a pergunta (o usuário
-    // já respondeu sim antes; só fechou e abriu o painel de novo)
-    if (estaTocandoAgora()) {
-      textoDialogo.innerHTML = '<p>A canção já está tocando.</p>';
-      return;
-    }
-    // a sequência da tempestade espiral foi reconhecida (mesmo que a
-    // libera-me-from-hell ainda não tenha começado a tocar de verdade —
-    // ver brocaSequenciaAtiva) até ela terminar — reação ao vivo, não
-    // fica presa depois que termina.
-    if (brocaSequenciaAtiva) {
-      textoDialogo.innerHTML = '<p>Os irmãos te olham com admiração.</p>';
-      return;
-    }
-    // já ouviu ela inteira em alguma visita — dá a dica de tocar aqui no
-    // nexus, MAS só se o viajante ainda não tiver mostrado que já sabe
-    // fazer isso (senão a dica não faz mais sentido nenhum)
-    if (NexusCancao.cancaoJaOuvida() && !NexusCancao.irmaosJaImpressionados()) {
-      textoDialogo.innerHTML = '<p>Ei, tente tocar nossa canção aqui no Nexus, você já a conhece, não precisa de mais instruções.</p>';
-      return;
-    }
-    // pergunta padrão — volta a aparecer normalmente depois que a reação
-    // ao vivo (broca tocando) termina, mesmo pra quem já impressionou os
-    // irmãos antes
-    textoDialogo.innerHTML =
-      '<p>Você nos trouxe de volta um para o outro. Depois de tanto tempo separados, finalmente estamos juntos de novo — e é graças a você.</p>' +
-      '<p>Gostaria de ouvir a canção que nos uniu?</p>' +
-      '<div class="cancao-escolha">' +
-        '<button type="button" data-resp="sim">Sim</button>' +
-        '<button type="button" data-resp="nao">Não</button>' +
-      '</div>';
-    textoDialogo.querySelector('[data-resp="sim"]').addEventListener('click', function (e) {
-      e.stopPropagation(); // não deixa esse toque também alternar o painel no mobile
-      textoDialogo.innerHTML = '<p>A melodia começa a soar, como há muito tempo não soava.</p>';
-      tocarCancao(); // só a gravação — as notas ao vivo agora moram no gatilho secreto (teclado/toque), não aqui
-    });
-    textoDialogo.querySelector('[data-resp="nao"]').addEventListener('click', function (e) {
-      e.stopPropagation();
-      textoDialogo.innerHTML = '<p>Tudo bem. Boa viagem, viajante — e obrigado, por tudo.</p>';
-      setTimeout(fecharPainel, 2600);
-    });
-  }
-
-  // Chamado de fora (malik-cicatriz.js) quando o viajante clica numa
-  // página quebrada — abre o painel e mostra a pista, sem mexer no
-  // fluxo normal de pergunta sim/não da canção.
-  window.NexusIrmaosMostrarRedirecionamento = function () {
-    abrirPainel();
-    textoDialogo.innerHTML = '<p>Procure o guerreiro do crepúsculo, ele pode te ajudar com isso.</p>';
-  };
-
-  // ── Nunca deve tocar junto com o som do despertar da broca. Se a canção
-  //    do painel estiver tocando quando a sequência da tempestade espiral
-  //    for reconhecida, ela pausa e o painel abre sozinho pra comentar.
-  //    brocaSequenciaAtiva liga JÁ AQUI — não espera a libera-me-from-hell
-  //    realmente começar (~2.7s de animação de invocação depois) — porque
-  //    a partir deste instante o diálogo não pode mais ser a pergunta de
-  //    sim/não, então se o painel já estiver aberto, atualiza a hora. ──
-  //    A sequência de verdade (teclado/toque) só toca as notas ao vivo —
-  //    quem chama a gravação completa (CANCAO_SRC) é só o Sim do painel,
-  //    em iniciarDialogo(); os dois ficam independentes de propósito.
-  window.aoTempestadeEspiralDisparar = function () {
-    NexusCancao.marcarIrmaosImpressionados();
-    brocaSequenciaAtiva = true;
-
-    if (estaTocandoAgora()) {
-      audioCancao.pause();
-      abrirPainel();
-      textoDialogo.innerHTML = '<p>E quem imaginaria que você tocaria nossa canção aqui, isso nos surpreendeu tanto que até tivemos que parar.</p>';
-      setTimeout(fecharPainel, 4200);
-      return;
-    }
-    if (painel.classList.contains('expandido')) iniciarDialogo();
-  };
-
-  // ── Dispara quando libera-me-from-hell realmente começa a tocar (dentro
-  //    de awakenDrill, ~2.7s depois do gatilho acima). Confere de novo se
-  //    a canção do painel não começou a tocar durante essa janela (senão
-  //    tocaria junto com a libera-me-from-hell). A tempestade em si não
-  //    "termina" — ela fica ali no centro depois que a broca desperta —
-  //    então em vez de esperar um 'ended' que pode nunca disparar, uso um
-  //    timer com a duração real da faixa, contado a partir de agora (que é
-  //    quando ela genuinamente começa a tocar). ──
-  window.aoBrocaComecouATocar = function () {
-    if (estaTocandoAgora()) audioCancao.pause();
-
-    clearTimeout(timerBroca);
-    timerBroca = setTimeout(function () {
-      brocaSequenciaAtiva = false;
-      if (painel.classList.contains('expandido')) iniciarDialogo();
-    }, DURACAO_LIBERA_ME_FROM_HELL_MS);
-
-    if (painel.classList.contains('expandido')) iniciarDialogo();
-  };
-
-  // mesmo padrão de interação do #dragonball-panel: hover no desktop,
-  // toque no mobile (variável `mob`, já compartilhada nesta página — mas
-  // sem presumir que ela exista: se algo mais cedo na página falhar antes
-  // de defini-la, isso não deveria derrubar este painel também)
-  var ehMobile = (typeof mob !== 'undefined') ? mob : (window.innerWidth < 768);
-  if (ehMobile) {
-    painel.addEventListener('click', function () {
-      var vaiAbrir = !painel.classList.contains('expandido');
-      if (vaiAbrir) { abrirPainel(); iniciarDialogo(); }
-      else { fecharPainel(); }
-    });
-  } else {
-    painel.addEventListener('mouseenter', function () {
-      abrirPainel();
-      iniciarDialogo();
-    });
-    painel.addEventListener('mouseleave', fecharPainel);
-  }
-  }); // fim do NexusCancao.aoPainelPronto
-})();
+window.NexusIrmaosMostrarRedirecionamento = function () {
+  try { localStorage.setItem('nexus_irmaos_pista_pendente', '1'); } catch (e) {}
+};
+// As duas funções abaixo viviam dentro do painel removido — sumiram
+// junto e quebravam o estado "impressionados" (usado pelo diálogo dos
+// Irmãos dentro da nave) mesmo a sequência secreta da broca continuando
+// a chamá-las normalmente (guardado por typeof === 'function' logo
+// acima, então falhava em silêncio). window.aoBrocaComecouATocar não
+// tem mais nada visível a fazer (reagia no próprio painel, que não
+// existe mais aqui); window.aoTempestadeEspiralDisparar precisa
+// continuar marcando o estado de verdade.
+window.aoBrocaComecouATocar = function () {};
+window.aoTempestadeEspiralDisparar = function () {
+  if (window.NexusCancao) window.NexusCancao.marcarIrmaosImpressionados();
+};
 </script>
 <script src="malik-cicatriz.js"></script>
 </body>

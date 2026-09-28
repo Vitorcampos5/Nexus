@@ -44,6 +44,13 @@
         try { localStorage.removeItem(CHAVE); } catch (e) {}
         try { localStorage.removeItem('malik_batalha_progresso'); } catch (e) {} // sem isso, a segunda tentativa cai no caminho de retomada (progresso salvo da primeira) e reproduz o bug da alma presa no canto
         tela.remove();
+        // O malik-batalha.js cria a PRÓPRIA tela de apagamento (z-index
+        // 800000) no clímax do Cenário A — ela fica no DOM por baixo
+        // desta aqui. A luta nova nasce com z-index 700000, ou seja,
+        // ATRÁS dela: sem remover as duas, o recomeço parecia não fazer
+        // nada (tela de nexus apagado pra sempre).
+        var apagaoBatalha = document.getElementById('malik-apagao-batalha');
+        if (apagaoBatalha) apagaoBatalha.remove();
         if (window.NexusMalikPermitirNovaLuta) window.NexusMalikPermitirNovaLuta(); // sem isso, a trava de "confronto já em andamento" bloqueava a nova chamada (tela preta)
         if (window.iniciarConfrontoMalik) window.iniciarConfrontoMalik('A', { ausente: false });
       });

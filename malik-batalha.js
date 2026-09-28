@@ -66,19 +66,42 @@
   var PASTA_LEYN = 'Assets/leyn/';
   var PASTA_FANTASMAS = 'Assets/fantasmas/';
 
-  // qual pose ele usa em cada fase — trocada com um crossfade rápido,
-  // não precisa ser tira animada porque cada pose já é uma imagem só
+  // Qual pose ele usa em cada fase — trocada com um crossfade rápido,
+  // não precisa ser tira animada porque cada pose já é uma imagem só.
+  // Escolhidas pelo que a fase faz: a lâmina esticada pro ataque 1D (que
+  // É uma linha), o giro de arco varrendo um plano pro 2D, o anel de
+  // energia (volume) pro 3D, e a pose em névoa glitch pro paradoxo
+  // temporal do 4D. Antes várias fases repetiam a mesma imagem.
   var POSE_POR_FASE = {
-    ping: 'malik-pose-parado-2.png',
-    cache: 'malik-pose-terminal.png',
-    broca: 'malik-pose-invocando-orbe.png',
-    mentira: 'malik-pose-triangulo.png',
-    saida: 'malik-pose-paineis-pequenos.png',
-    ddos: 'malik-pose-invocando-orbe.png',
-    overflow: 'malik-pose-triangulo.png',
+    ping: 'malik-vn-ping.png',              // Fase 1 — retrato VN: mão erguida com o anel de ping
+    cache: 'malik-pose-linha.png',          // 1D "A Linha" — lâmina esticada
+    broca: 'malik-pose-foice.png',          // 2D "O Plano" — giro varrendo o plano
+    mentira: 'malik-pose-aura.png',         // 3D "O Volume" — anel de energia em volta
+    saida: 'malik-pose-glitch.png',         // 4D "O Impossível" — figura em névoa glitch
+    ddos: 'malik-pose-invocando-orbe.png',  // rajadas convergentes — invocando
+    overflow: 'malik-pose-terminal.png',    // pilha estourando — de costas nos painéis
     clímaxA: 'malik-pose-paineis-grandes.png',
-    auraFinal: 'malik-pose-aura.png'
+    auraFinal: 'malik-pose-triangulo.png',  // costas + triângulo: o veredito final
+    espera: 'malik-vn-espera.png',          // turno de menu: braços cruzados, ele só espera você escolher
+    aproximacao: 'malik-vn-aproximacao.png', // durante a captura, antes da fase 1: puxando a adaga
+    falar: 'malik-vn-falar.png',            // Falar no menu (checkpoint e checkpointFinal): mão estendida, explicando
+    atacar: 'malik-vn-atacar.png'           // Atacar no menu (surtoDeHPMalik): braços abertos, o HP estoura
   };
+  // Folha 1 (retratos estilo visual novel, só busto): todos no mesmo canvas
+  // 652x453, mesma largura de capuz e cabeça no mesmo eixo, então trocar de
+  // pose não faz o rosto pular de tamanho/posição no retrato de 26vh.
+  var RETRATO_PAINEL_MALIK = 'malik-vn-retrato.png'; // recorte quadrado (cabeça+ombros) pro quadradinho de 54px do painel da luta 2D
+
+  // Leva nova (4 folhas x 5 poses cada, recortadas e organizadas por tema).
+  // Uma pose de cada folha virou a identidade PRINCIPAL da fase (substituiu
+  // o arquivo velho acima, mesmo nome: malik-pose-linha/foice/aura/glitch),
+  // as outras 4 de cada folha são a variação espalhada nos perigos daquela
+  // fase (ver dentro de cada fase* abaixo onde cada uma entra).
+  var POSES_LINHA_AVISO = ['malik-pose-linha-espera.png', 'malik-pose-linha-carga.png', 'malik-pose-linha-saque.png', 'malik-pose-linha-apice.png']; // 1D — giram na fase de AVISO (piscando); o perigo de verdade sempre volta pro malik-pose-linha.png
+  var POSES_FOICE_ROTACAO = ['malik-pose-foice-espera.png', 'malik-pose-foice-carga.png', 'malik-pose-foice.png', 'malik-pose-foice-grade.png', 'malik-pose-foice-impacto.png']; // 2D — só tem 1 mecânica (a grade), então as 5 giram juntas a cada aceso de células
+  var POSES_AURA_GOLPE = ['malik-pose-aura-espera.png', 'malik-pose-aura-investida.png', 'malik-pose-aura-colapso.png', 'malik-pose-aura-impacto.png']; // 3D — giram só na hora da PAREDE bater; o malik-pose-aura.png (anel) fica sustentado o resto do tempo, representando a broca-espiral contínua
+  var POSES_GLITCH_AZUL = ['malik-pose-glitch-azul.png', 'malik-pose-glitch-olho.png']; // 4D — sorteadas quando nasce um círculo AZUL
+  var POSES_GLITCH_VERMELHO = ['malik-pose-glitch-vermelho.png', 'malik-pose-glitch-explosao.png']; // 4D — sorteadas quando nasce um círculo VERMELHO; o malik-pose-glitch.png original fica reservado pro instante da zombaria
 
   var ativo = false; // impede dois confrontos simultâneos
   // Exposta só pro botão de recomeço (modo de teste) conseguir chamar
@@ -159,16 +182,19 @@
   // lado, largura igual) e devolve uma função que anima ela via
   // Web Animations API + easing steps(N) — sem precisar injetar
   // @keyframes no CSS, então funciona pra qualquer tamanho de tira.
-  function prepararTiraSprite(elemento, arquivo, largNatural, altNatural, nQuadros, alturaAlvo) {
+  // pasta é opcional — PASTA_LEYN por padrão (todo uso já existente
+  // chamava sem esse argumento), mas dá pra passar PASTA_MALIK etc.
+  function prepararTiraSprite(elemento, arquivo, largNatural, altNatural, nQuadros, alturaAlvo, pasta) {
     var escala = alturaAlvo / altNatural;
     var largEscalada = largNatural * escala;
     var largQuadro = largEscalada / nQuadros;
-    elemento.style.backgroundImage = "url('" + PASTA_LEYN + arquivo + "')";
+    elemento.style.backgroundImage = "url('" + (pasta || PASTA_LEYN) + arquivo + "')";
     elemento.style.backgroundRepeat = 'no-repeat';
     elemento.style.backgroundSize = largEscalada + 'px ' + alturaAlvo + 'px';
     elemento.style.backgroundPosition = '0 0';
     elemento.style.width = largQuadro + 'px';
     elemento.style.height = alturaAlvo + 'px';
+    elemento.style.flexShrink = '0'; // sem isso, uma coluna flex apertada encolhe o elemento e o sprite (background-size fixo) aparece cortado
     return function tocar(duracaoMs, repetir) {
       return elemento.animate(
         [{ backgroundPositionX: '0px' }, { backgroundPositionX: (-largQuadro * nQuadros) + 'px' }],
@@ -443,7 +469,7 @@
     }
 
     var retrato = el('img', 'max-height:26vh;max-width:72vw;object-fit:contain;filter:drop-shadow(0 0 34px rgba(255,43,58,.4));margin-bottom:16px;opacity:0;transition:opacity 1.4s ease;');
-    retrato.src = PASTA_MALIK + 'malik-pose-parado-1.png';
+    retrato.src = PASTA_MALIK + POSE_POR_FASE.espera; // retomar uma luta salva cai direto aqui, antes de qualquer fase trocar a pose
     retrato.alt = 'M.A.L.I.K.';
 
     var nome = el('div', 'letter-spacing:.32em;font-size:13px;color:' + VERMELHO + ';opacity:0;transition:opacity 1.8s ease;margin-bottom:14px;', 'M.A.L.I.K.');
@@ -464,6 +490,7 @@
     var comecoDoZero = !(retomarDe && retomarDe.estado);
 
     function revelarMalik() {
+      trocarPoseMalik(retrato, POSE_POR_FASE.aproximacao); // entra agachado com a adaga — a fase 1 troca pra parado logo em seguida
       raiz.appendChild(retrato);
       raiz.appendChild(nome);
       raiz.appendChild(hpLinha);
@@ -532,7 +559,9 @@
     var modoAtual = 'fase'; // 'fase' | 'checkpoint' | 'checkpointFinal' — junto com faseAtual, forma o "estado" salvo
     var acaoEscolhida = (retomarDe && retomarDe.acao) || null; // 'cancao' | 'esferas' | 'falar' | null — escolhida no checkpointFinal, lida dentro de oNexusResiste
     var hpDeMalikJaEstourou = false; // true assim que o surto de HP (ver surtoDeHPMalik) já rodou a animação inteira uma vez nesta luta — tentar atacar de novo não repete o crescimento, só confirma
+    var lutaEncerrada = false; // depois de encerrada, nada mais pode regravar progresso (ver salvarProgressoAtual)
     function salvarProgressoAtual() {
+      if (lutaEncerrada) return;
       var estado = modoAtual === 'checkpointFinal' ? 'checkpointFinal' : (modoAtual + ':' + faseAtual);
       salvarProgresso({ cenario: cenario, estado: estado, hp: hp, acao: acaoEscolhida, ausente: ausenteDuranteTudo });
     }
@@ -664,7 +693,20 @@
         alma.style.top  = (almaY - ALMA_TAM / 2) + 'px';
         arenaCaptura.remove();
         revelarMalik();
-        daquiA(1100, function () { avancarPara(1); });
+        // Se o viajante já gastou o desejo das esferas antes dele
+        // aparecer, M.A.L.I.K. percebe — e zomba de ter chegado tarde
+        // demais pra guardar o pedido que teria importado.
+        var desejoJaGasto = false;
+        try { desejoJaGasto = (parseInt(localStorage.getItem('nexus_esferas_bloqueado_ate'), 10) || 0) > Date.now(); } catch (e) {}
+        if (desejoJaGasto) {
+          daquiA(1100, function () {
+            falarMalik(caixa, 'As esferas já estão em pedra. Você gastou seu desejo em outra coisa — e agora não sobrou nenhum pra mim.', function () {
+              avancarPara(1);
+            });
+          });
+        } else {
+          daquiA(1100, function () { avancarPara(1); });
+        }
       }
 
       daquiA(1800, function () {
@@ -768,17 +810,8 @@
     function fase1Ping() {
       limparProjeteis();
       trocarPoseMalik(retrato, POSE_POR_FASE.ping);
-      // Telegraph: um ping visível parado ~1.1s antes do ritmo real
-      var tx = CAIXA_W * 0.2, ty = CAIXA_H * 0.3;
-      var aviso = spawnProjetil({ x: tx, y: ty, vx: 0, vy: 0, cor: 'rgba(255,43,58,.45)', tam: 10, ricochetes: 0 });
-      if (aviso && aviso.el) {
-        aviso.el.style.boxShadow = '0 0 14px ' + VERMELHO;
-        aviso.el.style.transition = 'opacity .4s ease';
-      }
-      daquiA(1100, function () {
-        if (aviso && aviso.el && aviso.el.parentNode) aviso.el.remove();
-        var idx = projeteis.indexOf(aviso);
-        if (idx !== -1) projeteis.splice(idx, 1);
+      // Sem telegraph: a fase começa direto no ritmo dos projéteis.
+      daquiA(300, function () {
         if (faseAtual !== 1 || modoAtual !== 'fase') return;
         var intervalo = setInterval(function () {
           if (faseAtual !== 1 || modoAtual !== 'fase') { clearInterval(intervalo); return; }
@@ -792,9 +825,6 @@
       });
     }
 
-    // "A Linha" — ataque 1D: tudo reduzido a um único eixo. Um feixe
-    // varre a caixa (horizontal ou vertical, trocando de eixo às vezes
-    // ao bater na borda) — só dói depois do telegraph inicial.
     // "A Linha" — ataque 1D: tudo reduzido a um único eixo. Uma barra
     // varre a caixa continuamente (nunca para) e alterna, de tempos em
     // tempos, entre perigosa e piscando (aviso, sem dano) — o piscar é
@@ -825,6 +855,7 @@
       function cicloAviso() {
         if (faseAtual !== 2 || modoAtual !== 'fase') return;
         perigoso = false;
+        trocarPoseMalik(retrato, POSES_LINHA_AVISO[Math.floor(Math.random() * POSES_LINHA_AVISO.length)]); // cada ciclo de aviso novo sorteia uma pose diferente, só variedade
         var piscadas = 0;
         var pisca = setInterval(function () {
           if (faseAtual !== 2 || modoAtual !== 'fase') { clearInterval(pisca); return; }
@@ -834,6 +865,7 @@
             clearInterval(pisca);
             perigoso = true;
             feixe.style.opacity = '.92';
+            trocarPoseMalik(retrato, POSE_POR_FASE.cache); // o perigo de verdade sempre volta pra mesma pose (a do feixe disparando)
             daquiA(2200 + Math.random() * 500, cicloAviso);
           }
         }, 170);
@@ -873,12 +905,15 @@
           celulas.push({ el: cel, col: c, row: r, estado: 'livre' });
         }
       }
+      var giroFoice = 0;
       var intervalo = setInterval(function () {
         if (faseAtual !== 3 || modoAtual !== 'fase') {
           clearInterval(intervalo);
           celulas.forEach(function (cl) { if (cl.el.parentNode) cl.el.remove(); });
           return;
         }
+        trocarPoseMalik(retrato, POSES_FOICE_ROTACAO[giroFoice % POSES_FOICE_ROTACAO.length]); // sem hitbox própria diferente aqui — só gira a cada aceso de células, pra dar variedade numa fase que é só uma mecânica só
+        giroFoice++;
         var livres = celulas.filter(function (cl) { return cl.estado === 'livre'; });
         var qtd = Math.min(livres.length, 4 + Math.floor(Math.random() * 3));
         for (var i = 0; i < qtd; i++) {
@@ -918,6 +953,13 @@
       var lados = ['top', 'bottom', 'left', 'right'];
       function golpe() {
         if (faseAtual !== 4 || modoAtual !== 'fase') return;
+        // a pose padrão da fase (anel/aura) representa a broca-espiral, que
+        // fica rodando o tempo todo em paralelo — só na hora da PAREDE bater
+        // é que a pose muda por um instante, depois volta sozinha pro anel
+        trocarPoseMalik(retrato, POSES_AURA_GOLPE[Math.floor(Math.random() * POSES_AURA_GOLPE.length)]);
+        daquiA(720, function () {
+          if (faseAtual === 4 && modoAtual === 'fase') trocarPoseMalik(retrato, POSE_POR_FASE.mentira);
+        });
         var lado = lados[Math.floor(Math.random() * lados.length)];
         var espessura = 46 + Math.random() * 26;
         var estilo = 'position:absolute;z-index:7;background:linear-gradient(135deg,rgba(255,43,58,.85),rgba(120,10,20,.92));box-shadow:0 0 18px ' + VERMELHO + ';pointer-events:none;';
@@ -992,6 +1034,8 @@
         if (faseAtual !== 5 || modoAtual !== 'fase') return;
         var azul = proximaCor === 'azul';
         proximaCor = azul ? 'vermelho' : 'azul'; // nunca a mesma cor duas vezes seguidas
+        var posesCor = azul ? POSES_GLITCH_AZUL : POSES_GLITCH_VERMELHO;
+        trocarPoseMalik(retrato, posesCor[Math.floor(Math.random() * posesCor.length)]); // a pose acompanha a cor do círculo que está nascendo agora
 
         var raio = 27 + Math.random() * 15;
         var x, y, tentativas = 0;
@@ -1050,6 +1094,7 @@
             aplicarDano(10 + Math.random() * 5);
             if (!zombandoAgora) {
               zombandoAgora = true;
+              trocarPoseMalik(retrato, POSE_POR_FASE.saida); // zombaria reserva a pose glitch "original" (a de sempre), pra marcar esse instante como diferente das cores que ficam girando
               falarMalik(caixa, 'Você não pode prever essa, pode?', function () { zombandoAgora = false; });
             }
             if (circulo.parentNode) circulo.remove();
@@ -1190,9 +1235,11 @@
       }
 
       daquiA(atrasoApagamento, function () {
+        lutaEncerrada = true; // a partir daqui nada mais regrava progresso
         limparProgresso();
         try { if (window.NexusMalikApagarDeVez) window.NexusMalikApagarDeVez(); } catch (e) {}
         var apagao = el('div', 'position:fixed;inset:0;z-index:800000;background:#000;color:#c8c8c8;font-family:Consolas,monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:15px;letter-spacing:.04em;opacity:0;transition:opacity .8s ease;text-align:center;line-height:2;');
+        apagao.id = 'malik-apagao-batalha'; // o botão de recomeço (modo teste, no malik-apagado.js) precisa achar e remover esta tela também — ela cobre a luta nova, que tem z-index menor
         apagao.innerHTML = 'ERR_CONNECTION_TIMED_OUT<br>este link não respondeu.<br><br><span style="color:#ff2b3a">NEXUS REMOVIDO.</span>';
         document.body.appendChild(apagao);
         requestAnimationFrame(function () { apagao.style.opacity = '1'; });
@@ -1216,6 +1263,14 @@
     function oNexusResiste() {
       limparProjeteis();
       rodando = false;
+      // A vitória já está decidida aqui — a cutscene abaixo dura ~47s, e
+      // qualquer salvamento tardio nesse meio (dano de um projétil que
+      // ainda estava no ar, por exemplo) recriava a entrada de progresso
+      // já limpa. No boot seguinte o malik.js via "luta pendente" e
+      // reabria o confronto, pra sempre — a luta do B nunca era dada
+      // como acabada e tudo que deveria vir depois nunca acontecia.
+      lutaEncerrada = true;
+      limparProgresso();
 
       var choques = 0;
       var vibra = setInterval(function () {
@@ -1229,7 +1284,7 @@
       var fantasma1 = null, fantasma2 = null, linha = null, anel = null;
       var esferaEls = [];
       var mensagemEl = null, leynEl = null, leynAnimacaoAtual = null;
-      var ALTURA_LEYN = Math.round(window.innerHeight * 0.68); // relativo à tela — subido de novo: o personagem é alto/estreito (307:987), então a largura real fica bem menor que a altura sugere
+      var ALTURA_LEYN = 200; // valor inicial — leynAparece() recalcula com base no espaço que realmente sobra na coluna flex
 
       function fantasmasJuntos() {
         linha = el('div', 'position:relative;display:flex;align-items:center;gap:14px;');
@@ -1264,7 +1319,13 @@
       function esferasChegam() {
         var rect = caixa.getBoundingClientRect();
         var cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
-        var raioFinal = Math.max(rect.width, rect.height) / 2 + 30;
+        // Pedido: as esferas se juntam mais perto do centro da caixa
+        // (ao redor da alma), não do lado de fora dela como era antes
+        // (Math.max(...)/2+30, um anel fora da borda). Um raio pequeno
+        // dessa forma deixaria as esferas encostando ou sobrepondo o
+        // anel do escudo dos irmãos (raio 15px) — 0.32 do lado menor
+        // dá um anel de ~80px de raio, com folga dos dois lados.
+        var raioFinal = Math.min(rect.width, rect.height) * 0.32;
         // valores idênticos aos de .db-orb/.db-orb.achada/.db-orb.completo e
         // @keyframes dbPulso no #dragonball-panel do nexus.html — mesmo
         // tamanho (24px), mesmo raio de glow parado (6px) e em pulso
@@ -1303,8 +1364,100 @@
           document.head.appendChild(estilo);
         }
       }
+      // Depois que a rachadura dele mostra a primeira fresta, as esferas
+      // fazem o mesmo que fazem ao voltar do Segredo com um desejo
+      // concedido: brilham mais forte, giram e voam pra fora em direções
+      // diferentes até sumir. Mesma técnica de dbDispersar() do
+      // #dragonball-panel (nexus.html) — reescrita aqui porque essas
+      // esferas são elementos soltos em document.body, fora do contexto
+      // CSS daquele painel (não dá pra simplesmente reusar a classe).
+      function esferasConcedemDesejo(aoTerminar) {
+        if (!esferaEls.length) { aoTerminar(); return; }
+        if (!document.getElementById('malik-esfera-dispersar-css')) {
+          var estilo = el('style'); estilo.id = 'malik-esfera-dispersar-css';
+          estilo.textContent =
+            '@keyframes malikEsferaDispersar{' +
+            '0%{transform:translate(0,0) rotate(0deg) scale(1);opacity:1;}' +
+            '25%{transform:translate(0,0) rotate(340deg) scale(1.2);opacity:1;}' +
+            '100%{transform:translate(var(--mdx),var(--mdy)) rotate(1080deg) scale(.15);opacity:0;}}';
+          document.head.appendChild(estilo);
+        }
+        var rect = caixa.getBoundingClientRect();
+        var cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+        // brilho intensificado — mesmo tratamento do painel quando
+        // "celebrando": pulso desliga, e entra um brilho fixo mais forte
+        esferaEls.forEach(function (orb) {
+          orb.style.animation = 'none';
+          orb.style.transition = 'box-shadow .4s ease, filter .4s ease';
+          orb.style.boxShadow = '0 0 22px rgba(255,217,138,1)';
+          orb.style.filter = 'brightness(1.3)';
+        });
+        daquiA(600, function () {
+          var atraso = 0;
+          esferaEls.forEach(function (orb) {
+            var r = orb.getBoundingClientRect();
+            var angulo = Math.atan2((r.top + 12) - cy, (r.left + 12) - cx) + (Math.random() - .5) * .6;
+            var distancia = 90 + Math.random() * 70;
+            orb.style.setProperty('--mdx', (Math.cos(angulo) * distancia).toFixed(1) + 'px');
+            orb.style.setProperty('--mdy', (Math.sin(angulo) * distancia).toFixed(1) + 'px');
+            (function (orb, atrasoDaEsfera) {
+              setTimeout(function () { orb.style.animation = 'malikEsferaDispersar 1.3s cubic-bezier(.32,.62,.4,1) forwards'; }, atrasoDaEsfera);
+            })(orb, atraso);
+            atraso += 70;
+          });
+          daquiA(atraso + 1300, function () {
+            esferaEls.forEach(function (o) { o.remove(); });
+            esferaEls = [];
+            aoTerminar();
+          });
+        });
+      }
 
-      // Ele ainda tenta. A proteção segura — mas é a primeira vez que
+      // O portal: um anel de luz dourada que se abre no centro da caixa,
+      // no mesmo lugar onde as esferas se concentraram — ele gasta a luz
+      // delas. Cresce, gira continuamente enquanto aberto, e é por ele
+      // que o Leyn emerge (ver leynAparece). fecharPortalLeyn() encolhe
+      // e remove; chamada de dentro de leynAparece(), não daqui.
+      var portalWrap = null;
+      function abrirPortalLeyn(aoAberto) {
+        if (!document.getElementById('malik-portal-css')) {
+          var estilo = el('style'); estilo.id = 'malik-portal-css';
+          estilo.textContent = '@keyframes malikPortalGiro{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}';
+          document.head.appendChild(estilo);
+        }
+        var rect = caixa.getBoundingClientRect();
+        var cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+        var tam = Math.min(rect.width, rect.height) * 0.72;
+        portalWrap = el('div',
+          'position:fixed;left:' + cx + 'px;top:' + cy + 'px;width:' + tam + 'px;height:' + tam + 'px;' +
+          'margin-left:' + (-tam / 2) + 'px;margin-top:' + (-tam / 2) + 'px;z-index:700015;pointer-events:none;' +
+          'opacity:0;transform:scale(0);transition:opacity .6s ease,transform 1.1s cubic-bezier(.2,.8,.2,1);'
+        );
+        var anelGirando = el('div',
+          'width:100%;height:100%;border-radius:50%;' +
+          'background:radial-gradient(circle,rgba(232,201,122,.9) 0%,rgba(196,163,90,.5) 42%,transparent 72%);' +
+          'box-shadow:0 0 40px rgba(232,201,122,.8),inset 0 0 30px rgba(255,255,255,.5);' +
+          'animation:malikPortalGiro 3.2s linear infinite;'
+        );
+        portalWrap.appendChild(anelGirando);
+        document.body.appendChild(portalWrap);
+        requestAnimationFrame(function () {
+          portalWrap.style.opacity = '1';
+          portalWrap.style.transform = 'scale(1)';
+        });
+        daquiA(1200, aoAberto);
+      }
+      function fecharPortalLeyn() {
+        if (!portalWrap) return;
+        var alvo = portalWrap;
+        alvo.style.transition = 'opacity .9s ease, transform .9s ease';
+        alvo.style.opacity = '0';
+        alvo.style.transform = 'scale(.6)';
+        daquiA(950, function () { if (alvo.parentNode) alvo.remove(); });
+        portalWrap = null;
+      }
+
+
       // alguma coisa dele não funciona, e isso deveria doer nele mais do
       // que qualquer HP perdido: até aqui, ele nunca teve que tentar de
       // novo. Some lines devem soar como se ele ainda achasse que vai
@@ -1360,91 +1513,256 @@
       }
 
       function leynAparece() {
-        leynEl = el('div', 'width:' + (1119 * (ALTURA_LEYN / 1405)) + 'px;height:' + ALTURA_LEYN + 'px;background-image:url(\'' + PASTA_LEYN + 'leyn-retrato.png\');background-size:contain;background-repeat:no-repeat;background-position:center;opacity:0;transition:opacity 1.6s ease;filter:drop-shadow(0 0 20px rgba(196,163,90,.4));margin-bottom:14px;');
+        // A altura precisa caber no que sobra da coluna flex (retrato do
+        // Malik ~26vh + nome + HP + caixa de 250px + margens). Antes eu
+        // usava uma fração da tela inteira, o que estourava o total — o
+        // flexbox então ENCOLHIA o elemento (flex-shrink padrão é 1),
+        // mas o background-size continuava no tamanho cheio, e o sprite
+        // aparecia cortado. flex-shrink:0 trava o encolhimento, e a
+        // conta abaixo garante que ele não precise encolher.
+        var espacoLivre = window.innerHeight - (window.innerHeight * 0.26) - CAIXA_H - 120;
+        ALTURA_LEYN = Math.max(150, Math.round(Math.min(espacoLivre, window.innerHeight * 0.34)));
+        // Emerge do portal: nasce pequeno e num brilho forte (dourado,
+        // ecoando o portal) que relaxa pro drop-shadow normal dele
+        // depois — em vez de só um fade-in parado, como era antes.
+        leynEl = el('div',
+          'flex-shrink:0;width:' + (1119 * (ALTURA_LEYN / 1405)) + 'px;height:' + ALTURA_LEYN + 'px;' +
+          'background-image:url(\'' + PASTA_LEYN + 'leyn-retrato.png\');background-size:contain;background-repeat:no-repeat;background-position:center;' +
+          'opacity:0;transform:scale(.35);transition:opacity 1.1s ease,transform 1.1s cubic-bezier(.2,.8,.2,1);' +
+          'filter:drop-shadow(0 0 34px rgba(232,201,122,.95));margin-bottom:14px;'
+        );
         raiz.insertBefore(leynEl, linha);
-        requestAnimationFrame(function () { leynEl.style.opacity = '1'; });
+        requestAnimationFrame(function () {
+          leynEl.style.opacity = '1';
+          leynEl.style.transform = 'scale(1)';
+        });
+        daquiA(1100, fecharPortalLeyn);
+        daquiA(1300, function () {
+          leynEl.style.transition = 'filter 1.4s ease';
+          leynEl.style.filter = 'drop-shadow(0 0 20px rgba(196,163,90,.4))';
+        });
       }
 
       // Observação (1 rodada inteira, na regra real) → um único golpe,
       // sem preparo visível — é literalmente "uma polegada".
-      function observacaoEGolpe() {
+      // Um flash rápido de tela, sincronizado com o instante do golpe —
+      // reaproveitado nas duas investidas da troca coreografada abaixo.
+      function flashDeGolpe() {
+        var flash = el('div', 'position:fixed;inset:0;z-index:700030;background:linear-gradient(100deg,transparent 46%,#fff 49%,#E8C97A 50%,transparent 54%);opacity:0;pointer-events:none;transition:opacity .06s linear;');
+        document.body.appendChild(flash);
+        requestAnimationFrame(function () {
+          flash.style.opacity = '1';
+          setTimeout(function () { flash.style.opacity = '0'; setTimeout(function () { flash.remove(); }, 200); }, 90);
+        });
+      }
+
+      // O dano "de verdade" (sacudida + flash vermelho + HP caindo) — só
+      // a 2ª investida da troca abaixo chama isso; a 1ª é resistida.
+      function danoVisualNoMalik(aoTerminar) {
+        retrato.style.transition = 'transform .08s ease';
+        var sacudidas = 0;
+        var sacode = setInterval(function () {
+          sacudidas++;
+          retrato.style.transform = 'translateX(' + (sacudidas % 2 ? -6 : 6) + 'px)';
+          if (sacudidas > 5) { clearInterval(sacode); retrato.style.transform = 'none'; }
+        }, 45);
+        var flashVermelho = el('div', 'position:absolute;inset:0;background:' + VERMELHO + ';opacity:.5;mix-blend-mode:screen;pointer-events:none;transition:opacity .3s ease;');
+        retrato.appendChild(flashVermelho);
+        requestAnimationFrame(function () { flashVermelho.style.opacity = '0'; });
+        daquiA(320, function () { if (flashVermelho.parentNode) flashVermelho.remove(); });
+
+        var hpFalso = 100;
+        var numeroHP = el('div', 'position:absolute;left:50%;top:-4px;transform:translateX(-50%);font-family:Consolas,monospace;font-size:13px;font-weight:bold;color:' + VERMELHO + ';text-shadow:0 0 8px rgba(255,43,58,.8);pointer-events:none;white-space:nowrap;');
+        retrato.appendChild(numeroHP);
+        var quedaHP = setInterval(function () {
+          hpFalso -= 8 + Math.random() * 10;
+          if (hpFalso <= 0) {
+            hpFalso = 0;
+            numeroHP.textContent = 'HP 0%';
+            clearInterval(quedaHP);
+            daquiA(500, function () {
+              if (numeroHP.parentNode) numeroHP.remove();
+              if (aoTerminar) aoTerminar();
+            });
+          } else {
+            numeroHP.textContent = 'HP ' + Math.floor(hpFalso) + '%';
+          }
+        }, 60);
+      }
+
+      // A primeira troca de golpes, coreografada (o jogador ainda não
+      // controla nada — isso só começa depois da fusão da alma com o
+      // Leyn, mais abaixo). Duas investidas: a 1ª o Malik resiste (só
+      // reage, muda de pose — ele ainda não acredita que pode perder);
+      // a 2ª acerta de vez, e É o dano visual que já existia (sacudida +
+      // flash vermelho + HP caindo). callback dispara só depois que o
+      // HP falso termina de cair na 2ª investida.
+      function observacaoEGolpe(callback) {
         if (fantasma1) fantasma1.style.opacity = '.45';
         if (fantasma2) fantasma2.style.opacity = '.45';
 
-        // entra em guarda: troca o retrato parado pela tira animada e
-        // deixa girando em loop enquanto "observa" o alvo
-        if (leynEl) {
-          // Não existe um "leyn-parado.png" de verdade — leyn-retrato.png é
-          // uma imagem parada só, então vira uma tira de 1 quadro (sem
-          // animação nenhuma, só troca de imagem se necessário).
-          var tocarParado = prepararTiraSprite(leynEl, 'leyn-retrato.png', 1119, 1405, 1, ALTURA_LEYN);
-          leynAnimacaoAtual = tocarParado(900, true);
-        }
-
-        daquiA(1700, function () {
-          // o golpe: cancela o loop parado, troca pra tira de ataque e
-          // toca ela uma vez só — sem preparo visível, "uma polegada"
+        function golpe(acertaDeVez, aoTerminarGolpe) {
           if (leynEl) {
             if (leynAnimacaoAtual) leynAnimacaoAtual.cancel();
-            var tocarAtaque = prepararTiraSprite(leynEl, 'leyn-estocada.png', 1536, 987, 5, ALTURA_LEYN);
+            var tocarAtaque = prepararTiraSprite(leynEl, 'leyn-estocada.png', 1536, 320, 5, ALTURA_LEYN);
             leynAnimacaoAtual = tocarAtaque(1400, false);
           }
-          var flash = el('div', 'position:fixed;inset:0;z-index:700030;background:linear-gradient(100deg,transparent 46%,#fff 49%,#E8C97A 50%,transparent 54%);opacity:0;pointer-events:none;transition:opacity .06s linear;');
-          document.body.appendChild(flash);
-          requestAnimationFrame(function () {
-            flash.style.opacity = '1';
-            setTimeout(function () { flash.style.opacity = '0'; setTimeout(function () { flash.remove(); }, 200); }, 90);
-          });
-
-          // A estocada acerta perto do quadro com o efeito de fogo (~950ms
-          // dentro da tira de 1400ms) — o HP dele despenca rápido, não aos
-          // poucos: alguns números caindo em sequência bem curta, não uma
-          // barra suave. Retrato reage com sacudida + flash vermelho.
+          flashDeGolpe();
+          // A estocada acerta perto do quadro com o efeito de fogo
+          // (~950ms dentro da tira de 1400ms).
           daquiA(950, function () {
-            retrato.style.transition = 'transform .08s ease';
-            var sacudidas = 0;
-            var sacode = setInterval(function () {
-              sacudidas++;
-              retrato.style.transform = 'translateX(' + (sacudidas % 2 ? -6 : 6) + 'px)';
-              if (sacudidas > 5) { clearInterval(sacode); retrato.style.transform = 'none'; }
-            }, 45);
-            var flashVermelho = el('div', 'position:absolute;inset:0;background:' + VERMELHO + ';opacity:.5;mix-blend-mode:screen;pointer-events:none;transition:opacity .3s ease;');
-            retrato.appendChild(flashVermelho);
-            requestAnimationFrame(function () { flashVermelho.style.opacity = '0'; });
-            daquiA(320, function () { if (flashVermelho.parentNode) flashVermelho.remove(); });
+            if (acertaDeVez) {
+              danoVisualNoMalik(aoTerminarGolpe);
+            } else {
+              // resistido: só uma reação rápida (muda de pose), sem
+              // sacudida nem queda de HP — ele ainda está de pé
+              trocarPoseMalik(retrato, POSE_POR_FASE.saida);
+              daquiA(400, aoTerminarGolpe);
+            }
+          });
+        }
 
-            var hpFalso = 100;
-            var numeroHP = el('div', 'position:absolute;left:50%;top:-4px;transform:translateX(-50%);font-family:Consolas,monospace;font-size:13px;font-weight:bold;color:' + VERMELHO + ';text-shadow:0 0 8px rgba(255,43,58,.8);pointer-events:none;white-space:nowrap;');
-            retrato.appendChild(numeroHP);
-            var quedaHP = setInterval(function () {
-              hpFalso -= 8 + Math.random() * 10;
-              if (hpFalso <= 0) {
-                hpFalso = 0;
-                numeroHP.textContent = 'HP 0%';
-                clearInterval(quedaHP);
-                daquiA(500, function () { if (numeroHP.parentNode) numeroHP.remove(); });
-              } else {
-                numeroHP.textContent = 'HP ' + Math.floor(hpFalso) + '%';
-              }
-            }, 60);
+        function voltarParaGuarda(aoTerminarGuarda) {
+          if (leynEl) {
+            if (leynAnimacaoAtual) leynAnimacaoAtual.cancel();
+            var tocarParado = prepararTiraSprite(leynEl, 'leyn-retrato.png', 1119, 1405, 1, ALTURA_LEYN);
+            leynAnimacaoAtual = tocarParado(900, true);
+          }
+          daquiA(500, aoTerminarGuarda);
+        }
+
+        // entra em guarda pela primeira vez — leyn-retrato.png não tem
+        // tira animada própria, então vira "tira" de 1 quadro só, sem
+        // animação nenhuma (só pra usar a mesma função de sempre)
+        if (leynEl) {
+          var tocarParadoInicial = prepararTiraSprite(leynEl, 'leyn-retrato.png', 1119, 1405, 1, ALTURA_LEYN);
+          leynAnimacaoAtual = tocarParadoInicial(900, true);
+        }
+
+        daquiA(700, function () { // menos tempo parado no retrato — o golpe vem rápido
+          golpe(false, function () { // 1ª investida — resistida
+            voltarParaGuarda(function () {
+              trocarPoseMalik(retrato, POSE_POR_FASE.aproximacao);
+              golpe(true, function () { // 2ª investida — acerta de vez
+                if (callback) callback();
+              });
+            });
           });
         });
       }
 
-      function malikExpulso() {
-        trocarPoseMalik(retrato, POSE_POR_FASE.auraFinal);
-        daquiA(230, function () {
-        retrato.style.transition = 'transform .5s ease, opacity .5s ease, filter .5s ease';
-        retrato.style.transform = 'scale(.18)';
-        retrato.style.opacity = '0';
-        retrato.style.filter = 'grayscale(1) brightness(2)';
-        nome.style.transition = 'opacity .4s ease';
-        nome.style.opacity = '0';
-        var fecho = el('div', 'position:fixed;left:50%;top:36%;transform:translate(-50%,-50%);z-index:700020;font-family:Consolas,monospace;font-size:12px;letter-spacing:.08em;color:#8a8a8a;opacity:0;transition:opacity .6s ease;', 'conexão encerrada — localhost');
+      // Quando o jogador vence a luta na arena (por ora só testável
+      // manualmente — ver o comentário sobre a tecla V dentro de
+      // malik-luta-leyn.js; ainda não existe sistema de rounds real),
+      // o Malik é expulso — mesmo tratamento de sempre (encolhe,
+      // dessatura, "conexão encerrada"), mas em cima do sprite da
+      // ARENA (malikSpriteEl), não do retrato pequeno da cutscene
+      // antiga, que a essa altura já está escondido atrás dela.
+      function malikExpulsoNaArena(malikSpriteEl, callback) {
+        if (malikSpriteEl) {
+          malikSpriteEl.style.transition = 'transform 1s ease, opacity 1s ease, filter 1s ease';
+          malikSpriteEl.style.transform = (malikSpriteEl.style.transform || '') + ' scale(.15)';
+          malikSpriteEl.style.opacity = '0';
+          malikSpriteEl.style.filter = 'grayscale(1) brightness(2)';
+        }
+        // z-index acima da arena (700050) — sem isso o texto ficaria
+        // escondido atrás dela
+        var fecho = el('div', 'position:fixed;left:50%;top:36%;transform:translate(-50%,-50%);z-index:700060;font-family:Consolas,monospace;font-size:12px;letter-spacing:.08em;color:#8a8a8a;opacity:0;transition:opacity .6s ease;', 'conexão encerrada — localhost');
         document.body.appendChild(fecho);
         requestAnimationFrame(function () { fecho.style.opacity = '1'; });
         daquiA(1300, function () { fecho.style.opacity = '0'; setTimeout(function () { fecho.remove(); }, 700); });
+        daquiA(1600, function () { if (callback) callback(); });
+      }
+
+      // A Alma do viajante se une ao corpo do Leyn — os dois se tornam
+      // um, e é a partir daqui que o viajante passa a controlar o Leyn
+      // diretamente (a arena que abre logo em seguida). A alma "voa" da
+      // caixa até o Leyn, brilhando, e termina num flash de luz nele.
+      function fundirAlmaComLeyn(callback) {
+        if (fantasma1) { fantasma1.style.transition = 'opacity 1s ease'; fantasma1.style.opacity = '0'; }
+        if (fantasma2) { fantasma2.style.transition = 'opacity 1s ease'; fantasma2.style.opacity = '0'; }
+        if (anel) { anel.style.transition = 'opacity .8s ease'; anel.style.opacity = '0'; }
+
+        var origemRect = alma.getBoundingClientRect();
+        var destRect = leynEl ? leynEl.getBoundingClientRect() : caixa.getBoundingClientRect();
+        var ox = origemRect.left + origemRect.width / 2, oy = origemRect.top + origemRect.height / 2;
+        var dx = destRect.left + destRect.width / 2, dy = destRect.top + destRect.height / 2;
+
+        // clone fixed pra poder voar livre por cima de tudo — a alma
+        // original vive dentro de "caixa" (overflow:hidden) e não
+        // conseguiria sair dela visualmente
+        var almaVoando = el('div',
+          'position:fixed;left:' + ox + 'px;top:' + oy + 'px;width:' + ALMA_TAM + 'px;height:' + ALMA_TAM + 'px;' +
+          'margin-left:' + (-ALMA_TAM / 2) + 'px;margin-top:' + (-ALMA_TAM / 2) + 'px;background:' + VERMELHO + ';' +
+          'box-shadow:0 0 8px ' + VERMELHO + ';clip-path:polygon(50% 0%,100% 35%,82% 100%,18% 100%,0% 35%);' +
+          'z-index:700020;pointer-events:none;' +
+          'transition:left 1.3s cubic-bezier(.3,.6,.3,1),top 1.3s cubic-bezier(.3,.6,.3,1),transform 1.3s ease,opacity .3s ease .9s;'
+        );
+        document.body.appendChild(almaVoando);
+        alma.style.opacity = '0'; // a original some — só a clonada continua visível voando
+
+        requestAnimationFrame(function () {
+          almaVoando.style.left = dx + 'px';
+          almaVoando.style.top = dy + 'px';
+          almaVoando.style.transform = 'scale(2.4)';
         });
+
+        daquiA(1000, function () {
+          if (leynEl) {
+            leynEl.style.transition = 'filter .5s ease';
+            var filtroAntigo = leynEl.style.filter;
+            leynEl.style.filter = 'drop-shadow(0 0 60px rgba(255,255,255,.95)) brightness(1.6)';
+            daquiA(600, function () { leynEl.style.filter = filtroAntigo; });
+          }
+          var flashFusao = el('div', 'position:fixed;inset:0;z-index:700021;background:radial-gradient(circle at ' + dx + 'px ' + dy + 'px,rgba(255,255,255,.85),transparent 55%);opacity:0;pointer-events:none;transition:opacity .35s ease;');
+          document.body.appendChild(flashFusao);
+          requestAnimationFrame(function () {
+            flashFusao.style.opacity = '1';
+            setTimeout(function () { flashFusao.style.opacity = '0'; setTimeout(function () { flashFusao.remove(); }, 500); }, 220);
+          });
+        });
+        daquiA(1350, function () { almaVoando.remove(); });
+        daquiA(1900, function () { if (callback) callback(); });
+      }
+
+      // Some com a cutscene antiga (fade) enquanto a arena nova (tela
+      // cheia, estilo fighting game) aparece por cima — a partir daqui
+      // o viajante controla o Leyn diretamente. arenaContexto/
+      // arenaControlador ficam guardados no escopo de oNexusResiste
+      // porque aoTerminar (a tecla V de teste) dispara bem depois,
+      // desligado da cadeia de callbacks que chega até aqui.
+      var arenaContexto = null, arenaControlador = null;
+      function transicaoParaArenaLuta() {
+        if (!window.NexusMalikArenaLuta) {
+          // malik-luta-leyn.js não carregou por algum motivo — sem
+          // travar a cutscene por completo, pula pro desfecho de
+          // sempre (sem a luta jogável)
+          malikExpulsoNaArena(null, restauracaoCompleta);
+          return;
+        }
+        var elementosParaApagar = [retrato, nome, hpLinha, linha]; // linha já contém fantasma1+caixa+fantasma2
+        function abrirArenaDeVerdade() {
+          arenaControlador = window.NexusMalikArenaLuta.iniciar({
+            retratoLeynSrc: PASTA_LEYN + 'leyn-retrato.png',
+            retratoMalikSrc: PASTA_MALIK + RETRATO_PAINEL_MALIK, // retrato fixo do painel da arena — antes reaproveitava retrato.src (o que estivesse na tela no fim da cutscene, variável); agora igual o Leyn, que já usa leyn-retrato.png fixo
+            elementosParaApagar: elementosParaApagar,
+            aoRevelar: function (contexto) { arenaContexto = contexto; },
+            aoTerminar: function () {
+              malikExpulsoNaArena(arenaContexto && arenaContexto.malikSprite, function () {
+                if (arenaControlador) arenaControlador.remover();
+                restauracaoCompleta();
+              });
+            }
+          });
+        }
+        // Pedido: a tela de "vs" nova (leyn-contra-malik.html) entra
+        // aqui, no fim desta Etapa 1 (o confronto por turnos que
+        // termina agora), antes da arena de luta 2D abrir de vez. Se
+        // mostrarVsNovo não existir (versão mais antiga de malik-luta-
+        // -leyn.js carregada, sem essa função ainda), não trava a
+        // cutscene — pula direto pra arena, como sempre foi.
+        if (window.NexusMalikArenaLuta.mostrarVsNovo) window.NexusMalikArenaLuta.mostrarVsNovo(abrirArenaDeVerdade);
+        else abrirArenaDeVerdade();
       }
 
       function restauracaoCompleta() {
@@ -1525,12 +1843,27 @@
       daquiA(27000, function () { if (esferaEls.length === 0) esferasChegam(); }); // só dispara aqui se 'esferas' não foi a ação escolhida (senão já aconteceu dentro do bloqueio)
       daquiA(29800, brocaSeSolta);
       daquiA(30700, function () { falarMalik(caixa, 'Sete requisições simultâneas não é ataque. É só mais log pra eu apagar depois.'); });
-      daquiA(35200, mensagemPersonifica);
-      daquiA(38800, leynAparece);
-      daquiA(40600, function () { falarMalik(caixa, '...'); }); // segunda vez sem resposta pronta — a rachadura do ataque já tinha sido a primeira
-      daquiA(41300, observacaoEGolpe);
-      daquiA(44900, malikExpulso); // adiado — o golpe do Leyn agora demora mais (1700ms de guarda + 1400ms de estocada) e precisa terminar antes
-      daquiA(47400, restauracaoCompleta);
+
+      // A partir daqui a sequência cresceu demais (esferas concedendo o
+      // desejo, portal, fusão da alma, arena) pra continuar confiando em
+      // tempos fixos somados — cada etapa encadeia a próxima só quando
+      // termina de verdade (callback), não por um daquiA(tempoAdivinhado).
+      daquiA(35200, function () {
+        mensagemPersonifica();
+        esferasConcedemDesejo(function () {
+          abrirPortalLeyn(function () {
+            leynAparece();
+            daquiA(1700, function () {
+              // segunda vez sem resposta pronta — a rachadura do ataque já tinha sido a primeira
+              falarMalik(caixa, '...', function () {
+                observacaoEGolpe(function () {
+                  fundirAlmaComLeyn(transicaoParaArenaLuta);
+                });
+              });
+            });
+          });
+        });
+      });
       // Sem toque em NexusMalikApagarDeVez em lugar nenhum daqui — esse
       // caminho nunca grava o apagamento permanente.
     }
@@ -1574,6 +1907,7 @@
     // Ganondorf/Rei Demônio estoura os limites de tela em Zelda. É a
     // resposta do jogo pra "e se eu tentasse brigar": medo, não números.
     function surtoDeHPMalik(callback) {
+      trocarPoseMalik(retrato, POSE_POR_FASE.atacar); // braços abertos, glifo em brasa: a reação dele a você tentar brigar
       var rectRetrato = retrato.getBoundingClientRect();
       // moldura recorta exatamente na borda da tela — sem isso, a barra
       // crescendo além da viewport pode virar barra de rolagem horizontal
@@ -1654,6 +1988,7 @@
       modoAtual = 'checkpoint';
       limparProjeteis(); // turno de menu é seguro — nenhum projétil da esquiva anterior atravessa pra cá
       mostrarCaixa(false); // o cubo em si é golpe do M.A.L.I.K. — some pra dar lugar à seleção de ação, como em Undertale
+      trocarPoseMalik(retrato, POSE_POR_FASE.espera); // turno de menu: braços cruzados, ele só espera você escolher
       salvarProgressoAtual();
       falarMalik(caixa, FALAS_MALIK[nFaseConcluida] || '...', function () {
         var resolvido = false, menuAtual = null, timerFallback = null;
@@ -1671,6 +2006,7 @@
           { label: 'Falar', ativo: true, onClick: function () {
               if (timerFallback) clearTimeout(timerFallback);
               if (menuAtual) { menuAtual.remove(); menuAtual = null; }
+              trocarPoseMalik(retrato, POSE_POR_FASE.falar); // mão estendida, explicando pro viajante
               falarMalik(caixa, FALAS_FALAR[nFaseConcluida] || '...', seguir);
             } }
         ], 8000);
@@ -1709,6 +2045,7 @@
           { label: 'Tentar falar com o Malik', ativo: true, onClick: function () {
               resolvido = true; // trava o timer de fundo — a fala ainda vai tocar antes de avancarPara
               if (menuAtual) { menuAtual.remove(); menuAtual = null; }
+              trocarPoseMalik(retrato, POSE_POR_FASE.falar);
               falarMalik(caixa, 'Falar é só uma chamada de função sem retorno. Nada muda porque você pediu educadamente.', function () {
                 resolvido = false; // libera seguirParaClimax de novo, dessa vez pra valer
                 seguirParaClimax('falar');
