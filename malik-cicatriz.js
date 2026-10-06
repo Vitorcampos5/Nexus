@@ -1,37 +1,3 @@
-/* malik-cicatriz.js — o rescaldo do Cenário B.
-   ============================================================
-   Vive só em nexus.html (não em index.html) — as páginas quebradas
-   são um estado do PRÓPRIO nexus, não do confronto em si. Carregado
-   sempre; inerte se não houver nada quebrado (localStorage vazio).
-
-   Cadeia completa (atualizada):
-     1. Viajante clica numa página quebrada -> os Irmãos avisam
-        (window.NexusIrmaosMostrarRedirecionamento, no nexus.html).
-     2. Se a página quebrada for a Triforce especificamente -> o Nexus
-        gasta o que sobrou nele pra abrir um caminho -> abre
-        tloz/visual_novel.html (Lost Woods → Ruínas Perdidas →
-        Hero’s Shade + Twilight Hero, diálogo, escolha, Canção da Cura).
-     3. Sim (dentro do HTML) -> aprende a Canção da Cura -> marca
-        localStorage song_of_healing_aprendida -> volta pro nexus ->
-        toca a canção de verdade -> cura tudo, com cicatriz permanente.
-     4. Não (dentro do HTML) -> silêncio e escurecimento tratados no
-        próprio visual_novel.html -> marca malik_cura_recusada_em ->
-        volta pro nexus -> ESTE arquivo detecta a marca no boot e roda
-        iniciarApagamentoFinal() (30s apagando os elementos reais do
-        nexus.html, um a um, aleatoriamente) -> no fim, chama
-        window.top.NexusMalikApagarDeVez() — o mesmo travamento
-        permanente e sem volta do Cenário A (malik-apagado.js).
-
-   ESTADO DE CURA vs POEIRA (localStorage):
-     - malik_paginas_quebradas  → lista de páginas/objetos em poeira
-     - song_of_healing_aprendida → canção aprendida no visual_novel
-     - malik_nexus_curado        → flag PERMANENTE de nexus curado
-     Ao curar de verdade, ESTE arquivo limpa malik_paginas_quebradas
-     e grava malik_nexus_curado = '1'. O nexus.html DEVE, no boot:
-       1) se malik_nexus_curado === '1' → NÃO reaplicar poeira
-       2) preferir o estado curado sobre qualquer lista de quebradas
-   ============================================================
-*/
 (function () {
   'use strict';
 
@@ -40,8 +6,6 @@
   var CHAVE_NEXUS_CURADO = 'malik_nexus_curado';
   var CHAVE_CURA_RECUSADA = 'malik_cura_recusada_em';
 
-  // tloz/ é irmã deste arquivo e de nexus.html/index.html na raiz —
-  // por isso o caminho relativo desce uma pasta a partir daqui.
   var VISUAL_NOVEL_URL = 'tloz/visual_novel.html';
 
   function lerQuebradas() {
@@ -93,17 +57,7 @@
     } catch (e) {}
   }
 
-  // Restaurada de uma versão anterior deste arquivo (de quando a cena
-  // do Herói-Sombra ainda rodava dentro do próprio nexus.html, antes de
-  // virar tloz/visual_novel.html) — se perdeu na divisão porque dependia
-  // do DOM do nexus ainda estar de pé, e a visual novel já navega pra
-  // longe dele. Restaurada aqui, no único lugar onde os elementos que
-  // ela apaga (os do próprio nexus.html) ainda existem de verdade.
   function iniciarApagamentoFinal() {
-    // Consome a marca já no início — se a página recarregar no meio dos
-    // 30s, não repete a animação inteira de novo (o Nexus já devia ter
-    // travado por conta do malik-apagado.js antes disso acontecer, mas
-    // é uma rede de segurança).
     try { localStorage.removeItem(CHAVE_CURA_RECUSADA); } catch (e) {}
 
     var DURACAO_MS = 30000;
@@ -141,17 +95,10 @@
     requestAnimationFrame(passo);
   }
 
-  // Se o nexus JÁ está curado, limpa residual de poeira em todo load
-  // (evita o bug do refresh voltando tudo para poeira).
   if (nexusJaCurado()) {
     limparQuebradas();
   }
 
-  // Recusou a cura na visual novel (Não): a partir daqui o Nexus se
-  // apaga de vez, sobre os elementos DE VERDADE desta página — por
-  // isso isto só podia voltar a existir aqui (em nexus.html), não na
-  // visual novel, que já não tem mais o nexus carregado quando chega
-  // nesse ponto.
   if (curaRecusada()) {
     iniciarApagamentoFinal();
     return;
@@ -180,9 +127,6 @@
       var triforceJaRestaurada = false;
       try { triforceJaRestaurada = localStorage.getItem('malik_triforce_restaurada') === '1'; } catch (e) {}
       if (triforceJaRestaurada) {
-        // Já restaurou antes — não repete a animação, só abre a visual
-        // novel de novo (ela decide sozinha, pelo malik_heroi_sombra_visto,
-        // se mostra a Lost Woods inteira ou só a visita repetida).
         abrirVisualNovel();
       } else if (window.NexusRestaurarUmTriangulo) {
         window.NexusRestaurarUmTriangulo(function () {
@@ -307,7 +251,6 @@
       document.removeEventListener('touchstart', aoToqueInicio);
       document.removeEventListener('touchend', aoToqueFim);
 
-      // CURA PERMANENTE prevalece sobre a poeira
       marcarNexusCurado();
 
       var aviso = el(
@@ -351,7 +294,6 @@
     ativarEscutaDaCura();
   }
 
-  // Helpers para o nexus.html consultar / forçar o estado
   window.NexusMalikEstaCurado = nexusJaCurado;
   window.NexusMalikMarcarCurado = marcarNexusCurado;
   window.NexusMalikLimparQuebradas = limparQuebradas;
