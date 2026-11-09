@@ -28,7 +28,8 @@
   var MALIK_GESTO_DURACAO_MIN_MS = 1300;
   var MALIK_GESTO_DURACAO_MAX_MS = 2000;
 
-  var LEYN_SOCO_DIM = [[301, 457], [352, 468], [462, 451], [458, 457], [347, 462]];
+  var LEYN_SOCO_DIM = [[505, 620], [664, 620], [772, 620], [824, 620], [509, 620]];
+  var LEYN_SOCO_PIVO_X = 332;
   var MALIK_MIRA_DIM = [[331, 559], [351, 542], [366, 520], [433, 561], [366, 684]];
   var MALIK_VORTICE_DIM = [[297, 578], [361, 545], [352, 550], [438, 600], [415, 637]];
 
@@ -238,10 +239,19 @@
     });
   }
 
-  function mostrarQuadroAvulso(sprite, pasta, nomeBase, indice1based, dimensoesNaturais, alturaAlvo) {
+  function metadeLarguraIdleLeyn(alturaAlvo) {
+    return (LEYN_IDLE_LARG_NATURAL / LEYN_IDLE_QUADROS) * (alturaAlvo / LEYN_IDLE_ALT_NATURAL) / 2;
+  }
+
+  function mostrarQuadroAvulso(sprite, pasta, nomeBase, indice1based, dimensoesNaturais, alturaAlvo, pivoX) {
     var dim = dimensoesNaturais[indice1based - 1];
     var escala = alturaAlvo / dim[1];
     var larguraEscalada = dim[0] * escala;
+    if (pivoX !== undefined) {
+      var margem = metadeLarguraIdleLeyn(alturaAlvo) - pivoX * escala;
+      sprite.style.marginLeft = margem + 'px';
+      sprite.style.transformOrigin = (pivoX * escala) + 'px 50%';
+    }
     sprite.style.backgroundImage = "url('" + pasta + nomeBase + (indice1based < 10 ? '0' + indice1based : indice1based) + ".png')";
     sprite.style.backgroundRepeat = 'no-repeat';
     sprite.style.backgroundPosition = '0 0';
@@ -279,6 +289,8 @@
     elemento.style.backgroundPosition = '0 0';
     elemento.style.width = largQuadro + 'px';
     elemento.style.height = alturaAlvo + 'px';
+    elemento.style.marginLeft = '';
+    elemento.style.transformOrigin = '';
     return tocarTiraComTempo(elemento, largQuadro, LEYN_IDLE_QUADROS, LEYN_IDLE_DURACOES_MS);
   }
 
@@ -454,9 +466,10 @@
 
     function hitboxGolpe() {
       var r = leynEl.getBoundingClientRect();
-      return olhandoDireita
-        ? { left: r.right, right: r.right + LEYN_GOLPE_ALCANCE_PX, top: r.top, bottom: r.bottom }
-        : { left: r.left - LEYN_GOLPE_ALCANCE_PX, right: r.left, top: r.top, bottom: r.bottom };
+      if (olhandoDireita) return { left: r.right, right: r.right + LEYN_GOLPE_ALCANCE_PX, top: r.top, bottom: r.bottom };
+      var pivo = r.left + metadeLarguraIdleLeyn(leynEl.alturaAlvo);
+      var ponta = pivo - (r.right - pivo);
+      return { left: ponta - LEYN_GOLPE_ALCANCE_PX, right: ponta, top: r.top, bottom: r.bottom };
     }
     function sobrepoe(a, b) {
       return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
@@ -488,7 +501,7 @@
         var indiceQuadro = Math.min(4, Math.floor(decorrido / golpeInfo.msPorQuadro));
         if (indiceQuadro !== quadroGolpeAtual) {
           quadroGolpeAtual = indiceQuadro;
-          if (sprite && leynEl.alturaAlvo) mostrarQuadroAvulso(sprite, PASTA_LEYN, 'leyn-soco-', quadroGolpeAtual + 1, LEYN_SOCO_DIM, leynEl.alturaAlvo);
+          if (sprite && leynEl.alturaAlvo) mostrarQuadroAvulso(sprite, PASTA_LEYN, 'leyn-soco-', quadroGolpeAtual + 1, LEYN_SOCO_DIM, leynEl.alturaAlvo, LEYN_SOCO_PIVO_X);
         }
         if (!jaAcertouEsseGolpe && malikEl &&
             quadroGolpeAtual >= LEYN_GOLPE_QUADRO_ATIVO_MIN && quadroGolpeAtual <= LEYN_GOLPE_QUADRO_ATIVO_MAX &&

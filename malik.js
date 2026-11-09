@@ -1,9 +1,24 @@
-
-            (function () {
+(function () {
               'use strict';
 
               var CHAVE_PROGRESSO_BATALHA = 'malik_batalha_progresso';
               var CHAVE_SESSAO_BATALHA = 'malik_sessao_batalha_ativa';
+
+              // Se a batalha foi retomada depois de um reload, a progressão do evento
+              // nunca chega a ser criada (o return abaixo sai antes). Sem isto, vencer o
+              // Cenário B nessa situação não gravava "resolvido" e o evento recomeçava.
+              // Quando a progressão existe, ela troca este atalho pela restauração completa.
+              var restaurarTudoCompleto = null;
+              window.NexusMalikRestaurarAgora = function () {
+                if (restaurarTudoCompleto) { restaurarTudoCompleto(true); return; }
+                if (/[?&]malikTeste=1\b/.test(location.search)) return;
+                try { localStorage.setItem('malik_resolvido_em', new Date().toISOString()); } catch (e) {}
+                try {
+                  var frameResolvido = document.getElementById('nexusFrame');
+                  if (frameResolvido && frameResolvido.contentWindow) frameResolvido.contentWindow.location.reload();
+                } catch (e) {}
+              };
+
 
               var progressoPendente = null;
               try {
@@ -31,6 +46,8 @@
                 return;
               }
 
+             // Valor padrão (usado pelos modos de teste que saem cedo). Quando o despertar
+             // pessoal entra em cena, mais abaixo, esta data é substituída pela do viajante.
              var DATA_DESPERTAR = { dia: '30', mes: '10', hora: '13', minuto: '00' };
              window.NexusMalikDataDespertar = DATA_DESPERTAR;
 
@@ -107,19 +124,52 @@
                return;
              }
 
-             var hoje = new Date();
-             var alvoDespertar = new Date(hoje.getFullYear(), parseInt(DATA_DESPERTAR.mes, 10) - 1, parseInt(DATA_DESPERTAR.dia, 10), parseInt(DATA_DESPERTAR.hora, 10) || 0, parseInt(DATA_DESPERTAR.minuto, 10) || 0, 0);
-             var ehODia = modoTeste || (hoje.getTime() >= alvoDespertar.getTime());
-             if (!ehODia) {
-               var MAX_ESPERA_MS = 20 * 24 * 60 * 60 * 1000;
-               (function agendarEspera(msRestantes) {
-                 if (msRestantes > MAX_ESPERA_MS) {
-                   setTimeout(function () { agendarEspera(msRestantes - MAX_ESPERA_MS); }, MAX_ESPERA_MS);
-                 } else {
-                   setTimeout(function () { location.reload(); }, Math.max(0, msRestantes));
-                 }
-               })(alvoDespertar.getTime() - hoje.getTime());
-               return;
+             // ═══ Despertar pessoal ═══
+             // Antes o Malik acordava para todo mundo numa data fixa. Agora cada viajante
+             // tem o seu momento: ele acorda quando o viajante está PRONTO (as 3 peças:
+             // sagas de Valtheris, esferas e fragmentos da Canção da Tempestade) ou, se
+             // essa hora nunca chegar, PRAZO_PESSOAL_DIAS dias depois da primeira visita.
+             // A linha do tempo do evento (2/7/14/21/30 min) conta a partir do instante
+             // em que ele acorda, então cada um vive o evento inteiro ao vivo.
+             var CHAVE_PRIMEIRA_VISITA = 'malik_primeira_visita';
+             var CHAVE_DESPERTAR_PESSOAL = 'malik_despertar_pessoal_em';
+             var PRAZO_PESSOAL_DIAS = 30;
+             var INTERVALO_VIGIA_MS = 5000;
+             var DIA_MS = 24 * 60 * 60 * 1000;
+             var prazoForcado = /[?&]prazoVencido=1\b/.test(location.search);
+
+             var acordou = false;
+             var vigiaDespertar = null;
+             var alvoDespertar = null;
+             var prazoMs = 0;
+
+             function lerMs(chave) {
+               try {
+                 var bruto = localStorage.getItem(chave);
+                 if (!bruto) return null;
+                 var n = /^\d+$/.test(bruto) ? parseInt(bruto, 10) : Date.parse(bruto);
+                 return (isFinite(n) && n > 0) ? n : null;
+               } catch (e) { return null; }
+             }
+
+             function gravarMs(chave, ms) {
+               try { localStorage.setItem(chave, String(ms)); } catch (e) {}
+             }
+
+             function doisDigitos(n) { return (n < 10 ? '0' : '') + n; }
+
+             // Mesmo formato de sempre ({dia, mes, hora, minuto} em texto) para quem já
+             // lê window.NexusMalikDataDespertar (ex.: contagem dos tubos nixie).
+             function publicarData(d) {
+               window.NexusMalikDataDespertar = {
+                 dia: doisDigitos(d.getDate()),
+                 mes: doisDigitos(d.getMonth() + 1),
+                 hora: doisDigitos(d.getHours()),
+                 minuto: doisDigitos(d.getMinutes()),
+                 ano: String(d.getFullYear()),
+                 timestamp: d.getTime(),
+                 pessoal: true
+               };
              }
 
              var CHAVE_RESOLVIDO = 'malik_resolvido_em';
@@ -486,19 +536,94 @@
      }
    }
 
-   window.NexusMalikRestaurarAgora = function () { restaurarTudo(true); };
+
+   // Atalho do topo passa a usar a restauração completa (esta função existe só
+   // depois que o evento passou a rodar de verdade).
+   restaurarTudoCompleto = restaurarTudo;
 
    function aoCarregarIframe() {
+     if (!acordou) return;
      if (!progressaoIniciada) {
        progressaoIniciada = true;
        agendarProgressao();
      } else if (nivelMaisAlto >= 0) {
-      corromperDocumentoInterno(NIVEIS[nivelMaisAlto]);
-    }
-  }
-  frame.addEventListener('load', aoCarregarIframe);
-  try {
-    if (frame.contentDocument && frame.contentDocument.readyState === 'complete') aoCarregarIframe();
-  } catch (e) {}
-})();
+       corromperDocumentoInterno(NIVEIS[nivelMaisAlto]);
+     }
+   }
 
+   // O 'load' do iframe pode passar enquanto o Malik ainda dorme (ele só acorda
+   // quando o viajante fica pronto, às vezes minutos depois). Por isso o 'load' é
+   // registrado desde já e lembrado; o readyState só cobre o caso de o iframe ter
+   // terminado de carregar antes deste script rodar.
+   var iframeCarregou = false;
+
+   function iframeJaCarregou() {
+     if (iframeCarregou) return true;
+     try {
+       var d = frame.contentDocument;
+       return !!(d && d.readyState === 'complete' && frame.contentWindow.location.href !== 'about:blank');
+     } catch (e) { return false; }
+   }
+
+   function jaResolvidoAgora() {
+     try { return !!localStorage.getItem(CHAVE_RESOLVIDO); } catch (e) { return false; }
+   }
+
+   function despertarAgora(momentoMs) {
+     acordou = true;
+     if (vigiaDespertar) { clearInterval(vigiaDespertar); vigiaDespertar = null; }
+     window.removeEventListener('storage', conferirDespertar);
+     alvoDespertar = new Date(Math.min(momentoMs, Date.now()));
+     publicarData(alvoDespertar);
+     // O 'load' do iframe pode já ter passado enquanto o Malik dormia.
+     if (iframeJaCarregou()) aoCarregarIframe();
+   }
+
+   function conferirDespertar() {
+     if (acordou) return;
+     if (jaResolvidoAgora()) {
+       // Outra aba já encerrou o evento por este viajante.
+       if (vigiaDespertar) { clearInterval(vigiaDespertar); vigiaDespertar = null; }
+       window.removeEventListener('storage', conferirDespertar);
+       return;
+     }
+     var momento = lerMs(CHAVE_DESPERTAR_PESSOAL);
+     if (momento === null) {
+       if (Date.now() < prazoMs && !viajantePreparado()) return;
+       momento = Date.now();
+       gravarMs(CHAVE_DESPERTAR_PESSOAL, momento);
+     }
+     despertarAgora(momento);
+   }
+
+   function iniciarEspera() {
+     var agora = Date.now();
+     var primeira = lerMs(CHAVE_PRIMEIRA_VISITA);
+     if (primeira === null || primeira > agora) { primeira = agora; gravarMs(CHAVE_PRIMEIRA_VISITA, primeira); }
+     var prazoReal = primeira + PRAZO_PESSOAL_DIAS * DIA_MS;
+     prazoMs = prazoForcado ? 0 : prazoReal;
+     publicarData(new Date(prazoReal));
+     conferirDespertar();
+     if (!acordou && !jaResolvidoAgora()) {
+       // Vigia: o viajante pode completar as 3 peças com a página aberta. O evento
+       // 'storage' avisa na hora quando outro documento (o próprio iframe) grava;
+       // o intervalo é a rede de segurança.
+       vigiaDespertar = setInterval(conferirDespertar, INTERVALO_VIGIA_MS);
+       window.addEventListener('storage', conferirDespertar);
+     }
+   }
+
+   frame.addEventListener('load', function () {
+     iframeCarregou = true;
+     aoCarregarIframe();
+   });
+
+   if (modoTeste) {
+     // ?malikTeste=1&minuto=N pula a espera pessoal e não grava nada.
+     acordou = true;
+     alvoDespertar = new Date();
+     if (iframeJaCarregou()) aoCarregarIframe();
+   } else {
+     iniciarEspera();
+   }
+})();

@@ -1277,10 +1277,17 @@
         if (fantasma1) fantasma1.style.opacity = '.45';
         if (fantasma2) fantasma2.style.opacity = '.45';
 
+        function compensarLayoutLeyn(larguraCelula) {
+          var m = (1119 * (ALTURA_LEYN / 1405) - larguraCelula) / 2;
+          leynEl.style.marginLeft = m + 'px';
+          leynEl.style.marginRight = m + 'px';
+        }
+
         function golpe(acertaDeVez, aoTerminarGolpe) {
           if (leynEl) {
             if (leynAnimacaoAtual) leynAnimacaoAtual.cancel();
-            var tocarAtaque = prepararTiraSprite(leynEl, 'leyn-estocada.png', 1536, 320, 5, ALTURA_LEYN);
+            var tocarAtaque = prepararTiraSprite(leynEl, 'leyn-estocada.png', 3400, 493, 5, ALTURA_LEYN);
+            compensarLayoutLeyn(3400 / 5 * (ALTURA_LEYN / 493));
             leynAnimacaoAtual = tocarAtaque(1400, false);
           }
           flashDeGolpe();
@@ -1298,6 +1305,8 @@
           if (leynEl) {
             if (leynAnimacaoAtual) leynAnimacaoAtual.cancel();
             var tocarParado = prepararTiraSprite(leynEl, 'leyn-retrato.png', 1119, 1405, 1, ALTURA_LEYN);
+            leynEl.style.marginLeft = '';
+            leynEl.style.marginRight = '';
             leynAnimacaoAtual = tocarParado(900, true);
           }
           daquiA(500, aoTerminarGuarda);
