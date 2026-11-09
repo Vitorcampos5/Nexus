@@ -728,8 +728,23 @@
   renderizar();
 
   // ---- abrir / fechar o mapa ----
+  // Só abre quando chamado de dentro da Estação Nexus — antes abria (via
+  // Ctrl+Shift+M ou o botão) de qualquer página do Nexus, mas o mapa
+  // agora é uma função exclusiva do quadro lá dentro da nave. "Dentro da
+  // nave" = qualquer sala da pasta Nave/ (mirante_da_proa, salao_das_esferas,
+  // estacao_interior...), exceto o exterior (estacao_nexus.html), que é só a
+  // casca vista de fora. Casar pela pasta, e não por um nome de arquivo,
+  // evita ter que editar isto toda vez que uma sala nova nasce.
+  function paginaEhEstacao() {
+    try {
+      var url = frameEl && frameEl.contentWindow && frameEl.contentWindow.location.href;
+      if (!url) return false;
+      return /\/Nave\//i.test(url) && !/estacao_nexus\.html/i.test(url);
+    } catch (erro) { return false; } // cross-origin (não deveria acontecer aqui) — por segurança, nega
+  }
   function alternarMapa(mostrar){
     var deveMostrar = typeof mostrar === 'boolean' ? mostrar : overlay.hidden;
+    if (deveMostrar && !paginaEhEstacao()) return;
     overlay.hidden = !deveMostrar;
     if (btnAbrirMapa) btnAbrirMapa.hidden = deveMostrar;
     if (deveMostrar) {
