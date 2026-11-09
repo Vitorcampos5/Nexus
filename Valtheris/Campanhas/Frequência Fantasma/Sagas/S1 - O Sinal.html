@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frequência Fantasma — O Sinal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #070605;
+    --bg-deep:        #0f0d0a;
+    --bg-chamber:     #15120e;
+    --bg-card:        #1d1a14;
+    --bg-card-alt:    #191611;
+
+
+    --ink:            #f8cf92;
+    --ink-dim:        #f19d1f;
+    --ink-faint:      #935c09;
+
+    --blood:          #941410;
+    --blood-bright:   #d41d18;
+    --blood-glow:     #ff4640;
+
+    --silver:         #f8ce90;
+    --silver-dim:     #837666;
+    --rune-blue:      #f09a18;
+    --rune-glow:      #f6be6b;
+
+    --gold:           #f09815;
+    --gold-bright:    #f3ab40;
+
+    --sanity-color:   #f19d1e;
+    --sanity-dim:     #ac6c0b;
+    --sanity-glow:    #f9d8a6;
+
+    --cosmic:         #7d4e08;
+    --cosmic-glow:    #f1a12a;
+    --cosmic-text:    #f8d196;
+
+    --success:        #a1650a;
+    --success-bright: #ec940f;
+    --fail:           #9a1511;
+    --fail-bright:    #d41d18;
+    --crit-success:   #8b5709;
+    --crit-fail:      #6a0f0c;
+
+    --border-subtle:  rgba(255,255,255,0.04);
+    --border-dim:     rgba(255,255,255,0.08);
+    --border-gold:    rgba(240,152,21,0.3);
+    --border-blood:   rgba(148,20,16,0.4);
+    --border-rune:    rgba(240,154,24,0.35);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-void);
+    color: var(--ink);
+    font-family:'Source Serif 4',Georgia,serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  /* ── LAYOUT WRAPPER ── */
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2rem 8rem;
+  }
+
+  /* ══════════════════════════════════════════
+     COVER / MASTHEAD
+  ══════════════════════════════════════════ */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 40%, rgba(148,20,16,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 50% 100%, rgba(240,154,24,0.06) 0%, transparent 60%);
+  }
+
+  .cover-eyebrow {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--silver-dim);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .cover-numeral {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: clamp(5rem, 18vw, 11rem);
+    font-weight: 900;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(148,20,16,0.5);
+    background: linear-gradient(180deg, rgba(148,20,16,0.3) 0%, transparent 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    margin-bottom: -0.1em;
+    opacity: 0;
+    animation: fadeUp 1s 0.5s forwards;
+    user-select: none;
+  }
+
+  .cover-divider {
+    width: 100%;
+    max-width: 500px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--blood) 30%, var(--blood) 70%, transparent);
+    margin: 1.5rem auto;
+    position: relative;
+    opacity: 0;
+    animation: fadeIn 1s 0.9s forwards;
+  }
+
+  .cover-divider::before,
+  .cover-divider::after {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--blood);
+    font-size: 0.6rem;
+  }
+  .cover-divider::before { left: calc(30% - 8px); }
+  .cover-divider::after  { right: calc(30% - 8px); }
+
+  .cover-title {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: clamp(1.4rem, 4vw, 2.4rem);
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    line-height: 1.3;
+    margin: 1rem 0 0.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.7s forwards;
+    text-shadow: 0 0 40px rgba(148,20,16,0.4);
+  }
+
+  .cover-subtitle {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.9rem;
+    letter-spacing: 0.3em;
+    color: var(--silver-dim);
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 1s forwards;
+  }
+
+  .cover-scroll-hint {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeIn 1.5s 2s forwards;
+  }
+
+  .cover-scroll-hint span {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(180deg, var(--ink-faint), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ══════════════════════════════════════════
+     CHAPTER SECTIONS
+  ══════════════════════════════════════════ */
+  .chapter {
+    margin-top: 6rem;
+    padding-top: 2rem;
+  }
+
+  .chapter-header {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .chapter-number {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: var(--blood);
+    line-height: 1;
+    min-width: 2ch;
+    text-align: right;
+    text-shadow: 0 0 20px rgba(212,29,24,0.3);
+    flex-shrink: 0;
+  }
+
+  .chapter-title-block {
+    flex: 1;
+  }
+
+  .chapter-title {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    line-height: 1.2;
+  }
+
+  .chapter-rule {
+    height: 1px;
+    background: linear-gradient(90deg, var(--blood) 0%, rgba(148,20,16,0.15) 100%);
+    margin-top: 0.5rem;
+  }
+
+  /* ══════════════════════════════════════════
+     PROSE
+  ══════════════════════════════════════════ */
+  .prose {
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.9;
+    margin-bottom: 1.8rem;
+  }
+
+  .prose p { margin-bottom: 1.2em; }
+  .prose p:last-child { margin-bottom: 0; }
+
+  .prose strong {
+    font-weight: 600;
+    color: #faddb2;
+  }
+
+  .prose em {
+    font-style: italic;
+    color: var(--ink-dim);
+  }
+
+  /* Drop cap for first paragraph of each chapter */
+  .prose.with-dropcap p:first-child::first-letter {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 4.5em;
+    font-weight: 900;
+    float: left;
+    line-height: 0.75;
+    margin: 0.1em 0.1em -0.05em 0;
+    color: var(--blood);
+    text-shadow: 0 0 20px rgba(212,29,24,0.4);
+  }
+
+  /* ══════════════════════════════════════════
+     DICE ROLL BLOCKS
+  ══════════════════════════════════════════ */
+  .roll-block {
+    margin: 2rem 0;
+    border-left: 3px solid var(--rune-blue);
+    background: linear-gradient(135deg, rgba(240,154,24,0.05) 0%, rgba(11,10,8,0.6) 100%);
+    border-radius: 0 6px 6px 0;
+    padding: 1.2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .roll-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 3px;
+    background: var(--rune-blue);
+    box-shadow: 0 0 12px var(--rune-glow);
+  }
+
+  .roll-block.success {
+    border-left-color: var(--success-bright);
+    background: linear-gradient(135deg, rgba(161,101,10,0.07) 0%, rgba(11,10,8,0.6) 100%);
+  }
+  .roll-block.success::before { background: var(--success-bright); box-shadow: 0 0 12px var(--success-bright); }
+
+  .roll-block.fail {
+    border-left-color: var(--fail-bright);
+    background: linear-gradient(135deg, rgba(154,21,17,0.09) 0%, rgba(11,10,8,0.6) 100%);
+  }
+  .roll-block.fail::before { background: var(--fail-bright); box-shadow: 0 0 12px rgba(212,29,24,0.5); }
+
+  .roll-block.crit-success {
+    border-left-color: var(--rune-glow);
+    background: linear-gradient(135deg, rgba(139,87,9,0.12) 0%, rgba(11,10,8,0.6) 100%);
+  }
+  .roll-block.crit-success::before { background: var(--rune-glow); box-shadow: 0 0 18px var(--rune-glow); }
+
+  .roll-block.crit-fail {
+    border-left-color: #8b0400;
+    background: linear-gradient(135deg, rgba(106,15,12,0.15) 0%, rgba(11,10,8,0.6) 100%);
+  }
+  .roll-block.crit-fail::before { background: #8b0400; box-shadow: 0 0 18px rgba(139,4,0,0.7); }
+
+  .roll-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.6rem;
+  }
+
+  .roll-name {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--silver);
+  }
+
+  .roll-formula {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: var(--ink-dim);
+  }
+
+  .roll-result-line {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .roll-dice {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .roll-block.success    .roll-dice { color: var(--success-bright); }
+  .roll-block.fail       .roll-dice { color: var(--fail-bright); }
+  .roll-block.crit-success .roll-dice { color: var(--rune-glow); text-shadow: 0 0 12px var(--rune-glow); }
+  .roll-block.crit-fail  .roll-dice { color: #ff2720; text-shadow: 0 0 14px rgba(255,39,32,0.5); }
+
+  .roll-verdict {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 0.25em 0.8em;
+    border-radius: 2px;
+  }
+
+  .roll-block.success    .roll-verdict { background: rgba(161,101,10,0.2); color: var(--success-bright); border: 1px solid rgba(236,148,15,0.3); }
+  .roll-block.fail       .roll-verdict { background: rgba(154,21,17,0.2); color: var(--fail-bright);    border: 1px solid rgba(212,29,24,0.3); }
+  .roll-block.crit-success .roll-verdict { background: rgba(139,87,9,0.2); color: var(--rune-glow);   border: 1px solid rgba(246,190,107,0.4); }
+  .roll-block.crit-fail  .roll-verdict { background: rgba(106,15,12,0.3);  color: #ff4640;              border: 1px solid rgba(255,39,32,0.3); }
+
+  /* ══════════════════════════════════════════
+     STAT TRACKERS
+  ══════════════════════════════════════════ */
+  .tracker-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: 2rem 0;
+  }
+
+  .tracker {
+    flex: 1;
+    min-width: 180px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tracker.hp-tracker { border-color: var(--border-blood); }
+  .tracker.sanity-tracker { border-color: rgba(241,157,30,0.25); }
+
+  .tracker-label {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.4rem;
+  }
+
+  .tracker-values {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+  }
+
+  .tracker-current {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 2rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .hp-tracker .tracker-current { color: var(--blood-bright); text-shadow: 0 0 12px rgba(212,29,24,0.3); }
+  .sanity-tracker .tracker-current { color: var(--sanity-color); text-shadow: 0 0 12px rgba(241,157,30,0.3); }
+
+  .tracker-slash {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 1.2rem;
+    color: var(--ink-faint);
+  }
+
+  .tracker-max {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 1rem;
+    color: var(--ink-dim);
+  }
+
+  .tracker-bar {
+    margin-top: 0.7rem;
+    height: 3px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .tracker-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  .hp-tracker .tracker-fill { background: linear-gradient(90deg, var(--blood), var(--blood-bright)); }
+  .sanity-tracker .tracker-fill { background: linear-gradient(90deg, var(--sanity-dim), var(--sanity-color)); }
+
+  .tracker-delta {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    margin-top: 0.3rem;
+  }
+
+  /* ══════════════════════════════════════════
+     COMBAT BLOCK
+  ══════════════════════════════════════════ */
+  .combat-block {
+    margin: 2.5rem 0;
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border-blood);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .combat-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--blood-bright), transparent);
+  }
+
+  .combat-header {
+    padding: 0.9rem 1.5rem;
+    background: rgba(148,20,16,0.12);
+    border-bottom: 1px solid var(--border-blood);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .combat-icon {
+    font-size: 1rem;
+    color: var(--blood-bright);
+  }
+
+  .combat-title {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--silver-dim);
+  }
+
+  .combat-body {
+    padding: 1.2rem 1.5rem;
+  }
+
+  .initiative-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .initiative-badge {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.3em 0.8em;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+
+  .initiative-badge.player  { color: var(--gold-bright); border-color: rgba(243,171,64,0.3); background: rgba(240,152,21,0.08); }
+  .initiative-badge.monster { color: var(--fail-bright); border-color: rgba(212,29,24,0.3);  background: rgba(154,21,17,0.1); }
+
+  .initiative-value {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--gold);
+  }
+
+  .initiative-label {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    color: var(--ink-dim);
+    font-size: 0.95rem;
+  }
+
+  /* ══════════════════════════════════════════
+     WHISPERS / COSMIC HORROR
+  ══════════════════════════════════════════ */
+  .whisper-block {
+    margin: 2rem 0;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba(125,78,8,0.06) 0%, rgba(17,15,11,0.8) 100%);
+    border: 1px solid rgba(241,161,42,0.15);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .whisper-block::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 50% 50%, rgba(241,161,42,0.03), transparent 70%);
+    animation: cosmicPulse 6s ease-in-out infinite;
+  }
+
+  .whisper-label {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: rgba(241,161,42,0.5);
+    margin-bottom: 0.8rem;
+  }
+
+  .whisper-line {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    color: var(--cosmic-text);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    opacity: 0.85;
+  }
+
+  .whisper-line::before {
+    content: '"';
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 2rem;
+    color: rgba(241,161,42,0.3);
+    line-height: 0;
+    vertical-align: -0.5em;
+    margin-right: 0.1em;
+  }
+
+  /* ══════════════════════════════════════════
+     VISION / MEMORY BLOCK
+  ══════════════════════════════════════════ */
+  .vision-block {
+    margin: 2rem 0;
+    padding: 1.5rem 1.8rem;
+    background: rgba(19,17,13,0.7);
+    border-left: 2px solid var(--sanity-dim);
+    border-top: 1px solid rgba(241,157,30,0.15);
+    border-bottom: 1px solid rgba(241,157,30,0.15);
+    position: relative;
+  }
+
+  .vision-label {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--sanity-dim);
+    margin-bottom: 0.8rem;
+  }
+
+  .vision-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .vision-list li {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    color: rgba(249,216,166,0.75);
+    font-size: 0.98rem;
+    padding-left: 1.2rem;
+    position: relative;
+  }
+
+  .vision-list li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    font-size: 0.45rem;
+    color: var(--sanity-dim);
+    top: 0.55em;
+  }
+
+  /* ══════════════════════════════════════════
+     DIALOGUE BLOCK
+  ══════════════════════════════════════════ */
+  .dialogue {
+    margin: 1.5rem 0;
+    padding: 1.2rem 1.5rem;
+    background: rgba(255,255,255,0.02);
+    border-left: 2px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+  }
+
+  .dialogue.creature,.dialogue.npc {
+    border-left-color: var(--blood-bright);
+    background: rgba(148,20,16,0.06);
+  }
+
+  .dialogue.cultist {
+    border-left-color: var(--cosmic-glow);
+    background: rgba(125,78,8,0.06);
+  }
+
+  .dialogue.leyn {
+    border-left-color: var(--silver);
+    background: rgba(248,206,144,0.04);
+  }
+
+  .dialogue.aberration {
+    border-left-color: var(--sanity-color);
+    background: rgba(241,157,30,0.05);
+  }
+
+  .dialogue.gm {
+    border-left-color: var(--gold);
+    background: linear-gradient(135deg, rgba(240,152,21,0.04) 0%, rgba(11,10,8,0.3) 100%);
+    padding: 1.3rem 1.6rem;
+  }
+
+  .dialogue.gm .dialogue-speaker {
+    color: var(--gold);
+    letter-spacing: 0.4em;
+  }
+
+  .dialogue.gm .dialogue-text {
+    font-style: normal;
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.9;
+  }
+
+  .dialogue.gm .dialogue-text p {
+    margin-bottom: 1.1em;
+  }
+
+  .dialogue.gm .dialogue-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .dialogue.gm .dialogue-text strong {
+    font-weight: 600;
+    color: #faddb2;
+  }
+
+  .dialogue.gm .dialogue-text em {
+    font-style: italic;
+    color: var(--ink-dim);
+  }
+
+  /* drop cap inside GM narration block */
+  .dialogue.gm.with-dropcap .dialogue-text p:first-child::first-letter {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 4.5em;
+    font-weight: 900;
+    float: left;
+    line-height: 0.75;
+    margin: 0.1em 0.1em -0.05em 0;
+    color: var(--blood);
+    text-shadow: 0 0 20px rgba(212,29,24,0.4);
+  }
+
+  .dialogue-speaker {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .dialogue.creature,.dialogue.npc .dialogue-speaker  { color: var(--blood-bright); }
+  .dialogue.cultist  .dialogue-speaker  { color: var(--cosmic-glow); }
+  .dialogue.leyn     .dialogue-speaker  { color: var(--silver); }
+  .dialogue.aberration .dialogue-speaker { color: var(--sanity-color); }
+
+  .dialogue-text {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* ══════════════════════════════════════════
+     SECTION DIVIDER
+  ══════════════════════════════════════════ */
+  .scene-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem 0 2.5rem;
+  }
+
+  .scene-divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ink-faint));
+  }
+
+  .scene-divider-line:last-child {
+    background: linear-gradient(90deg, var(--ink-faint), transparent);
+  }
+
+  .scene-divider-glyph {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  /* ══════════════════════════════════════════
+     LORE CALLOUT
+  ══════════════════════════════════════════ */
+  .lore-callout {
+    margin: 2rem 0;
+    padding: 1.4rem 1.8rem;
+    background: linear-gradient(135deg, rgba(240,152,21,0.05) 0%, transparent 80%);
+    border: 1px solid var(--border-gold);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .lore-callout::before {
+    content: '✦';
+    position: absolute;
+    top: -0.5em;
+    left: 1.5rem;
+    background: var(--bg-void);
+    padding: 0 0.4em;
+    color: var(--gold);
+    font-size: 0.7rem;
+  }
+
+  .lore-title {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+  }
+
+  .lore-text {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    color: var(--ink-dim);
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+
+  /* ══════════════════════════════════════════
+     DEATH SAVE BLOCK
+  ══════════════════════════════════════════ */
+  .death-save {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(106,15,12,0.2) 0%, rgba(11,10,8,0.8) 100%);
+    border: 1px solid rgba(139,4,0,0.5);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .death-save::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 100%, rgba(212,29,24,0.08), transparent 70%);
+    animation: deathPulse 3s ease-in-out infinite;
+  }
+
+  .death-save-title {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #ff2720;
+    margin-bottom: 0.8rem;
+    position: relative;
+  }
+
+  .death-save-dots {
+    display: flex;
+    gap: 0.5rem;
+    position: relative;
+  }
+
+  .death-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(139,4,0,0.6);
+  }
+
+  .death-dot.filled {
+    background: var(--blood-bright);
+    border-color: var(--blood-bright);
+    box-shadow: 0 0 8px rgba(212,29,24,0.5);
+  }
+
+  .death-dot.empty {
+    background: transparent;
+  }
+
+  /* ══════════════════════════════════════════
+     REVELATION BLOCK (Intuição crítica)
+  ══════════════════════════════════════════ */
+  .revelation-block {
+    margin: 2rem 0;
+    padding: 1.5rem 1.8rem;
+    background: linear-gradient(160deg, rgba(240,154,24,0.08) 0%, rgba(11,10,8,0.6) 100%);
+    border: 1px solid var(--border-rune);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .revelation-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--rune-blue), transparent);
+    box-shadow: 0 0 8px var(--rune-glow);
+  }
+
+  .revelation-label {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--rune-blue);
+    margin-bottom: 0.8rem;
+  }
+
+  .revelation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    list-style: none;
+    counter-reset: revelation;
+  }
+
+  .revelation-list li {
+    counter-increment: revelation;
+    padding-left: 2.2rem;
+    position: relative;
+    font-size: 0.98rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  .revelation-list li::before {
+    content: counter(revelation);
+    position: absolute;
+    left: 0;
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--rune-blue);
+    background: rgba(240,154,24,0.15);
+    border: 1px solid rgba(240,154,24,0.2);
+    border-radius: 2px;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0.2em;
+  }
+
+  /* ══════════════════════════════════════════
+     FINAL MOMENT
+  ══════════════════════════════════════════ */
+  .finale-block {
+    margin: 3rem 0 0;
+    text-align: center;
+    padding: 3rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .finale-block::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(148,20,16,0.08), transparent);
+  }
+
+  .finale-quote {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--ink-dim);
+    line-height: 1.8;
+    position: relative;
+    max-width: 560px;
+    margin: 0 auto 2rem;
+  }
+
+  .finale-quote em {
+    color: var(--ink);
+    font-style: normal;
+  }
+
+  .finale-divider {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--blood), transparent);
+    margin: 0 auto 2rem;
+  }
+
+  .finale-coda {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ══════════════════════════════════════════
+     SIDEBAR STAT STRIP (sticky)
+  ══════════════════════════════════════════ */
+  .floating-stats {
+    position: fixed;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+  }
+
+  .floating-stats.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .stat-pip {
+    width: 40px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 4px;
+    padding: 0.5rem 0.4rem;
+    text-align: center;
+  }
+
+  .stat-pip-label {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.45rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .stat-pip-value {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.9rem;
+    font-weight: 900;
+    display: block;
+  }
+
+  .stat-pip.hp  .stat-pip-value { color: var(--blood-bright); }
+
+  .stat-pip-sub {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.5rem;
+    color: var(--ink-faint);
+    display: block;
+    letter-spacing: 0.1em;
+    margin-top: 0.1rem;
+  }
+
+  .stat-pip.san .stat-pip-value { color: var(--sanity-color); }
+
+  @media (max-width: 1100px) {
+    .floating-stats { display: none; }
+  }
+
+  /* ══════════════════════════════════════════
+     ANIMATIONS
+  ══════════════════════════════════════════ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50%       { opacity: 0.8; transform: scaleY(1.1); }
+  }
+
+  @keyframes cosmicPulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50%       { opacity: 0.7; transform: scale(1.05); }
+  }
+
+  @keyframes deathPulse {
+    0%, 100% { opacity: 0.5; }
+    50%       { opacity: 1; }
+  }
+
+  @keyframes runeFlicker {
+    0%, 95%, 100% { opacity: 1; }
+    96%, 98%       { opacity: 0.4; }
+    97%, 99%       { opacity: 0.9; }
+  }
+
+  .rune-flicker { animation: runeFlicker 8s ease-in-out infinite; }
+
+  /* ══════════════════════════════════════════
+     RESPONSIVE
+  ══════════════════════════════════════════ */
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .cover { min-height: 85vh; padding: 4rem 1.2rem; }
+    .chapter-header { gap: 0.8rem; }
+    .chapter-number { font-size: 2rem; }
+    .roll-block { padding: 1rem 1.1rem; }
+    .tracker-row { flex-direction: column; }
+    .revelation-block, .lore-callout, .combat-block { margin: 1.5rem 0; }
+    .prose.with-dropcap p:first-child::first-letter { font-size: 3.5em; }
+  }
+
+  /* ══════════════════════════════════════════
+     AMPULHETA — DIVISOR TEMPORAL
+  ══════════════════════════════════════════ */
+  @keyframes hourglass-turn {
+    0%   { transform: rotate(0deg); }
+    40%  { transform: rotate(0deg); }
+    50%  { transform: rotate(180deg); }
+    90%  { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .scene-divider-hourglass {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-shrink: 0;
+  }
+
+  .hourglass-svg {
+    animation: hourglass-turn 5s ease-in-out infinite;
+    transform-origin: 12px 14px;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .scene-divider-time {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.35em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .scene-divider-time.highlight {
+    color: var(--gold);
+    opacity: 0.65;
+  }
+:root{--k-bia:#ff9ec4;--k-mae:#ffb3c7;--k-cida:#5fe0b0;--k-num:#5ff0d0;--k-thing:#6fd3dc;--k-lari:#ff6b78;--k-pai:#ffa24a;--k-ademir:#c4b49a;--k-note:#8fb0ff;--acc:#ff3c38;--card:rgba(20,16,12,.85);--mut:#8fa39a;--fg:#e8e2d0}
+em[class*=v-]{display:inline-block}
+.m[class*=v-]{border-left-color:var(--c,var(--acc))}
+.v-leo,.x{--c:#e0303c;animation:hb 2.4s ease-in-out infinite}
+@keyframes hb{0%,100%{text-shadow:0 0 0 rgba(224,48,60,0)}50%{text-shadow:0 0 10px rgba(224,48,60,.5)}}
+.v-pai{--c:var(--k-pai);color:var(--k-pai);font:800 15px/1.5 Impact,"Arial Narrow",sans-serif;animation:sh 3.4s infinite}
+@keyframes sh{0%,92%,100%{transform:none}94%{transform:translate(2px,-1px)}96%{transform:translate(-2px,1px)}98%{transform:translate(1px,0)}}
+.v-mae{--c:var(--k-mae);color:var(--k-mae);font-style:italic;animation:br 4.5s ease-in-out infinite}
+@keyframes br{0%,100%{opacity:.78}50%{opacity:1}}
+.v-edson{--c:#9c8a62;font-family:"Courier New",monospace;text-shadow:1px 0 2px rgba(130,105,60,.55),-1px 0 3px rgba(130,105,60,.4);animation:tw 6s ease-in-out infinite}
+@keyframes tw{0%,100%{letter-spacing:0}50%{letter-spacing:.035em}}
+.v-prof{--c:#888;color:var(--mut);font-variant:small-caps;letter-spacing:.04em}
+.v-cida{--c:var(--k-cida);color:var(--k-cida);font-family:system-ui,sans-serif;letter-spacing:.05em}
+.v-cida::after{content:" ▮";animation:bl 1.2s steps(2) infinite}
+@keyframes bl{50%{opacity:0}}
+.v-carlos{--c:#8a8f3a;font:700 15px "Arial Narrow",Impact,sans-serif;text-transform:uppercase;animation:nv .5s steps(2) infinite}
+@keyframes nv{0%{transform:translate(.7px,0)}100%{transform:translate(-.7px,.5px)}}
+.v-ademir{--c:var(--k-ademir);color:var(--k-ademir);filter:url(#rasp);animation:sm 5s linear infinite}
+@keyframes sm{0%{text-shadow:0 0 6px rgba(150,150,150,0)}50%{text-shadow:0 -8px 10px rgba(150,150,150,.45)}100%{text-shadow:0 -15px 14px rgba(150,150,150,0)}}
+.v-corsa{--c:#c0392b;font-family:"Courier New",monospace;text-transform:uppercase;letter-spacing:.12em;text-shadow:-2px 0 rgba(255,0,60,.7),2px 0 rgba(0,220,255,.7);animation:fl 3s steps(1) infinite}
+@keyframes fl{0%,88%,100%{opacity:1;transform:none}90%{opacity:.4;transform:translateX(3px)}92%{opacity:1}95%{opacity:.5;transform:translateX(-3px)}97%{opacity:1;transform:none}}
+.v-bia{--c:var(--k-bia);color:var(--k-bia);font:16px/1.5 "Comic Sans MS","Chalkboard SE","Comic Neue",cursive;animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+.v-bia.v-copy{--c:var(--k-thing);color:var(--k-thing);filter:url(#wave);text-shadow:0 3px 0 rgba(255,158,196,.45);animation:none}
+.v-lvoz{--c:var(--k-lari);color:var(--k-lari);font:italic 17px/1.5 "Bradley Hand","Segoe Print","Chalkboard SE",cursive;text-shadow:3px 0 0 rgba(255,107,120,.35),7px 0 2px rgba(255,107,120,.2),11px 0 4px rgba(255,107,120,.1)}
+.v-falsa{--c:var(--k-thing);color:var(--k-lari);font:italic 17px/1.5 "Bradley Hand","Segoe Print","Chalkboard SE",cursive;text-shadow:2px 0 0 rgba(111,211,220,.55);animation:ck 2.6s steps(1) infinite}
+@keyframes ck{0%,88%,100%{transform:none;filter:none}90%{transform:translateX(-4px) skewX(-6deg);filter:hue-rotate(160deg)}94%{transform:translateX(3px);filter:hue-rotate(160deg)}97%{transform:none;filter:none}}
+.v-thing{--c:var(--k-thing);color:var(--k-thing);filter:url(#wave);font-style:italic;letter-spacing:.05em;animation:dr 3.2s ease-in infinite}
+@keyframes dr{0%{text-shadow:0 1px 1px rgba(10,60,70,.5)}100%{text-shadow:0 14px 7px rgba(10,60,70,0)}}
+.v-eco{--c:#999;font-weight:700;animation:ec 2.4s ease-in-out infinite}
+@keyframes ec{0%,100%{text-shadow:-6px 0 0 rgba(150,150,150,.45),-12px 0 0 rgba(150,150,150,.25),-18px 0 0 rgba(150,150,150,.12)}50%{text-shadow:-3px 0 0 rgba(150,150,150,.5),-6px 0 0 rgba(150,150,150,.3),-9px 0 0 rgba(150,150,150,.15)}}
+.v-num{--c:var(--k-num);color:var(--k-num);font-family:"Courier New",monospace;text-shadow:0 0 6px rgba(0,255,200,.25);background-image:repeating-linear-gradient(0deg,rgba(0,255,200,.05) 0 1px,transparent 1px 3px)}
+.v-num::after{content:"▌";animation:bl 1s steps(2) infinite}
+.m.v-tv{background:#0d2a66;color:#fff;border-left-color:#e11;font:600 13px/1.5 Arial,sans-serif;text-transform:uppercase;letter-spacing:.04em}
+.m.v-tv::before{content:"● AO VIVO";display:block;color:#ff6b6b;font-size:11px;animation:bl 1s steps(2) infinite}
+.m.v-zap{background:#1f5c3a;color:#e9fff1;border-left:0;border-radius:12px;font:15px/1.4 system-ui,sans-serif}
+.m.v-note{--c:var(--k-note);color:var(--k-note);background-image:repeating-linear-gradient(transparent 0 22px,rgba(80,110,200,.28) 22px 23px);line-height:23px}
+.m.v-lnote{--c:#b3121f;background:#f3ecd2;color:#b3121f;font:italic 18px/1.4 "Bradley Hand","Segoe Print","Chalkboard SE",cursive;transform:rotate(-.8deg);box-shadow:2px 3px 0 rgba(0,0,0,.3)}
+.edge{position:fixed;top:0;bottom:0;width:clamp(16px,calc((100vw - 660px)/2),110px);z-index:1;pointer-events:none;overflow:hidden;font:11px/1.2 "Courier New",monospace;letter-spacing:.3em;color:var(--acc);opacity:.4;writing-mode:vertical-rl;user-select:none;-webkit-mask-image:linear-gradient(transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(transparent,#000 12%,#000 88%,transparent)}
+.edge.l{left:0}.edge.r{right:0;transform:rotate(180deg)}
+.edge span{display:block;white-space:nowrap;padding:0 2px}
+.edge::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");opacity:.14;mix-blend-mode:overlay;animation:ns .5s steps(5) infinite}
+@keyframes ns{0%{background-position:0 0}20%{background-position:-30px 20px}40%{background-position:20px -40px}60%{background-position:-50px -10px}80%{background-position:10px 30px}100%{background-position:0 0}}
+@media (prefers-reduced-motion:reduce){[class*=v-],.x,.edge::after{animation:none!important}}
+
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;background:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px);mix-blend-mode:overlay}
+.header-title,.char-name,.cover-title,.title,.cover-numeral{text-shadow:0 0 16px rgba(255,159,28,.35),2px 0 rgba(255,60,56,.4),-2px 0 rgba(143,163,154,.3)}
+.panel,.stat-box,.lore-item,.char-item,.ability-item,.attack-item,.equip-item,.save-item,.skill-row,.nature-box,.vital-card{opacity:1!important;transform:none!important}
+.dialogue.npc{border-left-color:var(--acc);background:rgba(255,60,56,.04)}
+.dialogue .v-leo,.dialogue.leyn{--c:#ff3c38}
+.dialogue-text p.r,.dialogue-text .r{color:#ff3c38;font-weight:700;letter-spacing:.12em}
+@media (prefers-reduced-motion:reduce){body::after{display:none}}
+</style>
+</head>
+<body>
+<div class="floating-stats"><div class="stat-pip"><span class="stat-pip-label" style="letter-spacing:.15em;">FIM DA SAGA</span></div><div class="stat-pip hp"><span class="stat-pip-label">PV</span><span class="stat-pip-value">12</span><span class="stat-pip-sub">/ 12</span></div><div class="stat-pip san"><span class="stat-pip-label">SAN</span><span class="stat-pip-value">55</span><span class="stat-pip-sub">/ 55</span></div></div><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="rasp"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="1" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="2.2"/></filter><filter id="wave" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="turbulence" baseFrequency=".01 .06" numOctaves="1" result="w"><animate attributeName="baseFrequency" dur="6s" values=".01 .06;.012 .09;.01 .06" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" in2="w" scale="5"/></filter></defs></svg><div class="edge l" aria-hidden="true"></div><div class="edge r" aria-hidden="true"></div><div class="cover"><div class="cover-eyebrow">Frequência Fantasma &nbsp;·&nbsp; Presidente Prudente</div><div class="cover-numeral">I</div><div class="cover-divider"></div><h1 class="cover-title">O Sinal</h1><p class="cover-subtitle">Saga I &nbsp;·&nbsp; Léo &nbsp;·&nbsp; 01:17 – 07:08</p><div class="cover-scroll-hint"><span>Role para baixo</span><div class="scroll-line"></div></div></div><div class="page-wrapper"><div class="lore-callout" style="margin:0 auto 2rem;max-width:760px"><div class="lore-title">Antes do Sinal</div><div class="lore-text"><div class="dialogue gm with-dropcap "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p><b>SISTEMA:</b> Delta Green / Call of Cthulhu 7e, adaptado. O Mestre cuida do mundo e dos NPCs; o Léo é seu.</p><p><b>PREMISSA:</b> Setembro de 2026. Presidente Prudente e região. Nas últimas 3 semanas, 7 pessoas desapareceram depois de postarem nos stories um mesmo áudio distorcido: um chiado com uma voz falando "volta". Todas usavam o "Rádio Nuvem 93.1", um app de rádio online pirata.</p><p><b>TOM:</b> Terror moderno, investigativo. Nada de elfo e bola de fogo. É você hoje, com o celular acabando a bateria. Sem armas. Só coragem e celular.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Meu personagem é só um adolescente normal, que leu sobre os desaparecimentos, e ficou curioso para descobrir mais. Quero um tom de investigação e terror/hardcore.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Personagem normal é muito mais assustador. Léo, 17 anos, 3º ano do Ensino Médio em Prudente. Leu sobre os 7 desaparecidos no grupo "Prudente Acontece". Um deles era da sua escola. Ninguém da polícia tá ligando. Você ficou obcecado.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Sou bom em traçar perfis das pessoas as observando, e em lutar, também consigo encontrar informações na internet com facilidade. Por exemplo se algum aplicativo ou IA está me rastreando e ouvindo meu microfone.</div></div><div class="lore-callout"><div class="lore-title">Ficha de Léo</div><div class="lore-text"><b>LEO – 17 anos</b><br/>Perfil Comportamental (Observar) <b>70%</b> · Briga <b>60%</b> · OSINT / Rastreio Digital <b>70%</b><br/>Fraquezas: Autoridade 30% · Furtividade 40% (adolescente faz barulho)</div></div><div class="roll-block"><div class="roll-header"><span class="roll-name">PLANO ORIGINAL DO MESTRE (ARQUIVADO): Beto (lan house), Controle Verde, Agente Renata Lins e a torre entre Prudente e Pirapozinho. A campanha tomou outro rumo e essas pistas ficaram de fora.</span></div></div></div></div><section class="chapter"><div class="chapter-header"><div class="chapter-number">I</div><div class="chapter-title-block"><div class="chapter-title">O Chiado da Nuvem</div><div class="chapter-rule"></div></div></div><div class="dialogue gm with-dropcap "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você tá no seu quarto, luz apagada. Casa em silêncio. Seu celular ilumina seu rosto.</p><p>Você acabou de achar o Instagram da última desaparecida, a sétima, <b>@laricosta</b>. Último story postado há 6 dias, 01:33 da manhã. É um vídeo todo preto, só com aquele chiado. Na legenda: <em>"alguém mais ouvindo isso na nuvem 93.1?"</em></p><p>Nos comentários, 12 pessoas comentando "apaga isso". Um perfil sem foto comentou: <b>"VOLTA"</b>.</p><p>Você coloca o fone. Aumenta o volume. Abre o site da Rádio Nuvem 93.1. É um site feio, preto, com um player no meio. Um botão escrito [OUVIR AO VIVO].</p><p>O chiado começa. É baixo. Depois aumenta. Você sente um frio na nuca.</p><p>E aí, por baixo do chiado… você jura que ouviu seu <b>NOME</b> sendo sussurrado. Com a sua voz.</p><p>O player trava em 01:17.</p><p>Seu WhatsApp vibra. Número desconhecido.</p></div></div><div class="dialogue npc v-num"><div class="dialogue-speaker">Número desconhecido</div><div class="dialogue-text">para de ouvir.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>O que você faz?</p></div></div><div class="revelation-block"><div class="revelation-label">O que você faz?</div><ol class="revelation-list"><li>Responde o WhatsApp</li><li>Desliga a rádio na hora e tenta rastrear quem é o número</li><li>Continua ouvindo pra tentar entender o que sussurrou seu nome</li></ol></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu vou sair do site. Vou voltar ao perfil da Lari, em seguida vou para a publicação. Vou entrar no perfil sem foto que comentou "volta".</div></div></section><section class="chapter"><div class="chapter-header"><div class="chapter-number">II</div><div class="chapter-title-block"><div class="chapter-title">A Foto que Não Era Preta</div><div class="chapter-rule"></div></div></div><div class="dialogue gm with-dropcap "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você fecha o site da Rádio Nuvem na hora. Rápido. Quando você fecha, o chiado não para instantaneamente. Fica mais 1 segundo no seu fone, como se estivesse vindo de dentro do seu celular, não do site.</p><p>Você tira o fone. Silêncio no quarto.</p><p>Você volta no Instagram da Lari. Foto normal, sorrindo na Praça do Parque do Povo. Você clica nos comentários do story arquivado.</p><p>O perfil sem foto: <b>@volta_93_1</b>. Sem foto, 0 seguidores, 1 seguindo: a própria Lari. Criado há 6 dias. Você clica nele. Só 1 publicação: uma foto toda preta, postada há 6 dias, 01:17 da manhã. A mesma hora que travou pra você agora. Na descrição, coordenadas: <code>-22.1211, -51.3923</code></p></div></div><div class="roll-block success"><div class="roll-header"><span class="roll-name">Teste de OSINT 70%</span><span class="roll-formula">d100</span></div><div class="roll-result-line"><span class="roll-dice">OSINT 70%</span><span class="roll-verdict">Sucesso</span></div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>As coordenadas dão em um lugar que você conhece: a <b>Torre da Rádio Comunitária desativada da Vila Industrial, perto da linha do trem</b>. Lacrada e abandonada desde 2018. Dizem que tem morador de rua lá.</p><p>Nos comentários da foto preta, só uma pessoa marcando vários @: a própria Lari, e mais 6 nomes. Os 7 desaparecidos. E um oitavo perfil que você não reconhece: <b>@leo.[seu sobrenome]</b>. É VOCÊ. Marcado há 3 minutos. Enquanto você estava na página.</p><p>Seu WhatsApp vibra de novo.</p></div></div><div class="dialogue npc v-num"><div class="dialogue-speaker">Número desconhecido</div><div class="dialogue-text">ele já tem seu IP. sai do insta.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você olha pra janela. Na rua, totalmente vazia a 1:17 da manhã, um <b>Corsa prata</b> parado, farol desligado. Você nunca viu aquele carro na sua rua.</p><p>Faz um teste de <em>Perfil Comportamental</em>. O que você consegue observar desse Corsa da sua janela? E o que você faz?</p></div></div><div class="revelation-block"><div class="revelation-label">O que você faz?</div><ol class="revelation-list"><li>Acorda seus pais</li><li>Tira print de tudo e apaga seu histórico / tenta se proteger digitalmente</li><li>Pega uma mochila e vai até a torre agora, antes que apaguem tudo</li></ol></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Vou ativar o modo avião do meu celular. E vou printar a imagem preta. Vou abrir ela nas fotos e mudar o brilho, aumentando a claridade. Vou ignorar o Corsa por enquanto.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você faz exatamente o que um alvo NÃO deveria fazer: você se desliga.</p></div></div><div class="roll-block"><div class="roll-header"><span class="roll-name">AÇÃO · MODO AVIÃO</span></div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você ativa. Imediatamente o ícone de sinal some. O "online" do WhatsApp some. O chiado que ainda estava residual no fone morre de vez. Por 1 segundo, você sente que o quarto ficou mais leve, como se alguém tivesse parado de te olhar pela fechadura.</p><p>Mas foi tarde demais por 4 minutos. Seu IP, seu @, sua localização aproximada já foram logados.</p></div></div><div class="roll-block"><div class="roll-header"><span class="roll-name">AÇÃO · A FOTO PRETA</span></div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você printa. Editar &gt; Brilho +100, Exposição +100, Sombras +100.</p><p><b>A imagem preta não era preta.</b></p><p>Quando você estoura o brilho, aparece uma foto granulada, tirada de baixo pra cima. O interior da torre da Vila Industrial. Concreto úmido, pichação.</p><p>E no meio da sala, <b>7 cadeiras de plástico brancas</b>. Em 7 cadeiras, 7 pessoas sentadas, de costas, olhando para uma parede. Pela roupa, pelo cabelo… é a Lari e os outros 6 desaparecidos. Estão imóveis.</p><p>Na oitava cadeira, vazia, tem algo escrito com fita crepe: <b>LEO</b>.</p><p>E na parede que eles estão olhando, pichado com algo escuro, um símbolo: um círculo com 3 linhas saindo, como uma antena de rádio. E embaixo: <b>"93.1 - A GENTE OUVE VOCÊ DE VOLTA"</b>.</p><p>Você dá zoom. Na janela da torre, refletido no vidro quebrado… o reflexo de quem tirou a foto. Uma pessoa de moletom, segurando o celular. E atrás dela, bem perto, uma figura alta demais pra ser gente, sem rosto.</p><p>Seu quarto está escuro. Modo avião ligado. Você está seguro digitalmente por agora.</p><p>Mas aí você escuta: <span class="r">TUM TUM TUM</span></p><p>Alguém bateu 3 vezes na porta da FRENTE da sua casa. Bem devagar. 1:19 da manhã.</p><p>O Corsa prata ainda está lá fora, agora com o farol de milha aceso, apontado direto pra sua janela.</p><p>Você tem 10 segundos antes de seus pais acordarem. O que você faz?</p></div></div><div class="revelation-block"><div class="revelation-label">O que você faz?</div><ol class="revelation-list"><li><b>Briga:</b> pega algo pra se defender e vai ver quem é na porta</li><li><b>Perfil + Furtividade:</b> apaga a luz do celular, se esconde no guarda-roupa e observa pela fresta o que o cara do Corsa vai fazer</li><li><b>OSINT reverso:</b> liga o celular só no Wi-Fi por 5 segundos pra puxar a localização exata da torre e mandar pra alguém de confiança</li></ol></div></section><section class="chapter"><div class="chapter-header"><div class="chapter-number">III</div><div class="chapter-title-block"><div class="chapter-title">Entrega: Rádio Nuvem</div><div class="chapter-rule"></div></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu vou perguntar quem é, enquanto já fico preparado / em guarda.</div></div><div class="dialogue gm with-dropcap "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você desliga a tela e deixa o celular em modo avião embaixo do travesseiro. No escuro, você tateia e pega o que tem mais perto: seu <b>cinto com fivela de metal pesada</b>. Enrola no punho. É o que te dá alcance e peso. Sua respiração tá alta.</p><p>Você desce as escadas descalço, sem acender a luz. Seus pais dormindo no quarto do fundo. Você para a 2 metros da porta de madeira. Seu coração batendo no ouvido.</p><p>Você grita, tentando soar mais velho:</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo</div><div class="dialogue-text">— QUEM É?!</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Silêncio por 3 segundos. Aí uma voz de homem, abafada pela porta, cansada, como quem fumou a vida inteira:</p></div></div><div class="dialogue npc v-corsa"><div class="dialogue-speaker">Voz na porta</div><div class="dialogue-text">Entrega. Rádio Nuvem.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você olha pelo olho mágico. Não tem ninguém na porta. Mas no chão, deixaram um <b>radinho de pilha velho</b>, pequeno, de plástico cinza. Tá ligado. Só chiado.</p><p>E o Corsa lá fora agora está com a porta do motorista aberta. Vazio.</p></div></div><div class="roll-block success"><div class="roll-header"><span class="roll-name">Teste de Perfil Comportamental 70%</span><span class="roll-formula">d100</span></div><div class="roll-result-line"><span class="roll-dice">Perfil Comportamental 70%</span><span class="roll-verdict">Sucesso</span></div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você nota duas coisas que um adulto não notaria:</p><p>1. O radinho no chão tá com a antena puxada e apontada EXATAMENTE pra sua janela, no segundo andar. Quem colocou sabia qual era seu quarto.</p><p>2. O chiado não é aleatório. Tem um ritmo. Parece… <b>respiração</b>. Como se alguém estivesse segurando o radinho perto da boca, respirando junto com você.</p><p>A voz atrás da porta de novo, mais perto, sussurrando na fresta:</p></div></div><div class="dialogue npc v-corsa"><div class="dialogue-speaker">Voz na porta</div><div class="dialogue-text">Você pediu pra ouvir, Léo. Aumenta o volume.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Seus pais se mexem na cama. Vão acordar em segundos. O que você faz?</p></div></div><div class="revelation-block"><div class="revelation-label">O que você faz?</div><ol class="revelation-list"><li>Chuta o radinho pra longe e tranca a porta com tudo</li><li>Pega o radinho e aumenta o volume, encarando o medo de frente</li><li>Abre a porta de uma vez e parte pra briga</li></ol></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu vou simplesmente abrir a porta e pisar no rádio.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você destranca a porta com força, <em>CLACK</em>, abre de uma vez e levanta o pé descalço e…</p><p class="r">CRACK.</p><p>Você pisa com tudo em cima do radinho. O plástico cinza estoura. A pilha voa. O chiado dá um grito agudo, como interferência, e morre.</p><p>Silêncio total na rua. Só grilo.</p><p>O Corsa prata, de porta aberta, não tem ninguém. Banco vazio. Motor ainda quente, saindo fumaça na madrugada.</p><p>Você olha pro chão. O radinho quebrado não tem placa, não tem nada dentro. Só barro seco e um pedaço de papel dobrado no compartimento da pilha. Você pega. É um papel de pão da padaria <b>Pão de Mel</b> da Vila Industrial, com uma letra apressada de menina:</p></div></div><div class="dialogue npc v-lnote"><div class="dialogue-speaker">Bilhete</div><div class="dialogue-text">NÃO VEM. ELE COPIA SUA VOZ. – L</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>É a letra da Lari. A desaparecida.</p><p>No mesmo instante, seu celular vibra embaixo do travesseiro lá no segundo andar, mesmo em <b>MODO AVIÃO</b>. Você escuta a vibração daqui de baixo.</p><p>Seu pai acende a luz do corredor atrás de você:</p></div></div><div class="dialogue npc v-pai"><div class="dialogue-speaker">Pai</div><div class="dialogue-text">LEO?! Que porra você tá fazendo com a porta aberta 1 da manhã?! Quem tá aí fora?!</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Ele tá vindo na sua direção. Vai ver o radinho quebrado. Vai ver o Corsa. O Corsa, lá fora, acende o farol alto na sua cara e arranca cantando pneu, sumindo na rua. Você guardou três letras da placa: <b>BTE</b>. Você tem o papel da Lari na mão. O que você fala pro seu pai?</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Tinha um doido no quintal aqui fora, eu vim ver o que era, mas parece que ele fugiu com o carro dele.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Seu pai, de cueca e camiseta, cabelo amassado, olha pra rua, depois pra você pisando descalço num radinho quebrado.</p></div></div><div class="dialogue npc v-pai"><div class="dialogue-speaker">Pai</div><div class="dialogue-text">Doido? Que doido, Léo? Você tá ouvindo rádio 1 da manhã? Tá maluco? Entra pra dentro agora!</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Ele te puxa pelo braço pra dentro. Tranca a porta com a chave, tranca o trinco. Ele tá puto, mas mais com medo. Pai do interior sabe que Vila Industrial de madrugada tem noia. Ele não vê o papel de pão que você fechou na mão. Você esconde no bolso do shorts.</p></div></div><div class="dialogue npc v-pai"><div class="dialogue-speaker">Pai</div><div class="dialogue-text">Amanhã a gente conversa. Desliga essa merda de celular!</div></div></section><section class="chapter"><div class="chapter-header"><div class="chapter-number">IV</div><div class="chapter-title-block"><div class="chapter-title">O Corsa e a Oitava Cadeira</div><div class="chapter-rule"></div></div></div><div class="dialogue gm with-dropcap "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você sobe. Seu quarto tá escuro. O celular ainda vibra embaixo do travesseiro, em modo avião. Você pega. Não é ligação. Não é WhatsApp. É o alarme do celular. Você nunca colocou alarme pra 1:17 da manhã. Tá escrito:</p></div></div><div class="dialogue npc v-num"><div class="dialogue-speaker">Mensagem</div><div class="dialogue-text"><b>ALARME: 01:17 – VOLTA</b></div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>E quando você desliga o alarme, a tela não volta pro início. Abre sozinha a galeria de fotos. Tem uma foto nova que você NÃO tirou. É uma foto do interior da SUA casa, tirada da rua, agora há pouco. Dá pra ver você e seu pai na porta da frente, de costas, olhando pro Corsa. A foto foi tirada de dentro do Corsa. E na janela do seu quarto, desenhado, aquele mesmo símbolo da torre: o círculo com 3 linhas.</p><p>Seu pai grita lá de baixo: <em class="v-pai">"LEO, APAGA A LUZ E DORME!"</em></p><p>Isso não é mais curiosidade de internet. O cara do Corsa sabe onde você mora. E ele sabe que você pisou no rádio dele. O que você faz agora pra sobreviver até de manhã?</p></div></div><div class="revelation-block"><div class="revelation-label">O que você faz?</div><ol class="revelation-list"><li><b>OSINT hardcore:</b> rastrear a placa do Corsa (BTE) em sites de consulta. É arriscado ter que ligar o Wi-Fi</li><li><b>Investigação raiz:</b> ir agora, a pé, sozinho, até a torre. Leva o cinto</li><li><b>Chama reforço:</b> desliga o modo avião e manda tudo que você tem pra alguém de confiança</li></ol></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu vou deitar, e ir dormir. Vou anotar no celular tudo que coletei de informações até agora. As coordenadas, a imagem das cadeiras, a mensagem da Lari, a placa do Corsa, a área industrial, o homem alto sem rosto.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você faz a coisa mais difícil que um investigador hardcore pode fazer: você respira e não se entrega pro pânico. Você deita. Coração a mil, mas você deita. Abre o <b>bloco de notas do celular</b>, ainda em modo avião. Luz no mínimo. E anota frio, como detetive:</p></div></div><div class="dialogue npc v-note"><div class="dialogue-speaker">Caderno de Léo</div><div class="dialogue-text">CASO: RÁDIO 93.1 - PRESIDENTE PRUDENTE<br/>- VITIMAS: 7 desaparecidos. Ultima: Lari Costa @laricosta<br/>- PADRÃO: Post 01:17 AM. Chiado. Comentario @volta_93_1<br/>- COORDENADAS: -22.1211, -51.3923 = TORRE RÁDIO VILA INDUSTRIAL (abandonada)<br/>- FOTO EDITADA: 7 pessoas de costas em cadeiras. 1 cadeira vazia com meu nome. Símbolo = círculo + 3 riscos (antena). Figura alta sem rosto no reflexo.<br/>- CORSA PRATA: Placa BTE-????. Motorista: homem, voz rouca, fuma. Sabe meu endereço, meu @, meu quarto.<br/>- PROVA FÍSICA: Radinho quebrado + bilhete Pão de Mel - "NÃO VEM. ELE COPIA SUA VOZ. - L"<br/>- HORARIO: Tudo acontece 01:17<br/>- ENTIDADE: Copia voz. Alto sem rosto. Atrai pelo rádio/chiado.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você salva. Desliga a tela. Fecha o olho. Você não dorme de verdade. Você cochila em alerta, com o cinto enrolado na mão embaixo do travesseiro.</p><p>01:17 da manhã, de novo, no seu sonho. Você está sentado na oitava cadeira da torre. As outras 7 pessoas ainda estão de costas. Você tenta levantar e não consegue. O chiado está muito alto agora, vem das paredes. A figura alta sem rosto está atrás de você. Coloca a mão no seu ombro. A mão é gelada. E sussurra no seu ouvido com a SUA voz, perfeita:</p></div></div><div class="dialogue npc v-eco"><div class="dialogue-speaker">Sua própria voz</div><div class="dialogue-text">Você anotou tudo certinho, Léo.</div></div></section><div class="scene-divider"><div class="scene-divider-line"></div><span class="scene-divider-time">06:45</span><div class="scene-divider-line"></div></div><section class="chapter"><div class="chapter-header"><div class="chapter-number">V</div><div class="chapter-title-block"><div class="chapter-title">Fica com Deus, Filho</div><div class="chapter-rule"></div></div></div><div class="dialogue gm with-dropcap "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você acorda sobressaltado. Sol entrando pela janela. Barulho da sua mãe fazendo café. Cheiro de pão. Seu pai já foi trabalhar.</p><p>Seu celular <b>não está mais em modo avião</b>. Você não desligou. Está com 1% de bateria, quente. Na tela, 17 chamadas perdidas do número desconhecido, das 1:17 até as 6 da manhã. E uma mensagem nova do Instagram: <em>@volta_93_1 te marcou em uma foto.</em></p><p>É a foto das 8 cadeiras de novo. Mas agora, a oitava não está mais vazia. Tem alguém sentado nela. De costas. De shorts e camiseta iguais à que você está usando. Cabelo igual ao seu. A legenda:</p></div></div><div class="dialogue npc v-num"><div class="dialogue-speaker">legenda</div><div class="dialogue-text">faltava só você. hoje 01:17 te busco na torre. – Lari</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Embaixo, sua mãe grita: <em class="v-mae">"LEO, VEM TOMAR CAFÉ ANTES DA ESCOLA!"</em> Você tem o dia inteiro até 01:17. A noite cai rápido. O que você faz hoje de dia pra se preparar pra noite?</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Vou levantar da cama, pôr meu uniforme, e dizer "já estou descendo, mãe". Vou pegar minha bolsa. Vou olhar em volta no meu quarto se tem algo útil que posso levar junto comigo.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você levanta. Joga água no rosto. Põe o uniforme. <em>"JÁ TÔ DESCENDO, MÃE!"</em> Você olha seu quarto com olhar de quem vai pra missão. <b>Inventário do quarto: você escolhe 2 pra levar na bolsa.</b></p></div></div><div class="revelation-block"><div class="revelation-label">O que você faz?</div><ol class="revelation-list"><li><b>Powerbank carregado 100%:</b> seu celular está com 1%; isso vai ser vital se você precisar gravar ou usar lanterna</li><li><b>Canivete suíço velho do seu avô:</b> enferrujado, mas corta, tem chavinha e lanterna fraquinha</li><li><b>Seu caderno de OSINT:</b> em branco, com caneta preta. Tudo que você anotou ontem está no bloco de notas do celular</li><li><b>Fone com fio:</b> pra ouvir áudio sem vazar som e sem Bluetooth que pode ser rastreado</li></ol></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Sua mãe grita de novo: <em class="v-mae">"Seu pão já esfriou!"</em> Você pega o quê e desce?</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">O caderno e o canivete. E se der também uma garrafa de água. Vou descer e comer o pão e tomar o café.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p><b>MOCHILA:</b> caderno de OSINT + canivete do avô + garrafa de água cheia (500 ml) + uniforme.</p><p>Cozinha pequena, TV ligada na Band. Sua mãe de roupão, mexendo no celular, com cara de quem dormiu mal. Na mesa: pão na chapa com manteiga, café com leite e um prato de mamão. Normal. Quase normal demais depois da madrugada que você teve.</p></div></div><div class="dialogue npc v-mae"><div class="dialogue-speaker">Mãe</div><div class="dialogue-text">Madrugada você tava andando pela casa? Seu pai disse que você tava na porta da rua. Que aconteceu?</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Na TV, bem na hora, o jornal local de Prudente:</p></div></div><div class="dialogue npc v-tv"><div class="dialogue-speaker">TV Band</div><div class="dialogue-text">"...a Polícia Civil pede ajuda para encontrar a sétima jovem desaparecida, Larissa Costa, 16 anos, vista pela última vez perto da Vila Industrial. Qualquer informação, ligar para o 197. E atenção: moradores relatam interferência estranha na frequência 93.1 FM desde ontem..."</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Sua mãe aumenta o volume sem querer. O que você responde pra ela?</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Tinha um noia batendo na porta, eu fui espantar ele. Não queria que ele roubasse algo na casa.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Ela te olha por cima do celular, te escaneando. Mãe tem Perfil Comportamental 90%.</p></div></div><div class="dialogue npc v-mae"><div class="dialogue-speaker">Mãe</div><div class="dialogue-text">Noia? Que noia, Léo? Aqui nessa rua nunca vem noia de madrugada. Você não tá mexendo com droga não, né? Tô te achando estranho desde ontem.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Ela fala baixo, mas firme. Ela tá preocupada, não brava. Ela puxa sua mão. Na TV continua: <em>"...a frequência 93.1 era da antiga Rádio Nuvem Comunitária, desativada após a morte do radialista..."</em> Você sente o bilhete da Lari no bolso queimando.</p><p>Você precisa sair pra escola agora, são 7:05. Se você for pra escola, ganha tempo. Mas se contar pra sua mãe, ela pode te trancar em casa ou te levar na delegacia. Você mantém a mentira ou conta parte da verdade? E você vai pra escola hoje ou vai cabular?</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu vou reforçar o que eu já disse. E frisar que estavam com um Corsa prata com o farol virado para a nossa casa. Se ela quiser fazer algo, pode ir na polícia e solicitar a localização do Corsa da placa com início BTE. Vou dizer que estou indo para a escola agora. E vou dizer "fica com Deus".</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você manda firme, sem gaguejar. Isso te salva.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo</div><div class="dialogue-text">Mãe, era um noia sim. Num Corsa prata, placa começava com BTE, tava com farol alto na nossa janela. Eu quebrei um radinho que ele deixou na porta. Se a senhora quiser, vai na polícia e pede pra ver câmera da rua.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você fala com tom de quem tá puto de verdade, não de quem tá mentindo. Ela recua. Solta sua mão.</p></div></div><div class="dialogue npc v-mae"><div class="dialogue-speaker">Mãe</div><div class="dialogue-text">BTE? Corsa prata?… Tá, depois eu vejo com seu pai. Vai pra escola, Léo. E não volta tarde.</div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo</div><div class="dialogue-text">Fica com Deus.<br/><span class="v-mae"><b>Mãe</b> <small>(baixo)</small>: Fica com Deus, filho.</span></div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você sai de casa. 7:08 da manhã. Rua vazia. No asfalto, em frente ao seu portão, a marca preta de pneu do Corsa. E no poste, um adesivo novo, branco, com o mesmo símbolo da torre: o círculo com 3 riscos. Você amassa e guarda no bolso junto com o bilhete.</p><p class="r">RUMO À ESCOLA.</p><p>No caminho, seu celular vibra. 1% de bateria. Mensagem da Lari. Da conta REAL dela, @laricosta, desativada há 3 dias. Como se ela tivesse voltado.</p></div></div><div class="dialogue npc v-num"><div class="dialogue-speaker">laricosta</div><div class="dialogue-text">leo? é vc? to na torre. NÃO VEM HOJE. ele ta te esperando. apaga tudo.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>A mensagem aparece como "enviada há 2 minutos". E logo abaixo, "usuário não encontrado": a conta sumiu de novo, como se nunca tivesse existido. Mas você leu.</p><p>Você está a 5 minutos da escola e a 15 minutos da Vila Industrial, a pé. Você vai:</p></div></div><div class="revelation-block"><div class="revelation-label">O que você faz?</div><ol class="revelation-list"><li><b>Ir pra escola e manter a cobertura</b>, usando o Wi-Fi de lá pra rastrear a placa BTE e o radialista morto da Rádio Nuvem</li><li><b>Cabular agora e ir direto pra torre de dia</b></li><li><b>Ir na delegacia com as provas:</b> bilhete, foto, marca de pneu</li></ol></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu vou normalmente para a escola. No caminho vou fazer uma anotação mental: "o antigo proprietário da rádio morreu…"</div></div></section><div class="finale-block"><p class="finale-quote">Ainda era manhã.<br>A noite, que sempre volta, tinha hora marcada.</p><div class="finale-divider"></div><div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Frequência Fantasma</div></div></div><div id="saga-end-sentinel" style="height:1px"></div><script>(function(){var t=document.querySelector(".floating-stats"),s=document.getElementById("saga-end-sentinel");if(!t||!s)return;new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)t.classList.add("visible")})}).observe(s)})();</script><script>
+(function(){
+var P=["volta","93.1","LEO","01:17","A GENTE OUVE VOCÊ DE VOLTA","NÃO VEM","ELE COPIA SUA VOZ","você anotou tudo certinho","aumenta o volume","faltava só você","você fechou a porta?","CAIXA","oitava cadeira","atende","fica"];
+var N="▒░#%/|01:.?";
+var still=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches;
+function rnd(a){return a[Math.floor(Math.random()*a.length)]}
+document.querySelectorAll(".edge").forEach(function(e){
+  var rows=[];
+  for(var i=0;i<6;i++){var s=document.createElement("span");e.appendChild(s);rows.push({el:s,cur:"",tgt:rnd(P),hold:0})}
+  rows.forEach(function(r){r.cur=r.tgt;r.el.textContent=r.cur});
+  if(still)return;
+  setInterval(function(){
+    var r=rnd(rows);
+    if(r.hold>0){r.hold--;if(Math.random()<.25&&r.cur){var k=Math.floor(Math.random()*r.cur.length);r.el.textContent=r.cur.slice(0,k)+rnd(N)+r.cur.slice(k+1)}else{r.el.textContent=r.cur}return}
+    var ok=r.tgt.indexOf(r.cur)===0;
+    if(!ok){r.cur=r.cur.slice(0,-1)}
+    else if(r.cur.length<r.tgt.length){r.cur+=Math.random()<.15?rnd(N):r.tgt.charAt(r.cur.length);if(r.cur.charAt(r.cur.length-1)!==r.tgt.charAt(r.cur.length-1)){r.tgt=r.tgt}}
+    else{r.hold=4+Math.floor(Math.random()*10);r.tgt=rnd(P);r.cur=r.cur;}
+    r.el.textContent=r.cur+(Math.random()<.5?"_":"");
+  },110);
+});
+})();
+</script>
+</body>
+</html>

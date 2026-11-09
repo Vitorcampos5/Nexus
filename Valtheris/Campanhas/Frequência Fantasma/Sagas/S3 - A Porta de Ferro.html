@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frequência Fantasma — A Porta de Ferro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void:        #070605;
+    --bg-deep:        #0f0d0a;
+    --bg-chamber:     #15120e;
+    --bg-card:        #1d1a14;
+    --bg-card-alt:    #191611;
+
+
+    --ink:            #f8cf92;
+    --ink-dim:        #f19d1f;
+    --ink-faint:      #935c09;
+
+    --blood:          #941410;
+    --blood-bright:   #d41d18;
+    --blood-glow:     #ff4640;
+
+    --silver:         #f8ce90;
+    --silver-dim:     #837666;
+    --rune-blue:      #f09a18;
+    --rune-glow:      #f6be6b;
+
+    --gold:           #f09815;
+    --gold-bright:    #f3ab40;
+
+    --sanity-color:   #f19d1e;
+    --sanity-dim:     #ac6c0b;
+    --sanity-glow:    #f9d8a6;
+
+    --cosmic:         #7d4e08;
+    --cosmic-glow:    #f1a12a;
+    --cosmic-text:    #f8d196;
+
+    --success:        #a1650a;
+    --success-bright: #ec940f;
+    --fail:           #9a1511;
+    --fail-bright:    #d41d18;
+    --crit-success:   #8b5709;
+    --crit-fail:      #6a0f0c;
+
+    --border-subtle:  rgba(255,255,255,0.04);
+    --border-dim:     rgba(255,255,255,0.08);
+    --border-gold:    rgba(240,152,21,0.3);
+    --border-blood:   rgba(148,20,16,0.4);
+    --border-rune:    rgba(240,154,24,0.35);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-void);
+    color: var(--ink);
+    font-family:'Source Serif 4',Georgia,serif;
+    font-size: 18px;
+    line-height: 1.85;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  /* ── LAYOUT WRAPPER ── */
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2rem 8rem;
+  }
+
+  /* ══════════════════════════════════════════
+     COVER / MASTHEAD
+  ══════════════════════════════════════════ */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 40%, rgba(148,20,16,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 50% 100%, rgba(240,154,24,0.06) 0%, transparent 60%);
+  }
+
+  .cover-eyebrow {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--silver-dim);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .cover-numeral {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: clamp(5rem, 18vw, 11rem);
+    font-weight: 900;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(148,20,16,0.5);
+    background: linear-gradient(180deg, rgba(148,20,16,0.3) 0%, transparent 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    margin-bottom: -0.1em;
+    opacity: 0;
+    animation: fadeUp 1s 0.5s forwards;
+    user-select: none;
+  }
+
+  .cover-divider {
+    width: 100%;
+    max-width: 500px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--blood) 30%, var(--blood) 70%, transparent);
+    margin: 1.5rem auto;
+    position: relative;
+    opacity: 0;
+    animation: fadeIn 1s 0.9s forwards;
+  }
+
+  .cover-divider::before,
+  .cover-divider::after {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--blood);
+    font-size: 0.6rem;
+  }
+  .cover-divider::before { left: calc(30% - 8px); }
+  .cover-divider::after  { right: calc(30% - 8px); }
+
+  .cover-title {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: clamp(1.4rem, 4vw, 2.4rem);
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    line-height: 1.3;
+    margin: 1rem 0 0.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.7s forwards;
+    text-shadow: 0 0 40px rgba(148,20,16,0.4);
+  }
+
+  .cover-subtitle {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.9rem;
+    letter-spacing: 0.3em;
+    color: var(--silver-dim);
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 1s 1s forwards;
+  }
+
+  .cover-scroll-hint {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeIn 1.5s 2s forwards;
+  }
+
+  .cover-scroll-hint span {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(180deg, var(--ink-faint), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ══════════════════════════════════════════
+     CHAPTER SECTIONS
+  ══════════════════════════════════════════ */
+  .chapter {
+    margin-top: 6rem;
+    padding-top: 2rem;
+  }
+
+  .chapter-header {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .chapter-number {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: var(--blood);
+    line-height: 1;
+    min-width: 2ch;
+    text-align: right;
+    text-shadow: 0 0 20px rgba(212,29,24,0.3);
+    flex-shrink: 0;
+  }
+
+  .chapter-title-block {
+    flex: 1;
+  }
+
+  .chapter-title {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    line-height: 1.2;
+  }
+
+  .chapter-rule {
+    height: 1px;
+    background: linear-gradient(90deg, var(--blood) 0%, rgba(148,20,16,0.15) 100%);
+    margin-top: 0.5rem;
+  }
+
+  /* ══════════════════════════════════════════
+     PROSE
+  ══════════════════════════════════════════ */
+  .prose {
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.9;
+    margin-bottom: 1.8rem;
+  }
+
+  .prose p { margin-bottom: 1.2em; }
+  .prose p:last-child { margin-bottom: 0; }
+
+  .prose strong {
+    font-weight: 600;
+    color: #faddb2;
+  }
+
+  .prose em {
+    font-style: italic;
+    color: var(--ink-dim);
+  }
+
+  /* Drop cap for first paragraph of each chapter */
+  .prose.with-dropcap p:first-child::first-letter {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 4.5em;
+    font-weight: 900;
+    float: left;
+    line-height: 0.75;
+    margin: 0.1em 0.1em -0.05em 0;
+    color: var(--blood);
+    text-shadow: 0 0 20px rgba(212,29,24,0.4);
+  }
+
+  /* ══════════════════════════════════════════
+     DICE ROLL BLOCKS
+  ══════════════════════════════════════════ */
+  .roll-block {
+    margin: 2rem 0;
+    border-left: 3px solid var(--rune-blue);
+    background: linear-gradient(135deg, rgba(240,154,24,0.05) 0%, rgba(11,10,8,0.6) 100%);
+    border-radius: 0 6px 6px 0;
+    padding: 1.2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .roll-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 3px;
+    background: var(--rune-blue);
+    box-shadow: 0 0 12px var(--rune-glow);
+  }
+
+  .roll-block.success {
+    border-left-color: var(--success-bright);
+    background: linear-gradient(135deg, rgba(161,101,10,0.07) 0%, rgba(11,10,8,0.6) 100%);
+  }
+  .roll-block.success::before { background: var(--success-bright); box-shadow: 0 0 12px var(--success-bright); }
+
+  .roll-block.fail {
+    border-left-color: var(--fail-bright);
+    background: linear-gradient(135deg, rgba(154,21,17,0.09) 0%, rgba(11,10,8,0.6) 100%);
+  }
+  .roll-block.fail::before { background: var(--fail-bright); box-shadow: 0 0 12px rgba(212,29,24,0.5); }
+
+  .roll-block.crit-success {
+    border-left-color: var(--rune-glow);
+    background: linear-gradient(135deg, rgba(139,87,9,0.12) 0%, rgba(11,10,8,0.6) 100%);
+  }
+  .roll-block.crit-success::before { background: var(--rune-glow); box-shadow: 0 0 18px var(--rune-glow); }
+
+  .roll-block.crit-fail {
+    border-left-color: #8b0400;
+    background: linear-gradient(135deg, rgba(106,15,12,0.15) 0%, rgba(11,10,8,0.6) 100%);
+  }
+  .roll-block.crit-fail::before { background: #8b0400; box-shadow: 0 0 18px rgba(139,4,0,0.7); }
+
+  .roll-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.6rem;
+  }
+
+  .roll-name {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--silver);
+  }
+
+  .roll-formula {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    color: var(--ink-dim);
+  }
+
+  .roll-result-line {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .roll-dice {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .roll-block.success    .roll-dice { color: var(--success-bright); }
+  .roll-block.fail       .roll-dice { color: var(--fail-bright); }
+  .roll-block.crit-success .roll-dice { color: var(--rune-glow); text-shadow: 0 0 12px var(--rune-glow); }
+  .roll-block.crit-fail  .roll-dice { color: #ff2720; text-shadow: 0 0 14px rgba(255,39,32,0.5); }
+
+  .roll-verdict {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 0.25em 0.8em;
+    border-radius: 2px;
+  }
+
+  .roll-block.success    .roll-verdict { background: rgba(161,101,10,0.2); color: var(--success-bright); border: 1px solid rgba(236,148,15,0.3); }
+  .roll-block.fail       .roll-verdict { background: rgba(154,21,17,0.2); color: var(--fail-bright);    border: 1px solid rgba(212,29,24,0.3); }
+  .roll-block.crit-success .roll-verdict { background: rgba(139,87,9,0.2); color: var(--rune-glow);   border: 1px solid rgba(246,190,107,0.4); }
+  .roll-block.crit-fail  .roll-verdict { background: rgba(106,15,12,0.3);  color: #ff4640;              border: 1px solid rgba(255,39,32,0.3); }
+
+  /* ══════════════════════════════════════════
+     STAT TRACKERS
+  ══════════════════════════════════════════ */
+  .tracker-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: 2rem 0;
+  }
+
+  .tracker {
+    flex: 1;
+    min-width: 180px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tracker.hp-tracker { border-color: var(--border-blood); }
+  .tracker.sanity-tracker { border-color: rgba(241,157,30,0.25); }
+
+  .tracker-label {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.4rem;
+  }
+
+  .tracker-values {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+  }
+
+  .tracker-current {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 2rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .hp-tracker .tracker-current { color: var(--blood-bright); text-shadow: 0 0 12px rgba(212,29,24,0.3); }
+  .sanity-tracker .tracker-current { color: var(--sanity-color); text-shadow: 0 0 12px rgba(241,157,30,0.3); }
+
+  .tracker-slash {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 1.2rem;
+    color: var(--ink-faint);
+  }
+
+  .tracker-max {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 1rem;
+    color: var(--ink-dim);
+  }
+
+  .tracker-bar {
+    margin-top: 0.7rem;
+    height: 3px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .tracker-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  .hp-tracker .tracker-fill { background: linear-gradient(90deg, var(--blood), var(--blood-bright)); }
+  .sanity-tracker .tracker-fill { background: linear-gradient(90deg, var(--sanity-dim), var(--sanity-color)); }
+
+  .tracker-delta {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    margin-top: 0.3rem;
+  }
+
+  /* ══════════════════════════════════════════
+     COMBAT BLOCK
+  ══════════════════════════════════════════ */
+  .combat-block {
+    margin: 2.5rem 0;
+    background: var(--bg-card-alt);
+    border: 1px solid var(--border-blood);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .combat-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--blood-bright), transparent);
+  }
+
+  .combat-header {
+    padding: 0.9rem 1.5rem;
+    background: rgba(148,20,16,0.12);
+    border-bottom: 1px solid var(--border-blood);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .combat-icon {
+    font-size: 1rem;
+    color: var(--blood-bright);
+  }
+
+  .combat-title {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--silver-dim);
+  }
+
+  .combat-body {
+    padding: 1.2rem 1.5rem;
+  }
+
+  .initiative-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .initiative-badge {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.3em 0.8em;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+
+  .initiative-badge.player  { color: var(--gold-bright); border-color: rgba(243,171,64,0.3); background: rgba(240,152,21,0.08); }
+  .initiative-badge.monster { color: var(--fail-bright); border-color: rgba(212,29,24,0.3);  background: rgba(154,21,17,0.1); }
+
+  .initiative-value {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--gold);
+  }
+
+  .initiative-label {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    color: var(--ink-dim);
+    font-size: 0.95rem;
+  }
+
+  /* ══════════════════════════════════════════
+     WHISPERS / COSMIC HORROR
+  ══════════════════════════════════════════ */
+  .whisper-block {
+    margin: 2rem 0;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, rgba(125,78,8,0.06) 0%, rgba(17,15,11,0.8) 100%);
+    border: 1px solid rgba(241,161,42,0.15);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .whisper-block::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 50% 50%, rgba(241,161,42,0.03), transparent 70%);
+    animation: cosmicPulse 6s ease-in-out infinite;
+  }
+
+  .whisper-label {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: rgba(241,161,42,0.5);
+    margin-bottom: 0.8rem;
+  }
+
+  .whisper-line {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    color: var(--cosmic-text);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    opacity: 0.85;
+  }
+
+  .whisper-line::before {
+    content: '"';
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 2rem;
+    color: rgba(241,161,42,0.3);
+    line-height: 0;
+    vertical-align: -0.5em;
+    margin-right: 0.1em;
+  }
+
+  /* ══════════════════════════════════════════
+     VISION / MEMORY BLOCK
+  ══════════════════════════════════════════ */
+  .vision-block {
+    margin: 2rem 0;
+    padding: 1.5rem 1.8rem;
+    background: rgba(19,17,13,0.7);
+    border-left: 2px solid var(--sanity-dim);
+    border-top: 1px solid rgba(241,157,30,0.15);
+    border-bottom: 1px solid rgba(241,157,30,0.15);
+    position: relative;
+  }
+
+  .vision-label {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--sanity-dim);
+    margin-bottom: 0.8rem;
+  }
+
+  .vision-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .vision-list li {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    color: rgba(249,216,166,0.75);
+    font-size: 0.98rem;
+    padding-left: 1.2rem;
+    position: relative;
+  }
+
+  .vision-list li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    font-size: 0.45rem;
+    color: var(--sanity-dim);
+    top: 0.55em;
+  }
+
+  /* ══════════════════════════════════════════
+     DIALOGUE BLOCK
+  ══════════════════════════════════════════ */
+  .dialogue {
+    margin: 1.5rem 0;
+    padding: 1.2rem 1.5rem;
+    background: rgba(255,255,255,0.02);
+    border-left: 2px solid var(--ink-faint);
+    border-radius: 0 4px 4px 0;
+  }
+
+  .dialogue.creature,.dialogue.npc {
+    border-left-color: var(--blood-bright);
+    background: rgba(148,20,16,0.06);
+  }
+
+  .dialogue.cultist {
+    border-left-color: var(--cosmic-glow);
+    background: rgba(125,78,8,0.06);
+  }
+
+  .dialogue.leyn {
+    border-left-color: var(--silver);
+    background: rgba(248,206,144,0.04);
+  }
+
+  .dialogue.aberration {
+    border-left-color: var(--sanity-color);
+    background: rgba(241,157,30,0.05);
+  }
+
+  .dialogue.gm {
+    border-left-color: var(--gold);
+    background: linear-gradient(135deg, rgba(240,152,21,0.04) 0%, rgba(11,10,8,0.3) 100%);
+    padding: 1.3rem 1.6rem;
+  }
+
+  .dialogue.gm .dialogue-speaker {
+    color: var(--gold);
+    letter-spacing: 0.4em;
+  }
+
+  .dialogue.gm .dialogue-text {
+    font-style: normal;
+    color: var(--ink);
+    font-size: 1.05rem;
+    line-height: 1.9;
+  }
+
+  .dialogue.gm .dialogue-text p {
+    margin-bottom: 1.1em;
+  }
+
+  .dialogue.gm .dialogue-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .dialogue.gm .dialogue-text strong {
+    font-weight: 600;
+    color: #faddb2;
+  }
+
+  .dialogue.gm .dialogue-text em {
+    font-style: italic;
+    color: var(--ink-dim);
+  }
+
+  /* drop cap inside GM narration block */
+  .dialogue.gm.with-dropcap .dialogue-text p:first-child::first-letter {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 4.5em;
+    font-weight: 900;
+    float: left;
+    line-height: 0.75;
+    margin: 0.1em 0.1em -0.05em 0;
+    color: var(--blood);
+    text-shadow: 0 0 20px rgba(212,29,24,0.4);
+  }
+
+  .dialogue-speaker {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .dialogue.creature,.dialogue.npc .dialogue-speaker  { color: var(--blood-bright); }
+  .dialogue.cultist  .dialogue-speaker  { color: var(--cosmic-glow); }
+  .dialogue.leyn     .dialogue-speaker  { color: var(--silver); }
+  .dialogue.aberration .dialogue-speaker { color: var(--sanity-color); }
+
+  .dialogue-text {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  /* ══════════════════════════════════════════
+     SECTION DIVIDER
+  ══════════════════════════════════════════ */
+  .scene-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem 0 2.5rem;
+  }
+
+  .scene-divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ink-faint));
+  }
+
+  .scene-divider-line:last-child {
+    background: linear-gradient(90deg, var(--ink-faint), transparent);
+  }
+
+  .scene-divider-glyph {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  /* ══════════════════════════════════════════
+     LORE CALLOUT
+  ══════════════════════════════════════════ */
+  .lore-callout {
+    margin: 2rem 0;
+    padding: 1.4rem 1.8rem;
+    background: linear-gradient(135deg, rgba(240,152,21,0.05) 0%, transparent 80%);
+    border: 1px solid var(--border-gold);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .lore-callout::before {
+    content: '✦';
+    position: absolute;
+    top: -0.5em;
+    left: 1.5rem;
+    background: var(--bg-void);
+    padding: 0 0.4em;
+    color: var(--gold);
+    font-size: 0.7rem;
+  }
+
+  .lore-title {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+  }
+
+  .lore-text {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    color: var(--ink-dim);
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+
+  /* ══════════════════════════════════════════
+     DEATH SAVE BLOCK
+  ══════════════════════════════════════════ */
+  .death-save {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(106,15,12,0.2) 0%, rgba(11,10,8,0.8) 100%);
+    border: 1px solid rgba(139,4,0,0.5);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .death-save::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 100%, rgba(212,29,24,0.08), transparent 70%);
+    animation: deathPulse 3s ease-in-out infinite;
+  }
+
+  .death-save-title {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #ff2720;
+    margin-bottom: 0.8rem;
+    position: relative;
+  }
+
+  .death-save-dots {
+    display: flex;
+    gap: 0.5rem;
+    position: relative;
+  }
+
+  .death-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(139,4,0,0.6);
+  }
+
+  .death-dot.filled {
+    background: var(--blood-bright);
+    border-color: var(--blood-bright);
+    box-shadow: 0 0 8px rgba(212,29,24,0.5);
+  }
+
+  .death-dot.empty {
+    background: transparent;
+  }
+
+  /* ══════════════════════════════════════════
+     REVELATION BLOCK (Intuição crítica)
+  ══════════════════════════════════════════ */
+  .revelation-block {
+    margin: 2rem 0;
+    padding: 1.5rem 1.8rem;
+    background: linear-gradient(160deg, rgba(240,154,24,0.08) 0%, rgba(11,10,8,0.6) 100%);
+    border: 1px solid var(--border-rune);
+    border-radius: 6px;
+    position: relative;
+  }
+
+  .revelation-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--rune-blue), transparent);
+    box-shadow: 0 0 8px var(--rune-glow);
+  }
+
+  .revelation-label {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--rune-blue);
+    margin-bottom: 0.8rem;
+  }
+
+  .revelation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    list-style: none;
+    counter-reset: revelation;
+  }
+
+  .revelation-list li {
+    counter-increment: revelation;
+    padding-left: 2.2rem;
+    position: relative;
+    font-size: 0.98rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  .revelation-list li::before {
+    content: counter(revelation);
+    position: absolute;
+    left: 0;
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--rune-blue);
+    background: rgba(240,154,24,0.15);
+    border: 1px solid rgba(240,154,24,0.2);
+    border-radius: 2px;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0.2em;
+  }
+
+  /* ══════════════════════════════════════════
+     FINAL MOMENT
+  ══════════════════════════════════════════ */
+  .finale-block {
+    margin: 3rem 0 0;
+    text-align: center;
+    padding: 3rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .finale-block::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(148,20,16,0.08), transparent);
+  }
+
+  .finale-quote {
+    font-family:'Source Serif 4',Georgia,serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--ink-dim);
+    line-height: 1.8;
+    position: relative;
+    max-width: 560px;
+    margin: 0 auto 2rem;
+  }
+
+  .finale-quote em {
+    color: var(--ink);
+    font-style: normal;
+  }
+
+  .finale-divider {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--blood), transparent);
+    margin: 0 auto 2rem;
+  }
+
+  .finale-coda {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ══════════════════════════════════════════
+     SIDEBAR STAT STRIP (sticky)
+  ══════════════════════════════════════════ */
+  .floating-stats {
+    position: fixed;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+  }
+
+  .floating-stats.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .stat-pip {
+    width: 40px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 4px;
+    padding: 0.5rem 0.4rem;
+    text-align: center;
+  }
+
+  .stat-pip-label {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.45rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .stat-pip-value {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.9rem;
+    font-weight: 900;
+    display: block;
+  }
+
+  .stat-pip.hp  .stat-pip-value { color: var(--blood-bright); }
+
+  .stat-pip-sub {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.5rem;
+    color: var(--ink-faint);
+    display: block;
+    letter-spacing: 0.1em;
+    margin-top: 0.1rem;
+  }
+
+  .stat-pip.san .stat-pip-value { color: var(--sanity-color); }
+
+  @media (max-width: 1100px) {
+    .floating-stats { display: none; }
+  }
+
+  /* ══════════════════════════════════════════
+     ANIMATIONS
+  ══════════════════════════════════════════ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50%       { opacity: 0.8; transform: scaleY(1.1); }
+  }
+
+  @keyframes cosmicPulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50%       { opacity: 0.7; transform: scale(1.05); }
+  }
+
+  @keyframes deathPulse {
+    0%, 100% { opacity: 0.5; }
+    50%       { opacity: 1; }
+  }
+
+  @keyframes runeFlicker {
+    0%, 95%, 100% { opacity: 1; }
+    96%, 98%       { opacity: 0.4; }
+    97%, 99%       { opacity: 0.9; }
+  }
+
+  .rune-flicker { animation: runeFlicker 8s ease-in-out infinite; }
+
+  /* ══════════════════════════════════════════
+     RESPONSIVE
+  ══════════════════════════════════════════ */
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .page-wrapper { padding: 0 1.2rem 5rem; }
+    .cover { min-height: 85vh; padding: 4rem 1.2rem; }
+    .chapter-header { gap: 0.8rem; }
+    .chapter-number { font-size: 2rem; }
+    .roll-block { padding: 1rem 1.1rem; }
+    .tracker-row { flex-direction: column; }
+    .revelation-block, .lore-callout, .combat-block { margin: 1.5rem 0; }
+    .prose.with-dropcap p:first-child::first-letter { font-size: 3.5em; }
+  }
+
+  /* ══════════════════════════════════════════
+     AMPULHETA — DIVISOR TEMPORAL
+  ══════════════════════════════════════════ */
+  @keyframes hourglass-turn {
+    0%   { transform: rotate(0deg); }
+    40%  { transform: rotate(0deg); }
+    50%  { transform: rotate(180deg); }
+    90%  { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .scene-divider-hourglass {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-shrink: 0;
+  }
+
+  .hourglass-svg {
+    animation: hourglass-turn 5s ease-in-out infinite;
+    transform-origin: 12px 14px;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .scene-divider-time {
+    font-family:'Special Elite','Courier New',monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.35em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .scene-divider-time.highlight {
+    color: var(--gold);
+    opacity: 0.65;
+  }
+:root{--k-bia:#ff9ec4;--k-mae:#ffb3c7;--k-cida:#5fe0b0;--k-num:#5ff0d0;--k-thing:#6fd3dc;--k-lari:#ff6b78;--k-pai:#ffa24a;--k-ademir:#c4b49a;--k-note:#8fb0ff;--acc:#ff3c38;--card:rgba(20,16,12,.85);--mut:#8fa39a;--fg:#e8e2d0}
+em[class*=v-]{display:inline-block}
+.m[class*=v-]{border-left-color:var(--c,var(--acc))}
+.v-leo,.x{--c:#e0303c;animation:hb 2.4s ease-in-out infinite}
+@keyframes hb{0%,100%{text-shadow:0 0 0 rgba(224,48,60,0)}50%{text-shadow:0 0 10px rgba(224,48,60,.5)}}
+.v-pai{--c:var(--k-pai);color:var(--k-pai);font:800 15px/1.5 Impact,"Arial Narrow",sans-serif;animation:sh 3.4s infinite}
+@keyframes sh{0%,92%,100%{transform:none}94%{transform:translate(2px,-1px)}96%{transform:translate(-2px,1px)}98%{transform:translate(1px,0)}}
+.v-mae{--c:var(--k-mae);color:var(--k-mae);font-style:italic;animation:br 4.5s ease-in-out infinite}
+@keyframes br{0%,100%{opacity:.78}50%{opacity:1}}
+.v-edson{--c:#9c8a62;font-family:"Courier New",monospace;text-shadow:1px 0 2px rgba(130,105,60,.55),-1px 0 3px rgba(130,105,60,.4);animation:tw 6s ease-in-out infinite}
+@keyframes tw{0%,100%{letter-spacing:0}50%{letter-spacing:.035em}}
+.v-prof{--c:#888;color:var(--mut);font-variant:small-caps;letter-spacing:.04em}
+.v-cida{--c:var(--k-cida);color:var(--k-cida);font-family:system-ui,sans-serif;letter-spacing:.05em}
+.v-cida::after{content:" ▮";animation:bl 1.2s steps(2) infinite}
+@keyframes bl{50%{opacity:0}}
+.v-carlos{--c:#8a8f3a;font:700 15px "Arial Narrow",Impact,sans-serif;text-transform:uppercase;animation:nv .5s steps(2) infinite}
+@keyframes nv{0%{transform:translate(.7px,0)}100%{transform:translate(-.7px,.5px)}}
+.v-ademir{--c:var(--k-ademir);color:var(--k-ademir);filter:url(#rasp);animation:sm 5s linear infinite}
+@keyframes sm{0%{text-shadow:0 0 6px rgba(150,150,150,0)}50%{text-shadow:0 -8px 10px rgba(150,150,150,.45)}100%{text-shadow:0 -15px 14px rgba(150,150,150,0)}}
+.v-corsa{--c:#c0392b;font-family:"Courier New",monospace;text-transform:uppercase;letter-spacing:.12em;text-shadow:-2px 0 rgba(255,0,60,.7),2px 0 rgba(0,220,255,.7);animation:fl 3s steps(1) infinite}
+@keyframes fl{0%,88%,100%{opacity:1;transform:none}90%{opacity:.4;transform:translateX(3px)}92%{opacity:1}95%{opacity:.5;transform:translateX(-3px)}97%{opacity:1;transform:none}}
+.v-bia{--c:var(--k-bia);color:var(--k-bia);font:16px/1.5 "Comic Sans MS","Chalkboard SE","Comic Neue",cursive;animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+.v-bia.v-copy{--c:var(--k-thing);color:var(--k-thing);filter:url(#wave);text-shadow:0 3px 0 rgba(255,158,196,.45);animation:none}
+.v-lvoz{--c:var(--k-lari);color:var(--k-lari);font:italic 17px/1.5 "Bradley Hand","Segoe Print","Chalkboard SE",cursive;text-shadow:3px 0 0 rgba(255,107,120,.35),7px 0 2px rgba(255,107,120,.2),11px 0 4px rgba(255,107,120,.1)}
+.v-falsa{--c:var(--k-thing);color:var(--k-lari);font:italic 17px/1.5 "Bradley Hand","Segoe Print","Chalkboard SE",cursive;text-shadow:2px 0 0 rgba(111,211,220,.55);animation:ck 2.6s steps(1) infinite}
+@keyframes ck{0%,88%,100%{transform:none;filter:none}90%{transform:translateX(-4px) skewX(-6deg);filter:hue-rotate(160deg)}94%{transform:translateX(3px);filter:hue-rotate(160deg)}97%{transform:none;filter:none}}
+.v-thing{--c:var(--k-thing);color:var(--k-thing);filter:url(#wave);font-style:italic;letter-spacing:.05em;animation:dr 3.2s ease-in infinite}
+@keyframes dr{0%{text-shadow:0 1px 1px rgba(10,60,70,.5)}100%{text-shadow:0 14px 7px rgba(10,60,70,0)}}
+.v-eco{--c:#999;font-weight:700;animation:ec 2.4s ease-in-out infinite}
+@keyframes ec{0%,100%{text-shadow:-6px 0 0 rgba(150,150,150,.45),-12px 0 0 rgba(150,150,150,.25),-18px 0 0 rgba(150,150,150,.12)}50%{text-shadow:-3px 0 0 rgba(150,150,150,.5),-6px 0 0 rgba(150,150,150,.3),-9px 0 0 rgba(150,150,150,.15)}}
+.v-num{--c:var(--k-num);color:var(--k-num);font-family:"Courier New",monospace;text-shadow:0 0 6px rgba(0,255,200,.25);background-image:repeating-linear-gradient(0deg,rgba(0,255,200,.05) 0 1px,transparent 1px 3px)}
+.v-num::after{content:"▌";animation:bl 1s steps(2) infinite}
+.m.v-tv{background:#0d2a66;color:#fff;border-left-color:#e11;font:600 13px/1.5 Arial,sans-serif;text-transform:uppercase;letter-spacing:.04em}
+.m.v-tv::before{content:"● AO VIVO";display:block;color:#ff6b6b;font-size:11px;animation:bl 1s steps(2) infinite}
+.m.v-zap{background:#1f5c3a;color:#e9fff1;border-left:0;border-radius:12px;font:15px/1.4 system-ui,sans-serif}
+.m.v-note{--c:var(--k-note);color:var(--k-note);background-image:repeating-linear-gradient(transparent 0 22px,rgba(80,110,200,.28) 22px 23px);line-height:23px}
+.m.v-lnote{--c:#b3121f;background:#f3ecd2;color:#b3121f;font:italic 18px/1.4 "Bradley Hand","Segoe Print","Chalkboard SE",cursive;transform:rotate(-.8deg);box-shadow:2px 3px 0 rgba(0,0,0,.3)}
+.edge{position:fixed;top:0;bottom:0;width:clamp(16px,calc((100vw - 660px)/2),110px);z-index:1;pointer-events:none;overflow:hidden;font:11px/1.2 "Courier New",monospace;letter-spacing:.3em;color:var(--acc);opacity:.4;writing-mode:vertical-rl;user-select:none;-webkit-mask-image:linear-gradient(transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(transparent,#000 12%,#000 88%,transparent)}
+.edge.l{left:0}.edge.r{right:0;transform:rotate(180deg)}
+.edge span{display:block;white-space:nowrap;padding:0 2px}
+.edge::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");opacity:.14;mix-blend-mode:overlay;animation:ns .5s steps(5) infinite}
+@keyframes ns{0%{background-position:0 0}20%{background-position:-30px 20px}40%{background-position:20px -40px}60%{background-position:-50px -10px}80%{background-position:10px 30px}100%{background-position:0 0}}
+@media (prefers-reduced-motion:reduce){[class*=v-],.x,.edge::after{animation:none!important}}
+
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;background:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px);mix-blend-mode:overlay}
+.header-title,.char-name,.cover-title,.title,.cover-numeral{text-shadow:0 0 16px rgba(255,159,28,.35),2px 0 rgba(255,60,56,.4),-2px 0 rgba(143,163,154,.3)}
+.panel,.stat-box,.lore-item,.char-item,.ability-item,.attack-item,.equip-item,.save-item,.skill-row,.nature-box,.vital-card{opacity:1!important;transform:none!important}
+.dialogue.npc{border-left-color:var(--acc);background:rgba(255,60,56,.04)}
+.dialogue .v-leo,.dialogue.leyn{--c:#ff3c38}
+.dialogue-text p.r,.dialogue-text .r{color:#ff3c38;font-weight:700;letter-spacing:.12em}
+@media (prefers-reduced-motion:reduce){body::after{display:none}}
+</style>
+</head>
+<body>
+<div class="floating-stats"><div class="stat-pip"><span class="stat-pip-label" style="letter-spacing:.15em;">FIM DA SAGA</span></div><div class="stat-pip hp"><span class="stat-pip-label">PV</span><span class="stat-pip-value">12</span><span class="stat-pip-sub">/ 12</span></div><div class="stat-pip san"><span class="stat-pip-label">SAN</span><span class="stat-pip-value">46</span><span class="stat-pip-sub">/ 55</span></div></div><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="rasp"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="1" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="2.2"/></filter><filter id="wave" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="turbulence" baseFrequency=".01 .06" numOctaves="1" result="w"><animate attributeName="baseFrequency" dur="6s" values=".01 .06;.012 .09;.01 .06" repeatCount="indefinite"/></feTurbulence><feDisplacementMap in="SourceGraphic" in2="w" scale="5"/></filter></defs></svg><div class="edge l" aria-hidden="true"></div><div class="edge r" aria-hidden="true"></div><div class="cover"><div class="cover-eyebrow">Frequência Fantasma &nbsp;·&nbsp; Presidente Prudente</div><div class="cover-numeral">III</div><div class="cover-divider"></div><h1 class="cover-title">A Porta de Ferro</h1><p class="cover-subtitle">Saga III &nbsp;·&nbsp; Léo &nbsp;·&nbsp; 11:20 – 12:05</p><div class="cover-scroll-hint"><span>Role para baixo</span><div class="scroll-line"></div></div></div><div class="page-wrapper"><section class="chapter"><div class="chapter-header"><div class="chapter-number">I</div><div class="chapter-title-block"><div class="chapter-title">Moço, Você Vai na Torre?</div><div class="chapter-rule"></div></div></div><div class="dialogue gm with-dropcap "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você decide ir pela frente mesmo. <em>"Já fui liberado mesmo, foda-se."</em> Atravessa a rua, lanterna na mão, e entra pelo portão da frente da E.E. Joaquim Murtinho.</p><p>Pátio movimentado: turmas reunidas por ordem da direção, um policial na secretaria, cheiro de merenda. Três pessoas te veem. A inspetora <b>Sônia</b>, na porta da cantina, faz sinal com a cabeça: <em class="v-prof">"Liberado cedo hoje?"</em> Seu amigo <b>Rafael</b>, da sua sala: <em>"Ué, mano, você não tava passando mal? Voltou?"</em> E no fundo do pátio, encostada no muro, a <b>Bia</b>, a filha do Ademir. Sete anos, uniforme, mochila maior que ela, uma garrafinha de água rosa na mão. Sozinha. Não está na fila da turma dela. Está parada, olhando pra você, fixo. Você nunca a viu antes.</p><p>Ela levanta a mãozinha e te chama, baixinho:</p></div></div><div class="dialogue npc v-bia"><div class="dialogue-speaker">Bia</div><div class="dialogue-text">Moço… você vai na torre?</div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu não vou nem responder eles, só vou seguir o caminho até a torre.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você passa reto pela Sônia, ignora o Rafael, finge que não ouviu a Bia. Atravessa o pátio rápido, cabeça baixa, e sai pelo portão dos fundos, que dá direto na Rua da Pedreira. O barulho da escola fica pra trás.</p><p><b>11:27 – Rua da Pedreira.</b> Rua de terra. Sem asfalto. Casas abandonadas. Mato alto. Muito mais quente aqui, sem sombra. A torre está na sua frente, gigante, uns 30 metros. Concreto todo rachado, pichado com "CV" e "FACÇÃO". A caixa d'água lá em cima, de metal, rangendo com o vento. Na base, uma portinha de ferro enferrujada, entreaberta. No chão em volta dela, marcas frescas de chinelo pequeno. E uma <b>garrafinha de água rosa</b>, caída, igual à que a Bia segurava agora há pouco.</p><p>Um vento frio sai de dentro da torre, mesmo com 35 graus lá fora. Cheiro de ferrugem e água parada. O que você faz?</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Que porra é essa? A Bia tava no pátio agora de pouco… por que tem objetos dela aqui?</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você olha pra garrafinha. Ainda tá suada. Gelada. Como se alguém tivesse acabado de largar. Você olha pra trás: dá pra ver o muro da escola daqui. A Bia não está mais lá. Ou você não consegue ver de tão longe. O vento frio traz um som baixinho. Uma música de caixinha de música, daquela de bailarina.</p><p><em>…Tlim… tlim… tlim…</em></p><p>E junto, uma voz de criança, ecoando dentro do concreto:</p></div></div><div class="dialogue npc v-bia v-copy"><div class="dialogue-speaker">Bia?</div><div class="dialogue-text">Moço… você esqueceu a lanterna?</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>É a voz da Bia. Mas vem de DENTRO da torre. De cima. A portinha range e abre mais um pouco sozinha. Lá dentro é escuro total, mesmo com sol lá fora.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Droga, isso não faz sentido… merda, droga de fenômeno sobrenatural. Vou dizer em tom claro, pro que quer que esteja lá dentro copiando as pessoas:</div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo</div><div class="dialogue-text">— VOCÊ DEU AZAR! EU VOU SER A ÚLTIMA PESSOA QUE VOCÊ VAI ATORMENTAR!</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Sua voz ecoa dentro da torre. Volta 3 vezes. <em>Atormentar… atormentar… atormentar…</em> Silêncio. A musiquinha para. Por um segundo, nada. Aí, de dentro, uma risadinha de criança. Mas errada. Longa demais. E uma voz responde. Não é mais da Bia. É da Lari.</p></div></div><div class="dialogue npc v-lvoz"><div class="dialogue-speaker">Voz da Lari</div><div class="dialogue-text">Você demorou, né? Achei que tinha esquecido de mim.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>A porta de ferro abre de vez, com um rangido forte. Lá dentro, pegadas molhadas subindo a escada. E no meio delas, o celular da Lari, com a tela acesa, tocando a música do TikTok que ela ouvia direto.</p></div></div></section><div class="scene-divider"><div class="scene-divider-line"></div><span class="scene-divider-time">11:32</span><div class="scene-divider-line"></div></div><section class="chapter"><div class="chapter-header"><div class="chapter-number">II</div><div class="chapter-title-block"><div class="chapter-title">Chap… Chap… Chap…</div><div class="chapter-rule"></div></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu vou pegar o canivete. Tomar um pouco da água. E manter a lanterna na cintura, acesa, enquanto entro na torre.</div></div><div class="dialogue gm with-dropcap "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você abre a lâmina. Frio na mão. Bebe um gole grande, a água gelada desce queimando. Prende a lanterna amarela na cintura, acesa, a luz tremendo no escuro. Você entra. <b>11:32.</b></p><p>O ar muda na hora. De 35 graus pra uns 15. Cheiro forte de limo, ferrugem e água velha. O facho pega paredes redondas de concreto escorrendo água. Poças pretas no chão. Uma <b>escada de concreto em caracol</b>, sem corrimão, toda molhada. No 3º degrau, o celular da Lari, tela acesa, tocando um áudio sozinho: <em class="v-lvoz">"mano, cê tá vindo mesmo? tô com medo…"</em></p><p>E lá em cima, uns 20 metros, passos descalços na água.</p><p><em>Chap… chap… chap…</em> Alguém está descendo. Você sobe pra encontrar, ou se esconde atrás do pilar?</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu vou esperar o que quer que seja descer.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você encosta as costas na parede gelada. Canivete na frente. Respiração presa. Os passos descem devagar, cada degrau rangendo, água pingando do teto na sua cabeça. Sua luz bate em <b>pés de criança</b>. Brancos demais. Molhados. Depois pernas finas. Uma saia xadrez de uniforme igual à da Bia e, no peito, dois crachás balançando em cordões azuis. Ela vira no lance da escada. E para.</p><p><b>Não é a Bia.</b></p><p>É uma menina parecida com a Bia, mas o rosto está todo esticado. Sorriso grande demais. Olhos sem brilho. Molhada da cabeça aos pés, cabelo grudado na cara. Ela inclina a cabeça pro lado. <span class="r">Estala.</span></p></div></div><figure style="margin:1.8rem auto;max-width:520px;text-align:center"><img src="../Fichas/Perfil%20-%20A%20Entidade%2093.1.jpg" alt="A manifestação na escada: menina de uniforme xadrez, cabelo molhado, sorriso largo demais, crachás no pescoço e rostos presos na parede" style="width:100%;border:1px solid rgba(255,159,28,.35);box-shadow:0 0 40px rgba(255,60,56,.25);border-radius:3px"><figcaption style="font-style:italic;font-size:.85rem;opacity:.7;margin-top:.6rem">A manifestação que desce a escada.</figcaption></figure><div class="dialogue npc v-thing"><div class="dialogue-speaker">A Criatura</div><div class="dialogue-text">Você trouxe a lanterna pra mim, moço?</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Ela estica a mão. Os dedos são longos demais. Unhas pretas de limo. Está a 4 metros, no meio da escada. O celular da Lari ainda toca no degrau: <em class="v-lvoz">"mano, cê tá vindo mesmo? tô com medo…"</em> O que você faz?</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu vou virar a luz da lanterna para o que deve ser o rosto dessa criatura. <small>(pensando)</small> Merda, merda, merda… os 7 desaparecidos já devem estar mortos, a Lari também.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você pega a lanterna e vira o facho direto no rosto dela. <b>A LUZ BATE.</b> A criatura grita. Não é grito de criança: é metal arranhando concreto. Leva as mãos longas ao rosto. A pele ferve onde a luz pega. Sai fumaça. Cheiro de carne queimada com cloro. Ela cai de joelhos na escada.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo</div><div class="dialogue-text">— O QUE VOCÊ É?! O QUE VOCÊ FEZ COM A LARI?!</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Ela ri, mesmo queimando. A boca rasga até a orelha.</p></div></div><div class="dialogue npc v-thing"><div class="dialogue-speaker">A Criatura</div><div class="dialogue-text">A Lari? A Lari tá aqui. Todas tão aqui. Dentro da água. Quer ver?</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Ela bate a mão na parede molhada. A água que escorre muda. Você vê <b>rostos</b>. Presos atrás do concreto molhado, tentando sair. Sete. Uma delas é a Lari. De olhos fechados. Boca aberta, como quem se afoga. Todos olhando pra você.</p><p>A criatura se arrasta pra cima de você, mesmo com a luz queimando. A 2 metros.</p></div></div><div class="dialogue npc v-thing"><div class="dialogue-speaker">A Criatura</div><div class="dialogue-text">Agora você fica também.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Ela pula em você.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu vou avançar também. Vou virar um soco no rosto da criatura, bem onde a lanterna queimou, o ponto cego dela. Enquanto grito: "Miserável, eu não vou te perdoar por isso!"</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você não recua. Você avança. Soco com toda a raiva no meio da queimadura. Seu punho afunda. Não é pele. É mole, gelatinoso, frio como água de caixa d'água velha. <span class="r">PLOFT.</span></p><p>A criatura grita e voa pra trás, bate as costas na parede. O rosto racha onde você socou, uma fenda preta, e sai água preta, fedida, com cabelos de criança. Ela tenta fugir escada acima. Quando vira as costas, você vê, <b>costurado na pele</b>, o crachá da escola da Lari. Com foto. Lá de cima da caixa d'água, um choro abafado de várias crianças batendo na tampa. <em>Tum… tum… tum…</em></p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Você não vai me enganar, monstro asqueroso. Vou fincar o canivete na jugular dela. Enquanto continuo apontando a lanterna para ela.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você pula em cima dela. Joelho no peito gelatinoso. As unhas de limo tentando te arranhar. A lanterna na cara dela, que fecha os olhos e grita. E com a direita você levanta o canivete e <b>FINCA. COM TUDO. NA JUGULAR.</b></p><p>Não sai sangue. Sai ÁGUA. Água preta, fedida, com lodo, jorrando na sua cara, na sua roupa, cheiro de esgoto. A criatura se debate, as pernas batem na escada, a boca rasgada abre e fecha.</p></div></div><div class="dialogue npc v-thing"><div class="dialogue-speaker">A Criatura</div><div class="dialogue-text">você… você…</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você gira o canivete. Afunda mais. <span class="r">GLUB.</span> O corpo murcha como uma bexiga furada. A pele que parecia de criança esvazia, encolhe. Sobra uma pele vazia no degrau, cheia de água preta. Dentro dela, boiando: chaves, pulseiras e crachás de escola e de trabalho. <b>Sete crachás</b>. E o celular da Lari, ainda aceso.</p><p>O choro lá de cima para de repente. Silêncio total. Depois, uma voz fraca, de criança, lá da caixa d'água: <em class="v-bia v-copy">"Moço? A gente tá presa… a água tá subindo…"</em> E outra: <em class="v-lvoz">"Mano, me ajuda, por favor!"</em> Sua lanterna pisca. A pilha velha está acabando. Você sobe?</p></div></div></section><div class="scene-divider"><div class="scene-divider-line"></div><span class="scene-divider-time">11:38</span><div class="scene-divider-line"></div></div><section class="chapter"><div class="chapter-header"><div class="chapter-number">III</div><div class="chapter-title-block"><div class="chapter-title">A Pele Vazia</div><div class="chapter-rule"></div></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Geralmente, histórias de horror não têm final feliz, no máximo agridoce. Eu prefiro parar na parte onde as vozes lá de cima somem. Elas seriam só uma tentativa de manipulação da criatura. Eu não subi a escada. Eu parei olhando para os crachás com fotos das desaparecidas. Vou pegar cada um deles e pôr na minha bolsa, mantendo o olho no corpo do monstro.</div></div><div class="dialogue gm with-dropcap "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>As vozes lá de cima somem. Silêncio. Você fica de olho no corpo, canivete ainda pingando água preta, lanterna piscando fraca. Se abaixa devagar, sem tirar o olho da pele vazia, e pega um por um: <b>1. Larissa Costa – E.E. Joaquim Murtinho</b>; 2. Rodrigo A. – crachá de funcionário, posto 24h; 3. Ana Clara… 4… até 7. Plástico molhado, frio. No fundo da pele, que não boiou, uma <b>chavinha enferrujada</b> com uma etiqueta de papelão molhada escrita à mão: <b>"CAIXA"</b>.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Vou jogar a água da minha garrafa no rosto pra limpar. Em seguida vou pegar a pele murcha desse monstro e pôr na garrafa, se possível, é claro.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>A água gelada tira o lodo dos seus olhos, da boca. Você cospe. Gosto de lodo e ferrugem. Quanto à pele: do tamanho de uma criança de 10 anos, enrugada, como borracha molhada. Você tenta enfiar na boca da garrafa. Escorregadia, grudenta, fria. Não cabe. Quando aperta, sai mais água preta e o fedor piora. Mas sob os dedos, no meio da pele, onde seria a barriga, há um <b>caroço</b>.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu corto por entre a pele e vejo o que é esse caroço. Além disso, eu pego a chave. (Como está meu inventário agora?)</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você guarda a chavinha no bolso da calça. Segura a pele (fria, parece couro molhado) e corta. <em>Tec.</em> A pele é grossa, você tem que fazer força. Quando rasga, não sai sangue. Sai lodo preto, cheiro podre. Dentro, grudado no lodo, um saco plástico pequeno, amarrado com arame enferrujado. Bem velho. Você puxa: um <b>celular flip</b> antigo, todo corroído de água, e uma <b>bonequinha de plástico sem um olho</b>, toda roída. Na capinha do celular, uma foto desbotada colada com durex: uma mulher adulta segurando uma menina no colo, na frente desta mesma torre. Deve ter uns 15 anos.</p></div></div><div class="dialogue npc "><div class="dialogue-speaker">Mensagem</div><div class="dialogue-text"><b>INVENTÁRIO · 11:38</b><br/>Mão direita: canivete sujo de água preta · Cintura: lanterna amarela, bateria fraca · Bolso: chavinha "CAIXA" · Mochila: garrafa com ~100 ml, saco com celular flip + bonequinha sem olho · Bolsa lateral: 7 crachás (inclui a Lari) · Chão: a pele rasgada, vazando lodo</div></div></section><section class="chapter"><div class="chapter-header"><div class="chapter-number">IV</div><div class="chapter-title-block"><div class="chapter-title">Você Nunca Saiu</div><div class="chapter-rule"></div></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu vou sair da torre e voltar para a escola. Se perguntarem o que aconteceu, vou dizer que acabei escorregando no caminho da torre.</div></div><div class="dialogue gm with-dropcap "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você limpa o canivete na parede, fecha. Desce a escada pulando os degraus molhados. Sai pela porta de ferro. O sol de 35 graus te acerta na cara. Você olha pra trás uma vez. A torre está quieta. Porta aberta. Nada se mexe. Você caminha de volta, camiseta suja de água preta, rosto molhado. Chega na escola.</p></div></div><div class="dialogue npc v-carlos"><div class="dialogue-speaker">Seu Carlos</div><div class="dialogue-text">Ô! Moleque! Onde cê tava? O pessoal da secretaria tá te procurando, sua amiga Lari sumiu!<br/><span class="v-prof"><b>Professora:</b> Meu Deus, o que aconteceu com você? Tá todo sujo!</span></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Da forma que eu planejei mesmo. Em seguida vou pro banheiro me limpar.</div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo</div><div class="dialogue-text">— Acabei escorregando no caminho da torre. Tem lodo lá, caí de cara.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>O porteiro franze a testa: <em class="v-carlos">"Torre? Não era pra ir pra lá, já falei! Tá cheio de buraco!"</em> Você entra. Corredor vazio, a diretora no rádio: <em class="v-prof">"Lari ainda não apareceu."</em> Banheiro masculino do fundo. Luz fluorescente piscando. Você tranca a porta. Espelho rachado. Abre a torneira. E quando abre a mochila pra pegar a garrafa, vê que a bolsa lateral, onde estavam os 7 crachás, está <b>cheia de água preta, pingando</b>. Um oitavo crachá boia nela. Sem foto. Em branco. Só o nome escrito à mão, caneta borrada: <b>o seu.</b> A água da torneira começa a sair preta também. O que você faz?</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu fecho meus olhos e me concentro, respiro fundo, tento sentir o cheiro do ambiente. Quero tentar perceber se ainda estou na torre.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>1… 2… 3… No banheiro da escola era pra ter desinfetante barato, xixi velho, sabonete. Você não sente nada disso. Sente <b>ferro molhado, concreto úmido, lodo velho, água parada há anos</b>. O mesmo cheiro de dentro da torre.</p><p>Você abre os olhos, devagar. Não está no banheiro da escola. <b>Você nunca saiu da torre.</b></p><p>Está sentado no chão, no meio da escada em caracol, no escuro. A lanterna apagada no colo. Na sua frente, a pele vazia da criatura está inteira de novo. Sem rasgo. Inflada. De pé. Te olhando. Usa os 7 crachás pendurados no pescoço, como colar. Sorri com aquela boca rasgada. E atrás dela, na parede, nomes riscados com unha. Centenas. Bem antigos. O último, fresco, riscado com água preta, é o seu.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu me levanto. Fecho a minha guarda e declaro: "Eu já disse, você não vai me enganar, e também não vai atrás de mais ninguém. Vamos acabar com isso aqui e agora." Eu vou preparar um chute para acertar ela.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Suas pernas estão bambas, escorregadias de lodo, mas você firma. Joelho dobrado. Canivete na direita. A criatura inclina a cabeça; os crachás balançam no pescoço dela, <em>tlec tlec tlec</em>. Ela não ataca. Só abre a boca rasgada e aponta para o seu bolso, onde está a chavinha "CAIXA". Ela quer que você suba. Onde você mira?</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Não vou ser mais uma das suas vítimas. Eu chuto o tronco dela.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você solta o peso do corpo todo. <span class="r">PLOFT!</span> Seu pé afunda. A pele não resiste. Igual chutar uma bexiga cheia. A criatura não cai: <b>ESTOURA</b>. Água preta pra todo lado, uma quantidade absurda de água podre e fedorenta que explode na escada, nas paredes, em você. Crachás voam. A pele rasga e gruda na parede, vazia de novo. No chão fica uma poça enorme. E no meio dela: a bonequinha sem olho, o celular flip e a chavinha "CAIXA", que caiu do seu bolso.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu vou pegar os crachás novamente. Isso não pertence a você. Em seguida vou pegar o celular flip e arremessar para fora da torre.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você cospe água preta. Se abaixa, guarda fechada ainda, e com a esquerda pesca os 7 crachás da poça fedorenta.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo</div><div class="dialogue-text">— ISSO NÃO PERTENCE A VOCÊ.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Guarda todos na bolsa lateral. Molhados, mas são deles. Pega o celular flip e arremessa com toda a força pela porta de ferro aberta lá embaixo. Ele voa, gira, cai no mato seco. <em>Plec.</em> Você ouve quebrar no sol. Longe da água. Quando volta a olhar pra escada, a poça está <b>secando</b>. Rápido. Sumindo pelas frestas, como se o chão bebesse. A pele grudada na parede murcha, seca, vira pó preto e some. Em 10 segundos só sobra concreto úmido. A bonequinha sem olho e a chavinha "CAIXA" no chão.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu vou sair pela porta de metal novamente.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você pega a chavinha, guarda no bolso. A bonequinha você deixa ali. Chega dela. Limpa o canivete na camiseta encharcada. Desce devagar, degrau por degrau, guarda semi-fechada. Nenhum barulho. Só concreto velho seco. Pisa pra fora. Sol. 36 graus. Mato estalando. Grilos. Você olha pra trás: a torre, seca, quietinha, porta aberta, escuro por dentro. No mato, a uns 5 metros, o celular flip quebrado ao meio, no sol. O que você faz?</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Vou para a escola.</div></div></section><div class="scene-divider"><div class="scene-divider-line"></div><span class="scene-divider-time">12:05</span><div class="scene-divider-line"></div></div><section class="chapter"><div class="chapter-header"><div class="chapter-number">V</div><div class="chapter-title-block"><div class="chapter-title">Você Fechou a Porta?</div><div class="chapter-rule"></div></div></div><div class="dialogue gm with-dropcap "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você não olha mais pra torre. Vira as costas e anda pelo caminho de terra, rápido. Cada passo deixa uma pegada molhada que seca em segundos no calor. Fedendo a água parada, camiseta preta de lodo, cabelo pingando. Você chega ao portão da escola.</p></div></div><div class="dialogue npc v-carlos"><div class="dialogue-speaker">Seu Carlos</div><div class="dialogue-text">Meu Deus do céu, moleque! O que aconteceu com você? Caiu na fossa?</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você está pronto pra falar a desculpa. Mas antes de abrir a boca, ouve um grito vindo do pátio:</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo</div><div class="dialogue-text">— LARI VOLTOU! A LARI APARECEU!</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Um monte de aluno correndo. E no meio do pátio, descalça, com a roupa toda suja de lodo preto, <b>exatamente igual a você</b>, tremendo: a Lari. Ela te vê. Vocês se encaram. Ela segura uma coisa apertada contra o peito: uma <b>bonequinha sem um olho</b>. Idêntica à que você deixou na torre. Ela sussurra só pra você ouvir:</p></div></div><div class="dialogue npc v-falsa"><div class="dialogue-speaker">Lari?</div><div class="dialogue-text">Você fechou a porta?</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Atrás de vocês, no horizonte, dá pra ver a torre. E a porta de ferro dela, que você deixou aberta… está <b>fechada</b> agora.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu vou me arrepiar, e pensar: não, não, não. Eu já saí da torre. Quem é você? Quem são vocês? Eu sei que você não é a Lari.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você se arrepia inteiro. Dá dois passos pra trás. A mão fecha no canivete.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo</div><div class="dialogue-text">— NÃO, NÃO, NÃO. EU JÁ SAÍ DA TORRE. QUEM É VOCÊ? QUEM SÃO VOCÊS? EU SEI QUE VOCÊ NÃO É A LARI.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>O pátio silencia. Os alunos te olham assustados. Uma professora segura a menina pelos ombros. A Lari, ou o que tem a cara dela, inclina a cabeça, igualzinho a criatura fazia. Sorri, com a boca um pouco grande demais.</p></div></div><div class="dialogue npc v-falsa"><div class="dialogue-speaker">Lari?</div><div class="dialogue-text">Mas eu sou a Lari. (a voz rouca de quem engoliu água suja) Você me salvou. Você me tirou de lá. Lembra? Você jogou o celular fora e me puxou. Você esqueceu ela. Eu trouxe pra você.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Ela estende a bonequinha, que pinga água preta no chão quente. Nesse segundo você sente: o bolso lateral, onde estavam os 7 crachás, está leve. Vazio. Você mete a mão. Só água. Você olha pro chão. Debaixo dos pés descalços dela, escorrendo dos tornozelos, sete crachás enfileirados, molhados, como se ela os tivesse trazido dentro de si.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Certo então. Fique calmo, ó meu coração. Round 3. Eu não vou desistir. Você pode fazer seus joguinhos à vontade. Não irei perder.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você respira fundo. Guarda fechada, de novo. A cara da Lari falsa <b>racha</b>. A pele da bochecha abre e vaza água preta. Todo mundo no pátio grita e sai correndo. Uma professora puxa os alunos pra dentro. O porteiro tranca o portão. Só você e ela, no meio do pátio vazio, no sol de 36 graus. A coisa olha pro céu, pro sol forte, e grita: um grito de cano velho estourando. Ela não aguenta o sol. A água preta que escorre começa a evaporar no concreto quente. <em>Tssssss.</em> Ela cai de joelhos. A bonequinha cai da mão dela. Os 7 crachás no chão começam a secar também. A bonequinha está no chão, entre você e ela.</p></div></div><div class="dialogue leyn v-leo"><div class="dialogue-speaker">Léo (jogador)</div><div class="dialogue-text">Eu pego o canivete e cravo no olho restante da boneca.</div></div><div class="dialogue gm "><div class="dialogue-speaker">Narrador</div><div class="dialogue-text"><p>Você abre o canivete. Corre dois passos. Pega a bonequinha do chão quente, encharcada, fedendo, se mexendo sozinha na sua mão. Mira o único olho de botão preto. E crava. <span class="r">POC!</span> A lâmina atravessa a cabeça de pano.</p><p>A bonequinha GRITA, grito de criança. A coisa no chão grita junto, o mesmo grito, mais alto. A bonequinha estoura na sua mão: não tem algodão, tem água preta, muita, que seca instantaneamente no sol. A pele da falsa Lari seca, racha, vira pó preto e some no vento.</p><p>No chão, onde ela estava, fica <b>uma menina com o rosto da Lari</b>. Desmaiada, pálida, respirando. De carne e osso. Roupa seca. Os 7 crachás no chão, limpos, secos, fotos nítidas.</p><p>Silêncio no pátio. Só o zumbido do calor. E lá no horizonte, a torre. Você jura que ouviu, bem baixinho, o barulho de uma porta de ferro sendo trancada por dentro.</p><p class="r">CLACK.</p></div></div><div class="dialogue npc "><div class="dialogue-speaker">Mensagem</div><div class="dialogue-text"><b>ONDE PARAMOS · terça 29/09, ~12:05</b><br/>Pátio da E.E. Joaquim Murtinho. Você tem o canivete, a lanterna apagada, a chavinha "CAIXA", R$ 7, o caderno, o bilhete da Lari e o adesivo do símbolo. O celular ficou na biblioteca. Os 7 crachás estão no chão, ao lado de uma menina com o rosto da Lari: desmaiada, respirando. Quem ela é, ainda não se sabe. O prazo continua: <b>30/09, 01:17</b>.</div></div></section><div class="finale-block"><p class="finale-quote">Ao longe, uma porta de ferro foi trancada por dentro.</p><div class="finale-divider"></div><div class="finale-coda">A Saga Continua &nbsp;·&nbsp; Frequência Fantasma</div></div></div><div id="saga-end-sentinel" style="height:1px"></div><script>(function(){var t=document.querySelector(".floating-stats"),s=document.getElementById("saga-end-sentinel");if(!t||!s)return;new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)t.classList.add("visible")})}).observe(s)})();</script><script>
+(function(){
+var P=["volta","93.1","LEO","01:17","A GENTE OUVE VOCÊ DE VOLTA","NÃO VEM","ELE COPIA SUA VOZ","você anotou tudo certinho","aumenta o volume","faltava só você","você fechou a porta?","CAIXA","oitava cadeira","atende","fica"];
+var N="▒░#%/|01:.?";
+var still=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches;
+function rnd(a){return a[Math.floor(Math.random()*a.length)]}
+document.querySelectorAll(".edge").forEach(function(e){
+  var rows=[];
+  for(var i=0;i<6;i++){var s=document.createElement("span");e.appendChild(s);rows.push({el:s,cur:"",tgt:rnd(P),hold:0})}
+  rows.forEach(function(r){r.cur=r.tgt;r.el.textContent=r.cur});
+  if(still)return;
+  setInterval(function(){
+    var r=rnd(rows);
+    if(r.hold>0){r.hold--;if(Math.random()<.25&&r.cur){var k=Math.floor(Math.random()*r.cur.length);r.el.textContent=r.cur.slice(0,k)+rnd(N)+r.cur.slice(k+1)}else{r.el.textContent=r.cur}return}
+    var ok=r.tgt.indexOf(r.cur)===0;
+    if(!ok){r.cur=r.cur.slice(0,-1)}
+    else if(r.cur.length<r.tgt.length){r.cur+=Math.random()<.15?rnd(N):r.tgt.charAt(r.cur.length);if(r.cur.charAt(r.cur.length-1)!==r.tgt.charAt(r.cur.length-1)){r.tgt=r.tgt}}
+    else{r.hold=4+Math.floor(Math.random()*10);r.tgt=rnd(P);r.cur=r.cur;}
+    r.el.textContent=r.cur+(Math.random()<.5?"_":"");
+  },110);
+});
+})();
+</script>
+</body>
+</html>
