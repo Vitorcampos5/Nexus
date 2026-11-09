@@ -1,0 +1,823 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Estação Nexus — Exterior</title>
+  <style>
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #04050c; color: #cfd6ff; font-family: system-ui, sans-serif; }
+    #c { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+    .caixa { position: fixed; z-index: 5; border: 1px solid #3a4380; background: #0a0c1add; border-radius: 8px; pointer-events: none; }
+    #hud { left: 16px; top: 16px; padding: 10px 13px; letter-spacing: .08em; font-size: 12px; }
+    #hud span { color: #8fa4ff; font-size: 11px; }
+    #hud i { display: block; height: 2px; margin-top: 8px; background: linear-gradient(90deg,#D4AA40,#CC4060,#E8B86D,#8EB5D8,#D2691E,#D9B776,#9B7FD4,#5EC4BB,#5FA88A); }
+    #status { right: 16px; top: 16px; padding: 8px 10px; font-size: 11px; color: #8fa4ff; }
+    #hint { bottom: 16px; left: 50%; transform: translateX(-50%); padding: 8px 12px; font-size: 11px; white-space: nowrap; }
+    #entrar {
+      position: fixed; z-index: 6; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      display: none; flex-direction: column; align-items: center; gap: 10px;
+      padding: 18px 22px; background: rgba(10, 12, 26, .94); border: 1px solid #6a7cff;
+      border-radius: 12px; box-shadow: 0 16px 48px #000a; text-align: center; pointer-events: auto;
+    }
+    #entrar h2 { margin: 0; font-size: 15px; letter-spacing: .12em; color: #ffb35a; }
+    #entrar p { margin: 0; font-size: 12px; opacity: .8; max-width: 250px; line-height: 1.4; }
+    #entrar .acoes { display: flex; gap: 8px; margin-top: 4px; }
+    #entrar button { appearance: none; cursor: pointer; border-radius: 8px; padding: 9px 14px; font-size: 12px; letter-spacing: .06em; border: 1px solid #3a4380; background: #12162e; color: #8fa4ff; }
+    #entrar button.primario { background: #232a5c; border-color: #8fa4ff; color: #fff; }
+    #entrar button:hover { filter: brightness(1.15); }
+    #voltar { position: fixed; z-index: 5; left: 16px; bottom: 16px; padding: 8px 12px; border: 1px solid #3a4380; background: #0a0c1add; border-radius: 8px; font-size: 11px; color: #8fa4ff; text-decoration: none; }
+    #voltar:hover { border-color: #8fa4ff; color: #fff; }
+    #err { display: none; position: fixed; inset: 0; z-index: 20; place-items: center; text-align: center; padding: 30px; background: #04050c; color: #fff; }
+    .caixa { backdrop-filter: blur(8px); box-shadow: 0 0 18px #6a7cff22, inset 0 0 0 1px #ffffff08; }
+    #hud b { letter-spacing: .18em; color: #e6ebff; }
+    #hud i { box-shadow: 0 0 10px #9B7FD455; }
+    #status::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 7px; border-radius: 50%; background: #5FA88A; box-shadow: 0 0 8px #5FA88A; animation: pulso 2s infinite; }
+    @keyframes pulso { 50% { opacity: .25; } }
+    #entrar { box-shadow: 0 16px 48px #000a, 0 0 28px #6a7cff33; backdrop-filter: blur(10px); animation: surge .25s ease-out; }
+    @keyframes surge { from { opacity: 0; transform: translate(-50%, -44%); } }
+    #teste-mecha { position: fixed; z-index: 5; right: 16px; top: 54px; padding: 8px 12px; font-size: 11px; letter-spacing: .08em; cursor: pointer; border-radius: 8px; border: 1px solid #3a4380; background: #0a0c1add; color: #8fa4ff; backdrop-filter: blur(8px); }
+    #teste-mecha:hover { border-color: #8fa4ff; color: #fff; }
+    #teste-mecha.ativo { border-color: #22ff55; color: #7dffa8; box-shadow: 0 0 14px #22ff5544; }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div id="hud" class="caixa"><b>ESTAÇÃO NEXUS</b><br><span>EXTERIOR · PEQUENA POR FORA, INFINITA POR DENTRO</span><i></i></div>
+  <div id="status" class="caixa">SISTEMA ONLINE</div>
+  <button id="teste-mecha" type="button">MODO MECHA · TESTE</button>
+  <div id="hint" class="caixa">Arraste para girar · roda/pinça para aproximar · clique na nave para entrar</div>
+  <a id="voltar" href="../nexus.html">← Voltar ao Nexus</a>
+  <div id="entrar">
+    <h2>ECLUSA DA PROA</h2>
+    <p>A eclusa está aberta. Deseja entrar na Estação Nexus?</p>
+    <div class="acoes">
+      <button type="button" class="primario" id="btn-entrar">Entrar</button>
+      <button type="button" id="btn-cancelar">Cancelar</button>
+    </div>
+  </div>
+  <div id="err"></div>
+
+  <!-- three.min.js mora em Lib/, ao lado de Nexus.html e da pasta Nave -->
+  <script src="../Lib/three.min.js"></script>
+  <script>
+(function () {
+  'use strict';
+  var DESTINO = 'mirante_da_proa.html';          // primeira sala do interior (o viajante aparece no corredor)
+  var H = [0xD4AA40, 0xCC4060, 0xE8B86D, 0x8EB5D8, 0xD2691E, 0xD9B776, 0x9B7FD4, 0x5EC4BB, 0x5FA88A]; // cores dos 9 universos
+  var BEAT = 60 / 92;
+  var err = document.getElementById('err');
+  var status = document.getElementById('status');
+  var canvas = document.getElementById('c');
+  var painelEntrar = document.getElementById('entrar');
+
+  try {
+    if (!window.THREE) throw new Error('Three.js não foi inicializado. Verifique ../Lib/three.min.js');
+
+    var mobile = innerWidth < 700;
+    var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: !mobile, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.5 : 2));
+    renderer.setSize(innerWidth, innerHeight, false);
+    renderer.setClearColor(0x04050c, 1);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15;
+
+    var scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x04050c, .009);
+    (function () {                       // reflexo de ambiente: painéis âmbar/ciano sobre céu escuro (dá brilho ao metal e ao ouro)
+      var c = document.createElement('canvas'); c.width = 512; c.height = 256;
+      var x = c.getContext('2d'), g = x.createLinearGradient(0, 0, 0, 256);
+      g.addColorStop(0, '#1a2050'); g.addColorStop(.5, '#05060e'); g.addColorStop(1, '#000'); x.fillStyle = g; x.fillRect(0, 0, 512, 256);
+      [[60, 90, 120, 18, '#ffb050'], [260, 70, 160, 14, '#ffffff'], [400, 100, 90, 22, '#40e0ff'], [160, 150, 140, 10, '#ff8a3a']].forEach(function (p) { x.fillStyle = p[4]; x.fillRect(p[0], p[1], p[2], p[3]); });
+      var t = new THREE.CanvasTexture(c); t.mapping = THREE.EquirectangularReflectionMapping; if (THREE.SRGBColorSpace) t.colorSpace = THREE.SRGBColorSpace;
+      scene.environment = new THREE.PMREMGenerator(renderer).fromEquirectangular(t).texture;
+    })();
+
+    var camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, .1, 300);
+    var dist = 17, az = .55, el = .14, intro = 0, kz = 0;
+    function cam() {
+      var ce = Math.cos(el);
+      var dd = (dist + 9 * kz) * (1 + .6 * (1 - intro) * (1 - intro));   // entrada: a câmera recua e aproxima
+      camera.position.set(Math.sin(az) * ce * dd, Math.sin(el) * dd + .6, Math.cos(az) * ce * dd);
+      camera.lookAt(0, .1, 0);
+    }
+    cam();
+
+    scene.add(new THREE.HemisphereLight(0x6a7cff, 0x050609, 1.5));
+    var key = new THREE.DirectionalLight(0xffd9a0, 2.2);
+    key.position.set(6, 8, 12);
+    scene.add(key);
+    var rim = new THREE.DirectionalLight(0x8a6aff, 2);
+    rim.position.set(-9, 4, -12);
+    scene.add(rim);
+    var motorLuz = new THREE.PointLight(0xff8a3a, 3, 16);
+    motorLuz.position.set(0, 0, -7);
+    scene.add(motorLuz);
+
+    // pseudo-aleatório determinístico: a nave é sempre a mesma
+    var sd = 11;
+    function rnd() { sd = (sd * 16807) % 2147483647; return (sd - 1) / 2147483646; }
+
+    var ship = new THREE.Group();
+    ship.position.y = -.2;
+    scene.add(ship);
+
+    function mat(c, r, m, e, ei) {
+      return new THREE.MeshStandardMaterial({ color: c, roughness: r == null ? .5 : r, metalness: m == null ? .85 : m, emissive: e || 0, emissiveIntensity: ei || 0 });
+    }
+    var hull = mat(0x1a1d27, .45, .85);
+    var dark = mat(0x08090f, .6, .8);
+    var steel = mat(0x3a4150, .4, .9);
+    var brass = mat(0x6b4f22, .35, .92, 0x2a1a06, .25);
+    var rust = mat(0x4a2a1c, .65, .7);
+    var teal = mat(0x1c3a3c, .5, .8);
+    var glass = mat(0x10305a, .1, .5, 0x2a6aff, 1.1);
+    var amber = mat(0x2a1a06, .5, .2, 0xffb35a, 2);
+    var chapas = [brass, rust, teal, steel, dark];
+
+    function box(x, y, z, sx, sy, sz, ma, rx, ry, rz) {
+      var o = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), ma);
+      o.position.set(x, y, z);
+      o.rotation.set(rx || 0, ry || 0, rz || 0);
+      ship.add(o);
+      return o;
+    }
+    function cyl(x, y, z, r, dep, ma, rx, ry, rz, seg) {
+      var o = new THREE.Mesh(new THREE.CylinderGeometry(r, r, dep, seg || 28), ma);
+      o.position.set(x, y, z);
+      o.rotation.set(rx || 0, ry || 0, rz || 0);
+      ship.add(o);
+      return o;
+    }
+    var PI2 = Math.PI / 2;
+
+    // Casco: corpo longo, dorso, quilha e proa afunilada
+    [-.625, .625].forEach(function (hx) { [-3, 0, 3].forEach(function (hz) { box(hx, 0, hz, 1.25, 1.5, 3, hull); }); });
+    [-.375, .375].forEach(function (hx) { box(hx, .95, -2.1, .75, .45, 3, steel); box(hx, .95, .9, .75, .45, 3, steel); });
+    [-.425, .425].forEach(function (hx) { box(hx, -.95, -2.4, .85, .4, 3, dark); box(hx, -.95, .6, .85, .4, 3, dark); box(hx, -.95, 2.6, .85, .4, 1, dark); });
+    var nariz = new THREE.Mesh(new THREE.CylinderGeometry(.5, 1.75, 3.2, 4), hull);
+    nariz.rotation.set(PI2, Math.PI / 4, 0);
+    nariz.scale.set(1, 1, .6);
+    nariz.position.set(0, 0, 6.1);
+    ship.add(nariz);
+    box(0, .62, 5.2, 1.3, .14, 1.9, glass, -.12, 0, 0);
+    box(0, .4, 6.5, .7, .1, 1.1, glass, -.22, 0, 0);
+    box(-.9, .78, -.5, .06, .04, 7, glass);
+    box(.9, .78, -.5, .06, .04, 7, glass);
+
+    // Janelas âmbar nos flancos (dois conveses), algumas apagadas
+    var janelas = [];
+    for (var s = -1; s <= 1; s += 2) {
+      [.3, -.12].forEach(function (y) {
+        for (var z = -3.7; z <= 3.9; z += .62) {
+          if (rnd() < .18) continue;
+          var noSpon = z > -3.05 && z < .65, noPod = z > 1.1 && z < 2.9 && y < .25;
+          if (noPod) continue;            // escondidas atrás do pod do flanco
+          janelas.push(box(s * (noSpon ? 2.045 : 1.27), noSpon ? y - .05 : y, z, .04, .15, .3, amber)); // sobre a face do sponson
+        }
+      });
+      box(s * 1.65, -.1, -1.2, .75, .95, 3.6, steel);
+      box(s * 1.65, .42, -1.2, .8, .08, 3.7, brass);
+      box(s * 1.6, -.15, 2, .6, .7, 1.8, hull);
+    }
+
+    // Acabamento: frisos nas quinas, linhas de luz nos sponsons e barra de luz da quilha
+    var friso = mat(0x2a3140, .3, .95), luzTeal = mat(0x0b1c1e, .4, .5, 0x5EC4BB, 1.8);
+    [-1, 1].forEach(function (sd3) {
+      [-3, 0, 3].forEach(function (fz) { box(sd3 * 1.25, .75, fz, .08, .08, 3.01, friso); });
+      [-3, 0, 3].forEach(function (fz) { box(sd3 * 1.25, -.75, fz, .08, .08, 3.01, friso); });
+      box(sd3 * 2.05, -.5, -1.2, .05, .05, 3.5, luzTeal);
+    });
+    [-.15, .15].forEach(function (hx) { box(hx, -1.17, -2.5, .2, .03, 2.1, luzTeal); box(hx, -1.17, -.4, .2, .03, 2.1, luzTeal); box(hx, -1.17, 1.7, .2, .03, 2.2, luzTeal); });
+
+    // Chapas remendadas: pedaços de metais diferentes recolhidos dos universos
+    for (var g = 0; g < 46; g++) {
+      var ma = chapas[Math.floor(rnd() * chapas.length)], h = .04 + rnd() * .06, sd2 = rnd() < .5 ? -1 : 1;
+      if (rnd() < .5) box(sd2 * (.8 + rnd() * .35), .75 + h / 2, -4 + rnd() * 8, .2 + rnd() * .5, h, .25 + rnd() * .7, ma);
+      else {
+        var zs = rnd() < .5 ? -4.3 + rnd() * 1.1 : 3 + rnd() * 1.3;   // só onde o casco está exposto
+        box(sd2 * (1.25 + h / 2), -.4 + rnd() * .7, zs, h, .2 + rnd() * .4, .25 + rnd() * .5, ma);
+      }
+    }
+
+    // Costuras de kintsugi: uma por universo, brilhando na cor dele
+    var costuras = [];
+    for (var u = 0; u < 9; u++) {
+      var sm = mat(0x111111, .3, .5, H[u], 2), z0 = -3.6 + u * .9;
+      costuras.push(sm);
+      for (var j = 0; j < 3; j++) {
+        var px = -.9 + j * .9 + (rnd() - .5) * .25, pz = z0 + (rnd() - .5) * .2;
+        var noDorso = Math.abs(px) < .72 && pz > -3.5 && pz < 2.3;   // sobre o dorso (y 1.19) ou sobre o casco (y .765)
+        box(px, noDorso ? 1.19 : .765, pz, .55, .03, .06, sm, 0, (rnd() - .5) * .9, 0);
+      }
+      var emSpon = z0 > -3.05 && z0 < .65, emPod = z0 > 1.1 && z0 < 2.9;
+      for (var sx = -1; sx <= 1; sx += 2) for (var k = 0; k < 2; k++) {
+        if (emPod && k === 0) continue;
+        box(sx * (emSpon ? 2.04 : 1.265), emPod ? .45 : (k ? .12 : -.25), z0 + (rnd() - .5) * .2, .03, emSpon ? .45 : .5, .06, sm, 0, 0, (rnd() - .5) * .8);
+      }
+    }
+
+    // Motores: três bocais grandes com chama laranja
+    var chamas = [];
+    [-.85, 0, .85].forEach(function (x, i) {
+      cyl(x, -.05, -5, .5, 1.4, dark, PI2, 0, 0);
+      var anel = new THREE.Mesh(new THREE.TorusGeometry(.5, .07, 8, 28), brass);
+      anel.position.set(x, -.05, -5.7);
+      ship.add(anel);
+      cyl(x, -.05, -5.72, .38, .08, mat(0xff8a3a, .2, .3, 0xff8a3a, 3), PI2, 0, 0);
+      var ch = new THREE.Mesh(new THREE.ConeGeometry(.36, 1.8, 16), new THREE.MeshBasicMaterial({ color: 0xff8a3a, transparent: true, opacity: .55, blending: THREE.AdditiveBlending, depthWrite: false }));
+      ch.rotation.x = -PI2;
+      ch.position.set(x, -.05, -6.7);
+      ship.add(ch);
+      chamas.push(ch);
+    });
+    [-1.65, 1.65].forEach(function (x) {
+      cyl(x, -.1, -3.1, .3, 1, dark, PI2, 0, 0);
+      var c2 = new THREE.Mesh(new THREE.ConeGeometry(.22, 1.1, 12), new THREE.MeshBasicMaterial({ color: 0xff8a3a, transparent: true, opacity: .5, blending: THREE.AdditiveBlending, depthWrite: false }));
+      c2.rotation.x = -PI2;
+      c2.position.set(x, -.1, -4);
+      ship.add(c2);
+      chamas.push(c2);
+    });
+
+    // Prato de comunicação, antenas e luzes de navegação
+    var prato = new THREE.Mesh(new THREE.TorusGeometry(.9, .05, 8, 32), brass);
+    prato.position.set(0, 1.75, -2.2);
+    prato.rotation.set(-.5, 0, 0);
+    ship.add(prato);
+    cyl(0, 1.45, -2.2, .06, .6, steel);
+    [-.55, .5].forEach(function (x, i) { cyl(x, 1.8, 1.2 + i, .02, 1.3, steel); });
+
+    // Bandeira da Brigada Gurren: mastro na popa do dorso, pano ondulando.
+    // Bandeira da Brigada Gurren, igual à capa do Super Tengen Toppa Gurren Lagann: campo vermelho + o crânio em chamas
+    // com os óculos (emblema recortado da textura da capa, embutido abaixo). Pra usar outra arte, aponte BANDEIRA_IMG pra um arquivo.
+    var BANDEIRA_IMG = '';           // ex.: '../Assets/bandeira-gurren.png'
+    var EMBLEMA_GURREN = 'data:image/png;base64,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';
+    function desenharBandeira(aoAtualizar) {
+      var c = document.createElement('canvas'); c.width = 960; c.height = 600;
+      var x = c.getContext('2d'); x.fillStyle = '#ff0000'; x.fillRect(0, 0, 960, 600);
+      var t = new THREE.CanvasTexture(c); if (THREE.SRGBColorSpace) t.colorSpace = THREE.SRGBColorSpace;
+      var img = new Image();
+      img.onload = function () {
+        var h = 372, w = h * img.width / img.height;
+        x.drawImage(img, (960 - w) / 2, (600 - h) / 2, w, h);
+        t.needsUpdate = true; if (aoAtualizar) aoAtualizar();
+      };
+      img.src = EMBLEMA_GURREN;
+      return t;
+    }
+    var mastro = cyl(0, 2.5, -3.2, .035, 2.7, brass);
+    var ponta = new THREE.Mesh(new THREE.SphereGeometry(.07, 12, 10), brass);
+    ponta.position.set(0, 3.88, -3.2); ship.add(ponta);
+    var panoGeo = new THREE.PlaneGeometry(2.1, 1.3, 20, 10);
+    var panoBase = panoGeo.attributes.position.array.slice();
+    var texFrente = desenharBandeira(function () { if (panoMatVerso && panoMatVerso.map) panoMatVerso.map.needsUpdate = true; });
+    function texVerso(t) {            // o verso do pano espelha a imagem; esta cópia desfaz o espelhamento
+      var v = t.clone(); v.wrapS = THREE.RepeatWrapping; v.repeat.x = -1; v.offset.x = 1; v.needsUpdate = true; return v;
+    }
+    var panoMat = new THREE.MeshStandardMaterial({ map: texFrente, side: THREE.FrontSide, toneMapped: false, roughness: .8, metalness: 0, emissive: 0x330508, emissiveIntensity: .5 });
+    var panoMatVerso = new THREE.MeshStandardMaterial({ map: texVerso(texFrente), side: THREE.BackSide, toneMapped: false, roughness: .8, metalness: 0, emissive: 0x330508, emissiveIntensity: .5 });
+    var pano = new THREE.Mesh(panoGeo, panoMat);
+    var panoVerso = new THREE.Mesh(panoGeo, panoMatVerso);   // mesma geometria: a ondulação anima os dois lados juntos
+    pano.position.set(1.08, 3.15, -3.2);
+    panoVerso.position.copy(pano.position);
+    ship.add(pano, panoVerso);
+    var FG = new THREE.Group();       // mastro + pano viajam juntos (passam pro mecha)
+    [mastro, ponta, pano, panoVerso].forEach(function (o) { ship.remove(o); FG.add(o); });
+    ship.add(FG);
+    // ajusta o pano à proporção da imagem (largura limitada a 3, pendurado no topo do mastro)
+    function ajustarPano(asp) {
+      var alt = 1.3, larg = alt * asp;
+      if (larg > 3) { larg = 3; alt = larg / asp; }
+      [pano, panoVerso].forEach(function (o) { o.scale.set(larg / 2.1, alt / 1.3, 1); o.position.x = .03 + larg / 2; o.position.y = 3.8 - alt / 2; });
+    }
+    if (BANDEIRA_IMG) new THREE.TextureLoader().load(BANDEIRA_IMG, function (t) {
+      if (THREE.SRGBColorSpace) t.colorSpace = THREE.SRGBColorSpace;
+      panoMat.map = t; panoMat.needsUpdate = true;
+      panoMatVerso.map = texVerso(t); panoMatVerso.needsUpdate = true;
+      if (t.image && t.image.width && t.image.height) ajustarPano(t.image.width / t.image.height);
+    }, undefined, function () { console.warn('Bandeira: não achei ' + BANDEIRA_IMG + ' — mantendo a arte desenhada no canvas.'); });
+    var navL = new THREE.PointLight(0xff2038, 2, 8);
+    navL.position.set(-2.1, .1, .2);
+    ship.add(navL);
+    var navR = new THREE.PointLight(0x35ff8a, 2, 8);
+    navR.position.set(2.1, .1, .2);
+    ship.add(navR);
+    var lampL = box(-2.08, .1, .2, .1, .1, .3, mat(0xd52b3b, .2, .5, 0xff2038, 2.5));
+    var lampR = box(2.08, .1, .2, .1, .1, .3, mat(0x37ff8a, .2, .5, 0x12ff68, 2.5));
+
+    // Fundo: o Nexus brilhando, nebulosas, estrelas e ilhas flutuantes
+    function textura() {
+      var c = document.createElement('canvas');
+      c.width = c.height = 128;
+      var x = c.getContext('2d'), gr = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+      gr.addColorStop(0, '#fff'); gr.addColorStop(.25, 'rgba(255,255,255,.5)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = gr; x.fillRect(0, 0, 128, 128);
+      return new THREE.CanvasTexture(c);
+    }
+    var suave = textura();
+    function brilho(cor, tam, op, x, y, z) {
+      var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: suave, color: cor, transparent: true, opacity: op, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+      sp.scale.setScalar(tam);
+      sp.position.set(x, y, z);
+      scene.add(sp);
+      return sp;
+    }
+    function sprNave(cor, tam, op, x, y, z) {
+      var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: suave, color: cor, transparent: true, opacity: op, blending: THREE.AdditiveBlending, depthWrite: false }));
+      sp.scale.setScalar(tam); sp.position.set(x, y, z); ship.add(sp); return sp;
+    }
+    var halos = [-.85, 0, .85].map(function (x) { return sprNave(0xff8a3a, 2.4, .75, x, -.05, -5.9); });
+    var strobos = [[-.55, 2.46, 1.2, 0xff2038], [.5, 2.46, 2.2, 0xffffff]].map(function (p) { return sprNave(p[3], .7, 1, p[0], p[1], p[2]); });
+    var NT = 96, tPos = new Float32Array(NT * 3), tCor = new Float32Array(NT * 3), tAge = [], tOff = [];
+    for (var k2 = 0; k2 < NT; k2++) { tAge.push(Math.random()); tOff.push([(Math.random() - .5) * .9, (Math.random() - .5) * .9]); }
+    var tGeo = new THREE.BufferGeometry();
+    tGeo.setAttribute('position', new THREE.BufferAttribute(tPos, 3));
+    tGeo.setAttribute('color', new THREE.BufferAttribute(tCor, 3));
+    var trilha = new THREE.Points(tGeo, new THREE.PointsMaterial({ map: suave, vertexColors: true, size: .45, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+    trilha.frustumCulled = false; ship.add(trilha);
+    brilho(0x5a3aa8, 170, .35, -60, 10, -95); brilho(0x2a4fbf, 190, .3, 55, -14, -105); brilho(0x8a3ab0, 130, .2, 0, 42, -115);
+    var estrelaCore = brilho(0xffffff, 10, 1, -36, 14, -75);
+    var estrelaHalo = brilho(0x8fa4ff, 60, .55, -36, 14, -75);
+    brilho(0xbcd0ff, 140, .15, -36, 14, -75);
+
+    var geo = new THREE.BufferGeometry();
+    var arr = new Float32Array(1800 * 3);
+    for (var i = 0; i < 1800; i++) {
+      var rr = 70 + Math.random() * 110, a = Math.random() * Math.PI * 2, b = (Math.random() - .5) * 2;
+      arr[i * 3] = Math.cos(a) * Math.cos(b) * rr;
+      arr[i * 3 + 1] = Math.sin(b) * rr;
+      arr[i * 3 + 2] = Math.sin(a) * Math.cos(b) * rr;
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+    var corE = new Float32Array(1800 * 3), tons = [[.8, .88, 1], [1, .95, .85], [.7, .78, 1], [1, .8, .7]];
+    for (var i3 = 0; i3 < 1800; i3++) { var tn = tons[i3 % 4], br = .45 + Math.random() * .55; corE[i3 * 3] = tn[0] * br; corE[i3 * 3 + 1] = tn[1] * br; corE[i3 * 3 + 2] = tn[2] * br; }
+    geo.setAttribute('color', new THREE.BufferAttribute(corE, 3));
+    scene.add(new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xffffff, vertexColors: true, size: .22, sizeAttenuation: true, fog: false })));
+
+    var ilhas = [], rocha = mat(0x1d2030, .9, .2);
+    [[-26, 6, -30, 3.2], [30, -4, -36, 2.6], [-38, -9, -10, 2.2], [40, 8, -8, 3], [8, 16, -48, 2.4], [-14, -14, -42, 2.8]].forEach(function (p, i) {
+      var gp = new THREE.Group(), topo = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 0), rocha);
+      topo.scale.set(p[3] * 1.3, p[3] * .5, p[3]);
+      var base = new THREE.Mesh(new THREE.ConeGeometry(.8 * p[3], 1.2 * p[3], 6), rocha);
+      base.rotation.x = Math.PI; base.position.y = -.6 * p[3];
+      var luz = new THREE.Mesh(new THREE.BoxGeometry(.18, .18, .18), amber);
+      luz.position.set(p[3] * .3, p[3] * .5, 0);
+      gp.add(topo, base, luz);
+      gp.position.set(p[0], p[1], p[2]);
+      gp.userData.y0 = p[1];
+      scene.add(gp);
+      ilhas.push(gp);
+    });
+
+    var hingeL = new THREE.Group(), hingeR = new THREE.Group(), holdL = new THREE.Group(), holdR = new THREE.Group(), spine = new THREE.Group();
+    hingeL.position.set(-1.25, .75, 0); holdL.position.set(1.25, -.75, 0); hingeR.position.set(1.25, .75, 0); holdR.position.set(-1.25, -.75, 0);
+    hingeL.add(holdL); hingeR.add(holdR); ship.add(hingeL, hingeR, spine);
+    ship.children.slice().forEach(function (o) {
+      if (o === hingeL || o === hingeR || o === spine) return;
+      var centro = Math.abs(o.position.x) < .3 && o.position.z > 4.6;   // proa, motor central e rastro
+      ship.remove(o); (centro ? spine : o.position.x < 0 ? holdL : holdR).add(o);
+    });
+    var gCoroa = mat(0xc4922e, .28, .95, 0x3a2400, .2), spons = [];
+    for (var kc = -2; kc <= 2; kc++) { var hc = .95 - Math.abs(kc) * .18, cc = new THREE.Mesh(new THREE.ConeGeometry(.12, hc, 4), gCoroa); cc.position.set(kc * .22, .78 + hc / 2, 5.0); spine.add(cc); }   // coroa na ponte de comando
+    [[holdL, -1], [holdR, 1]].forEach(function (p) {            // placas dos sponsons: viram armadura de ombro
+      var g = new THREE.Group(); g.position.set(p[1] * 1.65, -.1, -1.2); p[0].add(g);
+      p[0].children.slice().forEach(function (o) {
+        var x = Math.abs(o.position.x), z = o.position.z;
+        if (o !== g && o.isMesh && x > 1.3 && x < 2.1 && z > -3.1 && z < .7) { p[0].remove(o); o.position.sub(g.position); g.add(o); }
+      });
+      spons.push(g);
+    });
+    // Modo Mecha: quando a broca encaixa no buraco da Casa da Broca, a estação se transforma
+    var mecha = null, MODO_MECHA = false;
+    try { MODO_MECHA = localStorage.getItem('nexus_broca_encaixada') === '1'; } catch (e) {}
+    function construirMecha() {
+      var M = new THREE.Group(), V3 = THREE.Vector3, broca, nucleo;
+      var hull = mat(0x0d0d13, .38, .92), steel = mat(0x16171f, .45, .88), dark = mat(0x050507, .5, .85),
+          brass = mat(0xc4922e, .28, .95, 0x3a2400, .2), glass = mat(0x0a4a8a, .1, .5, 0x30b8ff, 2.2);
+      (function () {                             // textura de superfície: riscos, poeira e linhas de painel
+        var c = document.createElement('canvas'); c.width = c.height = 256; var x = c.getContext('2d');
+        x.fillStyle = '#8a8a8a'; x.fillRect(0, 0, 256, 256);
+        for (var i = 0; i < 900; i++) { var v = 100 + Math.random() * 120 | 0; x.fillStyle = 'rgb(' + v + ',' + v + ',' + v + ')'; x.fillRect(Math.random() * 256, Math.random() * 256, 1 + Math.random() * 2, 1 + Math.random() * 2); }
+        x.strokeStyle = 'rgba(255,255,255,.35)'; x.lineWidth = 1;
+        for (var j = 0; j < 40; j++) { var a = Math.random() * 256, b = Math.random() * 256; x.beginPath(); x.moveTo(a, b); x.lineTo(a + (Math.random() - .5) * 70, b + (Math.random() - .5) * 70); x.stroke(); }
+        x.strokeStyle = 'rgba(0,0,0,.6)'; x.lineWidth = 2; x.strokeRect(6, 6, 244, 244); x.beginPath(); x.moveTo(0, 128); x.lineTo(256, 128); x.stroke();
+        var t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        [hull, steel, dark, brass].forEach(function (m) { m.roughnessMap = t; m.envMapIntensity = 1.8; });
+      })();
+      function P(par, g, ma, x, y, z, rx, ry, rz) { var o = new THREE.Mesh(g, ma); o.position.set(x || 0, y || 0, z || 0); o.rotation.set(rx || 0, ry || 0, rz || 0); par.add(o); return o; }
+      var cacheB = {};
+      function caixa(sx, sy, sz) {               // caixa com quinas chanfradas (placas angulosas)
+        var k = sx + ',' + sy + ',' + sz; if (cacheB[k]) return cacheB[k];
+        var b = Math.min(.09, sx / 4, sy / 4, sz / 4), w = sx / 2 - b, h = sy / 2 - b, sh = new THREE.Shape();
+        sh.moveTo(-w, -h); sh.lineTo(w, -h); sh.lineTo(w, h); sh.lineTo(-w, h); sh.closePath();
+        var g = new THREE.ExtrudeGeometry(sh, { depth: sz - 2 * b, bevelEnabled: true, bevelThickness: b, bevelSize: b, bevelSegments: 1, steps: 1 });
+        g.translate(0, 0, -(sz - 2 * b) / 2); return (cacheB[k] = g);
+      }
+      function B(par, x, y, z, sx, sy, sz, ma, rx, ry, rz) { return P(par, caixa(sx, sy, sz), ma, x, y, z, rx, ry, rz); }
+      function halo(par, x, y, z, tam, cor, op) {
+        var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: suave, color: cor, transparent: true, opacity: op, blending: THREE.AdditiveBlending, depthWrite: false }));
+        sp.scale.setScalar(tam); sp.position.set(x, y, z); par.add(sp); return sp;
+      }
+      function tira(par, x, y, z, sx, sy, sz) { B(par, x, y, z, sx, sy, sz, luzV); halo(par, x, y, z, Math.max(sx, sy, sz) * 2.2, 0xffb020, .45); }
+      var sd = 11; function rr() { sd = (sd * 9301 + 49297) % 233280; return sd / 233280; }
+      function grebla(par, cx, cy, cz, w, h, eixo, sg, n) {
+        n = Math.floor(n / 6);                    // painéis quase limpos      // painel de detalhes: blocos, fendas e parafusos espalhados sobre uma face
+        for (var i = 0; i < n; i++) {
+          var u = (rr() - .5) * w * .9, v = (rr() - .5) * h * .9, a = [.12, .2, .3][rr() * 3 | 0], b = [.08, .14, .2][rr() * 3 | 0], d = [.06, .09][rr() * 2 | 0], ty = rr();
+          var ma = ty < .3 ? dark : ty < .6 ? steel : ty < .8 ? hull : brass, px = cx, py = cy, pz = cz, sx = a, sy = b, sz = d;
+          if (eixo === 'z') { px += u; py += v; pz += sg * d / 2; }
+          else if (eixo === 'x') { pz += u; py += v; px += sg * d / 2; sx = d; sz = a; }
+          else { px += u; pz += v; py += sg * d / 2; sx = a; sy = d; sz = b; }
+          if (ty > .88) C(par, px, py, pz, .055, .055, .08, brass, eixo === 'z' ? PI2 : 0, 0, eixo === 'x' ? PI2 : 0, 8);
+          else if (ty > .82) B(par, px, py, pz, sx * .5, sy * .3, sz, luzV);
+          else B(par, px, py, pz, sx, sy, sz, ma);
+        }
+      }
+      var cacheT = {};
+      function TZ(par, x, y, z, wt, dt, wb, db, h, ma, rx, ry, rz) {   // prisma afunilado: largura/profundidade no topo (t) e na base (b)
+        var k = [wt, dt, wb, db, h].join(','), g = cacheT[k];
+        if (!g) {
+          var a = wt / 2, b = dt / 2, c = wb / 2, d = db / 2, y1 = h / 2, y0 = -h / 2, pos = [];
+          var v = [[-a, y1, -b], [a, y1, -b], [a, y1, b], [-a, y1, b], [-c, y0, -d], [c, y0, -d], [c, y0, d], [-c, y0, d]];
+          [[0, 3, 2, 1], [4, 5, 6, 7], [0, 1, 5, 4], [2, 3, 7, 6], [3, 0, 4, 7], [1, 2, 6, 5]].forEach(function (q) { [0, 1, 2, 0, 2, 3].forEach(function (i) { pos.push.apply(pos, v[q[i]]); }); });
+          g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.computeVertexNormals(); cacheT[k] = g;
+        }
+        return P(par, g, ma, x, y, z, rx, ry, rz);
+      }
+      function disco(par, x, y, z, r) {          // disco de parafuso na lateral da junta
+        var sg = x < 0 ? -1 : 1;
+        C(par, x, y, z, r, r, .12, brass, 0, 0, PI2, 24); P(par, new THREE.TorusGeometry(r * .8, .04, 8, 24), dark, x + sg * .07, y, z, 0, PI2, 0);
+        C(par, x + sg * .1, y, z, r * .3, r * .3, .1, steel, 0, 0, PI2, 8);
+      }
+      function banda(par, y, w, d, z0) { B(par, 0, y, z0, w + .08, .08, d + .08, brass); }
+      function mao(par, s, curl) {      // mão: palma voltada pro corpo, dedos de 3 falanges curvando pra palma, polegar pra frente
+        var n = -s, pal = G(par, 0, -.4, .1);
+        B(pal, 0, 0, 0, .55, .7, 1.05, steel); B(pal, -n * .34, 0, 0, .12, .62, .95, hull); tira(pal, -n * .42, 0, 0, .04, .5, .08);
+        for (var i = 0; i < 4; i++) {
+          var k = [.9, 1, .95, .8][i], f1 = G(pal, 0, -.36, (i - 1.5) * .26);
+          S(f1, 0, 0, 0, .1, brass); B(f1, 0, -.2 * k, 0, .2, .4 * k, .2, dark); f1.rotation.z = n * curl * .7;
+          var f2 = G(f1, 0, -.4 * k, 0); S(f2, 0, 0, 0, .09, brass); B(f2, 0, -.18 * k, 0, .18, .34 * k, .18, steel); f2.rotation.z = n * curl;
+          var f3 = G(f2, 0, -.34 * k, 0); S(f3, 0, 0, 0, .08, brass); B(f3, 0, -.14 * k, 0, .16, .26 * k, .16, dark); f3.rotation.z = n * curl * .8;
+        }
+        var th = G(pal, n * .1, -.1, .62); S(th, 0, 0, 0, .12, brass); B(th, 0, -.2, 0, .22, .4, .22, steel); th.rotation.set(-.5, 0, n * .5);
+        var th2 = G(th, 0, -.4, 0); B(th2, 0, -.15, 0, .2, .3, .2, dark); th2.rotation.z = n * .5;
+        return pal;
+      }
+      function C(par, x, y, z, r1, r2, h, ma, rx, ry, rz, seg) { return P(par, new THREE.CylinderGeometry(r1, r2, h, seg || 20), ma, x, y, z, rx, ry, rz); }
+      function S(par, x, y, z, r, ma) { return P(par, new THREE.SphereGeometry(r, 18, 14), ma, x, y, z); }
+      function G(par, x, y, z) { var g = new THREE.Group(); g.position.set(x, y, z); par.add(g); return g; }   // pivô de articulação
+      function junta(par, x, y, z, r) {          // esfera + colares de latão + parafusos nas tampas
+        S(par, x, y, z, r, steel);
+        C(par, x, y, z, r * 1.08, r * 1.08, r * .9, dark, 0, 0, PI2, 18);          // luva de encaixe
+        for (var kk = 0; kk < 0; kk++) { var aa = kk * .628; B(par, x, y + Math.cos(aa) * r * 1.1, z + Math.sin(aa) * r * 1.1, r * .8, r * .2, r * .3, steel, aa, 0, 0); }
+        [-1, 1].forEach(function (d) {
+          P(par, new THREE.TorusGeometry(r * .92, r * .13, 8, 24), brass, x + d * r * .62, y, z, 0, PI2, 0);
+          for (var k = 0; k < 0; k++) { var a = k * 1.047; C(par, x + d * r * .98, y + Math.cos(a) * r * .5, z + Math.sin(a) * r * .5, r * .09, r * .09, r * .12, dark, 0, 0, PI2, 6); }
+        });
+      }
+      function piston(par, a, b, r) { return;            // pistão hidráulico entre dois pontos
+        var d = new V3().subVectors(b, a), l = d.length(), g = G(par, 0, 0, 0);
+        g.position.copy(a).add(b).multiplyScalar(.5); g.quaternion.setFromUnitVectors(new V3(0, 1, 0), d.normalize());
+        C(g, 0, -l * .18, 0, r * 1.5, r * 1.5, l * .62, dark, 0, 0, 0, 10); C(g, 0, l * .22, 0, r * .7, r * .7, l * .6, steel, 0, 0, 0, 10);
+      }
+      function cabo(par, pts, r) { return;
+        return P(par, new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(function (p) { return new V3(p[0], p[1], p[2]); })), 24, r, 6, false), dark);
+      }
+      var verde = mat(0x9ffcff, .2, .4, 0x40e0ff, 2.6), luzV = mat(0x2a1a00, .4, .5, 0xffb020, 2.2);
+      var pv = { om: [], co: [], pu: [], qd: [], jo: [], to: [] }, cab;
+
+      // pelve, cintura articulada e saiotes
+      // medidas: o tronco termina em y≈-.05 (2.3 x 2.4); as juntas dos quadris ficam em x=±1.15, y=-1.0
+      B(M, 0, -.25, 0, 2.6, .36, 2.5, steel);                                              // cinto: faixa um pouco maior que o tronco
+      B(M, 0, -.07, 0, 2.66, .05, 2.56, brass); B(M, 0, -.43, 0, 2.66, .05, 2.56, brass);   // frisos dourados
+      B(M, 0, -.25, 1.28, .9, .5, .14, brass); tira(M, 0, -.25, 1.37, .6, .06, .04);        // fivela
+      B(M, 0, -.25, -1.28, .9, .5, .14, brass);
+      [-1, 1].forEach(function (s) {
+        disco(M, s * 1.33, -.25, 0, .2);                                                    // discos laterais do cinto
+        TZ(M, s * 1.3, -.82, 0, .95, 1.7, 1.15, 1.9, .8, hull);                             // protetor do quadril, cobre o topo da junta
+        tira(M, s * 1.3, -.82, .98, .05, .5, .05);
+      });
+      B(M, 0, -.85, 0, 1.7, .85, 1.8, steel);                                               // pelve central
+      TZ(M, 0, -.9, .98, .9, .2, .5, .15, .85, brass); TZ(M, 0, -.9, -.98, .9, .2, .5, .15, .85, hull);   // aventais frente e trás
+      
+
+      // tronco (gira sobre a cintura)
+      var T = G(M, 0, .15, 0); T.scale.set(1, 1, 1);
+      TZ(T, 0, 1.4, 0, 3.9, 2.4, 2.3, 2.4, 3.2, hull);
+      B(T, 0, 1.5, 1.28, 3.1, 1.9, .3, brass);
+      for (var v = 0; v < 3; v++) B(T, 0, .0 + v * .17, 1.22, 2.0, .07, .1, dark);
+      [-1, 1].forEach(function (s) { B(T, s * 1.0, 3.0, .9, 1.3, .25, .5, brass, .3, 0, 0); tira(T, s * 1.56, 1.4, .3, .05, 1.5, .1); tira(T, s * 1.7, 1.5, 1.2, .08, 1.5, .05); });
+      C(T, 0, 1.5, 1.45, .88, .88, .1, dark, PI2, 0, 0, 36);
+      nucleo = C(T, 0, 1.5, 1.52, .5, .5, .1, verde, PI2, 0, 0, 36);
+      [.62, .86, 1.08].forEach(function (r, i) { P(T, new THREE.TorusGeometry(r, .05 + i * .01, 8, 40), brass, 0, 1.5, 1.5); });
+      P(T, new THREE.TorusGeometry(.56, .03, 8, 36), verde, 0, 1.5, 1.56); halo(T, 0, 1.5, 1.75, 3.6, 0x40e0ff, .55);
+      var lz = new THREE.PointLight(0x40e0ff, 2.4, 8); lz.position.set(0, 1.5, 2.4); T.add(lz);
+      B(T, 0, 3.2, 0, 4.4, .6, 2.4, steel);
+      [-1, 1].forEach(function (s) {
+        TZ(T, s * 1.15, 2.7, 1.3, 1.7, .35, 1.2, .3, .55, brass, 0, 0, s * .5);          // V do peito
+        TZ(T, s * 1.75, 3.3, .2, .3, 1.6, .5, 1.2, 1.5, hull, 0, 0, -s * .35);             // asas de peito (abrem pra cima)
+      });
+      C(T, 0, 1.5, 1.38, 1.25, 1.25, .14, steel, PI2, 0, 0, 6);
+      
+      grebla(T, 0, 2.55, 1.2, 3.0, .5, 'z', 1, 7); grebla(T, 0, 1.4, -1.2, 3.2, 2.6, 'z', -1, 14);
+      [-1, 1].forEach(function (s) { grebla(T, s * 1.76, 1.4, 0, 1.9, 2.2, 'x', s, 10); });
+      [-1, 1].forEach(function (s) { cabo(T, [[s * 1.2, 2.5, 1.3], [s * 1.9, 2.9, 1.45], [s * 2.6, 3.0, 1.1], [s * 3.0, 2.7, .7]], .07); });
+
+      // cabeça: pescoço articulado, viseira, antenas e crista de chamas
+      cab = G(T, 0, 3.5, .1); cab.scale.setScalar(.85);
+      C(cab, 0, -.05, -.1, .55, .65, .5, dark, 0, 0, 0, 16);
+      [-.15, .1].forEach(function (y) { P(cab, new THREE.TorusGeometry(.6, .05, 8, 20), brass, 0, y, -.1, PI2, 0, 0); });
+      B(cab, 0, .7, 0, 1.7, 1.3, 1.6, hull);
+      B(cab, -.5, .8, .85, .85, .38, .1, glass, 0, 0, .28); B(cab, .5, .8, .85, .85, .38, .1, glass, 0, 0, -.28);
+      B(cab, 0, .25, .82, .8, .18, .08, dark);
+      [-1, 1].forEach(function (s) { C(cab, s * .9, 1.1, -.2, .03, .03, .9, steel, 0, 0, -s * .2, 8); });
+      B(cab, 0, 1.38, 0, 1.3, .12, 1.1, brass);
+      for (var k = -2; k <= 2; k++) { var sh = 1.5 - Math.abs(k) * .3, fl = new THREE.Mesh(new THREE.ConeGeometry(.17, sh, 4), brass); fl.position.set(k * .3, 1.44 + sh / 2, 0); cab.add(fl); }
+      halo(cab, -.5, .8, .95, 1.1, 0x30b8ff, .6); halo(cab, .5, .8, .95, 1.1, 0x30b8ff, .6);
+
+      // braços: ombro → cotovelo → punho → mão (esquerda com dedos, direita com a broca)
+      [-1, 1].forEach(function (s) {
+        var om = G(T, s * 3.0, 3.2, 0), co, pu;
+        junta(om, 0, 0, 0, .72);
+        B(om, s * .15, .45, 0, 1.9, .5, 2.1, hull); B(om, s * .15, .75, 0, 1.5, .12, 1.7, brass); B(om, s * .15, .98, 0, 1.2, .12, 1.3, brass); P(om, new THREE.SphereGeometry(.6, 16, 10, 0, PI2, 0, PI2 / 2), brass, s * .15, 1.04, 0);
+        TZ(om, s * 1.15, .9, -.1, .3, 1.5, .45, 1.1, 3.0, hull, 0, 0, s * .3); B(om, s * 1.0, 1.1, -.1, .08, 2.2, .8, brass, 0, 0, s * .3);   // escudo de ombro
+        disco(om, s * .8, 0, 0, .55);
+        tira(om, s * .75, .5, 1.08, .1, .8, .05); tira(om, s * .55, .5, 1.08, .1, .8, .05);
+        TZ(om, 0, -1.6, 0, 1.25, 1.45, 1.0, 1.2, 2.4, hull); banda(om, -.7, 1.2, 1.4, 0); banda(om, -2.3, 1.0, 1.25, 0); grebla(om, s * .55, -1.6, 0, 1.1, 2.2, 'x', s, 8); tira(om, s * .58, -1.6, 0, .05, 1.6, .1);
+        piston(om, new V3(0, -.5, -.75), new V3(0, -2.4, -.75), .08);
+        co = G(om, 0, -2.7, 0); junta(co, 0, 0, 0, .58); disco(co, s * .72, 0, 0, .5); B(co, 0, 0, -.55, .9, .9, .3, brass, .3, 0, 0);
+        TZ(co, 0, -1.1, .2, 1.15, 1.3, 1.45, 1.55, 2.4, dark); banda(co, -.5, 1.2, 1.4, .2); banda(co, -1.9, 1.4, 1.5, .2);  grebla(co, s * .68, -1.1, .2, 1.2, 2.2, 'x', s, 8); piston(co, new V3(0, -.3, -.62), new V3(0, -2.0, -.62), .07);
+        pu = G(co, 0, -2.3, .2); junta(pu, 0, 0, 0, .42);
+        if (s < 0) {
+          mao(pu, s, .5);
+        } else {
+          var n = -s;                                                                   // lado de dentro (palma)
+          C(pu, 0, -.35, 0, .72, .82, .5, brass, 0, 0, 0, 16);                           // manguito do punho
+          TZ(pu, 0, -1.05, 0, 1.1, 1.3, 1.35, 1.5, 1.1, hull);                          // corpo do punho, alarga na frente
+          B(pu, 0, -.9, -.8, 1.0, .9, .14, brass);                                       // placa dourada no dorso
+          for (var i = 0; i < 4; i++) { var zf = (i - 1.5) * .34; B(pu, n * .7, -1.1, zf, .3, .9, .3, dark); S(pu, n * .7, -.62, zf, .12, brass); B(pu, n * .7, -1.62, zf, .3, .2, .3, steel); }
+          B(pu, n * .84, -.78, 0, .2, .3, 1.4, steel);                                   // polegar por cima dos dedos
+          TZ(pu, 0, -1.72, 0, 1.4, 1.55, 1.0, 1.1, .35, brass);                          // placa frontal, afunila pra base da broca
+          P(pu, new THREE.TorusGeometry(.8, .07, 8, 36), verde, 0, -1.92, 0, PI2, 0, 0);
+          P(pu, new THREE.CircleGeometry(.78, 36), new THREE.MeshBasicMaterial({ color: 0x7ffcff, transparent: true, opacity: .3, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }), 0, -1.94, 0, PI2, 0, 0);
+          halo(pu, 0, -1.95, 0, 3, 0x7ffcff, .4);
+          broca = G(pu, 0, -1.95, 0); broca.rotation.x = PI2;                            // a broca sai do punho, no eixo do antebraço
+          var bc = new THREE.Mesh(new THREE.ConeGeometry(.6, 3.2, 16), mat(0x9aa0a8, .3, .9, 0x40e0ff, 1.4)); bc.rotation.x = PI2; bc.position.z = 1.8; broca.add(bc);
+          var hp = []; for (var t = 0; t <= 1.001; t += .02) hp.push(new THREE.Vector3(Math.cos(t * 31) * ((1 - t) * .62 + .03), Math.sin(t * 31) * ((1 - t) * .62 + .03), .2 + 3.0 * t));
+          broca.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(hp), 120, .06, 6, false), verde));   // rosca em espiral
+          for (var q = 0; q < 3; q++) { var an = new THREE.Mesh(new THREE.TorusGeometry(.62 - q * .05, .08, 6, 20), brass); an.position.z = .15 + q * .12; broca.add(an); }
+        }
+        om.scale.set(.9, 1, .9); co.scale.set(s > 0 ? 1.35 : 1.2, 1, s > 0 ? 1.35 : 1.2);
+        pv.om.push(om); pv.co.push(co); pv.pu.push(pu);
+      });
+
+      // pernas: quadril → joelho → tornozelo → pé
+      [-1, 1].forEach(function (s) {
+        var qd = G(M, s * 1.15, -1.0, 0), jo, to;
+        
+        
+        junta(qd, 0, 0, 0, .7);
+        TZ(qd, 0, -1.35, 0, 1.2, 1.3, 1.65, 1.5, 2.3, hull); banda(qd, -.6, 1.3, 1.35, 0); banda(qd, -2.15, 1.6, 1.45, 0); grebla(qd, 0, -1.5, .72, 1.0, 1.4, 'z', 1, 8); B(qd, s * .68, -1.2, 0, .12, 1.7, 1.0, brass); tira(qd, s * .75, -1.2, 0, .04, 1.4, .1); B(qd, 0, -.5, .7, 1.0, .6, .12, brass); [-.3, .3].forEach(function (x) { tira(qd, x, -1.5, .68, .1, 1.2, .05); });
+        piston(qd, new V3(0, -.4, -.78), new V3(0, -2.3, -.7), .09);
+        jo = G(qd, 0, -2.55, .15); junta(jo, 0, 0, 0, .6); disco(jo, s * .85, 0, 0, .5); TZ(jo, s * .85, -.9, -.1, .25, 1.2, .35, 1.5, 1.6, hull, 0, 0, -s * .1); B(jo, 0, 0, .78, 1.5, 1.0, .38, brass, -.25, 0, 0); B(jo, 0, .62, .8, 1.2, .35, .3, brass, -.5, 0, 0); B(jo, 0, -.6, .72, 1.1, .4, .3, brass, .3, 0, 0);
+        TZ(jo, 0, -1.2, -.05, 1.6, 1.6, 1.1, 1.3, 2.1, dark); banda(jo, -.5, 1.5, 1.55, -.05); banda(jo, -1.9, 1.15, 1.35, -.05);  grebla(jo, 0, -1.3, .65, .9, 1.4, 'z', 1, 8); B(jo, 0, -.9, -.85, .6, 1.3, .4, steel); tira(jo, s * .6, -1.2, 0, .04, 1.4, .1); [-.3, .3].forEach(function (x) { tira(jo, x, -1.3, .7, .1, 1.0, .05); });
+        piston(jo, new V3(0, -.3, -1.1), new V3(0, -1.9, -1.1), .08);
+        to = G(jo, 0, -2.4, 0); junta(to, 0, 0, 0, .5); disco(to, s * .62, 0, 0, .35);
+        TZ(to, 0, -.15, .6, 1.4, 2.3, 1.7, 2.7, .6, hull); TZ(to, 0, -.2, 2.1, 1.2, .5, 1.5, .8, .45, steel); grebla(to, 0, .15, .6, 1.3, 2.2, 'y', 1, 10); B(to, 0, -.2, 1.75, 1.5, .34, .5, brass, .15, 0, 0); tira(to, 0, -.3, 1.95, 1.3, .08, .06);
+        qd.scale.set(1.0, 1, 1.05);
+        pv.qd.push(qd); pv.jo.push(jo); pv.to.push(to);
+      });
+
+      // capa vermelha rasgada, com a caveira desbotada, presa embaixo dos propulsores
+      function texCapa() {
+        var c = document.createElement('canvas'); c.width = 256; c.height = 512;
+        var x = c.getContext('2d'), g = x.createLinearGradient(0, 0, 0, 512);
+        g.addColorStop(0, '#4a040c'); g.addColorStop(.5, '#a80d1c'); g.addColorStop(1, '#6e0814'); x.fillStyle = g; x.fillRect(0, 0, 256, 512);
+        for (var i = 0; i < 9; i++) { x.fillStyle = 'rgba(0,0,0,' + (i % 2 ? .12 : .05) + ')'; x.fillRect(i * 28, 0, 14, 512); }
+        var t = new THREE.CanvasTexture(c), im = new Image();
+        im.onload = function () { x.globalAlpha = .3; x.drawImage(im, 56, 270, 144, 180); t.needsUpdate = true; }; im.src = EMBLEMA_GURREN;
+        if (THREE.SRGBColorSpace) t.colorSpace = THREE.SRGBColorSpace; return t;
+      }
+      var capaG = new THREE.PlaneGeometry(3.6, 6, 12, 18), capaPos = capaG.attributes.position, capaBase = capaPos.array.slice(), rasga = [0, -.8, .2, -1.1, .1, -.6, .3, -1.0, 0, -.7, .2, -.9, .1];
+      for (var ci = 0; ci < 13; ci++) capaBase[(18 * 13 + ci) * 3 + 1] += rasga[ci];
+      var capaPiv = G(T, 0, 2.1, -1.4); P(capaPiv, capaG, new THREE.MeshStandardMaterial({ map: texCapa(), side: THREE.DoubleSide, roughness: .9, metalness: 0, emissive: 0x2a0206, emissiveIntensity: .6 }), 0, -3, 0);
+
+      // propulsores nas costas (ocultos: quem propulsiona o mecha é o casco da nave)
+      var Eg2 = G(T, 0, 0, 0);
+      [-1, 0, 1].forEach(function (x) {
+        C(Eg2, x, 2.6, -1.6, .45, .55, 1.4, dark, PI2, 0, 0);
+        P(Eg2, new THREE.TorusGeometry(.5, .06, 8, 20), brass, x, 2.6, -2.3);
+        var f2 = new THREE.Mesh(new THREE.ConeGeometry(.34, 1.8, 14), new THREE.MeshBasicMaterial({ color: 0xff8a3a, transparent: true, opacity: .55, blending: THREE.AdditiveBlending, depthWrite: false }));
+        f2.rotation.x = -PI2; f2.position.set(x, 2.6, -3.1); Eg2.add(f2); chamas.push(f2);
+        var hl = new THREE.Sprite(new THREE.SpriteMaterial({ map: suave, color: 0xff8a3a, transparent: true, opacity: .7, blending: THREE.AdditiveBlending, depthWrite: false }));
+        hl.scale.setScalar(2.6); hl.position.set(x, 2.6, -2.5); Eg2.add(hl);
+      });
+
+      // pose de repouso com movimento leve: respira, vira a cabeça, balança braços e pernas
+      function anim(t, b) {
+        var w = Math.sin(t * .9);
+        T.rotation.set(.1, Math.sin(t * .5) * .06 - .12, 0); T.position.y = .15 + Math.sin(t * 1.2) * .02;      // inclinado pra frente, em guarda
+        cab.rotation.set(-.08 + Math.sin(t * .7) * .03, Math.sin(t * .45) * .12 + .12, 0);
+        pv.om[0].rotation.set(.35 + w * .04, 0, -.3); pv.om[1].rotation.set(-.8 + w * .05, 0, .2);
+        pv.co[0].rotation.x = -.7 - w * .05; pv.co[1].rotation.x = -1.0 + w * .05;
+        pv.pu[0].rotation.x = .2 + Math.sin(t * 1.3) * .05; pv.pu[1].rotation.x = .3;
+        pv.qd[0].rotation.set(-.35, 0, -.1); pv.qd[1].rotation.set(.1, 0, .1);
+        pv.jo[0].rotation.x = .6 + w * .02; pv.jo[1].rotation.x = .35;
+        pv.to[0].rotation.x = -.25; pv.to[1].rotation.x = -.45;
+        luzV.emissiveIntensity = 1.4 + .8 * b; glass.emissiveIntensity = 1.8 + .6 * b;
+        var pa = capaPos.array;
+        for (var q = 0; q < pa.length; q += 3) { var u = (3 - capaBase[q + 1]) / 6; pa[q] = capaBase[q] * (1 + .18 * u); pa[q + 2] = -u * 1.1 + Math.sin(t * 1.6 + u * 4 + capaBase[q] * 1.1) * .3 * u + Math.sin(capaBase[q] * 3.4) * .18 * u; }
+        capaPos.needsUpdate = true; capaG.computeVertexNormals();
+      }
+      M.userData = { broca: broca, nucleo: nucleo, anim: anim, T: T, cab: cab, pv: pv, capa: capaPiv };
+      M.rotation.order = 'YXZ';
+      M.position.y = 1.4;
+      return M;
+    }
+    var piso = new THREE.Mesh(new THREE.CircleGeometry(16, 48), mat(0x07080e, .22, .9)); piso.rotation.x = -PI2; piso.position.y = -4.8; piso.visible = false; scene.add(piso);
+    var textoNave = document.querySelector('#hud span').textContent, btnMecha = document.getElementById('teste-mecha');
+    var BOTAO_TESTE_MECHA = true;       // false esconde o botão de teste
+    mecha = construirMecha(); scene.add(mecha);
+    var PVm = mecha.userData, pv = PVm.pv, kT = 0, kAlvo = 0, giro = 0, vistoMecha = false, SIG = 1.05;
+    var Y = new THREE.Vector3(0, 1, 0), pl = new THREE.Vector3(), v1 = new THREE.Vector3();
+    try { vistoMecha = localStorage.getItem('nexus_mecha_visto') === '1'; } catch (er) {}
+    // 1) guarda as peças detalhadas do mecha (ficam ocultas na forma de nave)
+    var detalhes = [], matsM = [], matsC = [], itens = [], detVis = false, cascoVis = true, adVis = true;
+    function coletaMats(o, lista) { if (o.isMesh && o.material && o.material.blending !== THREE.AdditiveBlending && lista.indexOf(o.material) < 0) lista.push(o.material); }
+    mecha.traverse(function (o) { if (o.isMesh || o.isSprite || o.isLight) { detalhes.push(o); coletaMats(o, matsM); } });
+    detalhes.forEach(function (o) { o.visible = false; });
+    // 2) o esqueleto do mecha, deitado ao longo do eixo da nave (cabeça na proa, pernas na popa), na pose de nave
+    mecha.rotation.set(PI2, 0, 0); mecha.scale.setScalar(SIG); mecha.position.set(0, -.2, 1.6);
+    [PVm.T, PVm.cab].concat(pv.om, pv.co, pv.pu, pv.qd, pv.jo, pv.to).forEach(function (o) { o.rotation.set(0, 0, 0); });
+    mecha.updateMatrixWorld(true); ship.updateMatrixWorld(true);
+    // 3) cada peça real da nave é presa à articulação que ela vira (casco → armadura, proa → cabeça, sponsons → braços, canhões → punhos, estrutura inferior → pernas, motores → pés)
+    var helpers = [hingeL, hingeR, holdL, holdR, spine].concat(spons);
+    (function flat(g) { g.children.slice().forEach(function (o) { if (helpers.indexOf(o) >= 0) flat(o); else itens.push(o); }); })(ship);
+    function alvoDe(o) {
+      o.getWorldPosition(v1); ship.worldToLocal(v1);
+      var ax = Math.abs(v1.x), z = v1.z, i = v1.x < 0 ? 0 : 1;
+      if (z > 4.4) return PVm.cab;
+      if (ax > 1.3 && ax < 2.1) { if (z > -3.1 && z < .7) return pv.om[i]; if (z >= 1 && z <= 3) return pv.co[i]; if (z <= -3.05 && z > -4.6) return pv.pu[i]; }
+      if (z < -4.6) return ax < .3 ? mecha : pv.to[i];
+      if (z < -3.1) return pv.jo[i];
+      if (z < -1.5) return pv.qd[i];
+      return PVm.T;
+    }
+    itens.forEach(function (o) { alvoDe(o).attach(o); o.traverse(function (c) { coletaMats(c, matsC); }); });
+    var aditivos = itens.filter(function (o) { return o.isSprite || (o.isMesh && o.material && o.material.blending === THREE.AdditiveBlending); });
+    // reator do peito: o núcleo da nave (no centro do casco) migra pro centro do tórax
+    var orbA = PVm.T.worldToLocal(new THREE.Vector3(0, -.2, 0)), orbB = new THREE.Vector3(0, 1.5, 1.5);
+    var orbe = new THREE.Mesh(new THREE.SphereGeometry(.5, 20, 14), new THREE.MeshBasicMaterial({ color: 0x9ffcff })); orbe.position.copy(orbA); orbe.visible = false; PVm.T.add(orbe);
+    var oh = new THREE.Sprite(new THREE.SpriteMaterial({ map: suave, color: 0x40e0ff, transparent: true, opacity: .9, blending: THREE.AdditiveBlending, depthWrite: false })); oh.scale.setScalar(4); orbe.add(oh);
+    var fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: suave, color: 0x40e0ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
+    fl.scale.setScalar(9); fl.position.set(0, 1.5, 1.2); PVm.T.add(fl);                                           // clarão na troca
+    var orbW = new THREE.Mesh(new THREE.SphereGeometry(.95, 24, 18), new THREE.MeshBasicMaterial({ color: 0x7ffcff, transparent: true, opacity: .28, blending: THREE.AdditiveBlending, depthWrite: false }));
+    orbW.position.set(0, -1.95, 0); pv.pu[1].add(orbW);                                                          // orbe de energia da arma
+    function fade(m, op) { m.opacity = op; var t = op < .999; if (m.transparent !== t) { m.transparent = t; m.depthWrite = !t; m.needsUpdate = true; } }
+    function transforma(k, s) {
+      function st(a, c) { var x = Math.min(1, Math.max(0, (k - a) / (c - a))); return x * x * (3 - 2 * x); }
+      function mix(o, w, rx, ry, rz) { o.rotation.x = rx + (o.rotation.x - rx) * w; o.rotation.y = ry + (o.rotation.y - ry) * w; o.rotation.z = rz + (o.rotation.z - rz) * w; }
+      var eM = st(.1, .65), eL = st(.2, .6), eA = st(.25, .65), eH = st(.4, .75);
+      // o esqueleto se levanta: o corpo deitado gira em torno da pelve; braços, pernas e cabeça desdobram nas articulações (as peças do casco vão presas a elas)
+      mecha.rotation.set((1 - eM) * PI2, giro, 0); mecha.scale.setScalar(SIG + (1 - SIG) * eM);
+      pl.set(0, (-.2 + Math.sin(s * .6) * .07) * (1 - eM) + eM * (1.4 + Math.sin(s * 1.2) * .08), 1.6 * (1 - eM)); mecha.position.copy(pl).applyAxisAngle(Y, giro);
+      mix(PVm.T, eA, 0, 0, 0); mix(PVm.cab, eH, 0, 0, 0);
+      pv.om.forEach(function (o, i) { mix(o, eA, 0, 0, (i ? 1 : -1) * .1); }); pv.co.forEach(function (o) { mix(o, eA, 0, 0, 0); }); pv.pu.forEach(function (o) { mix(o, eA, 0, 0, 0); });
+      pv.qd.forEach(function (o) { mix(o, eL, 0, 0, 0); }); pv.jo.forEach(function (o) { mix(o, eL, 0, 0, 0); }); pv.to.forEach(function (o) { mix(o, eL, 0, 0, 0); });
+      // a armadura detalhada do mecha surge por dentro das placas do casco, que se dissolvem nela
+      var fm = st(.3, .6), fc = st(.4, .75), vm = k > .3, vc = k < .78, va = k < .45;
+      if (vm !== detVis) { detVis = vm; detalhes.forEach(function (o) { o.visible = vm; }); }
+      if (vc !== cascoVis) { cascoVis = vc; itens.forEach(function (o) { o.visible = vc; }); }
+      if (va !== adVis) { adVis = va; aditivos.forEach(function (o) { o.visible = va && cascoVis; }); }
+      matsM.forEach(function (m) { fade(m, fm); }); matsC.forEach(function (m) { fade(m, 1 - fc); });
+      orbe.position.lerpVectors(orbA, orbB, st(.2, .6)); orbe.scale.setScalar(1 - .5 * st(.2, .6)); orbe.visible = k > .12 && k < .65;
+      orbW.scale.setScalar(.001 + st(.82, 1) * (1 + .06 * Math.sin(s * 5)));
+      var f = Math.min(1, Math.max(0, (k - .2) / .5)); fl.material.opacity = (k > 0 && k < 1) ? .9 * Math.pow(Math.sin(Math.PI * f), 2) : 0;
+      piso.visible = k > .85; trilha.visible = k < .05;
+      FG.scale.setScalar(Math.max(.001, 1 - st(.35, .55))); FG.visible = k < .6 && cascoVis; PVm.capa.scale.setScalar(Math.max(.001, st(.45, .8)));   // o estandarte vermelho vira a capa vermelha
+    }
+    function modoMecha(on) {            // só visual: a transformação roda no loop
+      kAlvo = on ? 1 : 0;
+      document.querySelector('#hud span').textContent = on ? 'FORMA DE COMBATE · MECHA' : textoNave;
+      btnMecha.classList.toggle('ativo', on); btnMecha.textContent = on ? 'VOLTAR À NAVE · TESTE' : 'TRANSFORMAR · TESTE';
+    }
+    btnMecha.textContent = 'TRANSFORMAR · TESTE';
+    btnMecha.style.display = BOTAO_TESTE_MECHA ? '' : 'none';
+    btnMecha.addEventListener('click', function () { modoMecha(kAlvo < .5); });
+    if (MODO_MECHA) {                   // broca encaixada: o viajante assiste à transformação na primeira vez
+      if (vistoMecha) { kT = kAlvo = 1; modoMecha(true); }
+      else setTimeout(function () { modoMecha(true); try { localStorage.setItem('nexus_mecha_visto', '1'); } catch (er) {} }, 2200);
+    }
+
+    // Clique na nave → painel de entrada para o interior
+    var ray = new THREE.Raycaster();
+    var pointer = new THREE.Vector2();
+    var drag = false, moved = false, lx = 0, ly = 0;
+    function sobreNave(e) {
+      pointer.x = (e.clientX / innerWidth) * 2 - 1;
+      pointer.y = -(e.clientY / innerHeight) * 2 + 1;
+      ray.setFromCamera(pointer, camera);
+      return ray.intersectObjects([ship, mecha], true).length > 0;
+    }
+
+    canvas.addEventListener('pointerdown', function (e) {
+      drag = true; moved = false; lx = e.clientX; ly = e.clientY;
+      canvas.style.cursor = 'grabbing';
+      if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', function (e) {
+      if (!drag) { canvas.style.cursor = sobreNave(e) ? 'pointer' : 'grab'; return; }
+      var dx = e.clientX - lx, dy = e.clientY - ly;
+      if (Math.abs(dx) + Math.abs(dy) > 4) moved = true;
+      az -= dx * .006;
+      el = Math.max(-.65, Math.min(.65, el + dy * .004));
+      lx = e.clientX; ly = e.clientY;
+      cam();
+    });
+    function aoSoltar(e) {
+      if (!drag) return;
+      drag = false;
+      canvas.style.cursor = 'grab';
+      if (moved || !e) return;
+      if (sobreNave(e)) painelEntrar.style.display = 'flex';
+    }
+    canvas.addEventListener('pointerup', aoSoltar);
+    canvas.addEventListener('pointercancel', function () { drag = false; });
+
+    canvas.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      dist = Math.max(9, Math.min(30, dist * Math.exp(e.deltaY * .001)));
+      cam();
+    }, { passive: false });
+
+    document.getElementById('btn-entrar').addEventListener('click', function () {
+      window.location.href = DESTINO;
+    });
+    document.getElementById('btn-cancelar').addEventListener('click', function () {
+      painelEntrar.style.display = 'none';
+    });
+
+    var last = performance.now();
+    function loop(t) {
+      requestAnimationFrame(loop);
+      var dt = Math.min(.05, (t - last) / 1000);
+      last = t;
+      var s = t / 1000, batida = .5 + .5 * Math.sin(s * Math.PI * 2 / BEAT);
+      giro += dt * .035;
+      if (intro < 1) { intro = Math.min(1, intro + dt / 2.8); cam(); }
+      kT = kAlvo > kT ? Math.min(kAlvo, kT + dt / 6) : Math.max(kAlvo, kT - dt / 6);     // 6 s de transformação
+      var ez = kT * kT * (3 - 2 * kT); if (kz !== ez) { kz = ez; cam(); }
+      mecha.userData.broca.rotation.z += dt * 6;
+      mecha.userData.nucleo.material.emissiveIntensity = 2.2 + .8 * batida;
+      mecha.userData.anim(s, batida); transforma(kT, s);
+      chamas.forEach(function (o, i) {
+        o.scale.set(1, .85 + .22 * Math.sin(t * .02 + i * 1.7), 1);
+      });
+      motorLuz.intensity = 2.6 + .6 * Math.sin(t * .02);
+      costuras.forEach(function (m, i) { m.emissiveIntensity = 1.5 + .9 * batida * (i % 2 ? 1 : .6); });
+      glass.emissiveIntensity = .9 + .5 * batida;
+      luzTeal.emissiveIntensity = 1.5 + .6 * batida;
+      halos.forEach(function (h, i) { h.scale.setScalar(2.3 + .35 * Math.sin(t * .02 + i * 1.7)); });
+      strobos.forEach(function (sp, i) { sp.material.opacity = (Math.floor(s * 1.6 + i * .5) % 3 === 0) ? 1 : .08; });
+      for (var ei = 0; ei < NT; ei++) {
+        tAge[ei] = (tAge[ei] + dt * .45) % 1;
+        var ag = tAge[ei], ex = [-.85, 0, .85][ei % 3], fd = Math.pow(1 - ag, 1.6);
+        tPos[ei * 3] = ex + tOff[ei][0] * ag; tPos[ei * 3 + 1] = -.05 + tOff[ei][1] * ag; tPos[ei * 3 + 2] = -6 - ag * 7;
+        tCor[ei * 3] = fd; tCor[ei * 3 + 1] = .5 * fd; tCor[ei * 3 + 2] = .2 * fd;
+      }
+      tGeo.attributes.position.needsUpdate = true; tGeo.attributes.color.needsUpdate = true;
+      amber.emissiveIntensity = 1.8 + .5 * batida;
+      estrelaHalo.scale.setScalar(60 * (1 + .04 * Math.sin(s * Math.PI * 2 / BEAT)));
+      estrelaCore.scale.setScalar(10 * (1 + .04 * Math.sin(s * Math.PI * 2 / BEAT)));
+      lampL.material.emissiveIntensity = lampR.material.emissiveIntensity = (Math.floor(s * 1.2) % 2) ? 2.8 : .5;
+      var pa = panoGeo.attributes.position.array;
+      for (var q = 0; q < pa.length; q += 3) {
+        var u = (panoBase[q] + 1.05) / 2.1;
+        pa[q + 2] = Math.sin(panoBase[q] * 3.2 - s * 4.2 + panoBase[q + 1] * 1.2) * .1 * u;   // presa no mastro, solta na ponta
+      }
+      panoGeo.attributes.position.needsUpdate = true;
+      panoGeo.computeVertexNormals();
+      ilhas.forEach(function (gp, i) {
+        gp.position.y = gp.userData.y0 + Math.sin(s * .5 + i) * .45;
+        gp.rotation.y += dt * .02;
+      });
+      renderer.render(scene, camera);
+    }
+    requestAnimationFrame(loop);
+
+    addEventListener('resize', function () {
+      renderer.setSize(innerWidth, innerHeight, false);
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+    });
+
+    status.textContent = 'NAVE ONLINE';
+  } catch (e) {
+    console.error(e);
+    status.style.display = 'none';
+    err.style.display = 'grid';
+    err.innerHTML = '<div><h2>Erro ao iniciar a nave 3D</h2><p>' + String(e && e.message || e) + '</p></div>';
+  }
+})();
+  </script>
+</body>
+</html>
